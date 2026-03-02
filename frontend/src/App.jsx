@@ -20,8 +20,8 @@ import CompleteRegistrationProfesionalEmpresa05 from "./pages/profesionales/Comp
 import CompleteRegistrationProfesionalAgencia05 from "./pages/profesionales/CompleteRegistrationProfesionalAgencia05";
 
 // ControlPanel Layout
-import Layout from "./components/controlPanel/Layout";
-import AuthLayout from "./components/AuthLayout";
+import Layout from "./layouts/AppLayout";
+import AuthLayout from "./layouts/AuthLayout";
 
 // ControlPanel páginas
 import MiPerfil from "./components/controlPanel/MiPerfil";

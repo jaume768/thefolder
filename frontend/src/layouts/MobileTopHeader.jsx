@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./css/MobileTopHeader.css";
+import "../components/controlPanel/css/MobileTopHeader.css";
 
 // Mantén tus rutas
 const topMenuItems = [

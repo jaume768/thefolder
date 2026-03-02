@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
 
-import ProfileOptionsModal from './ProfileOptionsModal';
-import SearchResults from './SearchResults';
-import SearchFullScreen from './SearchFullScreen';
+import ProfileOptionsModal from '../components/controlPanel/ProfileOptionsModal';
+import SearchResults from '../components/controlPanel/SearchResults';
+import SearchFullScreen from '../components/controlPanel/SearchFullScreen';
 
 
 const getUsernameFromToken = () => {
@@ -183,7 +183,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
       return null;
     }
   }, []);
-  
+
 
   // debounce input
   const handleSearchInputChange = (e) => {
@@ -404,7 +404,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         <div
           className="header-left-nav-dropdown"
           ref={navMenuRef}
-          onMouseDown={(e) => e.stopPropagation()}  // ✅ evita que el “click fuera” se coma los clicks dentro
+          onMouseDown={(e) => e.stopPropagation()}
         >
         <button
           type="button"
@@ -422,7 +422,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           {(showNavMenu || activeNavItem) && <span className="header-dot" />}
         </button>
 
-
           {showNavMenu && (
             <div className="header-left-menu-panel" role="menu">
               {navItems.map(item => {
@@ -437,8 +436,8 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
                     onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setShowNavMenu(false);     // ✅ cerrar al elegir
-                      navigate(item.to);         // ✅ navegar
+                      setShowNavMenu(false);
+                      navigate(item.to);
                     }}
                   >
                     {item.label}
@@ -450,12 +449,10 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           )}
         </div>
 
-
       </div>
 
       {/* COLUMNA CENTRAL: buscador */}
       <div className="header-center" ref={searchRef}>
-        {/* Colapsado: solo lupa */}
         {!isSearchExpanded ? (
           <button
             type="button"
@@ -518,7 +515,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         )}
       </div>
 
-      {/* COLUMNA DERECHA (solo texto) */}
+      {/* COLUMNA DERECHA */}
       <div className="header-right">
         <button
           className={`button header-left-link create-main-btn ${isCreatePostOpen ? 'active' : ''} ${hasDraft ? 'has-draft' : ''}`}
@@ -550,18 +547,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           {isGuardados && <span className="header-dot" />}
         </button>
 
-        {/* Perfil */}
         <div className={`profile-wrapper ${showProfileOptions ? 'open' : ''}`} ref={profileRef}>
-          {/* FOTO USUARIO (futuro) */}
-          {/*
-          <img
-            className="profile-img"
-            src={avatarUrl}
-            alt="Ver mi Perfil"
-            onClick={handleAvatarClick}
-          />
-          */}
-
           <button
             type="button"
             className="button header-left-link"

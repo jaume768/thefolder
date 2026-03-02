@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Layout from "./controlPanel/Layout";
-import LandingHeader from "./home/LandingHeader";
+import Layout from "./AppLayout";
+import LandingHeader from "../components/home/LandingHeader";
 
 const AuthLayout = ({ children, activeMenu, contentClassName }) => {
   const navigate = useNavigate();

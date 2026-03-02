@@ -44,11 +44,11 @@ import Fashion from "./components/controlPanel/Fashion";
 import Blog from "./components/controlPanel/Blog";
 import Magazine from "./components/controlPanel/Magazine";
 import ArticleDetail from "./components/controlPanel/ArticleDetail";
-import AvisoLegal from "./components/controlPanel/AvisoLegal";
-import Privacidad from "./components/controlPanel/Privacidad";
-import Cookies from "./components/controlPanel/Cookies";
-import Contacto from "./components/controlPanel/Contacto";
-import About from "./components/controlPanel/About";
+import AvisoLegal from "./pages/legal/AvisoLegalPage";
+import Privacidad from "./pages/legal/PrivacidadPage";
+import Cookies from "./pages/legal/CookiesPage";
+import Contacto from "./pages/legal/ContactoPage";
+import About from "./pages/legal/AboutPage";
 
 // ✅ Nuevo perfil por rutas
 import ProfileRoot from "./pages/profile/ProfileRoot";

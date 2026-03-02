@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import './css/Privacidad.css';
+import '../../components/controlPanel/css/Privacidad.css';
 
 const Privacidad = () => {
     const navigate = useNavigate();
@@ -17,11 +17,11 @@ const Privacidad = () => {
                     <FaArrowLeft /> Volver
                 </button>
             </div>
-            
+
             <div className="privacidad-content">
                 <h1 className="privacidad-title">Política de Privacidad y Protección de Datos</h1>
                 <p className="privacidad-version">Actualizado: 20 de Mayo de 2025 Versión: 1.0</p>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Lo primero: La información</h2>
                     <p className="privacidad-paragraph">
@@ -133,7 +133,7 @@ const Privacidad = () => {
                         <li>Dirección IP de acceso.</li>
                         <li>Tipo y versión de navegador.</li>
                     </ul>
-                    
+
                     <h3 className="privacidad-subtitle-small">Verificación de perfiles profesionales o institucionales</h3>
                     <p className="privacidad-paragraph">
                         Cuando un usuario desea obtener un perfil profesional o institucional verificado, TheFolderWorld solicita el envío de cierta documentación al correo electrónico oficial. No se utilizan servicios externos ni se recopilan documentos de identidad personales. La información que solicitamos, y que almacenamos con el único propósito de verificar la autenticidad del perfil, incluye:
@@ -146,7 +146,7 @@ const Privacidad = () => {
                         <li>Enlace al sitio web oficial y/o redes sociales activas.</li>
                     </ul>
                     <p className="privacidad-paragraph">Estos datos son revisados por el equipo de administración para comprobar la veracidad del perfil antes de permitir la publicación de ofertas laborales o educativas.</p>
-                    
+
                     <h3 className="privacidad-subtitle-small">Actividades dentro de la plataforma</h3>
                     <p className="privacidad-paragraph">Para ofrecer una experiencia personalizada y funcional, TheFolderWorld almacena información sobre las acciones que realizas, como:</p>
                     <ul className="privacidad-list">
@@ -156,7 +156,7 @@ const Privacidad = () => {
                         <li>Historial de interacciones.</li>
                     </ul>
                 </section>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Usuarios menores de edad</h2>
                     <p className="privacidad-paragraph">
@@ -165,21 +165,21 @@ const Privacidad = () => {
                         Si eres menor de 18 años, es obligatorio presentar la autorización por escrito de uno de tus padres o de tu tutor legal para poder registrarte y utilizar los servicios de TheFolderWorld. Esta autorización será almacenada en nuestra base de datos como parte del proceso de verificación.
                     </p>
                 </section>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Reportes y reclamaciones</h2>
                     <p className="privacidad-paragraph">
                         Cuando se reporta contenido o se reclama publicación sin consentimiento, TheFolderWorld almacena detalles del reporte, explicaciones, lista de contenidos y pruebas adjuntas.
                     </p>
                 </section>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Publicación y gestión de ofertas</h2>
                     <p className="privacidad-paragraph">
                         Los perfiles profesionales o institucionales pueden publicar ofertas de empleo o educativas; se almacena toda la información, así como las imágenes adjuntas.
                     </p>
                 </section>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Uso de cookies</h2>
                     <p className="privacidad-paragraph">
@@ -191,7 +191,7 @@ const Privacidad = () => {
                         <li>Almacenar el identificador de sesión, manteniéndote logueado mientras navegas.</li>
                     </ul>
                 </section>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Tus derechos</h2>
                     <p className="privacidad-paragraph">
@@ -202,7 +202,7 @@ const Privacidad = () => {
                         En caso de que consideres que no hemos tratado tus datos de acuerdo con la normativa, tienes el derecho a presentar una reclamación ante la Agencia Española de Protección de Datos o ante la autoridad competente en materia de protección de datos.
                     </p>
                 </section>
-                
+
                 <section>
                     <h2 className="privacidad-subtitle">Aceptación de esta política</h2>
                     <p className="privacidad-paragraph">

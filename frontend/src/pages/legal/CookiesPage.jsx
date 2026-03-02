@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import './css/Cookies.css';
+import '../../components/controlPanel/css/Cookies.css';
 
 const Cookies = () => {
     const navigate = useNavigate();
@@ -17,11 +17,11 @@ const Cookies = () => {
                     <FaArrowLeft /> Volver
                 </button>
             </div>
-            
+
             <div className="cookies-content">
                 <h1 className="cookies-title">Política de Cookies</h1>
                 <p className="cookies-version">Actualizado: 20 de Mayo de 2025 Versión: 1.0</p>
-                
+
                 <p className="cookies-paragraph">
                     En TheFolderWorld, nos comprometemos a ofrecerte una experiencia de navegación segura y fluida. Para ello, utilizamos cookies y tecnologías similares que nos permiten mejorar la funcionalidad del sitio web y asegurar su correcto funcionamiento.
                 </p>

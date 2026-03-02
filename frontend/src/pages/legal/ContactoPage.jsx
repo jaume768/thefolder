@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaArrowLeft, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import './css/Contacto.css';
+import '../../components/controlPanel/css/Contacto.css';
 
 const Contacto = () => {
     const navigate = useNavigate();
@@ -17,10 +17,10 @@ const Contacto = () => {
                     <FaArrowLeft /> Volver
                 </button>
             </div>
-            
+
             <div className="contacto-content">
                 <h1 className="contacto-title">Contacto</h1>
-                
+
                 <div className="contacto-info-section">
                     <div className="contacto-info-card">
                         <div className="contacto-info-icon">
@@ -32,7 +32,7 @@ const Contacto = () => {
                             <p className="contacto-info-description">Para consultas generales, soporte técnico y colaboraciones.</p>
                         </div>
                     </div>
-                    
+
                     <div className="contacto-info-card">
                         <div className="contacto-info-icon">
                             <FaMapMarkerAlt />
@@ -45,7 +45,7 @@ const Contacto = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="contacto-social-section">
                     <h2>Síguenos en redes sociales</h2>
                     <div className="contacto-social-links">
@@ -63,7 +63,7 @@ const Contacto = () => {
                         </a>
                     </div>
                 </div>
-                
+
                 <div className="contacto-about-section">
                     <h2>Sobre TheFolderWorld</h2>
                     <p>

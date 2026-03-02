@@ -1,10 +1,10 @@
 import React from 'react';
-import './css/About.css';
+import '../../components/controlPanel/css/About.css';
 
 const About = () => {
     return (
         <div className="about-container">
-            
+
             <div className="about-content">
                 <div className="about-section">
                     <div className="about-text">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import './css/AvisoLegal.css';
+import '../../components/controlPanel/css/AvisoLegal.css';
 
 const AvisoLegal = () => {
     const navigate = useNavigate();
@@ -17,11 +17,11 @@ const AvisoLegal = () => {
                     <FaArrowLeft /> Volver
                 </button>
             </div>
-            
+
             <div className="avisolegal-content">
                 <h1 className="avisolegal-title">Aviso Legal</h1>
                 <p className="avisolegal-version">Actualizado: 20 de Mayo de 2025 Versión: 1.0</p>
-                
+
                 <p className="avisolegal-paragraph">
                     El presente documento constituye el Aviso Legal y las Condiciones de Uso de TheFolderWorld, y regula la relación entre esta plataforma y las personas usuarias del servicio. TheFolderWorld pone a disposición de sus usuarios las presentes Condiciones de Uso, cumpliendo con lo establecido en la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), así como con las obligaciones previstas en el Reglamento (UE) 2016/679, Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD).
                     Estas condiciones estarán vigentes y serán aplicables en tanto permanezcan accesibles desde la presente página web. La versión actual del Aviso Legal ha sido actualizada con fecha 20 de mayo de 2025. Las versiones anteriores, en su caso, pueden consultarse en el apartado correspondiente al final del documento.
@@ -42,13 +42,13 @@ const AvisoLegal = () => {
                         La condición de Usuario se adquiere mediante el mero acceso a cualquiera de los servicios disponibles en thefolder.world; la condición de Usuario Registrado se adquiere necesariamente mediante el proceso de registro. Ambas condiciones implican la aceptación expresa de este Aviso Legal. La aceptación del presente Aviso Legal implica que el Usuario ha leído, comprendido y aceptado su contenido en su totalidad. Las condiciones recogidas en este documento serán de aplicación desde el momento en que el Usuario acceda al sitio web o complete el proceso de registro, y su cumplimiento será exigible incluso después de que cese la condición de Usuario o Usuario Registrado, cuando así lo determine la normativa vigente o se establezca expresamente en el presente documento. TheFolderWorld se reserva el derecho a modificar este Aviso Legal en cualquier momento, por razones justificadas como la adaptación a cambios normativos, mejoras técnicas o modificaciones en el servicio ofrecido. Cualquier cambio relevante será comunicado a los Usuarios Registrados a la mayor brevedad posible. El Usuario puede solicitar en cualquier momento la cancelación de su cuenta y la baja como Usuario Registrado, enviando un correo electrónico a la dirección: thefolderworld@gmail.com. Actualmente no existe un sistema automatizado de baja directa desde la plataforma, aunque este podrá implementarse en futuras versiones del servicio. En caso de modificación del presente Aviso Legal, su nueva versión será publicada en la página web. Los Usuarios Registrados recibirán una notificación por correo electrónico y deberán aceptar las nuevas condiciones en su siguiente acceso. En caso de no aceptarlas, se procederá a la cancelación de su cuenta como Usuario Registrado.
                     </p>
                 </section>
-                
+
                 <section>
                     <h2 className="avisolegal-subtitle">Servicios</h2>
                     <p className="avisolegal-paragraph">
                         TheFolderWorld es una plataforma digital que facilita la creación, publicación y descubrimiento de creativos y entusiastas del campo del diseño y la moda. A través de su sitio web, los Usuarios pueden compartir contenido, crear perfiles públicos, interactuar entre ellos y acceder a oportunidades relacionadas con empleo y formación, con el objetivo de fomentar la colaboración y la visibilidad profesional.
                     </p>
-                
+
                     <h3 className="avisolegal-subtitle-small">Publicación de contenido</h3>
                     <p className="avisolegal-paragraph">
                         Los Usuarios Registrados pueden crear sus perfiles profesionales, añadir información relevante en su CV, publicar fotos en el apartado de portofolio, incluir enlaces, imágenes, materiales descargables u otro contenido útil, respetando siempre lo establecido en las Condiciones de Uso y en la Política de Privacidad.

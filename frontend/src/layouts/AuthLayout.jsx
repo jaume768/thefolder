@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Layout from "./AppLayout";
-import LandingHeader from "../components/home/LandingHeader";
+import LandingHeader from "../components/landing/LandingHeader";
 
 const AuthLayout = ({ children, activeMenu, contentClassName }) => {
   const navigate = useNavigate();

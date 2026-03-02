@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import LandingHeader from "../home/LandingHeader";
+import LandingHeader from "./LandingHeader";
 import "./css/landing-styles.css";
 
 export default function LandingHero({

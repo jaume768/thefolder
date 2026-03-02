@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import '../components/home/css/landing-styles.css';
-import '../components/home/css/modal-overlay.css';
+import '../components/landing/css/landing-styles.css';
+import '../components/landing/css/modal-overlay.css';
 
-import LandingHero from '../components/home/LandingHero';
-import LandingLinkSection from "../components/home/LandingLinkSection";
-import LandingTemplatesParallax from "../components/home/LandingTemplatesParallax";
-import LandingCreatorsShowcase from "../components/home/LandingCreatorsShowcase";
-import LandingFinalCTA from "../components/home/LandingFinalCTA";
-import LandingFooter from '../components/home/LandingFooter';
+import LandingHero from '../components/landing/LandingHero';
+import LandingLinkSection from "../components/landing/LandingLinkSection";
+import LandingTemplatesParallax from "../components/landing/LandingTemplatesParallax";
+import LandingCreatorsShowcase from "../components/landing/LandingCreatorsShowcase";
+import LandingFinalCTA from "../components/landing/LandingFinalCTA";
+import LandingFooter from '../components/landing/LandingFooter';
 
-import LoginModal from '../components/home/LoginModal';
-import RegisterModal from '../components/home/RegisterModal';
-import PasswordResetModal from '../components/home/PasswordResetModal';
+import LoginModal from '../components/landing/LoginModal';
+import RegisterModal from '../components/landing/RegisterModal';
+import PasswordResetModal from '../components/landing/PasswordResetModal';
 
 const Home = () => {
   const location = useLocation();

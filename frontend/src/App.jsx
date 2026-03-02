@@ -1,6 +1,7 @@
 // src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthContextProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import CompleteRegistration from "./pages/CompleteRegistration";
@@ -76,6 +77,7 @@ function App() {
   
 
   return (
+    <AuthContextProvider>
     <Router>
       <ScrollToTop />
       <Routes>
@@ -160,6 +162,7 @@ function App() {
         <Route path="/login" element={<Home />} />
       </Routes>
     </Router>
+    </AuthContextProvider>
   );
 }
 

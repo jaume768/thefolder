@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
-import './css/MyComunity.css';
+import '../../components/controlPanel/css/MyComunity.css';
 
 // ─── Mismos grupos que Creatives ────────────────────────────────────────────
 const GROUP_ORDER = [

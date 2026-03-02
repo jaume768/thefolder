@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Masonry from 'react-masonry-css';
-import './css/explorer.css';
+import '../../components/controlPanel/css/explorer.css';
 
 const Explorer = () => {
   const navigate = useNavigate();

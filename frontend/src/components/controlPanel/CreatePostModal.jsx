@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import CreatePost from "./CreatePost";
+import CreatePost from "../../pages/post/CreatePostPage";
 import "./css/CreatePostModal.css";
 
 export default function CreatePostModal({ open, onClose }) {

@@ -4,11 +4,11 @@ import axios from "axios";
 import {
   FaUserCircle,
 } from "react-icons/fa";
-import PeopleTagsList from "../PeopleTagsList";
-import "./css/UserPost.css";
-import "./css/MorePosts.css";
-import "./css/explorer.css";
-import "./css/MasonryGallery.css";
+import PeopleTagsList from "../../components/PeopleTagsList";
+import "../../components/controlPanel/css/UserPost.css";
+import "../../components/controlPanel/css/MorePosts.css";
+import "../../components/controlPanel/css/explorer.css";
+import "../../components/controlPanel/css/MasonryGallery.css";
 import Masonry from "react-masonry-css";
 
 const UserPost = () => {

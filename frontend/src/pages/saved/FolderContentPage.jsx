@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaTrash, FaEllipsisV } from 'react-icons/fa';
-import './css/FolderContent.css';
+import '../../components/controlPanel/css/FolderContent.css';
 
 const FolderContent = () => {
     const { folderId } = useParams();

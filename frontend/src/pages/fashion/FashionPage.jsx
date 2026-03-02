@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaChevronDown } from 'react-icons/fa';
 import { MdTune } from 'react-icons/md';
 import Draggable from 'react-draggable';
-import './css/fashion.css';
-import './css/explorer.css';
+import '../../components/controlPanel/css/fashion.css';
+import '../../components/controlPanel/css/explorer.css';
 
 const Fashion = () => {
     const navigate = useNavigate();

@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  FaUpload,
-  FaArrowLeft,
-  FaArrowRight,
-  FaEye,
   FaTimes,
   FaExclamationCircle,
 } from 'react-icons/fa';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import PeopleTagsList from "../PeopleTagsList";
-import './css/CreatePost.css';
+import PeopleTagsList from "../../components/PeopleTagsList";
+import '../../components/controlPanel/css/CreatePost.css';
 
 const STEPS = {
   PHOTOS: 1,     // ordenar (strip)

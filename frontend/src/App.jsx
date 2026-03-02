@@ -25,29 +25,37 @@ import AuthLayout from "./layouts/AuthLayout";
 
 // ControlPanel páginas
 import MiPerfil from "./components/controlPanel/MiPerfil";
-import MyComunity from "./components/controlPanel/MyComunity";
-import CreatePost from "./components/controlPanel/CreatePost";
+import UserProfile from "./components/controlPanel/UserProfile";
+
 import CreateOffer from "./components/controlPanel/CreateOffer";
 import CreateEducationalOffer from "./components/controlPanel/CreateEducationalOffer";
-import UserPost from "./components/controlPanel/UserPost";
-import Guardados from "./components/controlPanel/Guardados";
-import UserProfile from "./components/controlPanel/UserProfile";
-import FolderContent from "./components/controlPanel/FolderContent";
-import Creatives from "./components/controlPanel/Creatives";
-import Industry from "./components/controlPanel/Industry";
-import Explorer from "./components/controlPanel/Explorer";
+
+import UserPost from "./pages/post/UserPostPage";
+import CreatePost from "./pages/post/CreatePostPage";
+
+import Guardados from "./pages/saved/GuardadosPage";
+import FolderContent from "./pages/saved/FolderContentPage";
+
+import Industry from "./pages/industry/IndustryPage";
+import Explorer from "./pages/explorer/ExplorerPage";
+import Creatives from "./pages/creatives/CreativesPage";
+import Fashion from "./pages/fashion/FashionPage";
+import MyComunity from "./pages/community/CommunityPage";
+
 import Offers from "./components/controlPanel/Offers";
 import ViewOffer from "./components/controlPanel/ViewOffer";
 import JobOfferDetail from "./components/controlPanel/JobOfferDetail";
 import EducationalOfferDetail from "./components/controlPanel/EducationalOfferDetail";
-import Fashion from "./components/controlPanel/Fashion";
-import Magazine from "./components/controlPanel/Magazine";
+
+import Magazine from "./pages/magazine/MagazinePage";
 import Blog from "./pages/blog/BlogPage";
 import ArticleDetail from "./pages/blog/ArticleDetailsPage";
+
 import AvisoLegal from "./pages/legal/AvisoLegalPage";
 import Privacidad from "./pages/legal/PrivacidadPage";
 import Cookies from "./pages/legal/CookiesPage";
 import Contacto from "./pages/legal/ContactoPage";
+
 import About from "./pages/legal/AboutPage";
 
 // ✅ Nuevo perfil por rutas

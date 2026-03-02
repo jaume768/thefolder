@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import './css/magazine.css';
+import '../../components/controlPanel/css/magazine.css';
 import { FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 
 const Magazine = () => {

@@ -3,7 +3,7 @@ import axios from 'axios';
 import Masonry from "react-masonry-css";
 import { useNavigate } from 'react-router-dom';
 import { MdTune, MdClose } from 'react-icons/md';
-import './css/Creatives.css';
+import '../../components/controlPanel/css/Creatives.css';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
 
 const getHeaderGradient = (seed) => {

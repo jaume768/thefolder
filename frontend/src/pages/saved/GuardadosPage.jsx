@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaTimes, FaCheck, FaFolder } from 'react-icons/fa';
-import './css/Guardados.css';
+import '../../components/controlPanel/css/Guardados.css';
 
 const Guardados = () => {
   const [savedPosts, setSavedPosts] = useState([]);

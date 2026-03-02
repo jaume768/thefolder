@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaBuilding, FaMapMarkerAlt, FaCalendarAlt, FaBriefcase, FaLaptopHouse, FaClock, FaUserGraduate } from 'react-icons/fa';
-import './css/view-offer.css';
+import '../../components/controlPanel/css/view-offer.css';
 
 const ViewOffer = () => {
     const { offerId } = useParams();

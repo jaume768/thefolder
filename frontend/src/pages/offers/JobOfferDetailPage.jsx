@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './css/jobOfferDetail.css';
-import ApplyOfferModal from './ApplyOfferModal';
+import '../../components/controlPanel/css/jobOfferDetail.css';
+import ApplyOfferModal from '../../components/controlPanel/ApplyOfferModal';
 import { FaBookmark, FaRegBookmark, FaTimes } from 'react-icons/fa';
 
 const JobOfferDetail = () => {

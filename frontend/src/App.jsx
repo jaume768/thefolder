@@ -27,9 +27,6 @@ import AuthLayout from "./layouts/AuthLayout";
 import MiPerfil from "./components/controlPanel/MiPerfil";
 import UserProfile from "./components/controlPanel/UserProfile";
 
-import CreateOffer from "./components/controlPanel/CreateOffer";
-import CreateEducationalOffer from "./components/controlPanel/CreateEducationalOffer";
-
 import UserPost from "./pages/post/UserPostPage";
 import CreatePost from "./pages/post/CreatePostPage";
 
@@ -42,10 +39,12 @@ import Creatives from "./pages/creatives/CreativesPage";
 import Fashion from "./pages/fashion/FashionPage";
 import MyComunity from "./pages/community/CommunityPage";
 
-import Offers from "./components/controlPanel/Offers";
-import ViewOffer from "./components/controlPanel/ViewOffer";
-import JobOfferDetail from "./components/controlPanel/JobOfferDetail";
-import EducationalOfferDetail from "./components/controlPanel/EducationalOfferDetail";
+import Offers from "./pages/offers/OffersPage";
+import ViewOffer from "./pages/offers/ViewOfferPage";
+import JobOfferDetail from "./pages/offers/JobOfferDetailPage";
+import EducationalOfferDetail from "./pages/offers/EducationalOfferDetailPage";
+import CreateOffer from "./pages/offers/CreateOfferPage";
+import CreateEducationalOffer from "./pages/offers/CreateEducationalOfferPage";
 
 import Magazine from "./pages/magazine/MagazinePage";
 import Blog from "./pages/blog/BlogPage";

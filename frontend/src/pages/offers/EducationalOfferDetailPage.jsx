@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import HeaderSection from './EducationalOfferDetail/HeaderSection';
-import MainInfoSection from './EducationalOfferDetail/MainInfoSection';
-import DescriptionSection from './EducationalOfferDetail/DescriptionSection';
-import GallerySection from './EducationalOfferDetail/GallerySection';
-import AdditionalInfoSection from './EducationalOfferDetail/AdditionalInfoSection';
-import { formatDate, formatPrice, formatDuration } from './EducationalOfferDetail/utils';
-import './css/educationalOfferDetail.css';
+import HeaderSection from '../../components/controlPanel/EducationalOfferDetail/HeaderSection';
+import MainInfoSection from '../../components/controlPanel/EducationalOfferDetail/MainInfoSection';
+import DescriptionSection from '../../components/controlPanel/EducationalOfferDetail/DescriptionSection';        
+import GallerySection from '../../components/controlPanel/EducationalOfferDetail/GallerySection';
+import AdditionalInfoSection from '../../components/controlPanel/EducationalOfferDetail/AdditionalInfoSection';  
+import { formatDate, formatPrice, formatDuration } from
+'../../components/controlPanel/EducationalOfferDetail/utils';
+import '../../components/controlPanel/css/educationalOfferDetail.css';
 
 const EducationalOfferDetail = () => {
     const { offerId } = useParams();

@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import ExtraQuestionsForm from './ExtraQuestionsForm';
-import VerificationRequiredModal from '../modals/VerificationRequiredModal';
-import './css/create-offer.css';
+import ExtraQuestionsForm from '../../components/controlPanel/ExtraQuestionsForm';
+import VerificationRequiredModal from '../../components/modals/VerificationRequiredModal';
+import '../../components/controlPanel/css/create-offer.css';
 
 const CreateOffer = () => {
     const navigate = useNavigate();

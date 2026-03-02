@@ -1,0 +1,217 @@
+.profile-sticky-actions{
+  position: fixed;
+  left: calc(18px + env(safe-area-inset-left));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 9999;
+
+  display: flex;
+  gap: 14px;
+}
+
+.profile-sticky-action__icon-container-dark:hover, .profile-sticky-action__icon-container:hover {
+    transform: scale(1.02);
+}
+
+/* Cada fila (icono + “tooltip pill”) */
+.profile-sticky-action{
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Iconos circulares */
+.profile-sticky-action__icon{
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+/* Lapiz (blanco) */
+.profile-sticky-action__icon--edit{
+  width: 24px;
+  height: 24px;
+  background: #f2f2f2;
+  color: #111;
+}
+
+/* Lapiz (blanco) */
+.profile-sticky-action__icon--preview {
+  width: 24px;
+  height: 24px;
+  background: #f2f2f2;
+  color: #111;
+}
+
+
+.profile-sticky-action__icon-container {
+    padding: 16px;
+    background: #f2f2f2;
+    opacity: 0.9;
+    border-radius: 999px;
+    filter: invert(1);
+}
+
+.profile-sticky-action__icon-container-dark {
+    padding: 16px;
+    background: #0f0f0f;
+    opacity: 0.9;
+    border-radius: 999px;
+}
+
+/* Plus (negro, más grande como en tu imagen) */
+.profile-sticky-action__icon--create {
+  width: 24px;
+  height: 26px;
+  color: #fff;
+  font-size: 22px;
+  filter: invert(1);
+}
+
+/* Pills (tooltip) */
+.profile-sticky-action__label {
+  display: inline-flex;
+  align-items: center;
+
+  font-family: 'Inter Tight', sans-serif;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+
+  opacity: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+/* Pill blanco */
+.profile-sticky-action__label--edit{
+  background: #111;
+  color: #f2f2f2;
+}
+
+/* Pill negro */
+.profile-sticky-action__label--create{
+  background: #0f0f0f;
+  color: #fff;
+}
+
+/* Mostrar pill al hover/focus (desktop) */
+.profile-sticky-action:hover .profile-sticky-action__label,
+.profile-sticky-action:focus-visible .profile-sticky-action__label{
+  opacity: 0.9;
+  transform: translateX(0);
+}
+
+/* En móvil / touch: siempre visibles (no hay hover) */
+@media (hover: none) {
+  .profile-sticky-action__label{
+    opacity: 0.9;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 768px) {
+    
+    .user-extern-left-column {
+        top: 0;
+    }
+
+    .profile-sticky-actions {
+    display: none !important;
+    }
+
+    .profile-sticky-action__icon-container-dark {
+        padding: 18px;
+    }
+
+    .profile-sticky-action__icon--create {
+        width: 32px;
+        height: 32px;
+    }
+
+    .profile-sticky-action__icon-container {
+        padding: 14px;
+        display: none;
+    }
+
+    button.profile-sticky-action.profile-sticky-action--edit {
+        padding-left: 10px;
+        display: none;
+    }
+
+    span.profile-sticky-action__label.profile-sticky-action__label--create {
+      display: none;
+    }
+}
+
+
+/* CONTENEDOR */
+.profile-sticky-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 28px;
+  width: -webkit-fill-available;
+}
+
+/* BOTÓN BASE */
+.profile-sticky-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+
+  background: #fff;
+  cursor: pointer;
+
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  letter-spacing: 0.02em;
+  font-weight: 300;
+  color: #222;
+
+  transition: none;        /* ❌ sin animaciones */
+  transform: none;
+  box-shadow: none;
+
+  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #222;
+    color: #fdfdfd;
+
+}
+
+/* ICONO */
+.profile-sticky-action__icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  object-fit: contain;
+  filter: invert(1);
+}
+
+/* BOTÓN CREATE (si lo quieres oscuro) */
+.profile-sticky-action--create {
+  background: #111;
+  color: #fff;
+  border: none;
+}
+
+.profile-sticky-action--create .profile-sticky-action__icon {
+  filter: invert(1);
+}

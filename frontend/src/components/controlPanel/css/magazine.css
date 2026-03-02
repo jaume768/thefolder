@@ -1,0 +1,203 @@
+.magazine-container {
+    background-color: white;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Magazine header */
+.magazine-header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding-bottom: 16px;
+    text-align: center;
+}
+
+.magazine-header h1 {
+    font-size: 44px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 16px 0;
+}
+
+.magazine-description {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 800px;
+}
+
+/* Magazine flex container */
+.magazine-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8em;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Magazine card */
+.magazine-card {
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+/* Se quitó el hover effect de las tarjetas de revista */
+
+.magazine-image {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.magazine-image img {
+    width: 60%;
+    height: auto;
+    margin: auto;
+    object-fit: cover;
+    display: block;
+}
+
+
+
+.magazine-info {
+    text-align: center;
+}
+
+.magazine-info h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.magazine-price {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0 0 10px;
+}
+
+.magazine-date {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 16px;
+}
+
+.magazine-card a {
+    text-decoration: none;
+    color: inherit;
+    padding: 12px;
+    display: block;
+}
+
+.magazine-card a.no-link {
+    cursor: default;
+}
+
+.magazine-no-link {
+    color: #999;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Loading state */
+.magazine-loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.spinner {
+    animation: spin 1s infinite linear;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.magazine-error {
+    text-align: center;
+    padding: 40px;
+    color: #e64c3c;
+}
+
+.magazine-error svg {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+/* Empty state */
+.magazine-empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .magazine-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 24px;
+    }
+    
+    .magazine-image {
+        height: 320px;
+    }
+    
+    .magazine-info h2 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .magazine-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .magazine-container {
+        padding: 16px;
+        margin-bottom: 2em;
+    }
+    
+    .magazine-header h1 {
+        font-size: 28px;
+    }
+    
+    .magazine-description {
+        font-size: 14px;
+    }
+}
+
+/* Estilo para el párrafo de publicaciones propias */
+.about-photo-autor {
+    max-width: 800px;
+    text-align: center;
+    margin: 40px auto 20px;
+    padding: 15px;
+    line-height: 1.6;
+    font-size: 16px;
+    color: #555;
+}
+
+.about-photo-autor a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.about-photo-autor a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,96 @@
+.tf-footer {
+  background-color: #f8f8f8;
+  padding: 0px 16px 16px 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.tf-footer__inner{
+  max-width: 1200px;
+  width: 100%;
+  margin: 0px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+/* Izquierda */
+.tf-footer__brand{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--text);
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.tf-footer__mark{
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tf-footer__year{
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tf-footer__name{
+  font-size: 12px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Derecha */
+.tf-footer__nav{
+  display: inline-flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.tf-footer__link{
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  letter-spacing: 0.02em;
+  font-size: 11px;
+  color: rgba(0,0,0,.55);
+  text-decoration: none;
+
+}
+
+.tf-footer__link:hover{
+  color: rgba(0,0,0,.85);
+}
+
+/* Mobile: links arriba, texto debajo */
+@media (max-width: 640px){
+  .tf-footer__inner{
+    padding: 18px 22px;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #f8f8f8;
+    border-radius: 8px;
+  }
+
+  .tf-footer__nav{
+    order: 1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tf-footer__brand{
+    order: 2;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .tf-footer__year,
+  .tf-footer__name{
+      font-size: 14px;
+      line-height: 14px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-weight: 400;
+  }
+}

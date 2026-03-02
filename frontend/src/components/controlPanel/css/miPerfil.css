@@ -1,0 +1,1463 @@
+/* 
+   UserProfileExtern.css
+   Estilos para el nuevo diseño del perfil de usuario externo
+   Basado en la imagen de referencia compartida
+*/
+
+/* Contenedor principal */
+.miPerfil-view-container {
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.miPerfil-container {
+    position: relative;
+    margin: 0 auto;
+    font-family: 'Inter Tight', sans-serif;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Navegación y botón de volver */
+.miPerfil-navigation {
+    margin-bottom: 20px;
+}
+
+.miPerfil-back-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    font-size: 14px;
+}
+
+.miPerfil-back-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.miPerfil-back-btn span {
+    margin-left: 8px;
+}
+
+/* Estructura de contenido principal - layout de dos columnas */
+.miPerfil-content {
+    display: flex;
+}
+
+/* Columna izquierda - Información del perfil */
+.miPerfil-left-column {
+    width: 25%;
+    position: sticky;
+    top: 120px;
+    align-self: flex-start;
+    padding: 16px;
+}
+
+/* Foto de perfil */
+.miPerfil-profile-photo-container {
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.miPerfil-profile-photo {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: .5px solid #eee;
+}
+
+/* Información básica del perfil */
+.miPerfil-profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    align-items: center;
+}
+
+.miPerfil-fullname {
+    font-size: 40px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 40px;
+}
+
+.miPerfil-username {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    text-transform: lowercase;
+}
+
+.miPerfil-location {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.title-users {
+    text-align: start;
+    text-transform: uppercase;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+}   
+
+.miPerfil-bio {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.4;
+}
+
+.miPerfil-tags {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-content: flex-start;
+}
+
+.miPerfil-tags .creative-type {
+    margin: 0;
+}
+
+.creative-type {
+    font-family: "Inter Tight", sans-serif;
+    color: #111;
+    font-size: 11px;
+    line-height: 17px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.miPerfil-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 5px 0 15px;
+}
+
+/* Habilidades destacadas */
+.miPerfil-skills {
+    margin: 15px 0;
+}
+
+.miPerfil-skills h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.miPerfil-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.miPerfil-skill-tag {
+    background-color: #e5eeff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #333;
+}
+
+/* Sitio web */
+.miPerfil-website {
+    display: flex;
+    justify-content: center;
+}
+
+.miPerfil-website a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.miPerfil-website a:hover {
+    text-decoration: underline;
+}
+
+/* Archivos descargables */
+.miPerfil-downloads {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Estilos para los botones de PDF */
+.miPerfil-downloads {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.user-extern-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.pdf-row {
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.pdf-row.second-row {
+    justify-content: flex-start;
+}
+
+.pdf-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: #333;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 300;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    width: auto;
+    white-space: nowrap;
+    padding: 4px 8px;
+    font-family: 'Inter Tight', sans-serif;
+}
+
+.pdf-button:hover {
+    background-color: #e0e0e096;
+}
+
+.pdf-button.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pdf-icon {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+img.pdf-icon {
+    width: 11px;
+}
+
+.miPerfil-btn {
+    padding: 8px 16px;
+    background-color: #4c85ff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.miPerfil-btn:hover {
+    background-color: #3d6fd9;
+}
+
+.miPerfil-btn.disabled {
+    background-color: #e0e0e0;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Botones de acción */
+.miPerfil-action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.miPerfil-follow-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 32px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.miPerfil-follow-button:hover {
+    background-color: #1557b0;
+}
+
+.miPerfil-follow-button.following {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.miPerfil-notification-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: background-color 0.2s;
+}
+
+.miPerfil-notification-button:hover {
+    background-color: #e0e0e0;
+}
+
+.miPerfil-notification-button.active {
+    color: #1a73e8;
+}
+
+/* Iconos de contacto y compartir */
+.miPerfil-contact-share {
+    display: flex;
+    gap: 28px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.miPerfil-contact-button,
+.miPerfil-share-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 400;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 13px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border-radius: 50%;
+    padding: 16px;
+    cursor: pointer;
+    transition: none;
+}
+
+.miPerfil-contact-button span,
+.miPerfil-share-button span {
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
+}
+
+.miPerfil-contact-button:hover,
+.miPerfil-share-button:hover {
+    color: #555;
+}
+
+/* Media query para dispositivos móviles */
+@media (max-width: 768px) {
+    .miPerfil-left-column {
+        width: 100%;
+    }
+    
+    .miPerfil-right-column {
+        width: 100%;
+    }
+    
+    button.miPerfil-share-button {
+        padding: 14px;
+    }
+}
+
+/* Columna derecha - Contenido de pestañas */
+.miPerfil-right-column {
+    width: 90%;
+    margin: auto;
+}
+
+/* Pestañas superiores */
+.miPerfil-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .miPerfil-tabs {
+        margin-left: 0;
+    }
+}
+
+.miPerfil-tab {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 8px 0;
+    width: 160px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.miPerfil-tab:hover {
+    border-color: #d0d0d0;
+    color: #333;
+}
+
+.miPerfil-tab.active {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    border-color: #1a73e8;
+}
+
+/* Opciones de visualización para Portfolio */
+.miPerfil-view-options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .miPerfil-view-options {
+        margin-left: 0;
+    }
+}
+
+.miPerfil-view-container {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 9px;
+}
+
+.miPerfil-view-button {
+    background: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.miPerfil-view-button:hover {
+    background-color: #f5f5f5;
+}
+
+.miPerfil-view-button.active {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+}
+
+/* Contenido de Portfolio */
+
+.miPerfil-projects {
+    display: grid;
+    gap: 15px;
+}
+
+.miPerfil-projects.gallery-view {
+    grid-template-columns: repeat(3, 1fr);
+    margin-left: 8em;
+    margin-right: 4em;
+}
+
+.miPerfil-projects.list-view {
+    grid-template-columns: 1fr;
+}
+
+.miPerfil-project-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.miPerfil-project-card:hover {
+    transform: translateY(-5px);
+}
+
+.miPerfil-project-image {
+    display: block;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.gallery-view .miPerfil-project-image {
+    width: 100%;
+}
+
+.list-view .miPerfil-project-image {
+    width: 65%;
+    margin: 0 auto;
+}
+
+/* Estados de carga y sin contenido */
+.miPerfil-loading,
+.miPerfil-no-content {
+    padding: 30px;
+    text-align: center;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Contenido de About */
+.miPerfil-about-content {
+    padding: 10px;
+    margin: 0 4em;
+}
+
+/* Estilos específicos para perfiles de empresa e institución */
+.miPerfil-company-profile,
+.miPerfil-institution-profile,
+.miPerfil-creative-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Iconos de especialización */
+.miPerfil-section-icon {
+    color: #555;
+}
+
+/* Etiqueta de prácticas */
+.miPerfil-practice-badge {
+    background-color: #e8f4ff;
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: inline-block;
+    margin-top: 15px;
+    color: #1a73e8;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Estilos para las ofertas de trabajo y educativas */
+.miPerfil-offers-section {
+    margin-bottom: 30px;
+}
+
+.miPerfil-offers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.miPerfil-offer-card {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    width: 500px;
+    margin: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.miPerfil-offer-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.miPerfil-offer-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.miPerfil-offer-type {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.miPerfil-offer-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+}
+
+.miPerfil-offer-years,
+.miPerfil-offer-schedule,
+.miPerfil-offer-modality {
+    color: #666;
+}
+
+.miPerfil-offer-separator {
+    color: #ccc;
+}
+
+.miPerfil-offer-practices {
+    color: #1a73e8;
+    font-weight: 500;
+}
+
+.miPerfil-offer-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.miPerfil-offer-location,
+.miPerfil-offer-date {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.miPerfil-offer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.miPerfil-offer-tag {
+    background-color: #f0f0f0;
+    color: #555;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.miPerfil-offer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.miPerfil-offer-button {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.miPerfil-offer-button:hover {
+    background-color: #1557b0;
+}
+
+.miPerfil-offer-status {
+    font-size: 14px;
+    color: #666;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+/* Estilos para filtros */
+.miPerfil-offers-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f8ff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.miPerfil-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.miPerfil-filter-icon {
+    color: #1a73e8;
+}
+
+.miPerfil-clear-filter {
+    background-color: transparent;
+    color: #1a73e8;
+    border: 1px solid #1a73e8;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+
+.miPerfil-offers-filter-buttons {
+    margin-top: 10px;
+}
+
+.miPerfil-filter-label {
+    font-size: 14px;
+    color: #666;
+    margin-right: 10px;
+}
+
+.miPerfil-filter-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.miPerfil-filter-button {
+    background-color: #f0f0f0;
+    color: #555;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.miPerfil-filter-button:hover {
+    background-color: #e0e0e0;
+}
+
+.miPerfil-filter-button.active {
+    background-color: #1a73e8;
+    color: white;
+}
+
+/* Mensaje cuando no hay ofertas */
+.miPerfil-offers-empty {
+    text-align: center;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.miPerfil-offers-empty-icon {
+    font-size: 40px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.miPerfil-no-filtered-offers {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.miPerfil-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.miPerfil-downloads {
+    display: flex;
+    justify-content: left;
+    gap: 20px;
+}
+
+.miPerfil-section-description p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+    height: 200px;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #e7efff;
+    width: fit-content;
+    margin-bottom: 10px;
+    background-color: #f3f7ff;
+}
+
+.miPerfil-section p {
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: left;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Experiencia profesional */
+.miPerfil-experience-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.miPerfil-experience-item {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.miPerfil-experience-icon {
+    margin-right: 15px;
+    color: #666;
+}
+
+.miPerfil-experience-content {
+    flex: 1;
+}
+
+.miPerfil-experience-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.miPerfil-experience-company {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.miPerfil-experience-date {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.miPerfil-experience-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Formación educativa */
+.miPerfil-education-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.miPerfil-education-item {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.miPerfil-education-icon {
+    flex: 0 0 30px;
+    margin-right: 15px;
+    color: #666;
+}
+
+.miPerfil-education-content {
+    flex: 1;
+}
+
+.miPerfil-education-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.miPerfil-education-institution {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.miPerfil-education-date {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+/* Habilidades */
+.miPerfil-skills-container {
+    margin-top: 10px;
+}
+
+.miPerfil-skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.miPerfil-skill-tag {
+    background-color: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    display: inline-block;
+}
+
+/* Software */
+.miPerfil-software-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.miPerfil-software-item {
+    background-color: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    display: inline-block;
+}
+
+/* Idiomas */
+.miPerfil-languages-container {
+    margin-top: 10px;
+}
+
+.miPerfil-languages-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.miPerfil-language-item {
+    background-color: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    display: inline-block;
+}
+
+/* Redes sociales */
+.miPerfil-social-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.social-icon {
+    color: #333;
+    transition: all 0.2s ease;
+    opacity: 0.9;
+    width: 18px;
+}
+
+.social-icon.instagram:hover {
+    color: #111;
+}
+
+.social-icon.linkedin:hover {
+    color: #111;
+}
+
+.social-icon.behance:hover {
+    color: #111;
+}
+
+.social-icon.tumblr:hover {
+    color: #111;
+}
+
+.social-icon.youtube:hover {
+    color: #111;
+}
+
+.social-icon.pinterest:hover {
+    color: #111;
+}
+
+.miPerfil-social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.miPerfil-social-item {
+    display: flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.miPerfil-social-item:hover {
+    color: #1a73e8;
+}
+
+.miPerfil-social-icon {
+    margin-right: 8px;
+}
+
+/* Archivos descargables */
+.miPerfil-files-container {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.miPerfil-file-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.miPerfil-file-button:hover {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
+
+.miPerfil-file-icon {
+    margin-right: 8px;
+}
+
+/* Contenido de Ofertas */
+.miPerfil-offers-content {
+    padding: 10px;
+}
+
+/* Notificaciones */
+.miPerfil-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    max-width: 300px;
+    animation: user-extern-notification-slide-in 0.3s ease-out forwards;
+}
+
+.miPerfil-notification.success {
+    border-left: 4px solid #4caf50;
+}
+
+.miPerfil-notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.miPerfil-notification-icon {
+    color: #4caf50;
+}
+
+.miPerfil-notification.error .miPerfil-notification-icon {
+    color: #f44336;
+}
+
+@keyframes user-extern-notification-slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Portfolio section alignment with UserProfile */
+.miPerfil-projects-grid.gallery {
+    column-count: 4;
+    column-gap: 12px;
+}
+.miPerfil-projects-grid.individual {
+    grid-template-columns: 1fr;
+}
+.miPerfil-project-placeholder {
+    display: flex;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: transform .2s;
+    margin-bottom: 12px;
+}
+/* Se quitan width y margin para los placeholders de la galería */
+.miPerfil-projects-grid.individual .miPerfil-project-placeholder {
+    width: 65%;
+    margin: auto;
+}
+
+.miPerfil-project-placeholder img {
+    display: block;
+    object-fit: contain;
+    width: 100%;
+    break-inside: avoid;
+}
+.miPerfil-projects-grid.individual .miPerfil-project-placeholder img {
+    width: 65%;
+    margin: 0 auto;
+}
+
+/* Offers section alignment with UserProfile */
+.company-offers-container-company,
+.educational-offers-container-company {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.company-offers-empty-company,
+.educational-offers-empty-company {
+    text-align: center;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.offers-empty-icon-company {
+    font-size: 40px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+.create-offer-button-company {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+.create-offer-button-company:hover {
+    background-color: #1557b0;
+}
+.company-offer-item-company,
+.educational-offer-item-company {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    width: 500px;
+    margin: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.company-offer-item-company:hover,
+.educational-offer-item-company:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.offer-header-company,
+.offer-header-educational {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.offer-title-company,
+.offer-title-educational {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+.offer-status-company,
+.offer-status-educational {
+    font-size: 14px;
+    color: #666;
+}
+.offer-details-company,
+.offer-details-educational {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+}
+.offer-icon-company,
+.offer-icon-educational {
+    margin-right: 4px;
+}
+.offer-description-company,
+.offer-description-educational {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+.offer-actions-company,
+.offer-actions-educational {
+    display: flex;
+    justify-content: flex-end;
+}
+.view-offer-button-company,
+.view-offer-button-educational {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+.view-offer-button-company:hover,
+.view-offer-button-educational:hover {
+    background-color: #1557b0;
+}
+.no-filtered-offers {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .miPerfil-content {
+        flex-direction: column;
+        margin-bottom: 3em;
+    }
+
+    .miPerfil-about-content {
+        margin-left: 0;
+    }
+    
+    .miPerfil-projects-grid.gallery {
+        column-count: 2;
+    }
+
+    .miPerfil-container {
+        padding: 0;
+    }
+
+    .miPerfil-company-profile,
+    .miPerfil-institution-profile,
+    .miPerfil-creative-profile {
+        margin-bottom: 3em;
+        padding: 0 10px;
+    }
+
+    .miPerfil-profile-info {
+        text-align: center;
+    }
+
+    .miPerfil-left-column {
+        position: static;
+        margin: auto;
+        flex: none;
+    }
+
+    .miPerfil-profile-photo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .miPerfil-projects.gallery-view {
+        grid-template-columns: repeat(2, 1fr);
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .miPerfil-left-column {
+        position: relative;
+        transform: translateY(0);
+        top: 0px;
+        transition: transform 0.3s ease;
+    }
+
+    /* Clase que se añadirá con JavaScript cuando se haga scroll */
+    .miPerfil-left-column.scrolled {
+        transform: translateY(-100px);
+    }
+
+    .miPerfil-projects.gallery-view {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .miPerfil-tabs {
+        overflow-x: auto;
+        flex-wrap: wrap;
+        padding-bottom: 5px;
+    }
+
+    .miPerfil-tab {
+        padding: 10px 15px;
+    }
+
+    .miPerfil-action-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Hitos profesionales - Experiencia profesional */
+.miPerfil-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.miPerfil-experience-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.miPerfil-experience-item {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.miPerfil-experience-icon {
+    margin-right: 15px;
+    color: #666;
+}
+
+.miPerfil-experience-content {
+    flex: 1;
+}
+
+.miPerfil-experience-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.miPerfil-experience-company {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.miPerfil-experience-date {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.miPerfil-experience-description {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* Align Skills and Software tags to UserProfile style */
+.miPerfil-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.miPerfil-chip {
+    background-color: #e5eeff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #333;
+}
+
+/* Estilos para placeholders de proyectos */
+.miperfil-project-placeholder {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.miperfil-project-placeholder img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: solid 0.5px #eee;
+}
+
+/* Nuevos estilos añadidos */
+.miPerfil-section h2 {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.miPerfil-section-description h2 {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.miPerfil-about-content {
+    margin-left: 0;
+}
+
+.miPerfil-section-description p {
+    height: fit-content;
+}
+
+ul {
+    list-style: none;
+}
+
+li strong {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* NAV debajo de redes SOLO MOBILE */
+.ext-center-mobile {
+  display: none;
+  width: 100%;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 18px;
+}
+
+/* solo móvil */
+@media (max-width: 768px) {
+  .ext-center-mobile {
+    display: flex;
+  }
+}

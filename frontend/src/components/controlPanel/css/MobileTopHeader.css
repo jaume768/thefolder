@@ -1,0 +1,527 @@
+.mobile-top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  padding: 0 16px;
+  background: #fff;
+  display: none; /* solo mobile */
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1200;
+}
+
+.mobile-top-logo {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-top-logo img {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+.mobile-top-burger {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-top-burger:hover {
+  background: #f2f2f2;
+}
+
+.mobile-top-burger img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* =========================
+   PANEL (como dropdown desktop)
+========================= */
+.mobile-top-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  width: min(360px, calc(100vw - 32px));
+  background: #f2f2f2;
+  border-radius: 22px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Header usuario (centrado) */
+.mobile-top-panel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 10px 10px;
+}
+
+.mobile-top-user {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.mobile-top-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  display: block;
+}
+
+.mobile-top-user-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-top-username {
+  font-family: "Adamina", serif;
+  font-size: 1.65rem;
+  font-weight: 500;
+  color: #111;
+  line-height: 1.1;
+}
+
+/* ✅ pill gris como desktop */
+.mobile-top-upgrade {
+  border: 0;
+  background: #dbdad88a;
+  color: #333;
+  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.mobile-top-upgrade:hover {
+  background: #ffffff94;
+}
+
+/* =========================
+   Bloque items (gris dentro)
+========================= */
+.mobile-top-panel-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ✅ Caja gris como tu UL desktop */
+.mobile-top-panel-items .mobile-top-item:not(.danger) {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  cursor: pointer;
+
+  background: transparent;
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+/* el bloque "grupo" (fondo gris) */
+.mobile-top-panel-items {
+  background: #dbdad88a;
+  border-radius: 18px;
+  padding: 10px 8px;
+}
+
+/* hover como desktop */
+.mobile-top-panel-items .mobile-top-item:not(.danger):hover {
+  background: #d6d5d4;
+}
+
+/* activo */
+.mobile-top-item.active {
+  background: #ffffff94;
+  color: #111;
+}
+
+/* =========================
+   Logout separado (otro bloque)
+========================= */
+.mobile-top-item.danger {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  cursor: pointer;
+  background-color: #e6e5e4;
+
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  padding: 6px 14px;
+  border-radius: 14px;
+}
+
+.mobile-top-item.danger:hover {
+  background: #d6d5d4;
+}
+
+.mobile-top-header {
+  position: sticky; /* o fixed, según tu layout */
+  top: 0;
+  z-index: 9999;
+
+  transform: translateY(0);
+  transition: transform 220ms ease, opacity 220ms ease;
+  will-change: transform;
+}
+
+.mobile-top-header.is-hidden {
+  transform: translateY(-110%);
+  opacity: 0.98; /* opcional; puedes poner 0 si quieres que desaparezca del todo */
+  pointer-events: none; /* evita clicks mientras está oculto */
+}
+
+.mobile-top-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 9999;
+
+  transition: top 220ms ease;
+  will-change: top;
+
+  --mth-h: 72px;
+}
+
+.mobile-top-header.is-hidden {
+  top: calc(-1 * var(--mth-h));
+  pointer-events: none;
+}
+
+.mobile-top-header--editorial{
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  height: 42px;
+  border-radius: 12px;
+  z-index: 1200;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+
+  background: #fdfdfdcc;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.mobile-top-header.is-hidden{
+  transform: translateY(calc(-1 * var(--mth-h, 42px) - 12px));
+  transition: transform 220ms ease;
+}
+
+.mobile-top-leftlink{
+  background: transparent;
+  border: 0;
+  padding: 0;
+
+  font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #111;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mobile-top-slash{
+  color: #111;
+  font-weight: 500;
+}
+
+.mobile-top-menubtn{
+  background: transparent;
+  border: 0;
+  padding: 0;
+
+  font-family: "Inter Tight", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #8a8a8a;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mobile-top-menubtn.active{
+  color: #111;
+  font-weight: 500;
+}
+
+/* Reutiliza tu dot del header */
+.header-dot{
+  display: block;
+  width: 1px;
+  height: 12px;
+  border-radius: 5%;
+  background: currentColor;
+  transform: rotate(15deg);
+}
+
+/* Panel tipo tablet */
+.mobile-top-panel{
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  left: auto;
+
+  width: min(320px, calc(100vw - 24px));
+  background: #fdfdfd;
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 1300;
+
+  box-shadow: 0 18px 60px rgba(0,0,0,.12);
+  border: 1px solid rgba(0,0,0,.08);
+}
+
+/* Asegura que el overlay TF quede por encima del header mobile */
+.mth-tf-menu{
+  z-index: 5000;
+}
+
+/* Bloque usuario dentro del overlay con look editorial */
+.mth-userblock{
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-direction: column;
+}
+
+.mth-userblock__avatarBtn{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.mth-userblock__avatar{
+  width: 110px;
+  height: 140px;
+  border-radius: 0px;
+  object-fit: cover;
+  display: block;
+}
+
+.mth-userblock__meta{
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mth-userblock__name{
+    font-family: 'Adamina', sans-serif;
+    font-size: 34px;
+    letter-spacing: .02em;
+    opacity: .9;
+}
+
+.mth-userblock__name.profile {
+    font-family: 'Adamina', sans-serif;
+    font-size: 18px;
+    letter-spacing: .02em;
+    opacity: .9;
+}
+
+.mth-userblock__edit{
+    border: 0;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 18px;
+    padding: 10px 22px;
+    background: #222;
+    border-radius: 6px;
+    color: #fff;
+}
+
+.tf-menu.mth-tf-menu {
+    background: #fdfdfde6;
+    backdrop-filter: blur(42px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.tf-menu__top.register {
+  display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px 28px;
+}
+
+button.mobile-top-leftlink.close {
+    color: #8a8a8a;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.tf-menu__link.register {
+    font-size: 18px;
+    font-weight: 300;
+    padding: 18px 12px;
+}
+
+.tf-menu__content.register {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 26px;
+    padding: 0 20px 24px;
+}
+
+.tf-menu__link.register.is-active{
+  font-weight: 500;
+  color: #111;
+}
+
+/* =========================
+   NUEVO DISEÑO ACCIONES PERFIL (preview)
+   - Mantiene colores: negro #111/#222, fondo blanco translúcido
+   - Minimal, centrado, con card suave
+========================= */
+
+/* El overlay ya lo tienes: .tf-menu.mth-tf-menu */
+.tf-menu__content.register{
+  /* ya lo tienes; solo aseguro layout consistente */
+  padding-bottom: 28px;
+}
+
+/* Card de acciones */
+.mth-actions{
+  width: min(360px, 86vw);
+  margin: 22px auto 10px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.10);
+  display: grid;
+  gap: 12px;
+}
+
+/* Botones dentro */
+.mth-action{
+  height: 44px;
+  width: 100%;
+  border-radius: 10px;         /* parecido a tu 6px pero un pelín más premium */
+  font-family: var(--font-sans, Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 14px;             /* tu mock estaba más compacto; 14 funciona bien */
+  border: 1px solid rgba(0,0,0,.18);
+  background: transparent;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Primario */
+.mth-action--primary{
+  background: #222;            /* respeta tu negro */
+  color: #fff;
+  border-color: #222;
+}
+
+/* Micro feedback */
+.mth-action:active{
+  transform: translateY(1px);
+}
+
+/* =========================
+   Footer inferior: Cerrar sesión | Configuración
+========================= */
+.mth-footerlinks{
+  width: min(520px, 92vw);
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  padding-top: 10px;
+}
+
+.mth-footerlink{
+  border: 0;
+  background: transparent;
+  padding: 10px 0;
+  cursor: pointer;
+
+  font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+  color: #8a8a8a;
+}
+
+.mth-footerlink:first-child{ text-align: left; }
+.mth-footerlink:last-child{ text-align: right; }
+
+.mth-footersep{
+  width: 1px;
+  height: 12px;
+  background: transparent;
+  display: inline-block;
+  transform: rotate(15deg);
+}
+
+/* =========================
+   Ajustes para que el menú de links respire como en tu screenshot
+========================= */
+.tf-menu__links.register{
+  margin-top: 10px;
+}
+
+.tf-menu__link.register{
+  /* ya lo tienes, solo refuerzo consistencia */
+  width: 100%;
+  text-align: center;
+}

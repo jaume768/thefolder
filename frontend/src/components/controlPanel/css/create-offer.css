@@ -1,0 +1,428 @@
+/* src/components/css/create-offer.css */
+
+/* Página general */
+.createoffer-page {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.createoffer-page-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Layout: sidebar + contenido */
+.createoffer-container {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+}
+
+/* Sidebar fijo */
+.createoffer-sidebar {
+    position: fixed;
+    top: 14rem;
+    width: 200px;
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .createoffer-sidebar {
+        display: none;
+    }
+}
+
+.createoffer-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.createoffer-sidebar li {
+    margin-bottom: 1rem;
+}
+
+.createoffer-sidebar a {
+    text-decoration: none;
+    color: #777;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.createoffer-sidebar a:hover,
+.createoffer-sidebar a:focus {
+    color: #007bff;
+}
+
+/* Formulario */
+.createoffer-form {
+    display: flex;
+    flex-direction: column;
+    margin-left: 220px;
+    width: 800px;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .createoffer-form {
+        margin-left: 0;
+        margin-bottom: 2em;
+        width: 100%;
+    }
+}
+
+/* Secciones */
+.createoffer-form-section {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.createoffer-section-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 0.75rem;
+}
+
+/* Mini textos azules */
+.createoffer-subtitle {
+    display: block;
+    font-size: 0.9rem;
+    color: #007bff;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+/* Cabecera/banner */
+.logo-section {
+    padding: 0;
+    border: none;
+}
+
+.createoffer-header-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: #eef6fd;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.createoffer-header-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #007bff;
+}
+
+.upload-icon {
+    font-size: 2rem;
+}
+
+.upload-placeholder p {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.createoffer-header-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Nombre de la marca */
+.createoffer-company-name-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.createoffer-company-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.createoffer-company-name {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Inputs y textareas full width */
+.createoffer-full-width-input,
+.createoffer-full-width-textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    color: black;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.createoffer-full-width-input:focus,
+.createoffer-full-width-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.createoffer-full-width-textarea {
+    min-height: 100px;
+    resize: vertical;
+    background-color: #fff;
+}
+
+/* Grid especificaciones */
+.createoffer-specifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.createoffer-spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Para los dos campos extra que ocupan fila completa */
+.createoffer-spec-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.createoffer-spec-item label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.createoffer-spec-item input,
+.createoffer-spec-item select {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    background-color: white;
+    color: black;
+    border-radius: 8px;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.createoffer-spec-item input:focus,
+.createoffer-spec-item select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Skills */
+.createoffer-skills-input-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.createoffer-skill-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    color: #000;
+    border-radius: 8px;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.createoffer-skill-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.createoffer-add-skill-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.createoffer-add-skill-btn:hover {
+    background-color: #0056b3;
+}
+
+.createoffer-skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.createoffer-skill-tag {
+    background-color: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.createoffer-remove-skill-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #777;
+    cursor: pointer;
+}
+
+.createoffer-remove-skill-btn:hover {
+    color: #333;
+}
+
+/* Botón final */
+.createoffer-form-actions-final {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.createoffer-submit-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 200px;
+    transition: background 0.3s;
+}
+
+.createoffer-submit-btn:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.createoffer-submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Error */
+.createoffer-error-message {
+    color: #dc3545;
+    background-color: #ffe6e6;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .createoffer-container {
+        grid-template-columns: 1fr;
+    }
+
+    .createoffer-sidebar {
+        display: none;
+    }
+}
+
+/* Extra Questions */
+.createoffer-extra-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.createoffer-extra-questions .question-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.createoffer-extra-questions .question-item label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.createoffer-extra-questions .question-item input[type="text"],
+.createoffer-extra-questions .question-item select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #000;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.createoffer-extra-questions .question-item input:focus,
+.createoffer-extra-questions .question-item select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Extra Questions – botones */
+.createoffer-extra-questions .add-question-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 1rem;
+}
+
+.createoffer-extra-questions .add-question-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Eliminar pregunta: redondo, pequeño y rojo */
+.createoffer-extra-questions .remove-question-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.createoffer-extra-questions .remove-question-btn:hover {
+    background-color: #c82333;
+}

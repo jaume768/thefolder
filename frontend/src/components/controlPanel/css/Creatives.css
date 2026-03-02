@@ -1,0 +1,884 @@
+/* =============================================================================
+   CREATIVES.CSS — Refactorizado
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. CONTENEDOR PRINCIPAL
+   ============================================================================= */
+
+.creatives-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .creatives-container {
+    padding: 0;
+    margin-top: 0px;
+  }
+}
+
+.creatives-content {
+  max-width: 850px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .creatives-content {
+    width: 95%;
+    flex-direction: column;
+  }
+}
+
+.creatives-main {
+  flex: 1;
+}
+
+
+/* =============================================================================
+   2. HERO
+   ============================================================================= */
+
+.creatives-hero-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  max-width: 2980px;
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 15%;
+}
+
+.creatives-hero-inner.miPerfil-hero {
+    margin-top: 12%;
+}
+
+.creatives-subtitle {
+  width: 30%;
+  text-align: center;
+  margin: 0 auto;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  color: #666;
+  font-weight: 300;
+}
+
+h1.centerTitle {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+span.creatives-count {
+  font-weight: 300;
+  font-size: 32px;
+  line-height: 38px;
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .creatives-hero-inner {
+    margin-top: 260px;
+  }
+
+  .creatives-subtitle {
+    font-size: 13px;
+    width: fit-content;
+  }
+}
+
+@media (max-width: 480px) {
+  .creatives-hero-inner {
+    min-height: 100px !important;
+    margin-top: 200px !important;
+  }
+
+  .creatives-subtitle {
+    display: none;
+  }
+
+  p.creatives-subtitle.--show-mobile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 12px;
+    margin-top: 80px;
+  }
+
+  .centerTitle {
+    font-size: 48px !important;
+    line-height: 48px !important;
+  }
+
+  span.creatives-count {
+    font-size: 22px !important;
+    line-height: 22px !important;
+  }
+}
+
+p.creatives-subtitle.--show-mobile.--margin-top {
+  margin-top: 24px;
+}
+
+
+/* =============================================================================
+   3. MASONRY GRID
+   ============================================================================= */
+
+.my-masonry-grid {
+  display: flex;
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  background-clip: padding-box;
+}
+
+.my-masonry-grid.--big-gap {
+  gap: 40px;
+}
+
+@media (max-width: 992px) {
+  .creatives-masonry {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    margin: 32px 12px 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .creatives-masonry {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 16px;
+    margin: 24px 12px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .creatives-masonry {
+    margin-left: 0;
+  }
+}
+
+
+/* =============================================================================
+   4. CREATIVE CARD
+   ============================================================================= */
+
+.creative-card {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-self: start;
+  gap: 6px;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  transform: none;
+  box-shadow: none;
+  transition: none;
+  margin-bottom: 32px;
+}
+
+.creative-card-media {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #f5f5f5;
+  height: auto;
+}
+
+.creative-card-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  position: relative;
+  z-index: 0;
+}
+
+.creative-card-image--placeholder {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+.creative-card-avatar {
+  z-index: 2;
+}
+
+.creative-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Meta */
+.creative-name {
+  margin: 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.05;
+  color: #666;
+  letter-spacing: 0.01em;
+  text-decoration: underline;
+}
+
+.creative-role {
+  margin-top: 2px;
+  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.creative-location {
+  margin-top: 0;
+  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+@media (max-width: 992px) {
+  .creative-card {
+    max-width: none;
+    height: fit-content;
+  }
+}
+
+@media (max-width: 480px) {
+  .creative-post-image {
+    height: 180px;
+  }
+}
+
+
+/* =============================================================================
+   5. ESTADOS: CARGA, ERROR, FIN
+   ============================================================================= */
+
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.error-message {
+  color: #e74c3c;
+  text-align: center;
+  padding: 20px;
+  background-color: #feeaeb;
+  border-radius: 5px;
+  margin: 20px 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.end-message {
+  text-align: center;
+  padding: 15px;
+  color: #777;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+}
+
+
+/* =============================================================================
+   6. FILTROS — FILA DE TRIGGERS
+   ============================================================================= */
+
+.filters-triggers-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 7.5%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filters-triggers-left {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: 48px;
+}
+
+.filter-section-trigger {
+  width: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  margin: 12px 0;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.filter-section-trigger.is-active {
+  font-weight: 500;
+  color: #000;
+}
+
+.filter-section-trigger.is-open .filter-section-label,
+.filter-section-trigger.is-open .filter-section-indicator {
+  color: #222;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.filter-section-trigger.has-selection .filter-section-label,
+.filter-section-trigger.has-selection .filter-section-indicator {
+  color: #3c07cf;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.filter-section-indicator {
+  font-size: 12px;
+  font-weight: 300;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .filters-triggers-row {
+    padding: 0 24px;
+  }
+
+  .filters-triggers-left {
+    width: 100%;
+    gap: 12px 42px;
+    flex-wrap: wrap;
+  }
+
+  .filter-section-trigger {
+    padding: 12px 24px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .filter-section-indicator {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-triggers-row {
+    margin-top: 24px;
+    padding: 0 12px;
+    gap: 24px;
+  }
+
+  .filter-section-trigger {
+    font-size: 14px !important;
+    margin: 0 !important;
+  }
+}
+
+
+/* =============================================================================
+   7. FILTROS — CHIPS ACTIVOS (bajo los triggers)
+   ============================================================================= */
+
+.filters-open-area {
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filters-open-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.filters-sticky-chip {
+  background: #222;
+  color: #fff;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  font-weight: 300;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  border: solid transparent;
+  align-items: center;
+}
+
+.filters-sticky-chip .chip-x {
+  font-size: 14px;
+  line-height: 1;
+  color: #fff;
+}
+
+button.filters-sticky-chip.clean-all {
+  border-radius: 90px;
+  background: transparent;
+  color: #222;
+  font-weight: 400;
+  border: solid 1px #333;
+}
+
+@media (max-width: 768px) {
+  .filters-open-area {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-open-area {
+    gap: 12px !important;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filters-open-tags {
+    flex-wrap: wrap;
+    gap: 12px !important;
+  }
+}
+
+
+/* =============================================================================
+   8. FILTROS — TAGS
+   ============================================================================= */
+
+.filter-tag {
+  border: 1px solid #D8D8D8;
+  background: #FDFDFD;
+  color: #222;
+  border-radius: 4px;
+  padding: 4px 12px;
+  letter-spacing: 0.04em;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+.filter-tag.selected {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+  text-transform: uppercase;
+}
+
+.filters-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filters-empty {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 300;
+  color: #888;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+  .filter-tag {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .filters-tags {
+    gap: 24px;
+  }
+}
+
+
+/* =============================================================================
+   9. FILTROS — MODAL OVERLAY
+   ============================================================================= */
+
+.filters-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.filters-modal-panel {
+  width: min(680px, 92vw);
+  background: #FDFDFD;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 6px;
+  overflow: hidden;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .filters-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .filters-modal-panel {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    height: 90%;
+    overflow: auto;
+  }
+}
+
+
+/* =============================================================================
+   10. FILTROS — PANEL INTERIOR (header, body, columnas)
+   ============================================================================= */
+
+.filters-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.filters-panel-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  line-height: 17px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #111;
+}
+
+.filters-panel-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 300;
+  color: #888;
+  padding: 0 4px;
+}
+
+.filters-panel-close:hover {
+  color: #111;
+}
+
+.filters-panel-body {
+  padding: 12px;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .filters-panel-header {
+    padding: 24px;
+  }
+
+  .filters-panel-title {
+    font-size: 16px;
+  }
+
+  .filters-panel-body {
+    padding: 24px;
+  }
+}
+
+
+/* =============================================================================
+   11. FILTROS — DOS COLUMNAS
+   ============================================================================= */
+
+.filters-two-col {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 12px;
+  height: 100%;
+}
+
+.filters-col {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.filters-col-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  line-height: 12px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .filters-two-col {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 32px;
+  }
+
+  .filters-col {
+    height: auto;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+
+
+/* =============================================================================
+   12. FILTROS — LISTA IZQUIERDA (grupos/países)
+   ============================================================================= */
+
+.filters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filters-list-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #222;
+}
+
+.filters-list-item:hover {
+  border-color: rgba(0, 0, 0, 0.10);
+  background: #fff;
+}
+
+.filters-list-item.is-active {
+  border-color: #111;
+  color: #111;
+}
+
+.filters-list-item.has-selection .filters-list-text {
+  color: #3c07cf;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.filters-list-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid #D8D8D8;
+  background: transparent;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.filters-list-item.is-active .filters-list-dot {
+  border-color: #111;
+  background: #111;
+}
+
+@media (max-width: 768px) {
+  .filters-list-item {
+    font-size: 16px;
+  }
+}
+
+
+/* =============================================================================
+   13. TOOLBAR
+   ============================================================================= */
+
+.creatives-toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .creatives-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+
+/* =============================================================================
+   14. ICONOS
+   ============================================================================= */
+
+img.image-icon {
+  width: 12px;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  img.image-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+
+/* =============================================================================
+   15. ANIMACIONES
+   ============================================================================= */
+
+@keyframes loading {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+
+/* =============================================================================
+   ⚠️  REVISAR — Clases que pueden ser de otros componentes o ya no usarse
+   ============================================================================= */
+
+/* Posiblemente de Offers (revisar si se usa en otro archivo) */
+.offers-header {
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+
+.offers-description {
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+.offers-header h1 {
+  font-size: 44px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .offers-header {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .offers-description {
+    width: 100%;
+  }
+}
+
+/* Posiblemente no usados en Creatives.jsx actual */
+.explorer-tabs-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.explorer-tabs {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.creatives-sidebar {
+  width: 250px;
+  min-width: 250px;
+  height: auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .creatives-sidebar {
+    display: none;
+  }
+}
+
+.creative-location-hover {
+  margin-top: 6px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.04rem;
+  color: #999999de;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 100ms ease, transform 100ms ease;
+}
+
+.creative-card:hover .creative-location-hover {
+  opacity: 1;
+  transform: translateY(0);
+}

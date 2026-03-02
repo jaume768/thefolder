@@ -1,0 +1,371 @@
+.view-offer-container-view {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+}
+
+/* Cabecera de la oferta */
+.offer-header-view {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.offer-header-left-view {
+    display: flex;
+    align-items: center;
+}
+
+.company-logo-view {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: contain;
+    background-color: #f9f9f9;
+    padding: 5px;
+    margin-right: 20px;
+    border: 1px solid #eee;
+}
+
+.company-logo-placeholder-view {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #ccc;
+    margin-right: 20px;
+}
+
+.offer-header-info-view {
+    max-width: 600px;
+}
+
+.offer-title-view {
+    font-size: 1.8rem;
+    margin: 0 0 8px 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.company-info-view {
+    display: flex;
+    flex-direction: column;
+}
+
+.company-name-view {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.offer-location-view {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.info-icon-view {
+    margin-right: 5px;
+    color: #888;
+}
+
+.offer-header-right-view {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.offer-date-view {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.offer-status-view {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.offer-status-view.closed-view {
+    background-color: #f44336;
+}
+
+/* Contenido de la oferta */
+.offer-content-view {
+    display: flex;
+    gap: 30px;
+}
+
+.offer-main-content-view {
+    flex: 1;
+}
+
+.offer-section-view {
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+}
+
+.section-title-view {
+    font-size: 1.3rem;
+    color: #333;
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Detalles del puesto */
+.offer-details-grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.detail-item-view {
+    display: flex;
+    align-items: flex-start;
+}
+
+.detail-icon-view {
+    font-size: 1.3rem;
+    color: #3498db;
+    margin-right: 15px;
+    margin-top: 5px;
+}
+
+.detail-info-view h3 {
+    font-size: 1rem;
+    color: #555;
+    margin: 0 0 5px 0;
+    font-weight: 500;
+}
+
+.detail-info-view p {
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Secciones de texto */
+.offer-description-view p,
+.offer-functions-view p,
+.offer-profile-view p {
+    margin: 0 0 15px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+.offer-description-view p:last-child,
+.offer-functions-view p:last-child,
+.offer-profile-view p:last-child {
+    margin-bottom: 0;
+}
+
+/* Etiquetas */
+.offer-tags-view {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-view {
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: #f1f9ff;
+    color: #3498db;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+/* Barra lateral */
+.offer-sidebar-view {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.action-panel-view,
+.company-panel-view {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+}
+
+.action-title-view,
+.panel-title-view {
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0 0 15px 0;
+}
+
+.apply-button-view {
+    width: 100%;
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.apply-button-view:hover {
+    background-color: #2980b9;
+}
+
+.owner-actions-view {
+    margin-top: 15px;
+}
+
+.edit-button-view {
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.edit-button-view:hover {
+    background-color: #e9ecef;
+}
+
+.company-panel-info-view {
+    margin-top: 15px;
+}
+
+.company-panel-info-view h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.view-profile-link-view {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-top: 5px;
+    transition: color 0.2s;
+}
+
+.view-profile-link-view:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+.company-info-text-view {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Loading y errores */
+.view-offer-loading-view, .view-offer-error-view, .view-offer-not-found-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    text-align: center;
+}
+
+.loader-view {
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.view-offer-error-view h2, .view-offer-not-found-view h2 {
+    color: #e74c3c;
+    margin: 0 0 15px 0;
+}
+
+.view-offer-loading-view p, .view-offer-error-view p, .view-offer-not-found-view p {
+    color: #777;
+    margin: 0 0 20px 0;
+}
+
+.view-offer-error-view button, .view-offer-not-found-view button {
+    padding: 8px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .offer-content-view {
+        flex-direction: column;
+    }
+    
+    .offer-sidebar-view {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .offer-header-view {
+        flex-direction: column;
+    }
+    
+    .offer-header-right-view {
+        margin-top: 20px;
+        align-items: flex-start;
+    }
+    
+    .offer-details-grid-view {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .offer-header-left-view {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .company-logo-view, .company-logo-placeholder-view {
+        margin-bottom: 15px;
+        margin-right: 0;
+    }
+}

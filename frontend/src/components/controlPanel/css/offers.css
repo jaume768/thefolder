@@ -1,0 +1,413 @@
+/* src/css/offers.css */
+
+/* -------------------------------------------------- */
+/* Importa todos los estilos base desde fashion.css      */
+/* -------------------------------------------------- */
+@import './fashion.css';
+
+/* -------------------------------------------------- */
+/* Contenedor general: sidebar de filtros + contenido   */
+/* -------------------------------------------------- */
+.offers-page-container {
+  display: flex;
+  gap: 20px;
+  min-height: 100vh;
+  background-color: white;
+}
+
+/* -------------------------------------------------- */
+/* Sidebar de filtros (idéntica a la de fashion.css)   */
+/* -------------------------------------------------- */
+.filters-section {
+  width: 250px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  position: fixed;
+  top: 245px;
+}
+
+/* -------------------------------------------------- */
+/* Contenido principal: reutiliza .main-content de fashion.css */
+/* -------------------------------------------------- */
+.offers-main-content {
+  flex: 1;
+  margin-left: 0;
+  /* sin margen extra, gap del padre aplica separación */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* si usas <main className="main-content">, no necesitarías .offers-main-content */
+/* -------------------------------------------------- */
+/* Encabezados (pueden venir de fashion.css)         */
+/* -------------------------------------------------- */
+/* .page-title, .page-description definidos en fashion.css */
+
+/* -------------------------------------------------- */
+/* Tabs de filtrado por tipo de trabajo               */
+/* -------------------------------------------------- */
+.explorer-tabs-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.explorer-tabs {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+
+
+.user-extern-tab:hover {
+  color: #333;
+}
+
+.user-extern-tab.active {
+    background-color: #f5f5f5;
+    color: #444;
+}
+
+/* Todos los botones de filtrado tienen el mismo estilo */
+
+.user-extern-tab:disabled {
+  background-color: #f5f5f5;
+  color: #aaa;
+  border-color: #ddd;
+  cursor: not-allowed;
+  position: relative;
+  overflow: hidden;
+}
+
+/* -------------------------------------------------- */
+/* Botón de filtro */
+/* -------------------------------------------------- */
+.offers-filter-button {
+  position: fixed;
+  left: 15em;
+  top: 17%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.offers-filter-button.has-filters {
+  border: 2px solid #1a73e8;
+  box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+}
+
+.offers-filter-button:hover {
+  background-color: #333;
+  transform: scale(1.05);
+}
+
+.offers-filter-button svg {
+  font-size: 25px;
+}
+
+/* Panel de filtros para desktop */
+/* -------------------------------------------------- */
+.offers-filters-panel {
+  position: fixed;
+  top: 25%;
+  left: 2em;
+  width: 250px;
+  background: #fff;
+  border-radius: 12px;
+  height: 100vh;
+  transform: translateX(-120%);
+  transition: transform 0.3s ease;
+  z-index: 5;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+
+.offers-filters-panel.show {
+  transform: translateX(60px);
+}
+
+.offers-filters-container {
+  padding: 16px;
+}
+
+/* Estilos para la cabecera del panel de filtros */
+/* -------------------------------------------------- */
+.offers-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.offers-filters-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.offers-filters-close {
+  background: #000;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+.offers-filters-close:hover {
+  background-color: #333;
+}
+
+/* Botones de filtros */
+/* -------------------------------------------------- */
+.filter-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.clear-filters-btn {
+  width: 100%;
+  padding: 12px 0;
+  background-color: #f5f5f5;
+  color: #333;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* Móvil */
+/* -------------------------------------------------- */
+@media (max-width: 768px) {
+  .offers-filters-panel {
+    display: none;
+  }
+
+  .offers-filter-button.mobile {
+    left: unset;
+    right: 1em;
+    top: 13%;
+  }
+}
+
+/* Grilla de ofertas                                  */
+/* -------------------------------------------------- */
+.offers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  max-width: 900px;
+}
+
+/* -------------------------------------------------- */
+/* Tarjeta de oferta                                  */
+/* -------------------------------------------------- */
+.offer-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  margin: auto;
+  align-items: center;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+@media (max-width: 768px) {
+  .offer-card {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+.offer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px #00000014;
+}
+
+.offer-card-logo {
+  flex: 0 0 140px;
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  border: solid .5px #eee;
+}
+
+.offer-card-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.offer-card-content {
+  flex: 1;
+}
+
+.offer-card-user {
+  font-size: 15px;
+  color: #1a73e8;
+  margin-bottom: 12px;
+}
+
+.offer-card-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 6px 0;
+}
+
+.offer-card-meta {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.offer-card-meta span {
+  margin: 0 4px;
+  color: #ccc;
+}
+
+.offer-card-date {
+  font-size: 12px;
+  color: #777;
+}
+
+.offer-card-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Estilos específicos para cada tipo de trabajo */
+.badge-internship {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.badge-fulltime {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+.badge-parttime {
+  background-color: #fff8e1;
+  color: #ff8f00;
+  border: 1px solid #ffe082;
+}
+
+/* Estilo por defecto para otros tipos */
+.badge-other {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #ce93d8;
+}
+
+/* -------------------------------------------------- */
+/* Responsive: ocultar sidebar en móvil                */
+/* -------------------------------------------------- */
+@media (max-width: 768px) {
+  .filters-section {
+    display: none;
+  }
+
+  .offers-page-container {
+    flex-direction: column;
+    margin-bottom: 5em;
+  }
+
+  .offers-grid {
+    margin-left: 0;
+  }
+
+  .offer-card {
+    flex-direction: column;
+    max-width: 350px;
+    padding: 12px;
+  }
+  
+  .offer-card-meta {
+    flex-wrap: wrap;
+  }
+  
+  .offer-card-logo {
+    flex: 0 0 120px;
+    width: 100%;
+    height: 120px;
+    margin-right: 0px;
+    border: solid 0.5px #eee;
+  }
+  
+  .offer-card-badge {
+    top: 18px;
+    right: 18px;
+  }
+  
+  .offer-card-user {
+    margin-top: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .offer-card-content {
+    width: 100%;
+  }
+  
+  .offer-card-date {
+    position: absolute;
+    right: 12px;
+    top: 148px;
+  }
+  
+  .search-icon {
+    font-size: 16px;
+  }
+}

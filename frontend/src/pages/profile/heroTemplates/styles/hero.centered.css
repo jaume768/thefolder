@@ -1,0 +1,115 @@
+/* hero.centered.css */
+
+/* ── Layout 3 columnas ──────────────────────────────────────────────────── */
+.hero--centered .dc__layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 64px;
+  gap: 48px;
+}
+
+.hero--centered .dc__col {
+  display: flex;
+  align-items: center;
+}
+
+.hero--centered .dc__col--left {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.hero--centered .dc__col--center {
+  flex: 0 0 auto;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero--centered .dc__col--right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* ── Nombre ─────────────────────────────────────────────────────────────── */
+.hero--centered .dc__name {
+  font-family: "Adamina", serif;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.02rem;
+  color: #111;
+  margin: 0;
+}
+
+/* ── Tags ───────────────────────────────────────────────────────────────── */
+.hero--centered .dc__tags {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.hero--centered .dc__tag {
+  color: #111;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+/* ── Imagen vertical centrada ───────────────────────────────────────────── */
+.hero--centered .dc__media {
+  width: 320px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.hero--centered .dc__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero--centered .dc__placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* Chevron negro */
+.hero--centered .hero__scroll {
+  color: #111;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
+.hero--centered.is-mobile .dc__layout {
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 24px;
+  gap: 32px;
+}
+
+.hero--centered.is-mobile .dc__col--left,
+.hero--centered.is-mobile .dc__col--right {
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.hero--centered.is-mobile .dc__tags {
+  justify-content: center;
+}
+
+.hero--centered.is-mobile .dc__name {
+  font-size: 28px;
+  text-align: center;
+}
+
+.hero--centered.is-mobile .dc__media {
+  width: 80%;
+  max-width: 320px;
+}

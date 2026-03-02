@@ -1,0 +1,472 @@
+/* Layout base */
+
+.ob-logo{
+  width: 100px;
+  height: auto;
+  display: inline-block;
+}
+
+.ob-page{
+  min-height: 100vh;
+  color: #111;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.ob-top-brand{
+  position: absolute;
+  top: 32px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: serif; /* si usas una tipografía marca, cámbiala aquí */
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+
+.ob-center{
+  width: min(920px, 92vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+button.button.header-left-link.ob-top-logo {
+    width: 100%;
+    justify-content: center;
+    font-weight: 500;
+    color: #666;
+ }
+
+.ob-title{
+  font-family: Inter Tight, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 26px;
+  letter-spacing: 0.04em;
+  margin: 0 0 14px;
+}
+
+.ob-subtitle{
+  margin: 0 0 34px;
+  font-size: 14px;
+  line-height: 18px;
+  color: #666;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Username row */
+.ob-username{
+  width: min(520px, 80vw);
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 2px;
+  padding-bottom: 18px; /* espacio para la línea */
+  cursor: text;
+  margin: 24px 0px;
+}
+
+.ob-prefix{
+  font-size: 28px;
+  font-weight: 500;
+  color: #bfbfbf;
+  letter-spacing: -0.01em;
+}
+
+.ob-input{
+  font-family: 'Inter Tight', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  width: 320px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 28px;
+  font-weight: 500;
+  color: #111;
+  padding: 0;
+  margin: 0;
+  letter-spacing: 0.02em;
+  caret-color: #111;
+
+  /* “vacío” hasta focus o valor */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* aparece al hacer focus o si hay texto */
+.ob-username:focus-within .ob-input,
+.ob-username.has-value .ob-input{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* Cuando haces click en el área o ya hay texto: aparece el input */
+.ob-username:focus-within .ob-input,
+.ob-username.has-value .ob-input{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Línea inferior (subrayado) */
+.ob-underline{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 2px;
+  background: #e5e5e5;
+  border-radius: 999px;
+}
+
+/* Al hacer focus: línea más marcada */
+.ob-username:focus-within .ob-underline{
+  background: #111;
+}
+
+/* Check a la derecha */
+.ob-check{
+  position: absolute;
+  right: 0;
+  top: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0; /* por defecto oculto */
+  transform: scale(0.96);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+/* Solo se muestra cuando válido */
+.ob-check.ok{
+  opacity: 1;
+  transform: scale(1);
+  background: #1f8b3a; /* verde */
+  color: #fff;
+}
+
+/* Hint */
+.ob-hint{
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6f6f6f;
+}
+
+/* CTA */
+.ob-cta{
+    font-family: 'Inter Tight', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin-top: 28px;
+  height: 34px;
+  padding: 0 26px;
+  border-radius: 6px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ob-cta:disabled{
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Dots */
+.ob-dots{
+  margin-top: 60px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot{
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fdfdfd;
+  border: solid 1px #111;
+}
+
+.dot.active{
+  background: #111;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px){
+  .ob-center{ justify-content: center; }
+  .ob-title{ font-size: 28px; }
+  .ob-subtitle{ font-size: 14px; margin-bottom: 4px; }
+
+  .ob-prefix{ font-size: 28px; }
+  .ob-input{ font-size: 28px; width: 220px; }
+  .ob-check{ top: 6px; }
+  .ob-hint{ font-size: 14px; }
+  .ob-dots{ margin-top: 56px; }
+
+  .ob-status {
+    top: 2px !important;
+  }
+}
+
+@media (max-width: 420px){
+  .ob-title{ font-size: 24px; }
+  .ob-prefix{ font-size: 24px; }
+  .ob-input{ font-size: 24px; width: 100px; }
+}
+
+/* aparece al hacer focus o si hay texto */
+.ob-username:focus-within .ob-input,
+.ob-username.has-value .ob-input{
+  opacity: 1;
+}
+
+/* Estado: check/X */
+.ob-status{
+  position: absolute;
+  right: 0;
+  top: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+/* ✅ OK (verde) */
+.ob-status.is-ok{
+  opacity: 1;
+  transform: scale(1);
+  background: #1f8b3a;
+  color: #fff;
+}
+
+/* ❌ BAD (rojo con X blanca) */
+.ob-status.is-bad{
+  opacity: 1;
+  transform: scale(1);
+  background: #d64545;
+  color: #fff;
+}
+
+/* checking */
+.ob-status.is-checking{
+  opacity: 1;
+  transform: scale(1);
+  background: #111;
+  color: #fff;
+}
+
+/* Errores */
+.ob-error{
+  margin-top: 12px;
+  font-size: 14px;
+  color: #d64545;
+}
+
+.ob-input::placeholder {
+  color: #bdbdbd;
+  opacity: 1;
+}
+
+/* ===== Form (pantalla "Cuéntanos sobre ti") ===== */
+
+.ob-form{
+  width: min(520px, 92vw);
+  margin-top: 10px;
+}
+
+.ob-grid-2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.ob-field{
+  text-align: left;
+}
+
+.ob-label{
+  display: block;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  color: #111;
+  margin: 16px 0 8px;
+  text-transform: uppercase;
+}
+
+.ob-label-row{
+  width: 100%;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: #111;
+  margin: 16px 0 8px;
+  text-transform: uppercase;
+  }
+
+.ob-input-box{
+  width: 100%;
+  height: 32px;
+  border: transparent;
+  border-bottom: 1px solid #e5e5e5;
+  border-radius: 0px;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+}
+
+.ob-input-box:focus{
+  border-color: #111;
+}
+
+.ob-mini-hint{
+  margin-top: 8px;
+  font-size: 13px;
+  color: #6f6f6f;
+  text-align: left;
+}
+
+/* responsive: en móvil baja a 1 columna */
+@media (max-width: 620px){
+  .ob-grid-2{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Botón volver atrás */
+.ob-back{
+    height: 100%;
+  margin-top: 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: #6f6f6f;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.ob-back:hover{
+  color: #111;
+}
+
+
+.ob-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(520px, 92vw);
+}
+
+/* ===== Foto de perfil (Paso 3) ===== */
+
+.ob-photo{
+  width: min(520px, 92vw);
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ob-photo-box{
+  width: 120px;
+  height: 150px;
+  border-radius: 2px;
+  background: #f4f4f4;
+  border: 1px solid #e5e5e5;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.ob-photo-img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ob-photo-overlay{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  color: #9a9a9a;
+  pointer-events: none;
+}
+
+.ob-photo-actions{
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #6f6f6f;
+  font-size: 14px;
+}
+
+.ob-photo-action{
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: #6f6f6f;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ob-photo-action:hover{
+  color: #111;
+}
+
+.ob-photo-action:disabled{
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ob-photo-sep{
+  color: #c7c7c7;
+}
+
+.ob-hidden-input{
+  display: none;
+}
+
+.ob-mini-hint-center{
+  text-align: center;
+}
+
+/* Responsive: caja algo más pequeña */
+@media (max-width: 420px){
+  .ob-photo-box{
+    width: 80px;
+    height: 120px;
+  }
+}

@@ -1,0 +1,782 @@
+.explorer-container {
+    max-width: 1920px;
+    margin-top: 0px;
+}
+
+/* Header y descripción */
+.explorer-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1980px;   
+    margin: 15% auto 0;
+    text-align: center;
+}
+
+.explorer-filter-button.has-filters {
+    border: 2px solid #1a73e8;
+    box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+}
+
+.explorer-filters-close-btn {
+    /* si quieres un tamaño algo menor: */
+    padding: 8px 0;
+    font-size: 14px;
+    /* opcional: un margen para separarlo del encabezado */
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Asegúrate de que el icono no se vea muy grande */
+.explorer-filters-close-btn svg {
+    font-size: 18px;
+}
+
+.explorer-description {
+    max-width: 800px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #555;
+}
+
+
+/* Tabs y botón de filtro */
+.explorer-tabs-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+}
+
+.explorer-tabs {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.user-extern-tab {
+    border: 0px solid rgba(0, 0, 0, .08);
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: Inter Tight, sans-serif;
+    font-size: 13px;
+    line-height: 1;
+    color: #888;
+    cursor: pointer;
+    transition: background .16s ease, color .16s ease, border-color .16s ease;
+}
+
+
+.user-extern-tab:hover {
+    color: #333;
+}
+
+.user-extern-tab.active {
+    background-color: #f5f5f5;
+    color: #444;
+}
+
+.user-extern-tab:disabled {
+    background-color: #f5f5f5;
+    color: #aaa;
+    border-color: #ddd;
+    cursor: not-allowed;
+    position: relative;
+    overflow: hidden;
+}
+
+.user-extern-tab:disabled::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background-size: 200% 100%;
+    animation: loading 2s infinite linear;
+}
+
+.sidebar-info-menu {
+    margin-left: 27px;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* Botón de filtro */
+.explorer-filter-button {
+    position: fixed;
+    left: 20em;
+    top: 125px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.explorer-filter-button:hover {
+    background-color: #333;
+    transform: scale(1.05);
+}
+
+.explorer-filter-button svg {
+    font-size: 25px;
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
+    .explorer-filter-button {
+        top: 80%;
+    }
+
+    .explorer-header {
+    margin-top: 200px;
+    gap: 8px;
+}
+
+.user-location-profile {
+    display: none;
+}
+
+}
+
+/* Panel de filtros para desktop */
+.explorer-filters-panel {
+    position: fixed;
+    top: 120px;
+    left: -5em;
+    width: 250px;
+    height: 100vh;
+    transform: translate(-100%);
+    transition: transform .3s ease;
+    z-index: 5;
+    overflow-y: auto;
+    padding-top: 80px;
+}
+
+/* Ocultar el panel de filtros en móvil */
+@media (max-width: 768px) {
+    .explorer-filters-panel {
+        display: none;
+    }
+
+    .explorer-filter-button {
+        left: 1em;
+        top: 80%;
+    }
+}
+
+.explorer-filters-panel.show {
+    left: 30em;
+    margin-left: 1vw;
+}
+
+.explorer-filters-container {
+    padding: 16px;
+}
+
+/* Estilos para la cabecera del panel de filtros */
+.explorer-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.explorer-filters-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.explorer-filters-header-close {
+    background: #000;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    padding: 0;
+    transition: background-color 0.2s ease;
+}
+
+.explorer-filters-header-close:hover {
+    background-color: #333;
+}
+
+.explorer-filters-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.explorer-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.explorer-filter-search input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    color: black;
+    background-color: white;
+}
+
+.explorer-filter-select select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 26px;
+    font-size: 14px;
+    color: black;
+    background-color: white;
+    appearance: menulist;
+}
+
+.explorer-apply-filters-btn {
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 0;
+    font-size: 15px;
+    width: 100%;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.explorer-apply-filters-btn:hover {
+    background-color: #333;
+}
+
+.explorer-clear-filters-btn {
+    color: #000;
+    background-color: transparent !important;
+    border: solid 1px #000;
+}
+
+.explorer-clear-filters-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Contenido principal con transición */
+.explorer-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: margin-left 0.3s ease;
+}
+
+.explorer-content.with-filters {
+    margin-left: 250px;
+}
+
+/* En móvil no aplicamos margen al contenido */
+@media (max-width: 768px) {
+    .explorer-content.with-filters {
+        margin-left: 0;
+    }
+
+}
+
+/* Modal de filtros para móvil */
+.explorer-mobile-filters-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.explorer-mobile-filters-content {
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.explorer-mobile-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.explorer-mobile-filters-header h3 {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.explorer-mobile-filters-close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Zona para arrastrar el botón de filtros */
+.drag-handle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    cursor: move;
+}
+
+.my-masonry-grid_column {
+    padding-left: 0px;
+    background-clip: padding-box;
+}
+
+.masonry-item {
+    position: relative;
+    margin-bottom: 100px;
+    border-radius: 0px;
+    border: 0px;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+    margin-bottom: 290px;
+}
+
+.masonry-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.overlay{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  /* siempre visible */
+  opacity: 1;
+
+  /* sin fondo oscuro constante */
+  background: transparent;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.masonry-item:hover .overlay{
+  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+}
+
+
+.save-button-explorer{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  background: #000000ab;
+  border: none;
+  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 2;
+
+  /* 👇 oculto por defecto */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity .2s ease, transform .2s ease, background .2s ease;
+}
+
+.save-plus{
+  font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 200;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Estado guardado: tick */
+.save-button-explorer.saved{
+  background: #000000ab;
+}
+
+.save-button-explorer.saved {
+  width: 38px;
+  height: 38px;
+}
+
+img.save-icon {
+    filter: invert(1);
+    width: 17px !important;
+    height: 12px !important;
+}
+
+
+.masonry-caption{
+  font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: #666;
+  font-weight: 400;
+    display: -webkit-box;
+  -webkit-line-clamp: 1;   /* número máximo de líneas */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.masonry-caption.mono {
+    font-family: 'Inter Tight', sans-serif;
+    line-height: 17px;
+    font-weight: 300;
+}
+
+.centerTitle {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 125px;
+    line-height: 125px;
+    font-weight: 500;
+    color: #111;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+/* Estilos para el contenedor del perfil de usuario en hover */
+.user-profile-hover {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    border-radius: 0;
+    align-items: flex-start;
+    padding: 4px;
+}
+
+/* Contenedor del avatar circular */
+.user-avatar-container {
+    width: 45px;
+    height: 60px;
+    overflow: hidden;
+}
+
+.user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Estilos para la información del usuario */
+.user-info-hover {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.username {
+    font-family: "Adamina", serif;
+    line-height: 16px;
+    text-decoration: none;
+    text-align: right;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 0;
+
+    border-radius: 6px;
+    width: fit-content;
+    background: transparent;
+
+    color: #f5f5f5;
+    font-size: 18px;
+}
+
+.username-registro {
+    font-size: 14px;
+    font-weight: 600;
+    color: black;
+}
+
+.creative-type-tag {
+    color: black;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+}
+
+.user-location-profile {
+    font-size: 13px;
+    letter-spacing: 0.04rem;
+    line-height: 16px;
+    font-weight: 300;
+    font-family: Inter Tight, sans-serif;
+    color: #fff;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-info img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+img.search-sparkles-icon {
+    width: 13.5px;
+    height: 13.5px;
+    overflow: visible;
+}
+img.search-sparkles-icon {
+    opacity: 0.5;
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  padding: 12px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 0px;
+  white-space: nowrap;
+  background: #f2f2f2;
+  color: #333;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translateX(-50%) translateY(-4px);
+  z-index: 9999;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+}
+
+
+.tooltip:hover::after,
+.tooltip:hover::before,
+.tooltip:focus-visible::after,
+.tooltip:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+.masonry-item:hover .save-button-explorer{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.save-button-explorer:hover {
+    background: #000;
+}
+
+.save-button-explorer svg {
+    font-size: 18px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.save-button-explorer.saved {
+    background: #000000ab;
+    animation: saveAnimation 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.save-button-explorer.saved svg {
+    color: rgb(255, 255, 255);
+    animation: iconAnimation 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes saveAnimation {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.01);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes iconAnimation {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(0.98);
+    }
+
+    50% {
+        transform: scale(1.01);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.save-feedback {
+    position: absolute;
+    top: 55px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+}
+
+.save-feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.country-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.masonry-item:hover .country-tag {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+    color: #666;
+}
+
+.loading-spinner i {
+    font-size: 24px;
+}
+
+/* Tooltip */
+.save-tooltip{
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .16s ease, transform .16s ease;
+
+  display: inline-flex;
+  align-items: center;
+  font-family: Inter Tight, sans-serif;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 400;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Hover */
+.save-button-explorer:hover .save-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 🔹 Estado GUARDAR */
+.tooltip-default {
+    background: #000000;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+/* 🔹 Estado GUARDADA */
+.tooltip-saved {
+  background: #000000ab;
+  color: #ffffff;
+}

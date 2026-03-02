@@ -1,0 +1,29 @@
+/* Bloquea el scroll del body cuando el modal está abierto */
+.modal-open { overflow: hidden; }
+
+.cp-modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: #000000ba;
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.cp-modal-dialog{
+  width: min(1200px, 100%);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  border-radius: 16px;
+  outline: none;
+  scrollbar-width: none;
+}
+
+/* opcional, por si tu CreatePost asume fullpage */
+.createpost-page{
+  min-height: fit-content;
+}

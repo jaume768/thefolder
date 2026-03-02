@@ -1,0 +1,164 @@
+/* hero.fullscreen-alt.css */
+
+/* ── Imagen ocupa todo el hero ──────────────────────────────────────────── */
+.hero--fullscreen-alt .fsa__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero--fullscreen-alt .fsa__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero--fullscreen-alt .fsa__placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* Overlay oscuro */
+.hero--fullscreen-alt .fsa__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* ── Texto centrado (desktop) ───────────────────────────────────────────── */
+.hero--fullscreen-alt .fsa__content {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  width: 80%;
+}
+
+.hero--fullscreen-alt .fsa__name {
+  font-family: "Adamina", serif;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.02rem;
+  color: #fff;
+  margin: 0;
+}
+
+.hero--fullscreen-alt .fsa__tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.hero--fullscreen-alt .fsa__tag {
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+/* Chevron blanco */
+.hero--fullscreen-alt .hero__scroll {
+  color: #fff;
+}
+
+/* ── Mobile — igual que desktop: imagen completa, texto centrado ────────── */
+.hero--fullscreen-alt.is-mobile .fsa__content {
+  width: 90%;
+  gap: 12px;
+}
+
+.hero--fullscreen-alt.is-mobile .fsa__name {
+  font-size: 28px;
+}
+
+.hero--fullscreen-alt.is-mobile .fsa__tags {
+  gap: 20px;
+}
+
+/* hero.fullscreen-alt-mobile.css */
+
+/* ── Contenedor ─────────────────────────────────────────────────────────── */
+.hero--alt-vertical {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow: hidden;
+}
+
+/* ── Texto arriba centrado ──────────────────────────────────────────────── */
+.hero--alt-vertical .hero__header--alt {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 180px 28px 28px;
+  gap: 8px;
+  background: #fdfdfd;
+}
+
+.hero--alt-vertical .hero__name--dark {
+  font-family: "Adamina", serif;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.02rem;
+  color: #111;
+  margin: 0;
+}
+
+.hero--alt-vertical .hero__tags--alt {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero--alt-vertical .hero__tag--dark {
+  color: #111;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ── Imagen abajo ocupa el resto ────────────────────────────────────────── */
+.hero--alt-vertical .hero__media--alt-vertical {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero--alt-vertical .hero__image--alt-vertical {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.hero--alt-vertical .hero__placeholder--alt-vertical {
+  width: 100%;
+  height: 100%;
+}

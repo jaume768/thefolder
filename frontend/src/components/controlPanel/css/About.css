@@ -1,0 +1,114 @@
+/* About.css */
+.about-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.about-header {
+    margin-bottom: 30px;
+}
+
+.about-back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    background-color: transparent;
+    color: #1a73e8;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.about-content {
+    font-family: 'Inter Tight', sans-serif;
+    color: #222;
+    line-height: 1.6;
+}
+
+.about-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+    align-items: center;
+}
+
+.about-section:nth-child(even) {
+    direction: rtl; /* Invierte columnas para alternar */
+}
+
+.about-section:nth-child(even) .about-text {
+    direction: ltr; /* Texto vuelve a normal */
+}
+
+.about-image {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.about-text {
+    text-align: left;
+    font-size: 1.125rem;
+    color: #444;
+}
+
+.about-text h1 {
+    font-size: 2rem;
+}
+
+.about-text strong {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: #111;
+}
+
+.about-contact {
+    font-size: 1.125rem;
+    font-weight: 600;
+    font-family: 'Work Sans', sans-serif;
+    color: #1a73e8;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    text-decoration: none;
+}
+
+b {
+    font-weight: 600;
+}
+
+.about-photo-autor a {
+    text-decoration: none;
+    color: #1a73e8;
+}
+
+.about-photo-autor {
+    text-align: center;
+    font-size: 11px;
+}
+
+@media (max-width: 768px) {
+    .about-section {
+        grid-template-columns: 1fr;
+        direction: ltr !important;
+        gap: 24px;
+    }
+    
+    .about-section:nth-child(even) {
+        direction: ltr !important;
+    }
+
+    .about-container {
+        margin: 0px;
+    }
+}

@@ -1,0 +1,320 @@
+/* =========================================================
+   LINK SECTION (thefolder.es/carla.styling)
+========================================================= */
+:root{
+  --tf-text: #0b0b0b;
+  --tf-muted: #6a6a6a;
+  --tf-soft: #bfbfbf;
+  --tf-bg: #fdfdfd;
+
+  --tf-font-sans: 'Inter Tight', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+}
+
+/* Fullscreen feel (como en captura) */
+.tf-link{
+  color: var(--tf-text);
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 110px 34px 0px; /* deja aire para nav fixed del hero */
+}
+
+.tf-link__inner{
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    gap: 56px;
+    justify-items: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+}
+
+/* Big URL */
+.tf-link__headline{
+    font-family: var(--tf-font-sans);
+    line-height: 1;
+    text-align: center;
+    font-size: clamp(44px, 5vw, 84px);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.tf-link__half-left {
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.tf-link__half-right {
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.tf-link__domain{
+  color: var(--tf-soft);
+  font-weight: 400;
+}
+
+.tf-link__user{
+  color: var(--tf-text);
+  font-weight: 500;
+}
+
+.tf-link__cursor{
+  color: var(--tf-text);
+  font-weight: 400;
+  margin-left: 2px;
+  animation: tfBlink 1s steps(1) infinite;
+  margin-left: 2px;
+}
+
+@keyframes tfBlink{
+  50%{ opacity: 0; }
+}
+
+/* Content block */
+.tf-link__content{
+  text-align: center;
+  max-width: 720px;
+}
+
+.tf-link__kicker{
+  margin: 0 0 6px;
+  font-family: var(--tf-font-sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--tf-text);
+}
+
+.tf-link__title{
+  margin: 0 0 8px;
+  font-family: var(--tf-font-sans);
+  color: var(--tf-text);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 500;
+}
+
+.tf-link__desc{
+  margin: 0 0 22px;
+  font-family: var(--tf-font-sans);
+  color: var(--tf-muted);
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: 0.02rem;
+}
+
+.tf-link__cta{
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  font-family: var(--tf-font-sans);
+  color: var(--tf-muted);
+  font-size: 12px;
+  font-weight: 400;
+  padding: 8px 0px;
+  text-decoration: underline;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.tf-link__cta:hover{
+  color: var(--tf-text);
+}
+
+/* Mobile fine-tuning */
+@media (max-width: 960px){
+  .tf-link{
+    padding: 92px 24px 0px;
+  }
+
+  .tf-link__inner {
+    justify-content: space-around;
+  }
+
+
+  .tf-link__headline{
+    text-align: center;
+    align-items: flex-start;
+  }
+
+  .tf-link__domain, .tf-link__user {
+    font-size: 24px;
+  }
+
+  .tf-link__title{
+    font-size: 19px;
+  }
+
+  .tf-link__desc{
+    font-size: 14.5px;
+    line-height: 19px;
+  }
+
+  /* En móvil, mejor evitar <br> forzado */
+  .tf-link__br{
+    display: none;
+  }
+}
+
+.tf-link{
+  position: relative;
+}
+
+.tf-link__down{
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  opacity: .6;
+  padding: 10px;
+}
+
+.tf-link__down:hover{
+  opacity: 1;
+}
+
+
+/* =========================
+   LINK SECTION ANIMATIONS
+   ========================= */
+
+:root{
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Estado inicial: sin animar hasta que haya scroll */
+.tf-link .tf-link__headline{
+  opacity: 0;
+  transform: translateY(18px);
+  will-change: transform, opacity;
+}
+
+/* Se activa SOLO cuando scrolleas y entra */
+.tf-link.tf-link--visible .tf-link__headline{
+  animation: tfLinkHeadlineIn 1.05s var(--ease-luxe) forwards;
+  margin-top: 120px
+}
+
+/* El resto entra después */
+.tf-link .tf-link__content{
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+.tf-link.tf-link--visible .tf-link__content{
+  animation: tfLinkContentIn 0.95s var(--ease-luxe) forwards;
+  animation-delay: 0.22s;
+}
+
+/* Cascada de texto */
+.tf-link .tf-link__kicker,
+.tf-link .tf-link__title,
+.tf-link .tf-sub,
+.tf-link .tf-link__cta{
+  opacity: 0;
+  transform: translateY(10px);
+  will-change: transform, opacity;
+}
+.tf-link.tf-link--visible .tf-link__kicker{ animation: tfLinkItemIn .75s var(--ease-luxe) forwards; animation-delay: .38s; }
+.tf-link.tf-link--visible .tf-link__title { animation: tfLinkItemIn .75s var(--ease-luxe) forwards; animation-delay: .50s; }
+.tf-link.tf-link--visible .tf-sub         { animation: tfLinkItemIn .75s var(--ease-luxe) forwards; animation-delay: .64s; }
+.tf-link.tf-link--visible .tf-link__cta   { animation: tfLinkItemIn .75s var(--ease-luxe) forwards; animation-delay: .78s; }
+
+@keyframes tfLinkHeadlineIn { to { opacity: 1; transform: translateY(0); } }
+@keyframes tfLinkContentIn  { to { opacity: 1; transform: translateY(0); } }
+@keyframes tfLinkItemIn     { to { opacity: 1; transform: translateY(0); } }
+
+/* Si hay header fijo, esto ayuda a que el snap “start” no tape el inicio */
+.tf-link{
+  scroll-margin-top: 90px; /* ajusta a la altura real de tu navbar */
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce){
+  .tf-link .tf-link__headline,
+  .tf-link .tf-link__content,
+  .tf-link .tf-link__kicker,
+  .tf-link .tf-link__title,
+  .tf-link .tf-sub,
+  .tf-link .tf-link__cta{
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+.tf-link {
+  scroll-margin-top: 110px;
+}
+
+/* ===== Reveal más obvio ===== */
+.tf-link__headline{
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  filter: blur(6px);
+  transition:
+    opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity, filter;
+}
+
+.tf-link--visible .tf-link__headline{
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+}
+
+/* Stagger interno para que se note más */
+.tf-link__domain,
+.tf-link__user{
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tf-link--visible .tf-link__domain{
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 120ms;
+}
+
+.tf-link--visible .tf-link__user{
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 240ms;
+}
+
+/* El resto del contenido entra más suave */
+.tf-link__content{
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 320ms;
+}
+
+.tf-link--visible .tf-link__content{
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}

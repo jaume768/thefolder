@@ -1,0 +1,300 @@
+/* =========================
+   MyComunity - CSS limpio
+   (Tabs estilo Guardados)
+   ========================= */
+
+/* Contenedor principal */
+.mycomunity-container {
+  padding: 20px;
+  font-family: 'Inter Tight', sans-serif;
+  color: #000;
+  width: 100%;
+  margin: 20vh auto 60px;
+}
+
+/* Header */
+.mycomunity-header{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+/* Center title como Guardados */
+.centerTitle.mycomunity{
+  font-family: Inter Tight, sans-serif;
+  font-size: 125px;
+  line-height: 125px;
+  font-weight: 500;
+  color: #111;
+  text-transform: uppercase;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Mobile title */
+@media (max-width: 480px){
+  .centerTitle.mycomunity{
+    font-size: 48px !important;
+    line-height: 48px;
+  }
+
+  .mycomunity-card {
+    width: -webkit-fill-available;
+    padding: 0px 24px;
+    gap: 12px;
+    max-width: 80%;
+}
+
+.mycomunity-flex {
+    gap: 24px;
+}
+
+.mycomunity-profile-img {
+    width: 70px;
+    height: 70px;
+}
+
+h3.mycomunity-user-name, .mycomunity-user-location {
+    font-size: 16px;
+}
+
+.mycomunity-user-info {
+    gap: 4px;
+}
+
+
+
+}
+
+/* Wrapper (debajo del título) */
+.mycomunity-tabs-wrapper{
+  width: 100%;
+  max-width: 2190px;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto 0 auto;
+}
+
+/* Tabs estilo Guardados */
+.mycomunity-tabs{
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mycomunity-tab{
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  background: transparent;
+  user-select: none;
+
+  /* inactivo */
+  font-weight: 400;
+  color: #888;
+}
+
+.mycomunity-tab.active{
+  color: #111;
+  font-weight: 500;
+}
+
+.mycomunity-tab.active::after{
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: #111;
+}
+
+/* Buscador debajo de tabs (siempre visible) */
+.mycomunity-search-container{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.mycomunity-search{
+  width: 100%;
+  max-width: 350px;
+}
+
+.mycomunity-search-input{
+  width: 100%;
+  padding: 10px 12px;
+  border: solid transparent;
+  border-bottom: 1px solid #ddd;
+  border-radius: 0px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+}
+
+.mycomunity-search-input:focus{
+  border-color: #111;
+}
+
+/* Contenedor de perfiles (flex) */
+.mycomunity-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.mycomunity-filters {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 48px 0px 32px 0px;
+}
+
+/* Tarjeta de perfil */
+.mycomunity-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    min-width: 250px;
+}
+
+.mycomunity-card:hover {
+  cursor: pointer;
+}
+
+.mycomunity-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+/* Imagen de perfil */
+.mycomunity-profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #f0f0f0;
+}
+
+/* Nombre y rol */
+.mycomunity-user-name {
+    font-size: 12px;
+    font-family: Inter Tight, sans-serif;
+    font-weight: 400;
+    color: #666;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
+    text-decoration: underline;
+}
+
+.mycomunity-user-role {
+  font-size: 12px;
+  color: #555;
+  margin-top: 2px;
+}
+
+.mycomunity-user-location {
+    color: #666;
+    font-size: 12px;
+    font-weight: 400;
+    font-family: Inter Tight, sans-serif;
+}
+
+/* Estados */
+.mycomunity-loading,
+.mycomunity-error,
+.mycomunity-empty {
+  text-align: center;
+  padding: 30px;
+  font-size: 16px;
+  color: #555;
+  width: 100%;
+}
+
+.mycomunity-error {
+  color: #e74c3c;
+}
+
+.mycomunity-empty {
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* Paginación */
+.mycomunity-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.pagination-button {
+  background-color: #E7B971;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 600;
+}
+
+.pagination-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #d3a75f;
+}
+
+.pagination-info {
+  margin: 0 15px;
+  font-size: 14px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .mycomunity-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .mycomunity-tabs-wrapper{
+    padding: 0px;
+  }
+
+  .mycomunity-flex {
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    margin-bottom: 60px;
+  }
+
+  .mycomunity-search {
+    max-width: 350px;
+  }
+
+  .mycomunity-search-input {
+    font-size: 13px;
+  }
+}

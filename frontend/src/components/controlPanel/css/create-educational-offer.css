@@ -1,0 +1,335 @@
+.create-educational-offer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #333;
+    background-color: #f5f5f7;
+}
+
+.create-educational-offer h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.create-educational-offer form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Sección de imagen de cabecera */
+.create-educational-header-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.create-educational-header-image-upload {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.create-educational-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 100%;
+    height: 120px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.create-educational-upload-label:hover {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.create-educational-upload-icon {
+    font-size: 24px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.create-educational-file-input {
+    display: none;
+}
+
+.create-educational-header-image-preview {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.create-educational-header-image-preview img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Form fields */
+.create-educational-form-field {
+    margin-bottom: 15px;
+}
+
+.create-educational-form-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.create-educational-form-field input[type="text"],
+.create-educational-form-field input[type="number"],
+.create-educational-form-field input[type="url"],
+.create-educational-form-field select,
+.create-educational-form-field textarea {
+    width: 100%;
+    color: black;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border-color 0.2s;
+}
+
+.create-educational-form-field input[type="text"]:focus,
+.create-educational-form-field input[type="number"]:focus,
+.create-educational-form-field input[type="url"]:focus,
+.create-educational-form-field select:focus,
+.create-educational-form-field textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.create-educational-form-field.create-educational-checkbox-field {
+    display: flex;
+    align-items: center;
+}
+
+.create-educational-form-field.create-educational-checkbox-field label {
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+.create-educational-form-field.create-educational-checkbox-field input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.create-educational-form-field small {
+    display: block;
+    color: #777;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.create-educational-form-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+.create-educational-large-input {
+    font-size: 16px !important;
+    padding: 14px !important;
+}
+
+.create-educational-error-message {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Form sections */
+.create-educational-form-section {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.create-educational-form-section h3 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.create-educational-form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.create-educational-form-row > .create-educational-form-field {
+    flex: 1;
+}
+
+.create-educational-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+/* Botones */
+.create-educational-form-actions-final {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 3em;
+}
+
+.create-educational-cancel-button,
+.create-educational-submit-button {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.create-educational-cancel-button {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+.create-educational-cancel-button:hover {
+    background-color: #e5e5e5;
+}
+
+.create-educational-submit-button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+}
+
+.create-educational-submit-button:hover {
+    background-color: #0069d9;
+}
+
+.create-educational-submit-button:disabled {
+    background-color: #80bdff;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .create-educational-form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .create-educational-checkbox-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Estilos para la sección de preguntas extra */
+.create-educational-form-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.create-educational-questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.create-educational-question-item {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #e8e8e8;
+}
+
+.create-educational-question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.create-educational-question-header h4 {
+    font-size: 15px;
+    color: #444;
+    font-weight: 500;
+    margin: 0;
+}
+
+.create-educational-remove-question {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+}
+
+.create-educational-question-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.create-educational-question-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: white;
+    color: #333;
+}
+
+.create-educational-add-question-button {
+    background-color: #f5f5f5;
+    border: 1px dashed #ccc;
+    color: #555;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.create-educational-add-question-button i {
+    margin-right: 6px;
+}
+
+.create-educational-add-question-button:hover {
+    background-color: #e9e9e9;
+    color: #333;
+}

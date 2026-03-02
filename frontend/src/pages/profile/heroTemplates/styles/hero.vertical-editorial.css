@@ -1,0 +1,92 @@
+/* hero.vertical-editorial.css */
+
+/* ── Layout 2 columnas ──────────────────────────────────────────────────── */
+.hero--vertical-editorial .ve__layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+/* ── Columna texto — izquierda ──────────────────────────────────────────── */
+.hero--vertical-editorial .ve__col--text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 80px;
+  gap: 16px;
+  background: #fdfdfd;
+}
+
+.hero--vertical-editorial .ve__name {
+  font-family: "Adamina", serif;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.02rem;
+  color: #111;
+  margin: 0;
+}
+
+.hero--vertical-editorial .ve__tags {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero--vertical-editorial .ve__tag {
+  color: #111;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+/* ── Columna imagen — derecha, ocupa todo el alto ───────────────────────── */
+.hero--vertical-editorial .ve__col--media {
+  flex: 0 0 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero--vertical-editorial .ve__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero--vertical-editorial .ve__placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* Chevron negro */
+.hero--vertical-editorial .hero__scroll {
+  color: #111;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
+.hero--vertical-editorial.is-mobile .ve__layout {
+  flex-direction: column;
+}
+
+.hero--vertical-editorial.is-mobile .ve__col--text {
+  flex: 0 0 auto;
+  padding: 48px 24px 32px;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hero--vertical-editorial.is-mobile .ve__name {
+  font-size: 28px;
+}
+
+.hero--vertical-editorial.is-mobile .ve__col--media {
+  flex: 1;
+  min-height: 50vh;
+}

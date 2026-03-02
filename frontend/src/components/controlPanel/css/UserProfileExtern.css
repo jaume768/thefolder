@@ -1,0 +1,5062 @@
+/* 
+   UserProfileExtern.css
+   Estilos para el nuevo diseño del perfil de usuario externo
+   Basado en la imagen de referencia compartida
+*/
+
+.tf-guest-profile {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  max-width: 480px;
+  z-index: 5000;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.tf-guest-profile__text {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.tf-guest-profile__link {
+  font-family: "Inter Tight", sans-serif;
+  display: block;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  opacity: 0.7;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.dashboard-content {
+    flex: 1;
+    padding: 0px !important;
+}
+
+/* Contenedor principal */
+.user-extern-container {
+    position: relative;
+    font-family: 'Inter Tight', sans-serif;
+    color: #333;
+}
+
+.user-extern-header {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background: #fdfdfd;
+
+    position: relative;
+    z-index: 9;
+    margin-bottom: 38px;
+}
+
+.user-extern-header-item-30 {
+    position: absolute;
+    height: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.user-extern-tags-profile {
+  font-size: 11px;
+  line-height: 11px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  gap: 0px 6px;
+}
+
+.user-extern-tags-profile.header-tags {
+    gap: 40px;
+}
+
+.user-extern-header-image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-extern-header-item::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #00000055; /* ajusta la intensidad */
+  pointer-events: none;
+  border-radius: 2px; /* opcional, si quieres que siga el borde */
+}
+
+/* asegura que la imagen quede por debajo del overlay */
+.user-extern-header-image{
+  position: relative;
+  z-index: 0;
+}
+
+.user-extern-header-item::after{
+  z-index: 1;
+}
+
+
+.header-tags .creative-type {
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 0.08rem;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+}
+
+.user-extern-social-links{
+    display: flex;
+    gap: 18px;
+}
+
+/* Navegación y botón de volver */
+.user-extern-navigation {
+    margin-bottom: 20px;
+}
+
+.user-extern-back-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    font-size: 14px;
+}
+
+.user-extern-back-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.user-extern-back-btn span {
+    margin-left: 8px;
+}
+
+/* Estructura de contenido principal - layout de dos columnas */
+.user-extern-content {
+    display: flex;
+    gap: 40px;
+    margin-top: 120px;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Columna izquierda - Información del perfil */
+.user-extern-left-column {
+    flex: 0 0 250px;
+    align-self: center;
+}
+
+@media (max-width: 768px) {
+    
+    .user-extern-left-column {
+        top: 0;
+    }
+
+    .header-tags .creative-type {
+    font-size: 12px;
+  }
+
+  .ux-template-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+
+}
+
+/* Foto de perfil */
+.user-extern-profile-photo-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.user-extern-profile-photo {
+    width: 120px;
+    height: 140px;
+    border-radius: 2%;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+.title-user-extern-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Información básica del perfil */
+.user-extern-profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+    max-width: 300px;
+    margin-bottom: 80px
+}
+
+
+
+.user-extern-fullname {
+    text-align: center;
+    font-family: 'Adamina', serif;
+    font-size: 28px;
+    line-height: 34px;
+    letter-spacing: 0.02rem;
+    font-weight: 400;
+    margin: 0;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.user-extern-username {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.user-extern-bio {
+    text-align: start;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.user-extern-location {
+    text-align: start;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.user-extern-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 5px 0 15px;
+}
+
+.user-extern-portfolio-content {
+    justify-items: center;
+    margin-bottom: 38px;
+}
+
+/* Habilidades destacadas */
+.user-extern-skills {
+    margin: 15px 0;
+}
+
+.user-extern-skills h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.user-extern-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.normal-14px-text {
+    font-size: 10px;
+    letter-spacing: 0.02rem;
+    font-weight: 500;
+    color: #444;
+    text-transform: uppercase;
+}
+
+/* Sitio web */
+.user-extern-website {
+    margin: 15px 0;
+    display: flex;
+    justify-content: flex-start;
+    color: #444;
+    text-decoration: underline;
+    line-height: 0px;
+    font-size: 14px;
+}
+
+.user-extern-website a {
+    color: #444;
+    text-decoration: underline;
+    line-height: 0px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.user-extern-website a:hover {
+    text-decoration: underline;
+}
+
+/* Botones de acción */
+.user-extern-action-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 24px;
+}
+
+.user-extern-follow-button {
+    background-color: #f2f2f2;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    letter-spacing: 0.02rem;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.user-extern-follow-button:hover {
+    background-color: #e2e2e2;
+}
+
+.user-extern-follow-button.following {
+    background-color: #f2f2f2;
+    color: #666;
+}
+
+.user-extern-notification-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: background-color 0.2s;
+}
+
+.user-extern-notification-button:hover {
+    background-color: #e0e0e0;
+}
+
+.user-extern-notification-button.active {
+    color: #1a73e8;
+}
+
+/* Iconos de contacto y compartir */
+.user-extern-contact-share {
+    display: flex;
+    gap: 28px;
+    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-extern-contact-button,
+.user-extern-share-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 400;
+    box-shadow: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: none;
+}
+
+.user-extern-contact-button span,
+.user-extern-share-button span {
+    font-size: 14px;
+    color: #444;
+    font-weight: 400;
+    margin-left: 0px;
+}
+
+.user-extern-contact-button:hover,
+.user-extern-share-button:hover {
+    background: none;
+    color: #555;
+}
+
+
+.user-extern-right-column {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Pestañas superiores */
+.user-extern-tabs {
+    display: flex;
+    flex-direction: row;
+    gap: 80px;
+    justify-content: center;
+    align-items: flex-end;
+    bottom: 24px;
+    width: 100%;
+    z-index: 20;
+}
+
+.user-extern-tabs-box { 
+    width: fit-content;
+    display: flex;
+    gap: 2px;
+    padding: 6px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 13px 0px, 
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+@media (max-width: 768px) {
+    .user-extern-tabs {
+        margin-left: 0;
+        bottom: 74px;
+        width: 91%;
+    }
+    
+    .user-extern-tab {
+        padding: 8px 12px;
+    }
+}
+
+
+
+
+.user-extern-tab:hover {
+    color: #333;
+}
+
+.user-extern-tab.active {
+    background-color: #f5f5f5;
+    color: #444;
+}
+
+.user-exter-tab-portfolio {
+    position: relative;
+    background-color: white;
+    color: inherit;
+    border: 0px;
+}
+
+button.user-extern-tab-portfolio {
+    border: 0px;
+    padding-right: 12px;
+    font-size: 14px;
+    background: transparent;
+}
+
+button.user-extern-tab-portfolio:hover {
+    cursor: pointer;
+}
+
+.user-extern-tab-portfolio.active {
+    position: relative;
+    background-color: white;
+    color: inherit;
+    border: 0px;
+    border-bottom: solid 1.5px #444;
+}
+
+.user-extern-tab-portfolio.active::after {
+    content: "";
+    position: absolute;
+    right: 0px; /* separa del borde */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    background-color: #007bff;
+    border-radius: 50%; /* círculo */
+}
+
+/* Opciones de visualización para Portfolio */
+.user-extern-view-options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    gap: 10px;
+}
+
+.user-extern-view-container {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 4px;
+}
+
+@media (max-width: 768px) {
+    .user-extern-view-container {
+        margin-left: 0;
+    }
+}
+
+.user-extern-view-button {
+    background: white;
+    border: none;
+    padding: 4px 16px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.user-extern-view-button:hover {
+    background-color: #f5f5f5;
+}
+
+.user-extern-view-button.active {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    border: solid .5px #1a73e8;
+    border-radius: 8px;
+}
+
+.user-extern-projects.list-view {
+    grid-template-columns: 1fr;
+}
+
+.user-extern-projects.gallery-view{
+  display: block;
+  column-count: 4;
+  width: 100%;
+  gap: 48px;
+}
+
+.user-extern-projects.gallery-view.gallery--nogap {
+    gap: 0px;
+}
+
+.gallery--nogap .user-extern-project-card {
+  margin-bottom: 0;
+}
+
+.gallery--nogap .user-extern-project-media {
+    margin-bottom: -5px;
+}
+
+.ux-gallery-options {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 32px;
+}
+
+.ux-gallery-option-label {
+  font-family: "Inter Tight", sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin-top: 12px;
+  color: #222;
+}
+
+.ux-gallery-option-desc {
+    font-family: "Inter Tight", sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin-top: 12px;
+  color: #666;
+}
+
+p.user-extern-project-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    line-height: 16px;
+    font-weight: 400;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.user-extern-project-image {
+    object-fit: cover;
+}
+
+.gallery-view .user-extern-project-image {
+    width: 100%;
+    border-radius: 2px;
+}
+
+.list-view .user-extern-project-image {
+    width: 65%;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+/* Estados de carga y sin contenido */
+.user-extern-loading,
+.user-extern-no-content {
+    padding: 30px;
+    text-align: center;
+    color: #666;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+p.user-extern-no-content {
+    width: -webkit-fill-available;
+    min-width: 100vw;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 300;
+    text-align: center;
+    letter-spacing: 0.02em;
+    color:#666;
+}
+
+/* Contenido de About */
+.user-extern-about-content {
+    margin: 0 3em;
+}
+
+/* Estilos específicos para perfiles de empresa e institución */
+.user-extern-company-profile,
+.user-extern-institution-profile,
+.user-extern-creative-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 0px 0px 84px;
+    width: 45%;
+    max-width: 600px;
+}
+
+/* Estilos para las secciones */
+.user-extern-section {
+    margin-bottom: 0;
+}
+
+.miPerfil-languages{
+    display: flex;
+    gap: 15px;
+}
+
+/* Iconos de especialización */
+.user-extern-section-icon {
+    color: #555;
+}
+
+/* Etiqueta de prácticas */
+.user-extern-practice-badge {
+    background-color: #e8f4ff;
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: inline-block;
+    margin-top: 15px;
+    color: #1a73e8;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Estilos para las ofertas de trabajo y educativas */
+.user-extern-offers-section {
+    margin-bottom: 30px;
+}
+
+.user-extern-offers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.user-extern-offer-card {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    width: 500px;
+    margin: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-extern-offer-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.user-extern-offer-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-extern-offer-type {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-extern-offer-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-extern-offer-years,
+.user-extern-offer-schedule,
+.user-extern-offer-modality {
+    color: #666;
+}
+
+.user-extern-offer-separator {
+    color: #ccc;
+}
+
+.user-extern-offer-practices {
+    color: #1a73e8;
+    font-weight: 500;
+}
+
+.user-extern-offer-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.user-extern-offer-location,
+.user-extern-offer-date {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.user-extern-offer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.user-extern-offer-tag {
+    background-color: #f0f0f0;
+    color: #555;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.user-extern-offer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.user-extern-offer-button {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.user-extern-offer-button:hover {
+    background-color: #1557b0;
+}
+
+.user-extern-offer-status {
+    font-size: 14px;
+    color: #666;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+/* Estilos para filtros */
+.user-extern-offers-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f8ff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.user-extern-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-extern-filter-icon {
+    color: #1a73e8;
+}
+
+.user-extern-clear-filter {
+    background-color: transparent;
+    color: #1a73e8;
+    border: 1px solid #1a73e8;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-extern-clear-filter:hover {
+    background-color: #e8f0fe;
+}
+
+.user-extern-offers-filter-buttons {
+    margin-top: 10px;
+}
+
+.user-extern-filter-label {
+    font-size: 14px;
+    color: #666;
+    margin-right: 10px;
+}
+
+.user-extern-filter-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.user-extern-filter-button {
+    background-color: #f0f0f0;
+    color: #555;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.user-extern-filter-button:hover {
+    background-color: #e0e0e0;
+}
+
+.user-extern-filter-button.active {
+    background-color: #1a73e8;
+    color: white;
+}
+
+/* Mensaje cuando no hay ofertas */
+.user-extern-offers-empty {
+    text-align: center;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.user-extern-offers-empty-icon {
+    font-size: 40px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.user-extern-no-filtered-offers {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.user-extern-section h2 {
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.04em;
+    margin: 0;
+    text-align: left;
+    padding-bottom: 12px;
+    font-weight: 400;
+    color: #222;
+    text-transform: uppercase;
+}
+
+.user-extern-p {
+  font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.04em;
+    margin: 0;
+    text-align: left;
+    padding-bottom: 10px;
+    font-weight: 300;
+    margin: 0 0 4px;
+    color: #222;
+}
+
+
+.user-extern-section-description p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+    height: 200px;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #e7efff;
+    margin-bottom: 10px;
+    background-color: #f3f7ff;
+}
+
+.user-extern-chips{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Experiencia profesional */
+.user-extern-experience-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-extern-experience-item {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.user-extern-experience-icon {
+    margin-right: 15px;
+    color: #666;
+}
+
+.user-extern-experience-content {
+    flex: 1;
+}
+
+.user-extern-experience-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.user-extern-experience-company {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.user-extern-experience-date {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.user-extern-experience-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Formación educativa */
+.user-extern-education-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-extern-education-item {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.user-extern-education-icon {
+    flex: 0 0 30px;
+    margin-right: 15px;
+    color: #666;
+}
+
+.user-extern-education-content {
+    flex: 1;
+}
+
+.user-extern-education-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.user-extern-education-institution {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.user-extern-education-date {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+/* Habilidades */
+.user-extern-skills-container {
+    margin-top: 10px;
+}
+
+.user-extern-skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.user-extern-skill-tag {
+    background-color: #f2f2f2;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 300;
+    color: #333;
+    display: inline-block;
+    letter-spacing: 0.02em;
+}
+
+/* Software */
+.user-extern-software-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.user-extern-software-item {
+    background-color: #e5eeff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    display: inline-block;
+}
+
+/* Redes sociales */
+.user-extern-social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.user-extern-social-item {
+    display: flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.user-extern-social-item:hover {
+    color: #1a73e8;
+}
+
+.user-extern-social-icon {
+    margin-right: 8px;
+}
+
+/* Archivos descargables */
+.user-extern-files-container {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.user-extern-file-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.user-extern-file-button:hover {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
+
+.user-extern-file-icon {
+    margin-right: 8px;
+}
+
+/* Contenido de Ofertas */
+.user-extern-offers-content {
+    padding: 10px;
+}
+
+/* Notificaciones */
+.user-extern-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    max-width: 300px;
+    animation: user-extern-notification-slide-in 0.3s ease-out forwards;
+}
+
+.user-extern-notification.success {
+    border-left: 4px solid #4caf50;
+}
+
+.user-extern-notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.user-extern-notification-icon {
+    color: #4caf50;
+}
+
+.user-extern-notification.error .user-extern-notification-icon {
+    color: #f44336;
+}
+
+
+.user-extern-project-card{
+  display: inline-block; 
+  width: 100%;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+
+  margin: 0 0 48px;
+  cursor: pointer;
+}
+
+.gallery-view .user-extern-project-image{
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+
+
+@keyframes user-extern-notification-slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .user-extern-content {
+        flex-direction: column;
+    }
+
+    button.tab {
+        padding: 24px 48px !important;
+        font-size: 14px !important;
+    }
+
+    .user-extern-about-content {
+        margin-left: 0;
+    }
+
+    .user-extern-container{
+        padding: 0;
+        margin-bottom: 3em;
+    }
+    
+    .user-extern-company-profile,
+    .user-extern-institution-profile,
+    .user-extern-creative-profile {
+        margin-bottom: 3em;
+        padding: 0px;
+        width: 80%;
+        align-items: center;
+    }
+    
+    .user-extern-profile-info {
+        padding: 0px 24px;
+        text-align: center;
+        gap: 40px;
+        margin-bottom: 0px;
+    }
+    
+    .user-extern-left-column {
+        position: static;
+        margin: auto;
+        flex: none;
+    }
+    
+    .user-extern-profile-photo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .user-extern-projects.gallery-view {
+        column-count: 2;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+  .resume-aside {
+    width: 100%;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+  }
+
+  section.user-extern-section {
+    width: 80%;
+  }
+
+  .ux-gallery-options {
+    flex-direction: column;
+  }
+
+}
+
+@media (max-width: 480px) {
+    .user-extern-left-column {
+        position: relative;
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+    }
+    .user-extern-tabs {
+        overflow-x: auto;
+        flex-wrap: wrap;
+        padding-bottom: 5px;
+    }
+    
+    .user-extern-tab {
+        padding: 8px 12px;
+    }
+    
+    .user-extern-action-buttons {
+        flex-direction: column;
+    }
+
+    .resume-aside {
+    display: none !important;
+    }
+}
+
+/* CORRECCIONES DE ESTILO PARA IGUALAR CON MIPERFIL */
+
+/* Estilos para las etiquetas profesionales */
+.user-extern-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.user-extern-tag {
+    background-color: #e5eeff;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: inline-block;
+    margin: 3px;
+}
+
+/* Corregir estilos de la sección de educación */
+.user-extern-education-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.user-extern-education-item {
+    display: flex;
+    flex-direction: column;
+    background-color: #f6f6f6;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-extern-education-dates {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.user-extern-education-details h3 {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #333;
+}
+
+.user-extern-education-details p {
+    font-size: 14px;
+    color: #555;
+    background: none;
+    padding: 0;
+}
+
+/* Corregir estilos para experiencia profesional */
+.user-extern-experience-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-extern-experience-item {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-extern-experience-icon {
+    margin-right: 15px;
+    font-size: 18px;
+    color: #0047AB;
+}
+
+.user-extern-experience-content {
+    flex: 1;
+}
+
+.user-extern-experience-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.user-extern-experience-company {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.user-extern-experience-date {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Popup de Email */
+.success-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.success-popup {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+}
+
+.success-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.success-popup-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.email-popup-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.email-popup-close:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.email-popup-content p {
+    margin: 0 0 12px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.email-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: transparent;
+    border-radius: 0px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.email-text {
+    flex: 1;
+    font-family: "Inter Tight", sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    color: #333;
+    word-break: break-all;
+}
+
+.copy-email-btn {
+    background: #222;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.copy-email-btn:hover {
+    background: #111;
+}
+
+
+
+@media (max-width: 480px) {
+
+  .success-popup {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .user-extern-content {
+        gap: 32px;
+    }
+    
+    .email-display {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .copy-email-btn {
+        justify-content: center;
+    }
+}
+
+/* ========== LAYOUT CV / RESUME (3 COLUMNAS) ========== */
+
+.resume-main {
+    display: flex;
+    justify-content: center;
+}
+
+.resume-aside {
+    position: sticky;
+    bottom: 60px;
+    left: 100%;
+    right: 100%;
+    width: fit-content;
+    padding-right: 60px;
+}
+
+/* Col 1 (info estática de perfil) */
+.resume-col-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.resume-left-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Reusamos tu tipografía / colores claros */
+.resume-name {
+    font-family: "Adamina", serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 28px;
+    color: #333;
+    margin: 0;
+}
+
+.resume-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+.resume-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.resume-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.resume-section-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    margin: 0;
+
+    text-align: left;
+}
+
+.resume-bio {
+  font-family: "Inter Tight", sans-serif;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.02em;
+    font-weight: 300;
+    color: #111;
+    margin: 0;
+    text-align: center;
+    width: 300px;
+}
+
+.resume-location {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 300;
+    letter-spacing: 0.02rem;
+    color: #222;
+    margin: 0;
+}
+
+.resume-contact-btn {
+    background-color: #f2f2f2;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 10px;
+    letter-spacing: 0.02rem;
+    font-weight: 400;
+    color: #444;
+    width: fit-content;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: 'Inter Tight', sans-serif;
+}
+
+.resume-contact-btn:hover {
+    background-color: #0000001f;
+}
+
+.resume-website {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 300;
+    color: #555;
+    letter-spacing: 0.04em;
+}
+
+.resume-website a {
+    text-decoration: underline;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Col 2 (contenido CV principal) */
+.resume-col-middle {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Col 3 (foto / avatar) */
+.resume-col-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.resume-avatar-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    border-radius: 12px;
+    width: 100%;
+}
+
+.resume-avatar-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.resume-avatar {
+    width: 115px;
+    height: 140px;
+    object-fit: cover;
+    border: 0px solid #ddd;
+}
+
+.resume-avatar-meta {
+    text-align: center;
+}
+
+.resume-avatar-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    line-height: 18px;
+    margin: 0;
+}
+
+.resume-avatar-username {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+    line-height: 16px;
+}
+
+/* mobile: una columna */
+@media (max-width: 1024px) {
+    .resume-col-right {
+        order: -1; /* la foto aparece primero en mobile */
+    }
+}
+
+.user-extern-back{
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 10000;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 0px solid rgba(0,0,0,0.12);
+  background: #fdfdfd;
+
+  cursor: pointer;
+}
+
+.user-extern-back:hover {
+    background: #0000000f;
+}
+
+.user-extern-back-icon{
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.user-extern-project-media{
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+
+.separator {
+    color: #999;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    align-items: center;
+}
+
+/* ===== HEADER EXTERNO PERFIL ===== */
+.ext-profile-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: fixed;
+  top: 12px;
+  left: 60px;
+  right: 60px;
+  height: 42px;
+  border-radius: 8px;
+  z-index: 2000;
+  color: var(--ext-fg);
+  background: var(--ext-bg);
+  box-shadow: var(--ext-shadow);
+  transition: background-color .2s ease, box-shadow .2s ease, color .2s ease;
+  }
+
+.ext-profile-header.on-hero {
+  --ext-fg: #fdfdfd;
+  --ext-bg: transparent;
+  --ext-shadow: none;
+}
+
+.ext-profile-header.on-hero-light {
+  --ext-fg: #111;
+  --ext-bg: transparent;
+  --ext-shadow: none;
+}
+
+.ext-profile-header.on-white {
+  --ext-fg: #000;
+  --ext-bg: #fdfdfde0;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.ext-profile-header * {
+  color: inherit;
+}
+
+.ext-left{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 150px;
+}
+
+.ext-logo {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+
+  color: inherit;
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.ext-back {
+position: absolute;
+top: 76px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+
+  color: inherit;
+  font-size: 16px;
+  opacity: 0.95;
+  display: none;
+}
+
+.ext-back-icon {
+  width: 14px;
+  height: 12px;
+}
+
+/* CENTRO perfectamente centrado como en el diseño */
+.ext-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+}
+
+.ext-tab {
+  font-family: "Inter Tight", sans-serif;
+  background: transparent;
+  border: 0;
+  font-size: 11px;
+  line-height: 17px;
+  letter-spacing: 0.04em;
+  color: inherit;
+  cursor: pointer;
+  font-weight: 400;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  gap: 5px;
+  opacity: 0.75;
+}
+
+button.ext-tab:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+button.ext-tab.active {
+    padding-right: 0px;
+    opacity: 1;
+    font-weight: 400;
+    text-decoration: underline;
+}
+
+/* DERECHA */
+.ext-right {
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ext-create {
+  border: 0;
+  background: #000;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.ext-icon-btn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.ext-save-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* iconos blancos en modo hero (si tus SVG son negros) */
+.ext-profile-header.on-hero .ext-save-icon,
+.ext-profile-header.on-hero .ext-back-icon {
+  filter: invert(1);
+}
+
+.ext-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ext-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.ext-chevron {
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 768px) {
+
+  .ext-profile-header {
+    display: none !important;
+  }
+
+    .user-extern-tags-profile.header-tags {
+        gap: 6px 24px;
+    }
+
+    .user-extern-header-item-30 {
+        padding: 0px 24px;
+        gap: 6px;
+    }
+
+    .ext-center {
+        display: none;
+    }
+
+    .ext-profile-header.on-hero {
+        display: none;
+    }
+
+  .ext-profile-header { padding: 16px 18px 12px; }
+  .ext-center { gap: 40px; }
+  .ext-logo { font-size: 28px; }
+  .ext-tab { font-size: 16px; }
+
+  .user-extern-header { 
+    height: 100% !important;
+  }
+
+  .ext-profile-header.on-white {
+    display: none;
+  }
+
+}
+.ext-logo {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ext-logo-img {
+  width: 125px;
+  display: block;
+}
+
+/* Si quieres que en modo hero el logo se vea blanco y tu PNG es negro */
+.ext-profile-header.on-hero .ext-logo-img {
+  filter: invert(1);
+}
+.ext-profile-header.on-white .ext-logo-img,
+.ext-profile-header.on-white .ext-save-icon,
+.ext-profile-header.on-white .ext-back-icon {
+  filter: none !important;
+}
+
+.ext-profile-header .header-icon-button,
+.ext-profile-header .profile-wrapper,
+.ext-profile-header .create-main-btn {
+  color: inherit;
+}
+
+button.create-main-btn.no-invert {
+    color: white !important;
+}
+
+button.ext-chevron {
+    padding: 0px;
+    width: 32px;
+}
+
+#white-sentinel { height: 1px; }
+
+.ext-profile-header.on-white img {
+  filter: none !important;
+}
+
+/* ===== NAV LINKS EXTERN HEADER ===== */
+
+/* Desktop links (se ven en pantallas grandes) */
+.ext-left-nav--desktop{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: 10px;
+}
+
+.ext-left-link{
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+
+  color: inherit;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13.5px;
+  opacity: .92;
+}
+
+.ext-left-link:hover{
+  opacity: 1;
+}
+
+.ext-left-link.active{
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.ext-left-menu-btn{
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+
+  color: inherit;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13.5px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ext-menu-chevron{
+  transition: transform .18s ease;
+}
+.ext-menu-chevron.open{
+  transform: rotate(180deg);
+}
+
+.ext-left-menu-panel{
+  position: absolute;
+  top: 40px;
+  left: 0;
+  min-width: 220px;
+
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  padding: 8px;
+
+  z-index: 999999; /* por encima de todo */
+}
+
+.ext-left-menu-item{
+  width: 100%;
+  text-align: left;
+
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  padding: 10px 10px;
+  border-radius: 10px;
+
+  font-size: 13.5px;
+  color: #111;
+}
+
+.ext-left-menu-item:hover{
+  background: rgba(0,0,0,0.06);
+}
+
+/* Breakpoint: para que NO choque con el nav central (Portfolio/CV) */
+@media (max-width: 1100px){
+  .ext-left-nav--desktop{ display: none; }
+}
+
+
+button.create-main-btn.no-filter {
+    color: white !important;
+}
+
+/* Por defecto: NO se ve en desktop */
+.ext-center-mobile {
+  display: none;
+}
+
+/* SOLO MOBILE */
+@media (max-width: 768px) {
+  .ext-center-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    width: 100%;
+    z-index: 20;
+    margin-top: 32px;
+  }
+
+  .resume-bio {
+    width: fit-content;
+  }
+
+  /* opcional: un pelín más grande en móvil */
+  .ext-center-mobile .ext-tab {
+    font-size: 16px;
+  }
+
+  .resume-avatar {
+    width: 105px;
+    height: 135px;
+  }
+}
+.pdf-row {
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.pdf-row.second-row {
+    justify-content: flex-start;
+}
+
+.pdf-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: #333;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 400;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    width: auto;
+    white-space: nowrap;
+    padding: 4px 8px;
+    font-family: 'Inter Tight', sans-serif;
+}
+
+.pdf-button:hover {
+    background-color: #e0e0e096;
+}
+
+.pdf-button.disabled {
+    font-weight: 300;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pdf-icon {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+img.pdf-icon {
+    width: 11px;
+}
+
+.social-icon {
+    color: #333;
+    transition: all 0.2s ease;
+    opacity: 0.9;
+    width: 18px;
+}
+
+.social-icon.instagram:hover {
+    color: #111;
+}
+
+.social-icon.linkedin:hover {
+    color: #111;
+}
+
+.social-icon.behance:hover {
+    color: #111;
+}
+
+.social-icon.tumblr:hover {
+    color: #111;
+}
+
+.social-icon.youtube:hover {
+    color: #111;
+}
+
+.social-icon.pinterest:hover {
+    color: #111;
+}
+
+.ext-mini-profile-pill{
+    margin-left: 50px;
+    height: 38px;
+    padding: 0 12px 0 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.25s ease-out;
+    position: relative;
+  }
+  
+  .ext-profile-header.on-white .ext-mini-profile-pill{
+    background: #ffffff;
+    border: 0px solid rgb(0 0 0 / 0%);
+    top: 60px;
+    border-radius: 12px !important;
+    padding: 10px 11px;
+    height: fit-content;
+    gap: 12px;
+  }
+  
+  .ext-mini-profile-avatar{
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  .ext-mini-profile-name {
+    white-space: nowrap;
+    font-family: 'Adamina', serif;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+  }
+  
+  .ext-mini-profile-up{
+    font-size: 14px;
+    opacity: .85;
+  }
+  
+  img.ext-mini-profile-up {
+    width: 13.5px;
+    opacity: 0.65;
+}
+
+.user-extern-project-description {
+    margin-top: 0px;
+    font-size: 10px;
+    line-height: 10px;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* ===== WYSIWYG Edit (contentEditable) ===== */
+.ux-editable {
+  outline: none;
+  cursor: text;
+  min-height: 1em;
+}
+
+.ux-editable:focus {
+  background: rgba(0,0,0,0.03);
+  border-radius: 4px;
+}
+
+.ux-editable:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(0,0,0,0.35);
+}
+
+/* URL input sin “look de input” */
+.ux-url-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ux-url-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: #444;
+  text-decoration: underline;
+  width: 220px;
+  max-width: 100%;
+}
+
+.ux-url-input::placeholder {
+  color: rgba(0,0,0,0.35);
+  text-decoration: none;
+}
+
+/* Sticky container para botones (usa tu edit-sticky-save existente) */
+.ux-edit-sticky {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  display: flex;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.ux-cancel-btn {
+  border: none;
+  background: rgba(0,0,0,0.08);
+  padding: 12px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ux-cancel-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+ 
+/* ===== EDIT HUB (tabs + cards + index) ===== */
+.ux-edit-hub{
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ux-editprofile-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+}
+
+
+.ux-edit-tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    padding-left: 28px;
+    z-index: 150;
+    background: #fdfdfd;
+}
+
+.ux-edit-tab{
+  background:none; border:0; cursor:pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color:#666;
+  padding: 10px 16px;
+  position: relative;
+  letter-spacing: 0.02em;
+}
+
+.ux-edit-tab.active{ color:#111; font-weight: 500; }
+.ux-edit-tab.active::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-2px;
+  height: 2px; background:#111;
+}
+
+
+:root{
+  --ux-gridW: min(1000px, 70vw);
+  --ux-gap: 32px;
+  --ux-indexW: 300px;
+  --ux-topSticky: 170px; /* header(82) + margen */
+}
+
+.ux-edit-grid>div {
+    min-width: 0;
+    width: 100%;
+}
+
+.ux-edit-grid.no-grid {
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* evita overflow de inputs */
+.ux-edit-grid > div{
+  min-width: 0;
+}
+
+.ux-card{
+  background:#fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 18px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 32px;
+}
+
+.ux-card-title{
+    margin: 0px 0 6px;
+    font-size: 18px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    color: #222;
+    letter-spacing: .04rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    padding: 0px 14px 10px
+}
+
+strong {
+    font-weight: 500;
+}
+
+.ux-card-title-h2{
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    color: #222;
+    letter-spacing: .04rem;
+    margin-top: 12px;
+}
+
+
+.ux-card-subtitle {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    line-height: 17px;
+    letter-spacing: 0.02em;
+    font-weight: 300;
+    margin: 0 0 12px;
+    color: #555;
+    margin-bottom: 0px;
+}
+
+.ux-task{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 0;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+.ux-task:first-of-type{ border-top: 0; }
+
+.ux-task-left{
+  display:flex; flex-direction:column; gap: 4px; align-items: flex-start;
+}
+.ux-task-label{ font-size: 14px; color:#111; }
+.ux-task-hint{ font-size: 13px; color:#777; }
+
+.ux-task-btn{
+  border:0;
+  background: transparent;
+  cursor:pointer;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color:#111;
+}
+.ux-task-btn:hover{ background: rgba(0,0,0,.06); }
+
+.ux-index {
+  position: sticky;
+  top: 110px;
+  height: fit-content;
+}
+
+.ux-card-main {
+    text-align: left;
+    margin-bottom: 32px;
+}
+
+/* ✅ INDEX sticky real */
+aside.ux-card.ux-index{
+  position: sticky;
+  top: var(--ux-topSticky);
+  align-self: start;
+
+  width: 100%;
+  height: fit-content;
+
+  max-height: calc(100vh - var(--ux-topSticky) - 24px);
+  overflow: auto;
+  z-index: 10;
+  margin-top: 112px;
+}
+
+
+
+@media (max-width: 1100px){
+  .ux-edit-grid{
+    grid-template-columns: 1fr; /* index abajo */
+  }
+
+  aside.ux-card.ux-index{
+    position: fixed;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.ux-index a {
+  display:block;
+  padding: 8px 0;
+  color:#666;
+  text-decoration:none;
+  font-size: 14px;
+}
+
+.ux-index a:hover{ color:#222; }
+.ux-index a strong{ color:#222; }
+
+@media (max-width: 980px){
+  .ux-edit-grid{ grid-template-columns: 1fr; }
+  .ux-index{ position: static; }
+  .ux-edit-hub{ padding: 0 16px 80px; }
+}
+
+.ux-edit-shell{
+  overflow: visible !important;
+  transform: none !important;
+}
+
+/* Sidebar fija */
+.ux-left-sidebar{
+    position: fixed;
+    top: 70px;
+    height: fit-content;
+    align-self: start;
+    width: 35vh;
+    min-width: 250px;
+    padding: 24px;
+    border: solid 1px #00000014;
+    border-radius: 18px;
+    background-color: #fff;
+    margin-left: 3%;
+    margin-bottom: 2%;
+}
+
+/* Bloque perfil */
+.ux-left-profile{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 18px;
+  gap: 4px;
+}
+
+.ux-left-avatar{
+  width: 150px;
+  height: 195px;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0,0,0,.10);
+  background: #f6f6f6;
+  margin-bottom: 18px;
+}
+
+.ux-left-avatar img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ux-left-name{
+  margin: 0;
+  font-family: "Adamina", serif;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 22px;
+  color: #111;
+}
+
+.ux-left-username{
+  margin: 6px 0 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.ux-left-location{
+  margin: 6px 0 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.ux-left-divider{
+  height: 1px;
+  background: rgba(0,0,0,.08);
+  margin-bottom: 18px;
+}
+
+/* Nav izquierda */
+.ux-left-nav{
+  width: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ux-left-nav-item{
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  color: #111;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.6;
+}
+
+.ux-left-nav-item:hover{
+  background: #f8f8f8;
+  color: #111;
+}
+
+.ux-left-nav-item.active{
+  color: #111;
+  font-weight: 500;
+  opacity: 1;
+  background: #f8f8f8;
+}
+
+/* Derecha: quitamos el “max-width/padding” del hub para que lo controle el shell */
+.ux-edit-main .ux-edit-hub{
+    width: 100%;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    margin-top: 60px;
+}
+
+.ux-edit-div{
+    width: 60%;
+}
+
+/* Ajustes responsive */
+@media (max-width: 1100px){
+  .ux-edit-shell{
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ===== Inline form dentro de ux-card (como screenshot) ===== */
+.ux-form-block { 
+    display: flex; 
+    flex-direction: column; 
+    margin-top: 48px;
+}
+
+.ux-form-label{
+  display: block;
+  font-size: 14px;
+  line-height: 17px;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 500;
+  color: #222;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.ux-form-label.separator {
+    padding-bottom: 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+}
+
+.formlabel-small {
+  font-size: 14px;
+}
+
+.ux-form-row{
+  display:flex;
+  gap: 18px;
+}
+
+.ux-form-column{
+  display:flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ux-form-field{ 
+    display:flex; 
+    flex-direction:column;
+    width: 100%;
+}
+
+.ux-input{
+  width: 100%;
+  height: 32px;
+  border: solid transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  outline: none;
+  font-family: "Inter Tight", sans-serif;
+}
+
+
+input.ux-input {
+    color: #222;
+}
+
+.ux-autosave {
+    margin-top: 32px;
+    text-align: center;
+}
+
+.ux-autosave p {
+    font-size: 12px;
+    color: #777;
+}
+
+.ux-textarea{
+  color: #222;
+  width:100%;
+  min-height: 120px;
+  resize: vertical;
+  border-radius: 0px;
+  border: solid transparent;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  outline:none;
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: 0.02em;
+  padding-bottom: 8px;
+
+}
+
+.ux-textarea:focus{
+    border: solid transparent;
+    border-bottom: solid 1.5px #222;
+    background: #fff;
+}
+
+.ux-counter{
+  display:flex;
+  justify-content: space-between;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color:#8a8a8a;
+  margin-top: 4px;
+}
+
+.ux-helper{
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11.5px;
+  line-height: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color:#8a8a8a;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Foto perfil */
+.ux-photo-box{
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  padding: 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ux-photo-preview img{
+  width: 90px;
+  height: 125px;
+  object-fit: cover;
+  border-radius: 2px;
+  display:block;
+  align-self: center;
+}
+
+.ux-photo-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 6px;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ux-photo-actions div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: #555;
+}
+
+.ux-input:focus {
+    border: solid transparent;
+    border-bottom: solid 1.5px #222;
+    background: #fff;
+}
+
+.ux-link-btn{
+  border:0;
+  background:none;
+  cursor:pointer;
+  font-size: 14px;
+  color:#444;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 400;
+  padding: 6px 10px;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ux-link-btn:hover{ 
+  background-color: #f1f1f1;
+  color: #333;
+
+}
+
+.ux-sep{ color:#bbb; font-size: 12px; line-height: 24px; }
+
+.ux-photo-hint{
+  margin-top: 6px;
+  font-size: 12px;
+  color:#888;
+  text-align:center;
+}
+
+@media (max-width: 820px){
+  .ux-form-row{ grid-template-columns: 1fr; }
+}
+
+/* Evita que al hacer scroll el header sticky tape el inicio del bloque */
+.ux-anchor-target {
+  scroll-margin-top: 90px; /* ajusta a la altura real de tu header */
+}
+
+/* Estilo index */
+.ux-index-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 6px 0px;
+  cursor: pointer;
+  font-size: 15px;
+  opacity: 0.85;
+  color: #666;
+}
+
+.ux-index-link:hover,
+.ux-index-link:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.ux-index-link.is-active {
+  color: #222;
+  font-weight: 500;
+  opacity: 1;
+}
+
+
+/* Por si alguna parte sigue usando scrollIntoView start o # */
+.ux-anchor-target {
+  scroll-margin-top: 120px; /* ajusta aprox al header */
+}
+
+.ux-textarea::placeholder {
+  color: #b8b8b8;
+  line-height: 1.6;
+}
+
+.textarea-large {
+    min-height: 150px;
+}
+
+/* ===== CV EDIT: Experiencia laboral (tarjetas + form wrapper) ===== */
+
+.ux-exp-list{
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.ux-exp-logo{
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.08);
+  overflow: hidden;
+
+  display: grid;
+  place-items: center;
+}
+
+.ux-exp-logo img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ux-exp-logo-placeholder{
+  font-size: 34px;
+  font-weight: 600;
+  color: #222;
+}
+
+.ux-exp-title{
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #222;
+  text-align: left;
+}
+
+.ux-exp-meta{
+  font-family: 'Inter Tight', sans-serif;
+font-weight: 400;
+  margin-top: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.ux-exp-subtle{
+font-family: 'Inter Tight', sans-serif;
+font-weight: 400;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.ux-exp-link{
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 6px;
+  color: #777;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 13px;
+}
+
+.ux-exp-actions{
+  display: flex;
+  gap: 0px;
+}
+
+.ux-exp-add{
+  margin-top: 14px;
+}
+
+.ux-exp-add .ux-btn{
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  width: -webkit-fill-available;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.10);
+  padding: 14px 24px;
+  letter-spacing: 0.04em;
+  color: #333;
+}
+
+.ux-btn{
+font-family: 'Inter Tight', sans-serif;
+font-size: 14px;
+font-weight: 400;
+  border:0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor:pointer;
+  letter-spacing: 0.02em;
+}
+.ux-btn.primary{ background:#111; color:#fff; }
+.ux-btn.ghost{ background: #f8f8f8; }
+
+
+.ux-exp-form-wrap{
+  margin-top: 14px;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 18px;
+  padding: 24px;
+  background: #fff;
+  margin-left: 24px;
+}
+
+.ux-exp-form-title{
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #222;
+  font-family: 'Inter Tight', sans-serif;
+  padding-bottom: 12px;
+  border-bottom: solid 1px rgba(0, 0, 0, .08);
+  text-align: left;
+}
+
+/* ================================
+   CV EDIT - EXPERIENCIA LABORAL
+   ================================ */
+
+.ux-exp-helper{
+  margin-top: 0;
+}
+
+.ux-exp-list{
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.ux-exp-card{
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  margin: 4px 0px 4px 0px;
+}
+
+.ux-exp-logo{
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #fafafa;
+  overflow: hidden;
+
+  display: grid;
+  place-items: center;
+}
+
+.ux-exp-logo img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ux-exp-logo-placeholder{
+  font-size: 34px;
+  font-weight: 600;
+  color: #222;
+}
+
+.ux-exp-content{
+  min-width: 0;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 12px;
+}
+
+.ux-exp-title{
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.06rem;
+  text-transform: uppercase;
+  color: #222;
+}
+
+.ux-exp-meta{
+  margin-top: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.ux-exp-subtle{
+  margin-top: 6px;
+  font-size: 13px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.ux-exp-link{
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 6px;
+
+  color: #777;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 13px;
+}
+
+.ux-exp-actions{
+  display: flex;
+  gap: 10px;
+}
+
+.ux-exp-actions .ux-link-btn{
+  display: grid;
+  place-items: center;
+  padding: 6px 10px; /* un poco más compacto */
+}
+
+/* Botón añadir */
+.ux-exp-add{
+  margin-top: 14px;
+}
+
+.ux-exp-add-btn{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: #fff;
+  padding: 14px 16px;
+  font-weight: 600;
+}
+
+/* Layout: logo izquierda + campos derecha */
+.ux-exp-form-layout{
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.ux-exp-logo-col{
+  width: 92px; /* reserva */
+}
+
+.ux-form-label-sm{
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+/* Botón/logo uploader */
+.ux-exp-logo-btn{
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #fafafa;
+  cursor: pointer;
+  overflow: hidden;
+
+  display: grid;
+  place-items: center;
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.ux-exp-logo-btn:hover{
+  border-color: rgba(0,0,0,.20);
+}
+
+.ux-exp-logo-btn img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ux-exp-logo-icon{
+  font-size: 26px;
+  color: #999;
+}
+
+.ux-exp-fields{
+  flex: 1;
+  min-width: 0;
+}
+
+.ux-exp-full{
+  grid-column: 1 / -1;
+}
+
+/* selects mes/año */
+.ux-exp-two{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* checkbox */
+.ux-exp-check{
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #333;
+}
+
+/* acciones form */
+.ux-exp-form-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 820px){
+  .ux-exp-form-layout{
+    flex-direction: column;
+  }
+
+  .ux-exp-logo-col{
+    width: auto;
+  }
+
+  .ux-exp-form-row{
+    grid-template-columns: 1fr;
+  }
+
+  .ux-exp-two{
+    grid-template-columns: 1fr;
+  }
+
+  .ux-exp-card{
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .ux-exp-actions{
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+/* Fechas: wrapper que contiene inicio + fin */
+.ux-exp-dates{
+  grid-column: 1 / -1; /* ocupa el ancho completo dentro del ux-form-row */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 6px;
+}
+
+/* Cada bloque de fecha */
+.ux-exp-date-block{
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive: en móvil, una debajo de otra */
+@media (max-width: 820px){
+  .ux-exp-dates{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Tooltip simple (hover) ===== */
+.ux-tooltip {
+  position: relative;
+}
+
+.ux-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.10);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+  border-radius: 10px;
+
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #111;
+  font-family: 'Inter Tight', sans-serif;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 9999;
+}
+
+.ux-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+
+  border: 6px solid transparent;
+  border-top-color: rgba(0,0,0,.10);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease;
+  z-index: 9999;
+}
+
+.ux-tooltip:hover::after,
+.ux-tooltip:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.ux-tooltip:hover::before,
+.ux-tooltip:focus-visible::before {
+  opacity: 1;
+}
+
+/* Botón de peligro coherente con tu UI */
+.ux-btn-danger{
+  background: #111 !important;
+  color: #fff !important;
+}
+.ux-btn-danger:hover{
+  opacity: .9;
+}
+
+img.ux-icon {
+    width: 15px;
+}
+
+img.ux-icon-left-menu {
+  width: 20px;
+}
+
+img.ux-icon-sm {
+    width: 9px;
+}
+
+/* =========================
+   HardSkills / Software tags
+   ========================= */
+
+.ux-hardskills-subtitle{
+  margin: 0 0 6px;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: #777;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.ux-tags-input{
+  width: 100%;
+  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 10px;
+  padding: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #fff;
+}
+
+.ux-tag-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #f6f6f6;
+  border-radius: 6px;
+  padding: 4px 10px;
+
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  color: #111;
+}
+
+.ux-tag-x{
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: #111;
+  opacity: .9;
+}
+
+.ux-tag-x:hover{
+  opacity: 1;
+}
+
+.ux-tags-text{
+  border: 0;
+  outline: none;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  color: #777;
+  flex: 1;
+  min-width: 160px;
+}
+
+.ux-tags-text::placeholder{
+  color: #cccccc;
+}
+
+.ux-hardskills-hint{
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: #777;
+  line-height: 1.4;
+}
+
+/* Populares */
+.ux-popular-wrap{
+  margin-top: 26px;
+}
+
+.ux-popular-title{
+  color: #222;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.ux-popular-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ux-popular-pill{
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px 10px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+
+  cursor: pointer;
+}
+
+.ux-popular-pill:hover{
+  background: rgba(0,0,0,.04);
+}
+
+.ux-popular-text{
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  color: #222;
+  font-family: 'Inter Tight', sans-serif;
+}
+
+.ux-popular-plus{
+  font-size: 18px;
+  line-height: 1;
+  color: #222;
+  opacity: .9;
+}
+
+.ux-popular-plus:hover{
+  opacity: 1;
+}
+
+.ux-tags-box{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+
+.user-extern-languages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-languae-text {
+    color: #333;
+    border: none;
+    font-family: "Inter Tight", sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: .02rem;
+    display: inline-block;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+}
+
+p.user-languae-text {
+  font-size: 12px;
+}
+
+/* separador suave debajo del título */
+.ux-divider{
+  height: 1px;
+  width: 100%;
+  background: rgba(0,0,0,0.08);
+  margin: 14px 0 18px;
+}
+
+/* fila (label arriba + input abajo) */
+.ux-social-row{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ux-social-label{
+  font-weight: 500;
+  font-size: 14px;
+  color: #222;
+  text-align: left;
+}
+
+/* contenedor del input (icono + prefix + input) */
+.ux-social-input{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: solid transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 0px;
+}
+
+/* cajita del icono */
+.ux-social-iconbox{
+  width: 34px;
+  height: 34px;
+  border-radius: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+}
+
+.ux-social-iconbox svg{
+  width: 16px;
+  height: 16px;
+  opacity: 0.95;
+}
+
+/* el prefix gris */
+.ux-social-prefix{
+  font-size: 14px;
+  font-weight: 400;
+  color: #333;
+  white-space: nowrap;
+  letter-spacing: 0.02rem;
+}
+
+/* input “limpio” */
+.ux-social-field{
+  width: 100%;
+  border: 0;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  margin-left: -4px;
+}
+
+.ux-social-field::placeholder{
+  color: rgba(0,0,0,0.35);
+}
+
+/* focus como el diseño */
+.ux-social-input:focus-within{
+  border-color: transparent;
+  border-bottom: solid 1.5px #222;
+}
+
+/* =========================
+   IDENTIDAD VISUAL (nuevo)
+   ========================= */
+
+.ux-iv-head{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.ux-iv-title{
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #222;
+  letter-spacing: 0.02em;
+}
+
+.ux-iv-subtitle{
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: #777;
+}
+
+
+.ux-iv-preview{
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #f6f6f6;
+
+  display: grid;
+  place-items: center;
+  align-content: center;
+}
+
+.ux-iv-preview img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.filters-panel-body.upload-picture {
+    padding: 12px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+button.new-tablero-button.new-profile {
+    width: fit-content;
+    border-radius: 6px;
+    align-self: flex-end;
+}
+
+/* Desktop: apaisado */
+.ux-iv-preview--desktop{
+  aspect-ratio: 20 / 10;
+}
+
+/* Mobile: vertical */
+.ux-iv-preview--mobile{
+  max-width: 200px;
+  margin: 0 auto;
+  aspect-ratio: 11 / 16;
+}
+
+/* Placeholder cámara */
+.ux-iv-placeholder{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.ux-iv-camera{
+  font-size: 34px;
+  opacity: 0.5;
+}
+
+/* ===== Identidad visual: ratios ===== */
+.ux-iv-ratios{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0px 0px 12px 0px;
+}
+
+/* Botón base */
+.ux-iv-ratio{
+  height: 50px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 10px; /* para que el texto respire */
+  transition: background .15s ease, border-color .15s ease, transform .1s ease;
+}
+
+.ux-iv-ratio:hover{
+  background: rgba(0,0,0,0.04);
+}
+
+.ux-iv-ratio:active{
+  transform: scale(0.98);
+}
+
+/* Activo */
+.ux-iv-ratio.is-active{
+  border-color: rgba(0,0,0,0.30);
+  background: rgba(0,0,0,0.06);
+}
+
+/* Texto dentro */
+.ux-iv-ratio-label{
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  color: #333;
+  letter-spacing: 0.02rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ===== tamaños proporcionales con height = 45px ===== */
+/* width = 45 * (ancho/alto) */
+
+.ratio-1-1{  width: 50px; }  /* 45 * 1/1 */
+.ratio-16-9{ width: 90px; }  /* 45 * 16/9 ≈ 80 */
+.ratio-9-16{ width: 28px; }  /* 45 * 9/16 ≈ 25.3 -> 26 */
+.ratio-4-3{  width: 67px; }  /* 45 * 4/3 = 60 */
+
+
+
+.ux-iv-caption{
+    display: block;
+    font-size: 18px;
+    font-family: Inter Tight, sans-serif;
+    font-weight: 500;
+    color: #222;
+    margin-bottom: 10px;
+    letter-spacing: .02em;
+    text-align: center;
+    margin: 8px 0px;
+}
+
+.ux-iv-actions{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  color: #555;
+}
+
+
+.ux-iv-sep{
+  color: #bbb;
+  font-size: 12px;
+}
+
+.ux-iv-hints{
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ux-iv-note{
+  margin-top: 6px;
+  font-size: 12px;
+  color: #999;
+}
+
+/* Mobile ajustes */
+@media (max-width: 768px){
+  .ux-iv-preview--mobile{
+    max-width: 100%;
+  }
+
+  .ux-iv-caption{
+    font-size: 26px;
+  }
+}
+
+.ux-edit-grid.no-index{
+  grid-template-columns: 1fr !important;
+}
+
+.card-identidad-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* =========================
+   Imagen para creativos (buscador)
+   ========================= */
+
+.ux-creative-card{
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* bloque imagen grande */
+.ux-creative-preview{
+  position: relative;
+  height: 250px;
+  width: 100%;          
+  display: flex;
+  justify-content: center;
+}
+
+.ux-creative-bg{
+  width: 195px;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* placeholder cuando no hay imagen */
+.ux-creative-placeholder{
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* avatar flotante centrado (foto perfil real) */
+.ux-creative-avatar-float{
+    position: absolute;
+    left: 50%;
+    bottom: -38px;
+    transform: translate(-50%);
+    background: #fff;
+    padding: 2px;
+}
+
+.ux-creative-avatar{
+  width: 90px;
+  height: 115px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+/* footer blanco */
+.ux-creative-footer{
+  padding: 58px 24px 22px;    /* deja hueco para el avatar que “entra” */
+  background: #fff;
+  text-align: center;
+}
+
+.ux-creative-actions{
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.ux-creative-hints{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #666;
+}
+
+.ux-creative-hint-line{
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.ux-creative-tip{
+  font-size: 18px;
+  line-height: 1.35;
+  color: #777;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* En este diseño NO hace falta variar en mobile: se mantiene igual */
+@media (max-width: 768px){
+  .ux-creative-preview{ height: 320px; }
+  .ux-creative-avatar{ width: 96px; height: 126px; }
+  .ux-creative-footer{ padding-top: 54px; }
+}
+
+/* =========================
+   Plantillas (nuevo)
+========================= */
+
+.ux-template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.ux-template-card {
+  position: relative;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.ux-template-card:hover {
+  transform: translateY(-1px);
+}
+
+.ux-template-card.is-selected {
+  border-color: #111;
+  border: 3px solid;
+}
+
+.ux-template-preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #f2f2f2;
+  border-radius: 8px;
+}
+
+.ux-template-preview--mobile {
+  aspect-ratio: 9 / 16;
+}
+
+.ux-template-title {
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+
+.ux-template-subtitle {
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: #777;
+  line-height: 1.35;
+}
+
+.ux-template-check {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #111;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+}
+
+/* =========================
+   Tabs: Vista ordenador / móvil
+========================= */
+
+.ux-coverview-tabs {
+    max-width: 900px;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    top: 0;
+    z-index: 150;
+  margin: 0px 0 22px;
+}
+
+.ux-edit-template {
+    display: flex;
+    flex-direction: column;
+}
+
+.ux-coverview-tab {
+  position: relative;
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #b8b8b8;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.ux-coverview-tab.is-active {
+  color: #111;
+}
+
+.ux-coverview-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -15px;
+  height: 2px;
+  background: #111;
+}
+
+/* iconos cuadrados (simulan desktop/mobile) */
+.ux-coverview-icon {
+  display: inline-block;
+  width: 18px;
+  height: 12px;
+  border: 1.75px solid currentColor;
+  border-radius: 2px;
+  margin-left: 10px;
+  transform: translateY(2px);
+}
+
+.ux-coverview-icon.mobile {
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  transform: translateY(3px);
+}
+
+
+/* =========================
+   MiniHero Preview (Plantillas)
+========================= */
+
+.ux-template-preview {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* contenedor minihero */
+.ux-minihero {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* fullscreen: imagen de fondo */
+.ux-minihero--fullscreen .ux-minihero-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.ux-minihero--fullscreen .ux-minihero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* overlay suave para legibilidad */
+.ux-minihero--fullscreen .ux-minihero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #00000045;
+}
+
+/* texto encima */
+.ux-minihero--fullscreen .ux-minihero-content {
+  color: #fff;
+  text-align: center;
+  align-items: center;
+  align-self: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0px 12px;
+}
+
+
+
+/* fullscreen ALT imagen de fondo */
+.ux-minihero--fullscreen-alt .ux-minihero-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.ux-minihero--fullscreen-alt .ux-minihero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* overlay suave para legibilidad */
+.ux-minihero--fullscreen-alt .ux-minihero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #00000045;
+}
+
+/* texto encima */
+.ux-minihero--fullscreen-alt .ux-minihero-content {
+    color: #fff;
+    text-align: center;
+    align-items: center;
+    align-self: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* =========================
+   MiniHero - Imagen centrada
+========================= */
+
+.ux-minihero--centered {
+  background: #fdfdfd;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr; /* izquierda / imagen / derecha */
+  align-items: center;
+  height: 100%;
+  padding: 14px 14px 0px;
+  gap: 10px;
+}
+
+
+.ux-minihero-col--left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ux-minihero-col--right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* nombre oscuro (en centered no va blanco) */
+.ux-minihero-name--dark {
+  color: #111;
+  font-size: 16px;
+  font-weight: 500;
+
+}
+
+/* tags oscuros */
+.ux-minihero-tags--dark {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.ux-minihero-tag--dark {
+  color: #111;
+  opacity: 0.7;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* marco vertical de la imagen (la “foto centrada”) */
+.ux-minihero-frame {
+  width: 80%;
+  height: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* imagen dentro del marco */
+.ux-minihero-img-centered {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* En móvil: layout más compacto */
+.ux-minihero--centered.is-mobile {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 10px;
+  padding: 12px 12px 0px;
+  text-align: center;
+}
+
+.ux-minihero--centered.is-mobile .ux-minihero-col--left,
+.ux-minihero--centered.is-mobile .ux-minihero-col--right {
+  justify-content: center;
+}
+
+.ux-minihero--centered.is-mobile .ux-minihero-frame {
+  width: 62%;
+}
+
+
+
+/* =========================
+   MiniHero - Vertical editorial
+========================= */
+
+.ux-minihero--vertical-editorial {
+  background: #fdfdfd;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr; /* texto / imagen */
+  align-items: center;
+  height: 100%;
+  padding: 0px 0px 0px 14px;
+  gap: 12px;
+}
+
+/* Columna izquierda */
+.ux-ve-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding-left: 12px;
+  padding-bottom: 28px;
+}
+
+/* Columna derecha */
+.ux-ve-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Marco vertical grande */
+.ux-ve-frame {
+  width: 100%;
+  max-width: 260px;        /* controla tamaño dentro del preview */
+  aspect-ratio: 4 / 5;     /* vertical editorial */
+  overflow: hidden;
+}
+
+.ux-ve-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* En móvil: apilado */
+.ux-minihero--vertical-editorial.is-mobile {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  padding: 12px;
+  text-align: left;
+}
+
+.ux-minihero--vertical-editorial.is-mobile .ux-ve-frame {
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+
+/* =========================
+   MiniHero - Vertical centrada
+========================= */
+
+.ux-minihero--vertical-centered {
+  background: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  flex-direction: column;
+  height: 100%;
+  padding: 28px 24px 0px;
+  gap: 12px;
+  text-align: center;
+  justify-content: flex-end;
+}
+
+/* parte superior */
+.ux-vc-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.ux-vc-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.ux-vc-tags {
+  justify-content: center;
+}
+
+/* imagen centrada */
+.ux-vc-bottom {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ux-vc-frame {
+  max-width: 280px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  max-height: 80px;
+}
+
+.ux-vc-img {
+  width: 60%;
+  object-fit: cover;
+  display: block;
+}
+
+/* en móvil: un pelín más estrecha */
+.ux-minihero--vertical-centered.is-mobile .ux-vc-frame {
+  width: 70%;
+  max-width: 220px;
+}
+
+
+
+.ux-minihero-name {
+    font-size: 7px;
+    font-weight: 500;
+    line-height: 1.1;
+    font-family: 'Adamina', serif;
+    z-index: 500;
+    position: relative;
+}
+
+.ux-minihero-tags {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  width: fit-content;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ux-minihero-tag {
+  font-size: 3.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* placeholder */
+.ux-minihero--placeholder .ux-minihero-placeholder-box {
+  width: 100%;
+  height: 100%;
+  background: #f2f2f2;
+}
+
+/* =========================
+   NORMALIZACIÓN TEXTO MOBILE
+========================= */
+
+.ux-minihero.is-mobile .ux-minihero-name,
+.ux-minihero--centered.is-mobile .ux-minihero-name,
+.ux-minihero--vertical-editorial.is-mobile .ux-minihero-name,
+.ux-minihero--vertical-centered.is-mobile .ux-minihero-name {
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 500;
+  position: relative;
+}
+
+.ux-minihero.is-mobile .ux-minihero-tag,
+.ux-minihero--centered.is-mobile .ux-minihero-tag,
+.ux-minihero--vertical-editorial.is-mobile .ux-minihero-tag,
+.ux-minihero--vertical-centered.is-mobile .ux-minihero-tag {
+  font-size: 3.5px;
+  letter-spacing: 0.06em;
+}
+
+/* ===== Template: stacked ===== */
+.user-extern-header.tpl-stacked {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.user-extern-header.tpl-stacked .tpl-stacked-media {
+  width: 100%;
+}
+
+/* ===== Template: overlay ===== */
+.user-extern-header.tpl-overlay {
+  position: relative;
+}
+
+.user-extern-header.tpl-overlay .tpl-overlay-bg {
+  width: 100%;
+  height: 100%;
+  min-height: 220px; /* ajusta a tu hero */
+  background-size: cover;
+  background-position: center;
+  border-radius: inherit;
+}
+
+.user-extern-header.tpl-overlay .tpl-overlay-content {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  right: 18px;
+}
+
+.user-extern-header-placeholder{
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+
+.tab.portfolio.active::after{
+  content: " /";
+  opacity: 0.8;
+}
+
+button.tab.portfolio.active:after {
+    height: 0px;
+}
+
+
+.ux-minihero--fullscreen-alt.is-mobile {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cancelar el overlay oscuro en mobile */
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-bg::after {
+  display: none;
+}
+
+/* La imagen ocupa la mitad inferior */
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-bg {
+  position: absolute;
+  inset: auto 0 0 0;   /* pegada abajo */
+  height: 68%;          /* ocupa ~60% inferior */
+  top: auto;
+}
+
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Texto en la parte superior, sobre fondo blanco */
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-content {
+    position: relative;
+    z-index: 10;
+    color: #111;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    padding: 18px 16px 24px;
+    gap: 8px;
+    height: 32%;
+    background: #fff;
+    display: flex;
+}
+
+/* Nombre en negro, más grande en mobile */
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-name {
+  color: #111;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'Adamina', serif;
+  line-height: 1.2;
+}
+
+/* Tags en negro, espaciados horizontalmente */
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-tags {
+  flex-direction: row;
+  justify-content: center;
+}
+
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-tag {
+  color: #111;
+  font-size: 3.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+@media (max-width: 1200px){
+  .user-extern-projects.gallery-view{ column-count: 3;}
+}
+@media (max-width: 900px){
+  .user-extern-projects.gallery-view{ column-count: 2;}
+}
+@media (max-width: 600px){
+  .user-extern-projects.gallery-view{ 
+    column-count: 1;
+    display: flex;
+    gap: 80px;
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   MiniHero - Split Top
+========================= */
+
+.ux-minihero--split-top {
+  background: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+
+/* Franja superior — texto alineado a la derecha */
+.ux-st-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: right;
+  padding: 10px 14px 20px;
+  gap: 4px;
+  position: absolute;
+  bottom: 0px;
+  background: #fdfdfd;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.ux-st-tags {
+  justify-content: flex-end;
+}
+
+/* Imagen ocupa el resto */
+.ux-st-media {
+  flex: 1;
+}
+
+.ux-st-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* =========================
+   MiniHero - Split Image (mobile)
+========================= */
+
+.ux-minihero--split-image {
+  background: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Imagen arriba ~60% */
+.ux-si-media {
+  flex: 0 0 62%;
+  overflow: hidden;
+}
+
+.ux-si-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Franja blanca abajo — nombre izquierda, tags derecha */
+.ux-si-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 10px;
+  gap: 8px;
+}
+
+.ux-si-tags {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
+/* =========================
+   MiniHero - Vertical Card (mobile)
+========================= */
+
+.ux-minihero--vertical-card {
+  background: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0;
+}
+
+/* Imagen vertical centrada */
+.ux-vcard-media {
+  width: 68%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ux-vcard-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Texto centrado debajo */
+.ux-vcard-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 10px 0;
+  gap: 4px;
+}
+
+.ux-vcard-tags {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+
+
+.gallery-view .user-extern-project-image{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===== OVERLAY hover (título + contador centrados) ===== */
+
+/* Un velo suave sobre la imagen */
+.user-extern-project-media::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Contenedor del texto centrado */
+.user-extern-project-overlay{
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+
+  text-align: center;
+  padding: 14px;
+
+  opacity: 0;
+  transform: translateY(0px);
+  transition: all ease-in-out .1s;
+  pointer-events: none;
+}
+
+/* Título */
+.user-extern-project-overlay-title{
+  margin: 0;
+  color: #fff;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+
+  /* por si el título es largo */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Contador (ej: [+3]) */
+.user-extern-project-overlay-count{
+  margin: 0;
+  color: #fff;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+}
+
+/* Desktop: aparece al hover y focus */
+.user-extern-project-card:hover .user-extern-project-media::after,
+.user-extern-project-card:focus-within .user-extern-project-media::after{
+  opacity: 1;
+}
+
+.user-extern-project-card:hover .user-extern-project-overlay,
+.user-extern-project-card:focus-within .user-extern-project-overlay{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile: SIEMPRE visible */
+@media (hover: none) {
+  .user-extern-project-media::after{
+    opacity: 1;
+  }
+
+  .user-extern-project-overlay{
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ext-profile-header.on-white .ext-tab,
+.ext-profile-header.on-white .ext-logo,
+.ext-profile-header.on-white .ext-left-link,
+.ext-profile-header.on-white .ext-menu-chevron {
+  color: #000;
+}
+
+/* ====== HERO estilo Guardados para Edit Profile ====== */
+.miPerfil-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 18px;
+}
+
+.miPerfil-hero-avatar {
+    position: relative;
+    bottom: 115px;
+    width: 124px;
+    height: 162px;
+    border-radius: 0px;
+    overflow: hidden;
+    background: #eee;
+}
+
+.miPerfil-hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.miPerfil-title {
+  margin: 0;
+}
+
+/* Tabs secundarias un poco más compactas */
+.tab-save.tab-save--small {
+  font-size: 14px;
+  padding: 10px 16px;
+}
+
+/* Separación entre tabs principales y secundarias */
+.miPerfil-tabs-wrapper {
+  margin-top: 16px;
+}
+
+/* Ocultar sidebar porque ahora es navegación superior */
+.ux-left-sidebar {
+  display: none;
+}
+
+/* El shell ahora puede ocupar todo */
+.ux-edit-shell {
+  grid-template-columns: 1fr; /* si era grid 2 columnas */
+}
+
+/* Si tu main tenía margen por el sidebar, neutralízalo */
+.ux-edit-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+
+.user-extern-error {
+    display: flex;
+    /* width: fit-content; */
+    height: 100vh;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+button.filter-tag.role-by-group.is-active::after {
+    content: "-";
+}
+
+button.filter-tag.role-by-group.is-active {
+  border: solid #333;
+}
+
+button.filter-tag.role-by-group {
+  background-color: transparent;
+  border: solid transparent;
+}
+
+button.filter-tag.role-by-group::after {
+  content: "+";
+}
+
+span.role-group-label {
+    padding-right: 6px;
+    text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SETTINGS PAGE — añadir a UserProfileExtern.css (o donde vivan los ux-*)
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Fila horizontal: info a la izquierda, botón a la derecha */
+.ux-settings-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 32px;
+}
+
+.ux-settings-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Valor actual (email, ••••••••, etc.) */
+.ux-settings-current-value {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #888);
+  margin: 0;
+}
+
+/* Área de edición que se despliega bajo la fila */
+.ux-settings-edit-area {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Fila de acciones (guardar / cancelar) */
+.ux-settings-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* Separador entre secciones */
+.ux-divider {
+  height: 1px;
+  background: var(--color-border, #e5e5e5);
+  margin: 4px 0;
+}
+
+/* Botón primario (guardar) */
+.ux-btn-primary {
+  padding: 8px 20px;
+  background: var(--color-black, #000);
+  color: #fff;
+  border: none;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.ux-btn-primary:hover { opacity: 0.75; }
+
+/* Botón ghost (cancelar) */
+.ux-btn-ghost {
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--color-black, #000);
+  border: 1px solid currentColor;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.ux-btn-ghost:hover { opacity: 0.6; }
+
+/* Botón peligro (eliminar cuenta) */
+.ux-btn-danger {
+  padding: 8px 20px;
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.ux-btn-danger:hover { opacity: 0.8; }
+.ux-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Mensajes inline */
+.ux-msg-ok {
+  font-size: 0.8125rem;
+  color: #27ae60;
+  margin: 0;
+}
+.ux-msg-error {
+  font-size: 0.8125rem;
+  color: #c0392b;
+  margin: 0;
+}
+
+/* Modal de eliminación */
+.ux-delete-modal {
+  max-width: 460px !important;
+}
+
+.ux-delete-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ux-delete-modal-body p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  color: var(--color-text, #222);
+}
+
+section#card-settings {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .guardados-tabs-wrapper.miPerfil-tabs-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* oculta scrollbar en Firefox */
+  }
+
+  .guardados-tabs-wrapper.miPerfil-tabs-wrapper::-webkit-scrollbar {
+    display: none; /* oculta scrollbar en Chrome/Safari */
+  }
+
+  .guardados-tabs-wrapper.miPerfil-tabs-wrapper .guardados-tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap; /* evita que los tabs salten de línea */
+    width: max-content; /* permite que el contenido se extienda */
+  }
+}

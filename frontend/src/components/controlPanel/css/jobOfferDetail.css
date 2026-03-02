@@ -1,0 +1,426 @@
+/* Contenedor principal */
+.job-offer-detail-container-jobdetail {
+    background-color: white;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+}
+
+/* Botón de cierre (X) */
+.back-to-blog-btn.offers {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 16px;
+    padding: 6px 16px;
+    border: solid .5px #ccc;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.back-to-blog-btn.offers:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+
+/* Cabecera con banner */
+.job-offer-header-jobdetail {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-offer-banner-jobdetail {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    position: relative;
+}
+
+.banner-image-jobdetail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Título y sección de empresa */
+.job-offer-title-section-jobdetail {
+    padding: 24px 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.job-offer-title.job-section-jobdetail {
+    margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.job-offer-title-row-jobdetail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.job-offer-position-jobdetail {
+    font-size: 44px;
+    font-weight: 600;
+    margin: 0;
+    color: #222;
+    line-height: 44px;
+}
+
+.urgent-label-jobdetail {
+    background-color: #ff4d4d;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.job-offer-company-name-jobdetail {
+    font-size: 20px;
+    font-weight: 600;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.job-offer-company-name-jobdetail .perfil__avatar {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Información principal de la oferta */
+.job-offer-main-info-jobdetail {
+    background-color: #fff;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 0;
+}
+
+.job-offer-info-left-jobdetail,
+.job-offer-info-right-jobdetail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.job-offer-metadata-jobdetail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.metadata-tag-jobdetail {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #666;
+    padding: 10px 0;
+    margin-right: 15px;
+}
+
+.metadata-tag-jobdetail i {
+    font-size: 16px;
+    color: #333;
+}
+
+.job-offer-publication-date-jobdetail {
+    font-size: 14px;
+    color: #999;
+}
+
+/* Botón de aplicar */
+.apply-button-jobdetail {
+    background-color: #1a73e8;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.apply-button-jobdetail:hover {
+    background-color: #1b69cf;
+}
+
+/* Estilo para cuando ya está inscrito */
+.apply-button-jobdetail.applied-button {
+    background-color: #78909c;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.apply-button-jobdetail.applied-button:hover {
+    background-color: #78909c;
+}
+
+/* Acciones de la oferta (aplicar y guardar) */
+.job-offer-actions-jobdetail {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    position: fixed;
+    top: 7em;
+    right: 2em;
+    line-height: 44px;
+}
+
+/* Botón para guardar oferta */
+.save-offer-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #f2f2f2;
+    color: #666;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-offer-button:hover {
+    background-color: #e0e0e0;
+}
+
+.save-offer-button.saved {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-color: #bbdefb;
+}
+
+.save-offer-button.saved:hover {
+    background-color: #bbdefb;
+}
+
+.save-offer-button svg {
+    font-size: 16px;
+}
+
+/* Feedback al guardar/quitar de guardados */
+.save-feedback {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: #424242;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.save-feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Contenido principal (descripciones, funciones, etc.) */
+.job-offer-content-jobdetail {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 16px 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.job-section-jobdetail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.section-title-jobdetail {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.rich-text-jobdetail {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+    white-space: pre-wrap;
+}
+
+/* Hard y Soft Skills */
+.tags-container-jobdetail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 4px 0 24px;
+    font-size: 14px;
+}
+
+.skill-tag-jobdetail {
+    padding: 4px 16px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.hard-skill-jobdetail {
+    background-color: #E5EEFF;
+    color: #444;
+}
+
+.soft-skill-jobdetail {
+    background-color: #E5EEFF;
+    color: #444;
+}
+
+/* Oferta externa */
+.external-link-button-jobdetail {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f5f5f5;
+    color: #333;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.external-link-button-jobdetail:hover {
+    background-color: #e0e0e0;
+}
+
+/* Botón de volver */
+.back-button-jobdetail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: auto;
+    padding: 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+}
+
+.back-button-jobdetail:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Loading y error */
+.job-offer-loading-jobdetail,
+.job-offer-error-jobdetail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    text-align: center;
+    color: #666;
+}
+
+.job-offer-loading-jobdetail i {
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .job-offer-banner-jobdetail {
+        height: 250px;
+    }
+
+    .job-offer-detail-container-jobdetail {
+        width: 100%;
+        margin-bottom: 3em;
+    }
+
+    .job-offer-title-row-jobdetail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .job-offer-main-info-jobdetail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .job-offer-metadata-jobdetail {
+        gap: 16px;
+    }
+
+    .metadata-tag-jobdetail {
+        font-size: 18px;
+    }
+
+    .job-offer-actions-jobdetail {
+        right: 24px;
+        top: 74px;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+    }
+
+    a.back-to-blog-btn.offers {
+        display: none;
+    }
+}
+
+.job-offer-actions-jobdetail {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    position: fixed;
+    top: 7em;
+    right: 2em;
+    line-height: 44px;
+}
+
+.job-offer-company-name-jobdetail {
+    margin-left: 4px;
+}
+    
+.job-offer-position-jobdetail {
+    font-size: 32px;
+    line-height: 40px;
+}

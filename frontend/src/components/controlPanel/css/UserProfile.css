@@ -1,0 +1,733 @@
+/* Contenedor principal */
+.user-profile-container {
+    position: relative;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1200px;
+    font-family: 'Inter Tight', sans-serif;
+    color: #000;
+}
+
+/* Navegación y botón de volver */
+.user-profile-navigation {
+    margin-bottom: 20px;
+}
+
+.user-profile-back-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.user-profile-back-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.user-profile-back-btn span {
+    margin-left: 8px;
+    font-size: 16px;
+}
+
+/* Encabezado y pestañas móviles */
+.user-profile-header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Encabezado: foto y datos personales */
+.user-profile-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.user-profile-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-profile-personal-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-profile-name {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.user-profile-occupations,
+.user-profile-location {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Pestañas para vista móvil (se muestran solo en pantallas pequeñas) */
+.user-profile-mobile-tabs {
+    display: none;
+}
+
+.user-profile-mobile-tabs button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #e9ecef;
+    font-size: 1rem;
+    color: #989898;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.user-profile-mobile-tabs button.active {
+    background: #535353;
+    color: #fff;
+}
+
+/* Contenedor de contenidos (perfil y publicaciones) */
+.user-profile-content {
+    display: flex;
+    gap: 5em;
+    margin-top: 20px;
+}
+
+/* Contenido izquierdo (perfil) */
+.user-profile-left-content {
+    flex: 1;
+}
+
+/* Secciones internas del perfil */
+.user-profile-section {
+    background: #fdfdfd;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.user-profile-section.ultima-seccion {
+    margin-bottom: 20px;
+}
+
+.user-profile-section h2 {
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+}
+
+.user-profile-section p {
+    font-size: 1rem;
+    margin-top: 5px;
+    margin-left: 10px;
+    line-height: 1.5;
+}
+
+.user-profile-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.user-profile-list li {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.user-profile-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.user-profile-chip {
+    background: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.user-profile-social-links {
+    display: flex;
+    gap: 15px;
+    font-size: 1.5rem;
+}
+
+.user-profile-social-links a {
+    color: #000;
+    transition: color 0.3s ease;
+}
+
+.user-profile-social-links a:hover {
+    color: rgba(6, 182, 160, 1);
+}
+
+.user-profile-downloads {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.user-profile-btn {
+    background: #38c785;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.user-profile-btn:hover {
+    background: #292929;
+}
+
+/* Botón para seguir/dejar de seguir */
+.follow-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #E7B971;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.follow-button:hover {
+    background-color: #d3a75f;
+}
+
+.follow-button.following {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.follow-button.following:hover {
+    background-color: #f8f8f8;
+    border-color: #ccc;
+}
+
+.user-profile-stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.user-profile-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Mensajes informativos */
+.user-profile-loading,
+.user-profile-error,
+.user-profile-no-posts {
+    text-align: center;
+    padding: 20px;
+    font-size: 1rem;
+}
+
+.user-profile-error h2 {
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.user-profile-error button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: #38c785;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.user-profile-error button:hover {
+    background: #2aa56f;
+}
+
+@media (min-width: 769px) {
+    .user-profile-right-content {
+      overflow-y: auto;
+      max-height: calc(100vh - 120px);
+    }
+}
+
+/* =============================== */
+/* Sección de Publicaciones (Derecha) */
+/* =============================== */
+
+/* Contenedor de la columna derecha (publicaciones) */
+.user-profile-right-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Controles para cambiar la vista de publicaciones */
+.user-profile-projects-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+/* Transición para cambios de vista en publicaciones */
+.user-profile-project-grid {
+    transition: all 0.3s ease-in-out;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.user-profile-project-grid.gallery {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(3, 0.22fr);
+    gap: 7px;
+}
+
+.user-profile-project-grid.individual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Estilos para cada publicación/proyecto */
+.user-profile-project-card {
+    position: relative;
+    background: #f5f5f5;
+    height: 110px;
+    width: 110px;
+    overflow: hidden;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.user-profile-project-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.user-profile-project-card:hover {
+    transform: scale(1.05);
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile-project-grid.individual .user-profile-project-card {
+    height: 20em;
+    width: 20em;
+}
+
+/* Botón de alternar vista */
+.toggle-view-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.3s ease;
+    color: #000;
+}
+
+.toggle-view-btn:hover {
+    color: #000;
+}
+
+/* =============================== */
+/* Estilos para vista de escritorio y móvil */
+/* =============================== */
+
+@media (min-width: 769px) {
+    .user-profile-mobile-tabs {
+        display: none;
+    }
+
+    .user-profile-content {
+        display: flex;
+    }
+
+    .user-profile-left-content,
+    .user-profile-right-content {
+        display: block;
+        width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-profile-section.ultima-seccion {
+        margin-bottom: 50px;
+    }
+
+    .user-profile-container {
+        padding: 7px;
+    }
+
+    .user-profile-mobile-tabs {
+        display: flex;
+        gap: 10px;
+    }
+
+    .user-profile-content {
+        display: block;
+    }
+
+    .user-profile-left-content,
+    .user-profile-right-content {
+        display: none;
+    }
+
+    .user-profile-left-content.active,
+    .user-profile-right-content.active {
+        margin-bottom: 4em;
+        display: block;
+    }
+}
+
+/* Notificaciones */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    animation: slideIn 0.3s ease-out forwards;
+    max-width: 350px;
+}
+
+.notification.success {
+    background-color: #e6f7ee;
+    border-left: 4px solid #08b599;
+    color: #08b599;
+}
+
+.notification.error {
+    background-color: #feeaeb;
+    border-left: 4px solid #e74c3c;
+    color: #e74c3c;
+}
+
+.notification-icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.notification span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.notification.hide {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Estilos faltantes para que UserProfile se vea igual que MiPerfil */
+
+/* Estilo para el botón de ver */
+.user-profile-view-btn {
+    background: transparent;
+    color: #38c785;
+    border: 2px solid #38c785;
+}
+
+.user-profile-view-btn:hover {
+    background: #38c785;
+    color: #fff;
+}
+
+/* Estilos para pestañas de empresa */
+.company-tabs-user-profile {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
+.company-tab-user-profile {
+    background: #f0f0f0;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #555;
+}
+
+.company-tab-user-profile.active {
+    background: #38c785;
+    color: white;
+}
+
+.company-tab-user-profile:hover {
+    background: #e0e0e0;
+}
+
+.company-tab-user-profile.active:hover {
+    background: #2aa56f;
+}
+
+/* Estilos para secciones de ofertas */
+.user-profile-company-offers {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.user-profile-offer-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-profile-offer-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile-offer-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.user-profile-offer-company {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.user-profile-offer-description {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.user-profile-offer-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.user-profile-offer-detail {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.user-profile-offer-detail svg {
+    color: #38c785;
+}
+
+.user-profile-offer-apply {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.user-profile-offer-apply-btn {
+    background: #38c785;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.user-profile-offer-apply-btn:hover {
+    background: #2aa56f;
+}
+
+/* Para las etiquetas de empresa */
+.user-profile-company-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.user-profile-company-tag {
+    background-color: #f0f7f4;
+    color: #38a3a5;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.user-profile-practice-badge {
+    margin-top: 15px;
+    display: inline-block;
+}
+
+.user-profile-practice-badge span {
+    background-color: #fef3c7;
+    color: #d97706;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Para la sección de hitos profesionales */
+.user-profile-milestones-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.user-profile-milestone-item {
+    padding-bottom: 15px;
+}
+
+.user-profile-milestone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+}
+
+.user-profile-milestone-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+    color: #333;
+}
+
+.user-profile-milestone-date {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.user-profile-milestone-entity {
+    font-size: 1rem;
+    font-style: italic;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.user-profile-milestone-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #555;
+    margin: 5px 0 0 0;
+}
+
+.user-profile-milestone-divider {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 15px 0 5px 0;
+}
+
+.user-profile-no-data-message {
+    color: #888;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+/* Estilos para contenedor vacío */
+.user-profile-company-offers-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.user-profile-empty-icon {
+    font-size: 2.5rem;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.user-profile-empty-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.user-profile-empty-subtitle {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.user-profile-create-offer-btn {
+    background: #38c785;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-profile-create-offer-btn:hover {
+    background: #2aa56f;
+}

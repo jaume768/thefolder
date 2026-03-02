@@ -1,0 +1,216 @@
+/* Estilos para el componente PrintableProfile y la impresión PDF */
+
+/* Estilos para el componente printable cuando está visible en la página */
+.printable-profile {
+    display: none; /* Oculto por defecto */
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Container de pestañas */
+.tab-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.tab-button {
+    padding: 8px 20px;
+    margin: 0 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.tab-button.active {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #000;
+}
+
+/* Perfil header */
+.print-profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.print-profile-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.print-profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.print-profile-name {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.print-profile-username {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 10px 0;
+}
+
+.print-profile-location,
+.print-profile-bio {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.print-profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.print-tag {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 3px;
+    border-radius: 20px;
+    background-color: #f2f2f2;
+    color: #444;
+    font-size: 13px;
+}
+
+/* Secciones */
+.print-profile-sections {
+    width: 100%;
+}
+
+.print-section {
+    margin-bottom: 25px;
+}
+
+.print-section h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* Experiencia y educación */
+.print-experience-item {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.print-experience-logo {
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.print-experience-logo img,
+.print-logo-placeholder {
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    object-fit: cover;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.print-experience-content {
+    flex: 1;
+}
+
+.print-experience-title {
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.print-experience-company {
+    font-size: 14px;
+    margin: 0 0 2px 0;
+    color: #555;
+}
+
+.print-experience-location {
+    font-size: 14px;
+    margin: 0 0 2px 0;
+    color: #666;
+}
+
+.print-experience-period {
+    font-size: 13px;
+    color: #777;
+    margin: 0 0 5px 0;
+}
+
+.print-experience-duration {
+    color: #666;
+}
+
+.print-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Estilos para impresión */
+@media print {
+    /* Ocultar todo excepto el componente de impresión */
+    body * {
+        display: none !important;
+    }
+    
+    /* Mostrar solo el componente de impresión y sus descendientes */
+    body .printable-profile,
+    body .printable-profile * {
+        display: block !important;
+    }
+    
+    body .printable-profile {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 1cm !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Restaurar el comportamiento flex para elementos específicos */
+    body .printable-profile .tab-container,
+    body .printable-profile .print-profile-tags,
+    body .printable-profile .print-tags-container,
+    body .printable-profile .print-experience-item {
+        display: flex !important;
+    }
+    
+    /* Configuración de página */
+    @page {
+        size: A4;
+        margin: 1.5cm;
+    }
+}

@@ -1,0 +1,1586 @@
+.perfil {
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Header */
+.perfil__header {
+    padding: 16px 0;
+}
+
+.perfil__nombre {
+    margin: 0;
+    font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: #666;
+    font-weight: 400;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-align: right;
+    text-decoration: underline;
+}
+
+.perfil__ubicacion {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #666;
+  font-family: Inter Tight, sans-serif;
+}
+
+.perfil__volver {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    display: flex;
+    gap: 1em;
+    margin-left: 10px;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Contenido */
+.perfil__contenido {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    grid-template-columns: 1fr 1fr;
+    max-width: 2500px;
+    margin: 0 auto;
+    padding: 0px 24px;
+    gap: 80px;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .perfil__contenido {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+}
+
+/* Imágenes */
+.perfil__imagenes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0; 
+    padding-top: 24px;
+    width: 100%;
+}
+
+.perfil__imagen {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30em;
+}
+
+.perfil__imagen-principal {
+    height: 100%;
+    border-radius: 0;
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* Eliminadas las flechas de navegación */
+
+/* Opciones de guardar, compartir y eliminar */
+.post-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    padding: 24px 0 0;
+}
+
+.save-button-post,
+.compartir,
+.delete-button {
+    border-radius: 50%;
+    background-color: #fff;
+    color: #666;
+    padding: 0.5em;
+    border: solid 0px #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    color: #555;
+    width: 44px;
+    height: 44px;
+}
+
+.save-button-post {
+    background-color: #000;
+}
+
+.save-button-post.saved {
+    background: #dbdbdb;
+}
+
+img.save-icon {
+    width: 18px;
+    height: 19px;
+    overflow: visible;
+}
+
+img.save-icon.invert-filter {
+    filter: invert(1);
+    width: 18px;
+    height: 19px;
+    overflow: visible;
+}
+
+
+.saved-text {
+    position: absolute;
+    top: 40px;
+    right: -30px;
+    background-color: #4c85ff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.save-button-post:hover,
+.compartir:hover,
+.delete-button:hover {
+    background: #999;
+}
+
+/* Galería de miniaturas */
+.perfil__galeria {
+    display: flex;
+    gap: 1em;
+    margin-top: 2em;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+
+.gallery-item {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.gallery-item:nth-child(3n) {
+    grid-row-end: span 2;
+}
+
+.gallery-item:nth-child(5n) {
+    grid-column-end: span 2;
+    grid-row-end: span 2;
+}
+
+@media (max-width: 668px) {
+    .perfil__galeria {
+        justify-content: center;
+    }
+    
+    .masonry-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    }
+    
+    .perfil__imagenes {
+        padding: 0px;
+    }
+
+    .editorial-block {
+      display: flex;
+      flex-direction: column;
+    }
+}
+
+.perfil__miniatura {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    cursor: pointer;
+    opacity: 0.7;
+    border: 2px solid transparent;
+    border-radius: 0;
+}
+
+.perfil__miniatura.active {
+    border: solid 2px #1a73e8;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+/* Información del post */
+.perfil__info {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    right: auto;
+    width: 370px;
+    flex: 0 0 370px;
+    align-self: flex-start;
+    padding: 24px 18px;
+}
+
+.perfil__publicacion {
+    border-radius: 0;
+    padding: 0px 8px;
+}
+
+.info-header {
+    width: 100%;
+}
+
+.perfil__usuario {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border-radius: 0;
+    width: 100%;
+}
+
+.perfil__usuario:hover {
+    cursor: pointer;
+}
+
+.perfil__avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: solid .5px #ddd;
+}
+
+.perfil__presentacion {
+    padding: 2em 1em;
+    background-color: #ececec;
+    border-radius: 7px;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+
+/* Etiquetas de la imagen */
+.perfil__etiquetas,
+.perfil__personas,
+.perfil__image-tags {
+    padding: 0em 0 0;
+    border-radius: 0;
+    padding-bottom: 16px;
+    border-bottom: solid 1px #88888873;
+}
+
+.perfil__presentacion {
+padding: 2em 1em;
+background-color: #ececec;
+border-radius: 7px;
+width: 100%;
+margin-bottom: 1em;
+}
+
+/* Publicación */
+.publicacion__titulo {
+    font-size: 38px;
+    color: #222;
+    font-family: Inter Tight, sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: right;
+}
+
+.publicacion__descripcion {
+    font-size: 12px;
+    line-height: 16px;
+    max-width: 350px;
+    text-align: left;
+    font-family: Inter Tight, sans-serif;
+    font-weight: 400;
+    color: #333;
+    margin: 32px 0;
+}
+
+.image-tags__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.etiqueta,
+.image-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: transparent;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #444;
+    border: 0px solid transparent;
+    margin-top: 8px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+}
+
+/* Personas */
+.personas__lista {
+    list-style: none;
+    padding: 0;
+}
+
+.personas__item {
+    color: #333;
+}
+
+.personas__enlace {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.etiquetas__lista {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0.7em 0;
+}
+
+.etiqueta {
+    color: black;
+    padding: 0.5em 1em;
+    background-color: #ececec;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    margin: 0.5em;
+}
+
+/* Animación de carga moderna */
+.modern-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid #555;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 15px;
+}
+
+.loading-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+}
+
+.loading-text:after {
+    content: '...';
+    position: absolute;
+    animation: dots 1.5s infinite;
+    width: 20px;
+    text-align: left;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* Responsive */
+@media (max-width: 719px) {
+    /* Añadir margen inferior cuando no hay etiquetas de imagen en móvil */
+    .perfil__publicacion.no-image-tags {
+        margin-bottom: 1em;
+    }
+}
+
+@media (min-width: 720px) {
+    .perfil__contenido {
+        grid-template-columns: 1fr 1fr;
+    }
+    .options {
+        top: 10px;
+        right: 10px;
+    }
+}
+
+@media (min-width: 1200px) {
+   
+    .perfil__contenido {
+        grid-template-columns: 4fr 1fr;
+    }
+    .anterior,
+    .siguiente {
+        top: 50%;
+    }
+    .anterior {
+        left: -30px;
+    }
+    .siguiente {
+        right: -30px;
+    }
+    .options {
+        top: 10px;
+        right: 10px;
+    }
+}
+
+/* Estilos para el modal de confirmación */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-content p {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #444;
+}
+
+.modal-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Estilos para más posts */
+.more-posts-title {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 5px;
+}
+
+.explorer-content.explorer-user-post {
+
+    padding: 0px !important;
+}
+
+/* Estilos para la vista previa a pantalla completa */
+.fullscreen-preview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.fullscreen-preview-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.fullscreen-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    transition: background-color 0.3s;
+}
+
+.fullscreen-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.fullscreen-prev-btn,
+.fullscreen-next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    transition: background-color 0.3s;
+}
+
+.fullscreen-prev-btn {
+    left: 20px;
+}
+
+.fullscreen-next-btn {
+    right: 20px;
+}
+
+.fullscreen-prev-btn:hover,
+.fullscreen-next-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-btn {
+    filter: invert(1);
+}
+
+.modal-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.modal-actions button:first-child {
+    background-color: #f2f2f2;
+    color: #000;
+}
+
+.modal-actions button:last-child {
+    background-color: #222;
+    color: #fff;
+}
+/* =========================
+   Pinterest-like image fit
+   (pegar al FINAL del CSS)
+   ========================= */
+
+/* 1) Estructura: que la columna de info NO sea absolute (eso hace que las imágenes ocupen todo) */
+.perfil__contenido {
+  align-items: flex-start;
+}
+
+
+/* Ajustes en pantallas medianas */
+@media (max-width: 1024px) {
+  .perfil__contenido {
+    padding: 0px;
+    gap: 80px;
+  }
+}
+
+/* En móvil: info debajo, sin sticky */
+@media (max-width: 768px) {
+  .perfil__contenido {
+    padding:  90px 0px 0px !important;
+    gap: 24px;
+  }
+
+  .perfil__info {
+    position: static;
+    width: 100%;
+    flex-basis: auto;
+    padding: 24px;
+  }
+
+  .perfil__imagenes {
+    width: 100%;
+  }
+}
+
+.post-column-item {
+  width: fit-content;
+  display: flex;
+  justify-content: center; /* centra la imagen cuando no ocupa todo el ancho */
+}
+
+/* La magia: limitar tamaño por viewport, mantener proporción y que se vea “elegante” */
+.post-column-image {
+  display: block;
+  max-width: 100%;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+/* En móvil sí suele quedar mejor ocupar ancho completo */
+@media (max-width: 768px) {
+  .post-column-image {
+    width: 100%;
+    max-height: 72vh;
+  }
+}
+
+/* 3) Fullscreen: un pelín más “pro” (sin tocar JSX) */
+.fullscreen-preview-content {
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .fullscreen-preview-content {
+    padding: 64px 16px;
+  }
+}
+
+.fullscreen-image {
+  max-width: min(92vw, 1200px);
+  max-height: calc(100vh - 140px); /* deja espacio a botones/cierre */
+  border-radius: 0px;
+  object-fit: contain;
+}
+
+/* =========================
+   Acciones arriba: ••• izquierda + Guardar derecha
+   ========================= */
+.post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0px;
+}
+
+.post-actions-left,
+.post-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Botón ••• */
+.more-button {
+  border-radius: 999px;
+  background: transparent;
+  border: 0px solid rgba(0,0,0,0.08);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform .12s ease, background .18s ease;
+  transform: rotate(90deg);
+}
+
+
+/* Menú desplegable */
+.actions-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: absolute;
+  width: 220px;
+  padding: 8px;
+  border-radius: 14px;
+  top: 33px;
+  right: 0%;
+  z-index: 50;
+  background: #fdfdfdc2;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.post-actions-left {
+  position: relative;
+}
+
+.actions-menu-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+}
+
+.actions-menu-item:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+.actions-menu-item.danger {
+  color: #b42318;
+}
+
+.actions-menu-item.danger:hover {
+  background: rgba(180, 35, 24, 0.08);
+}
+
+/* =========================
+   Personas: estilo “cards” con avatar + rol + @
+   ========================= */
+.personas__lista--cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.perfil__datos {
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
+}
+
+.personas__item--card {
+  list-style: none;
+}
+
+.external-link-img {
+    width: 14px;
+    height: 14px;
+    margin: 0px 8px 0px 0px;
+    opacity: 0.85;
+}
+
+.tagged-person {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border: solid transparent;
+  cursor: default;
+}
+
+.tagged-person.is-clickable {
+  cursor: pointer;
+}
+
+.tagged-person.is-clickable:hover {
+  border-color: transparent;
+}
+
+.tagged-person__avatar {
+      width: 44px;
+    height: 44px;
+    border-radius: 2px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: #ececec;
+    border: 1px solid rgba(0, 0, 0, .08);
+    flex: 0 0 44px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+}
+
+.tagged-person__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tagged-person__avatar span {
+  font-weight: 700;
+  color: #333;
+}
+
+.tagged-person__role {
+  font-family: 'Inter Tight',sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #444;
+  text-align: left;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: row;
+  gap: 1px;
+}
+
+.tagged-person__user {
+font-family: 'Inter Tight',sans-serif;
+  font-size: 11px;
+  color: #444;
+  text-align: left;
+  text-decoration: underline;
+}
+
+h3.personas__titulo, h3.image-tags__titulo {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 400;
+    color: #888;
+    font-size: 11px;
+    margin-top: 32px;
+}
+
+/* ===== Toast global ===== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: rgba(17, 17, 17, 0.92);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  z-index: 20000;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* ===== Menú acciones (icono opcional) ===== */
+.actions-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions-menu-ico {
+  flex: 0 0 auto;
+}
+
+/* ===== Modal "Honor the Artist" ===== */
+.honor-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15000;
+  padding: 18px;
+}
+
+.honor-card {
+  width: min(520px, 92vw);
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 22px 22px;
+  text-align: center;
+  position: relative;
+}
+
+.honor-stack {
+  position: relative;
+  height: 120px;
+  margin: 6px auto 0px;
+  width: 180px;
+}
+
+.honor-sq {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  border-radius: 0px;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(.95);
+}
+
+.honor-sq--back {
+  left: 10px;
+  top: 18px;
+  opacity: .85;
+  transform: rotate(-6deg);
+}
+
+.honor-sq--mid {
+  right: 8px;
+  top: 24px;
+  opacity: .65;
+  transform: rotate(6deg);
+}
+
+.honor-sq--front {
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+}
+
+.honor-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 6px 0 10px;
+  color: #111;
+  font-family: 'Inter Tight', sans-serif;
+}
+
+.honor-text {
+  margin: 0 auto 18px;
+  max-width: 42ch;
+  color: #666;
+  line-height: 1.35;
+  font-size: 1rem;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 400;
+}
+
+.honor-btn {
+    font-family: 'Inter Tight', sans-serif;
+  border: none;
+  background: #111;
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 40px;
+  font-size: 1.05rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: transform .12s ease, opacity .12s ease;
+}
+
+.honor-btn:hover {
+  transform: translateY(-1px);
+  opacity: .96;
+}
+
+.honor-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0,0,0,.06);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-top-btn{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.scroll-top-btn:hover{
+  transform: translateY(-1px);
+}
+
+.tagged-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+
+.tagged-person__user {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tagged-person__external {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.continue-explorer-btn{
+  background: #121212;
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform .12s ease, opacity .12s ease;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.continue-explorer-btn:hover{
+  opacity: .95;
+}
+.continue-explorer-btn:active{
+  transform: translateY(0px);
+  opacity: .9;
+}
+
+/* Cada item debe ser relativo para posicionar botones encima */
+.post-column-item{
+  position: relative;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+}
+
+/* Contenedor overlay acciones */
+.post-image-actions{
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none; /* importante: solo botones clicables */
+  z-index: 5;
+}
+
+.post-image-actions-left{
+  top: 12px;
+  left: 12px;
+  position: relative;
+  pointer-events: auto;
+    pointer-events: auto;
+    width: 38px;
+    height: 38px;
+    background: #fdfdfdc2;
+    backdrop-filter: blur(1px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 8px;
+}
+
+
+/* Guardar estilo Explorer, pero aseguramos click */
+.post-save-button{
+  pointer-events: auto;
+}
+
+/* El menú dentro de imagen: que caiga desde la izquierda */
+.post-actions-menu{
+  top: 44px;
+  left: 0;
+  right: auto;
+}
+
+/* Si tu imagen tiene fondo gris, asegúrate que overlay se vea */
+.post-column-image{
+  border-radius: 0px;
+}
+
+/* En móvil: un poquito más pegado */
+@media (max-width: 768px){
+  .post-image-actions{
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    display: none;
+  }
+}
+
+/* contenedor overlay */
+.post-image-actions{
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 10;
+
+  /* oculto por defecto, como Explorer */
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .18s ease, transform .18s ease;
+
+  /* dejamos clic solo en botones */
+  pointer-events: none;
+}
+
+/* mostrar al hover del contenedor */
+.post-column-item:hover .post-image-actions{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: none; /* seguimos bloqueando el contenedor */
+}
+
+/* pero los botones sí deben poder clicarse */
+.post-image-actions .save-button-explorer,
+.post-image-actions .more-button,
+.post-image-actions .actions-menu{
+  pointer-events: auto;
+}
+
+/* Botón de ••• en foto: no rotar y que flote con fondo */
+.more-button.post-more-button{
+  transform: rotate(90deg);
+}
+
+/* Guardar arriba derecha */
+.save-button-explorer.post-save-button{
+  position: relative; /* por si el tooltip necesita ancla */
+}
+
+/* Menú: desplegar desde la izquierda */
+.post-image-actions-left{
+  position: relative;
+}
+
+.actions-menu.post-actions-menu{
+  top: 46px;
+  left: 0;
+  right: auto;
+}
+
+/* En móvil: siempre visible (porque no hay hover) */
+@media (max-width: 768px){
+  .post-image-actions{
+    opacity: 1;
+    transform: none;
+    pointer-events: none;
+    display: none;
+  }
+  .post-image-actions .save-button-explorer,
+  .post-image-actions .more-button,
+  .post-image-actions .actions-menu{
+    pointer-events: auto;
+  }
+}
+
+/* =========================================================
+   FIX: save-button-explorer en UserPost (no hay .masonry-item)
+   ========================================================= */
+
+/* El botón sigue oculto por explorer.css, así que lo mostramos con hover del item */
+.post-column-item:hover .save-button-explorer{
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateY(0) !important;
+}
+
+/* En móvil (sin hover), siempre visible */
+@media (max-width: 768px){
+  .post-column-item .save-button-explorer{
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+}
+
+.post-column-item:hover .post-image-actions{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================
+   Editorial layout (UserPost)
+   ========================= */
+
+/* La columna editorial ocupa el ancho disponible (sin romper tu layout actual) */
+.post-column{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+  margin: 0 auto;
+}
+
+/* Cada bloque editorial */
+.editorial-block{
+  width: 100%;
+  display: flex;
+  gap: 42px;
+  flex-direction: row;
+  justify-content: space-around
+}
+
+/* Item wrapper (ya es relative en tu CSS, lo reforzamos por si acaso) */
+.editorial-item{
+  position: relative;
+}
+
+/* Imagen: mantiene proporción y look editorial */
+.editorial-image{
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 82vh;
+  object-fit: contain;
+}
+
+/* -------------------------
+   Desktop editorial rules
+   ------------------------- */
+@media (min-width: 1024px){
+
+  /* Por defecto: 1 columna */
+  .editorial-block{
+    grid-template-columns: 1fr;
+  }
+
+  /* 2 imágenes lado a lado */
+  .editorial-two{
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: start;
+  }
+
+  /* Centro editorial: imagen única con “aire” */
+  .editorial-center{
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  /* Derecha editorial: imagen única alineada a derecha */
+  .editorial-right{
+    grid-template-columns: 1fr;
+    justify-items: end;
+  }
+  /* Ajuste fino: que el bloque “single” se vea editorial también */
+  .editorial-single{
+    grid-template-columns: 1fr;
+  }
+  .editorial-single .editorial-item{
+    justify-self: center;
+  }
+}
+
+/* -------------------------
+   Tablet: un poco menos ancho
+   ------------------------- */
+@media (min-width: 768px) and (max-width: 1023px){
+  .editorial-center .editorial-item,
+  .editorial-right .editorial-item,
+  .editorial-single .editorial-item{
+    width: min(720px, 100%);
+  }
+
+  .editorial-two{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* -------------------------
+   Mobile: todo a 1 columna
+   (y acciones siempre visibles ya lo tienes)
+   ------------------------- */
+@media (max-width: 767px){
+  .editorial-block{
+    grid-template-columns: 1fr !important;
+    flex-direction: column;
+    gap: 150px;
+  }
+  .editorial-item{
+    width: 100% !important;
+    flex-direction: column;
+  }
+
+  .image-credit {
+    transform: none !important;
+    writing-mode: horizontal-tb !important;
+    margin-top: 2px;
+  }
+
+  .editorial-image{
+    width: 100%;
+    max-height: 72vh;
+  }
+}
+
+/* -------------------------
+   Overlay actions: que no se corten
+   ------------------------- */
+.editorial-item .post-image-actions{
+  z-index: 20;
+}
+
+/* Si quieres un look “revista”: un poco más de espacio entre bloques */
+@media (min-width: 1024px){
+  .post-column{
+    gap: 56px;
+  }
+}
+
+/* === Hover card para personas etiquetadas === */
+.tagged-person {
+  position: relative;
+}
+
+.tagged-person__hovercard {
+    position: absolute;
+    right: 245px;
+    top: 50%;
+    transform: translate(100%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    scale: .98;
+    transition: opacity .18s ease, transform .22s ease, scale .22s ease;
+    z-index: 50;
+}
+
+.tagged-person:hover .tagged-person__hovercard {
+  opacity: 1;
+  scale: 1;
+  transform: translate(100%, -50%);
+}
+
+.tagged-person__hovercard-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: #3c07cf;
+  background-color: transparent;
+}
+
+.tagged-person__hover-avatar {
+    width: fit-content;
+    height: 130px;
+    transform: translateY(0);
+    transition: transform .22s ease;
+}
+
+.tagged-person:hover .tagged-person__hover-avatar {
+  transform: translateY(-1px);
+}
+
+.tagged-person__hover-fallback {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.12);
+  font-weight: 700;
+}
+
+.tagged-person__hover-external {
+    width: 100%;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.05;
+    text-align: center;
+    padding: 6px;
+    text-transform: uppercase;
+    font-family: 'Inter Tight', sanse;
+    transform: rotate(318deg);
+}
+
+.tagged-person__hover-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tagged-person__hover-name {
+  font-size: 0.95rem;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tagged-person__hover-sub {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userpost-top-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.userpost-top-image {
+  flex: 1;
+  min-width: 0;
+  align-self: flex-start;
+}
+
+.userpost-top-info {
+  flex: 0 0 35%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .userpost-top-row {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-end;
+  }
+
+  .userpost-top-info {
+    flex: 1;
+    max-width: 100%;
+  }
+}
+
+
+.delete-post {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-end;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #888;
+    font-weight: 300;
+    background: transparent;
+    border: solid 0px transparent;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.delete-post:hover {
+  text-decoration: underline;
+  color: #b42318;
+  cursor: pointer;
+}
+
+.perfil__by-user {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.no-text-decoration {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: .02em;
+    color: #666;
+    font-family: Inter Tight, sans-serif;
+}
+
+.modal-content-title {
+    margin-bottom: 4px;
+    font-family: Inter Tight, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.modal-content-subtitle {
+  margin-bottom: 16px;
+  font-family: Inter Tight, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.modal-content-link {
+    word-break: break-all;
+    padding: 6px 0px;
+    border-radius: 0px;
+    background: transparent;
+    border-bottom: 1px solid #d8d8d8;
+    margin-bottom: 0px;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.image-credit {
+    font-size: 9px;
+    line-height: 1.35;
+    opacity: .8;
+    letter-spacing: .2px;
+    white-space: pre-wrap;
+    transform: rotate(180deg);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    margin-left: 4px;
+    color: #666;
+}
+
+.fullscreen-image-credit {
+  margin-top: 14px;
+  max-width: min(920px, 90vw);
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.9;
+  text-align: center;
+  white-space: pre-wrap;
+}

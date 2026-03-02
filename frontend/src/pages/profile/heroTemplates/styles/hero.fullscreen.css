@@ -1,0 +1,94 @@
+/* hero.fullscreen.css */
+
+/* ── Imagen ocupa todo el hero ──────────────────────────────────────────── */
+.hero--fullscreen .fs__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero--fullscreen .fs__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero--fullscreen .fs__placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* Overlay oscuro */
+.hero--fullscreen .fs__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* ── Texto: izquierda verticalmente centrado ────────────────────────────── */
+.hero--fullscreen .fs__content {
+  position: absolute;
+  z-index: 2;
+  left: 48px;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.hero--fullscreen .fs__name {
+  font-family: "Adamina", serif;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.02rem;
+  color: #fff;
+  margin: 0;
+}
+
+.hero--fullscreen .fs__tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+}
+
+.hero--fullscreen .fs__tag {
+  color: #fff;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+/* Chevron blanco */
+.hero--fullscreen .hero__scroll {
+  color: #fff;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
+.hero--fullscreen.is-mobile .fs__content {
+  left: 24px;
+  right: 24px;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.hero--fullscreen.is-mobile .fs__name {
+  font-size: 14px;
+}
+
+.hero--fullscreen.is-mobile .fs__tags {
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}

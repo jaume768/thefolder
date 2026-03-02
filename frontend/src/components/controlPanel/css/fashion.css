@@ -1,0 +1,507 @@
+/* src/css/fashion.css */
+
+/* ------------------ CONTENEDOR Y LAYOUT ------------------ */
+.fashion-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.filters-section {
+  width: 250px;
+  height: 492px;
+  padding: 20px;
+  border-radius: 12px;
+  position: fixed;
+  top: 245px;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* ------------------ ENCABEZADOS ------------------ */
+.filters-section h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 16px;
+  text-align: center;
+  line-height: 44px;
+}
+
+.page-description {
+  font-size: 17px;
+  color: #555;
+  max-width: 70%;
+  margin: 0 auto 30px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ------------------ FILTROS ------------------ */
+/* 1. Buscador */
+.filter-search {
+  position: relative;
+}
+
+.filter-search .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 37%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 14px;
+}
+
+.filter-search input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+  box-shadow: none;
+}
+
+.filter-input input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+}
+
+/* 3. Selects (Tipo de centro, Nivel, Modalidad, Categoría) */
+.filter-select {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.filter-select select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-shadow: none;
+}
+
+.filter-select .chevron-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+}
+
+/* 4. Botón aplicar filtros */
+.apply-filters-btn {
+  width: 100%;
+  padding: 12px 0;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 15px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.apply-filters-btn:hover {
+  background-color: #333;
+}
+
+/* Botón de filtro */
+.fashion-filter-button {
+  position: fixed;
+  top: 120px;
+  left: 200px;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #000;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+}
+
+.fashion-filter-button.has-filters {
+  border: 2px solid #1a73e8;
+  box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+}
+
+.fashion-filter-button:hover {
+  background-color: #333;
+  transform: scale(1.05);
+}
+
+.fashion-filter-button svg {
+  font-size: 25px;
+}
+
+/* Panel de filtros para desktop */
+.fashion-filters-panel {
+  position: fixed;
+  top: 25%;
+  left: 2em;
+  width: 250px;
+  background: transparent;
+  border-radius: 12px;
+  height: 100vh;
+  transform: translateX(-120%);
+  transition: transform 0.3s ease;
+  z-index: 5;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+
+.fashion-filters-panel.show {
+  transform: translateX(60px);
+}
+
+.fashion-filters-container {
+  padding: 16px;
+}
+
+/* Estilos para la cabecera del panel de filtros */
+.fashion-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.fashion-filters-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.fashion-filters-close {
+  background: #000;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+.fashion-filters-close:hover {
+  background-color: #333;
+}
+
+/* El contenedor principal no se desplaza cuando se muestran los filtros */
+
+/* Ocultar filtros en móvil */
+@media (max-width: 768px) {
+  .fashion-filters-panel {
+    display: none;
+  }
+  
+  .fashion-container.with-filters {
+    margin-left: 0;
+  }
+  
+  .fashion-filter-button {
+    left: 87%;
+    top: 9em;
+  }
+}
+
+/* ------------------ VIEW TOGGLE (Todo / Pública / Privada) ------------------ */
+/* Tabs y botón de filtro */
+.explorer-tabs-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.explorer-tabs {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+
+
+
+.user-extern-tab:hover {
+  color: #333;
+}
+
+.user-extern-tab.active {
+    background-color: #f5f5f5;
+    color: #444;
+}
+
+.user-extern-tab:disabled {
+  background-color: #f5f5f5;
+  color: #aaa;
+  border-color: #ddd;
+  cursor: not-allowed;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-extern-tab:disabled::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background-size: 200% 100%;
+  animation: loading 2s infinite linear;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* ------------------ LISTADO DE INSTITUCIONES ------------------ */
+.institutions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Cada tarjeta */
+.institution-card {
+  display: flex;
+  align-items: center;
+  background: #f9f9f9;
+  border-radius: 12px;
+  width: 100%;
+  margin: auto;
+  height: auto;
+  padding: 16px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .institution-card {
+    width: 100%;
+  }
+
+  .page-description{
+    width: 100%;
+  }
+}
+
+.institution-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Logo de la institución */
+.institution-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #f9f9f9;
+  padding: 4px;
+  margin-bottom: auto;
+  margin-right: 18px;
+}
+
+/* Contenedor de texto */
+.institution-info {
+  flex: 1;
+}
+
+.institution-info h3 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 28px;
+  color: #333;
+}
+
+/* Subtítulo (ubicación, modalidad) */
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* Tags de categorías */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tag {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  background: #f5f5f5;
+  color: #444;
+}
+
+.professional-title {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
+  text-transform: none;
+}
+
+.official-website-btn {
+  display: inline-flex;
+  align-items: center;
+  position: absolute;
+  top: 78%;
+  right: 12px;
+  padding: 6px 12px;
+  background-color: transparent;
+  color: #333;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  gap: 5px;
+  z-index: 2;
+}
+
+.official-website-btn::after {
+  content: '↗';
+  font-size: 14px;
+  margin-left: 2px;
+}
+
+.official-website-btn:hover {
+  background-color: #f8f8f8;
+  border-color: #ccc;
+}
+
+/* Badge de Visibilidad */
+.institution-tag {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  margin-left: 16px;
+}
+
+.institution-tag.public {
+  background: #e0f2f1;
+  margin-bottom: auto;
+  padding: 2px 16px;
+  border: solid 1px #a7cac6;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #00796b;
+}
+
+.institution-tag.private {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+/* ------------------ MENSAJES DE ESTADO ------------------ */
+.loading,
+.error,
+.no-results {
+  text-align: center;
+  color: #888;
+  margin: 20px 0;
+  font-size: 12px;
+}
+
+.error {
+  color: #e74c3c;
+  background-color: #feeaeb;
+  border-radius: 5px;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .view-toggle-group {
+    justify-content: center;
+  }
+
+  .institutions-list {
+    gap: 12px;
+  }
+  
+  .institution-card {
+    flex-direction: column;
+  }
+  
+  .fashion-filter-button {
+    left: unset;
+    right: 1em;
+    top: 83%;
+  }
+  
+  .institution-logo {
+    width: 100%;
+    height: 140px;
+    margin-right: 0px;
+  }
+  
+  img.institution-logo {
+    object-fit: cover;
+    object-position: center;
+  }
+  
+  .institution-tag {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+  }
+  
+  .institution-info h3 {
+    margin-top: 8px;
+  }
+  
+  .tags {
+    justify-content: space-between;
+  }
+}

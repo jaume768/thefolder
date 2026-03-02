@@ -1,0 +1,74 @@
+/* hero.vertical-card.css */
+
+/* ── Contenedor ─────────────────────────────────────────────────────────── */
+.hero--vertical-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fdfdfd;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* ── Imagen vertical centrada ───────────────────────────────────────────── */
+.hero--vertical-card .vcard__media {
+  width: 72%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.hero--vertical-card .vcard__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.hero--vertical-card .vcard__placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Texto centrado debajo ──────────────────────────────────────────────── */
+.hero--vertical-card .vcard__footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 28px 0;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.hero--vertical-card .vcard__name {
+  font-family: "Adamina", serif;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.02rem;
+  color: #111;
+  margin: 0;
+}
+
+.hero--vertical-card .vcard__tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero--vertical-card .vcard__tag {
+  color: #111;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+}

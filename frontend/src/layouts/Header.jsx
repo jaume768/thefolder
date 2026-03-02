@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
 
-import ProfileOptionsModal from '../components/controlPanel/ProfileOptionsModal';
+import ProfileOptionsModal from '../components/modals/ProfileOptionsModal';
 import SearchResults from '../components/controlPanel/SearchResults';
 import SearchFullScreen from '../components/controlPanel/SearchFullScreen';
 

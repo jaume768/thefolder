@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import axios from "axios";
-import ProfileOptionsModal from '../ProfileOptionsModal';
+import ProfileOptionsModal from '../../modals/ProfileOptionsModal';
 import { useCreatePost } from "../CreatePostContext";
 
 const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, viewedAvatar, isDark }) => {

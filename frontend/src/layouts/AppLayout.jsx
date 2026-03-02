@@ -3,7 +3,7 @@ import Sidebar from '../components/controlPanel/Sidebar';
 import Header from './Header';
 import MobileSideMenu from './MobileSideMenu';
 import MobileTopHeader from './MobileTopHeader';
-import CreatePostModal from '../components/controlPanel/CreatePostModal';
+import CreatePostModal from '../components/modals/CreatePostModal';
 import { CreatePostProvider } from '../components/controlPanel/CreatePostContext';
 
 

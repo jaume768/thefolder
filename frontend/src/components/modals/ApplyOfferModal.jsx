@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './css/applyOfferModal.css';
+import '../controlPanel/css/applyOfferModal.css';
 
 const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
     const [answers, setAnswers] = useState([]);

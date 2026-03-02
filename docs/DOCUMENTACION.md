@@ -163,12 +163,26 @@ frontend/src/
 ├── App.jsx                          # Enrutado principal
 ├── main.jsx                         # Punto de entrada
 ├── index.css                        # Estilos globales
+│
+├── layouts/                         # Shells de la aplicación
+│   ├── AppLayout.jsx                # Layout principal (sidebar + header + contenido)
+│   ├── AuthLayout.jsx               # Layout para rutas públicas (LandingHeader + children)
+│   ├── Header.jsx                   # Header del panel autenticado (búsqueda, perfil)
+│   ├── MobileTopHeader.jsx          # Header móvil
+│   ├── MobileSideMenu.jsx           # Menú lateral móvil
+│   └── Sidebar.jsx                  # Navegación lateral (stub)
+│
+├── contexts/
+│   ├── AuthContext.jsx              # Estado de autenticación global
+│   └── CreatePostContext.jsx        # Estado del modal de creación de post
+│
 ├── components/
-│   ├── AuthLayout.jsx               # Layout para usuarios no autenticados (LandingHeader + children)
 │   ├── TokenHandler.jsx             # Captura token OAuth de URL y redirige a /explorer
 │   ├── ScrollToTop.jsx              # Scroll al inicio en cada cambio de ruta
 │   ├── PeopleTagsList.jsx           # Lista de menciones de usuarios en posts
-│   ├── home/                        # Componentes de la landing page
+│   ├── forms/
+│   │   └── ExtraQuestionsForm.jsx   # Formulario dinámico de preguntas extra (ofertas)
+│   ├── landing/                     # Componentes de la landing page
 │   │   ├── LandingHeader.jsx        # Header de la landing (nav + botones login/registro)
 │   │   ├── LandingHero.jsx          # Sección hero con typewriter y CTA
 │   │   ├── LandingCreatorsShowcase.jsx  # Showcase de creativos
@@ -179,79 +193,105 @@ frontend/src/
 │   │   ├── LoginModal.jsx           # Modal de inicio de sesión
 │   │   ├── RegisterModal.jsx        # Modal de registro
 │   │   ├── PasswordResetModal.jsx   # Modal de recuperación de contraseña
-│   │   └── css/                     # Estilos de cada componente (9 archivos)
-│   ├── controlPanel/                # Panel de control del usuario autenticado
-│   │   ├── Layout.jsx               # Layout principal con sidebar y header
-│   │   ├── Header.jsx               # Header del panel (búsqueda, notificaciones)
-│   │   ├── Sidebar.jsx              # Navegación lateral
-│   │   ├── MobileTopHeader.jsx      # Header móvil
-│   │   ├── MobileSideMenu.jsx       # Menú lateral móvil
-│   │   ├── SearchFullScreen.jsx     # Búsqueda a pantalla completa
-│   │   ├── SearchResults.jsx        # Resultados de búsqueda
-│   │   ├── Explorer.jsx             # Explorador de contenido (grid masonry)
-│   │   ├── Creatives.jsx            # Directorio de creativos con filtros
-│   │   ├── Industry.jsx             # Directorio de empresas/industria
-│   │   ├── Fashion.jsx              # Sección de formación en moda
-│   │   ├── Blog.jsx                 # Listado de artículos del blog
-│   │   ├── ArticleDetail.jsx        # Detalle de artículo
-│   │   ├── Magazine.jsx             # Revistas digitales
-│   │   ├── Offers.jsx               # Listado de ofertas (trabajo + educativas)
-│   │   ├── JobOfferDetail.jsx       # Detalle de oferta de trabajo
-│   │   ├── EducationalOfferDetail/  # Detalle de oferta educativa
-│   │   ├── CreatePost.jsx           # Formulario de creación de post
-│   │   ├── CreateOffer.jsx          # Formulario de creación de oferta de trabajo
-│   │   ├── CreateEducationalOffer/  # Formulario de oferta educativa (múltiples pasos)
-│   │   ├── UserPost.jsx             # Detalle de un post
-│   │   ├── UserProfile.jsx          # Perfil público de otro usuario
-│   │   ├── MiPerfil.jsx             # Mi perfil (vista antigua — en migración)
-│   │   ├── Guardados.jsx            # Carpetas de guardados del usuario
-│   │   ├── FolderContent.jsx        # Contenido de una carpeta guardada
-│   │   ├── ViewOffer.jsx            # Ver oferta guardada
-│   │   ├── MyComunity.jsx           # Seguidos y seguidores
-│   │   ├── MisOfertasSection.jsx    # Mis ofertas publicadas
-│   │   ├── ApplyOfferModal.jsx      # Modal para aplicar a una oferta
-│   │   ├── ProfileOptionsModal.jsx  # Modal de opciones de perfil
-│   │   ├── Contacto.jsx             # Formulario de contacto
-│   │   ├── About.jsx                # Página about
-│   │   ├── AvisoLegal.jsx           # Aviso legal
-│   │   ├── Privacidad.jsx           # Política de privacidad
-│   │   ├── Cookies.jsx              # Política de cookies
-│   │   ├── miPerfil/                # Secciones del perfil propio (modular)
-│   │   ├── userProfile/             # Secciones del perfil ajeno (modular)
-│   │   └── css/                     # Estilos del panel de control
-│   └── modals/
-│       ├── EditProfileModal.jsx         # Modal general de edición de perfil
-│       ├── VerificationRequiredModal.jsx # Modal verificación requerida
-│       └── css/
+│   │   └── css/                     # Estilos de cada componente
+│   ├── modals/
+│   │   ├── ApplyOfferModal.jsx          # Modal para aplicar a una oferta
+│   │   ├── CreatePostModal.jsx          # Modal de creación de post
+│   │   ├── EditProfileModal.jsx         # Modal general de edición de perfil
+│   │   ├── ProfileOptionsModal.jsx      # Modal de opciones de perfil (dropdown)
+│   │   └── VerificationRequiredModal.jsx # Modal verificación requerida
+│   ├── profile/
+│   │   └── MisOfertasSection.jsx    # Sección de ofertas publicadas por el usuario
+│   ├── search/
+│   │   ├── SearchFullScreen.jsx     # Búsqueda a pantalla completa con tabs
+│   │   └── SearchResults.jsx        # Dropdown de resultados de búsqueda
+│   └── controlPanel/                # Subcomponentes internos (no son páginas)
+│       ├── EducationalOfferDetail/  # Secciones del detalle de oferta educativa
+│       ├── CreateEducationalOffer/  # Pasos del formulario de oferta educativa
+│       ├── editProfile/             # Tabs y UI del editor de perfil
+│       ├── userProfile/             # Secciones del perfil público ajeno
+│       ├── miPerfil/                # Secciones del perfil propio
+│       └── css/                     # Todos los estilos del panel de control
+│
 ├── pages/
 │   ├── Home.jsx                     # Landing page (ruta /)
-│   ├── CompleteRegistration.jsx     # Paso inicial de registro
+│   ├── CompleteRegistration.jsx     # Selector de tipo de usuario en el registro
+│   ├── blog/
+│   │   ├── BlogPage.jsx             # Listado de artículos del blog
+│   │   └── ArticleDetailsPage.jsx   # Detalle de artículo
+│   ├── community/
+│   │   └── CommunityPage.jsx        # Seguidos y seguidores
+│   ├── creatives/
+│   │   └── CreativesPage.jsx        # Directorio de creativos con filtros
 │   ├── creativos/                   # Flujo de registro para creativos
-│   │   ├── CompleteRegistrationCreativo.jsx       # Paso 1
-│   │   └── CompleteRegistrationCreativo03.jsx     # Paso 2 (fotos/portfolio)
+│   │   ├── CompleteRegistrationCreativo.jsx
+│   │   └── CompleteRegistrationCreativo03.jsx
+│   ├── explorer/
+│   │   └── ExplorerPage.jsx         # Explorador de contenido (grid masonry)
+│   ├── fashion/
+│   │   └── FashionPage.jsx          # Sección de formación en moda
+│   ├── industry/
+│   │   └── IndustryPage.jsx         # Directorio de empresas/industria
+│   ├── legal/
+│   │   ├── AboutPage.jsx
+│   │   ├── AvisoLegalPage.jsx
+│   │   ├── ContactoPage.jsx
+│   │   ├── CookiesPage.jsx
+│   │   └── PrivacidadPage.jsx
+│   ├── magazine/
+│   │   └── MagazinePage.jsx         # Revistas digitales
+│   ├── offers/
+│   │   ├── OffersPage.jsx           # Listado de ofertas (trabajo + educativas)
+│   │   ├── JobOfferDetailPage.jsx   # Detalle de oferta de trabajo
+│   │   ├── EducationalOfferDetailPage.jsx # Detalle de oferta educativa
+│   │   ├── CreateOfferPage.jsx      # Crear/editar oferta de trabajo
+│   │   ├── CreateEducationalOfferPage.jsx # Crear/editar oferta educativa
+│   │   └── ViewOfferPage.jsx        # Ver oferta guardada
+│   ├── post/
+│   │   ├── UserPostPage.jsx         # Detalle de un post
+│   │   └── CreatePostPage.jsx       # Formulario de creación de post
 │   ├── profesionales/               # Flujo de registro para profesionales
-│   │   ├── CompleteRegistrationProfesional.jsx             # Paso 1 (tipo)
+│   │   ├── CompleteRegistrationProfesional.jsx
 │   │   ├── CompleteRegistrationProfesionalDatosPersonales.jsx
 │   │   ├── CompleteRegistrationProfesionalInstitucion.jsx
 │   │   ├── CompleteRegistrationProfesionalMarca05.jsx
 │   │   ├── CompleteRegistrationProfesionalEmpresa05.jsx
 │   │   └── CompleteRegistrationProfesionalAgencia05.jsx
-│   └── profile/                     # NUEVO sistema de perfil (en migración activa)
-│       ├── ProfileRoot.jsx          # Raíz: redirige a /myprofile/edit
-│       ├── ProfileEditPage.jsx      # Editar perfil
-│       ├── ProfileOffersPage.jsx    # Mis ofertas
-│       ├── ProfileSettingsPage.jsx  # Configuración de cuenta
-│       ├── NewEditProfileContent.jsx
-│       └── heroTemplates/           # Plantillas de portada de perfil
-│           ├── ProfileHeroTemplates.jsx
-│           ├── HeroAtoms.jsx
-│           ├── heroShared.js
-│           ├── templates/
-│           │   ├── desktop/         # D_Centered, D_Fullscreen, D_FullscreenAlt,
-│           │   │                    # D_SplitTop, D_VerticalCentered, D_VerticalEditorial
-│           │   └── mobile/          # M_Fullscreen, M_FullscreenAlt,
-│           │                        # M_SplitImage, M_VerticalCard
-│           └── styles/
+│   ├── profile/
+│   │   ├── ProfileRoot.jsx          # Raíz: redirige a /myprofile/edit
+│   │   ├── ProfileEditPage.jsx      # Editar perfil
+│   │   ├── ProfileOffersPage.jsx    # Mis ofertas publicadas
+│   │   ├── ProfileSettingsPage.jsx  # Configuración de cuenta
+│   │   ├── NewEditProfileContent.jsx
+│   │   ├── MiPerfilPage.jsx         # Mi perfil (vista propia)
+│   │   ├── UserProfilePage.jsx      # Perfil público de otro usuario
+│   │   └── heroTemplates/           # Plantillas de portada de perfil
+│   │       ├── ProfileHeroTemplates.jsx
+│   │       ├── HeroAtoms.jsx
+│   │       ├── heroShared.js
+│   │       ├── templates/
+│   │       │   ├── desktop/         # D_Centered, D_Fullscreen, D_FullscreenAlt,
+│   │       │   │                    # D_SplitTop, D_VerticalCentered, D_VerticalEditorial
+│   │       │   └── mobile/          # M_Fullscreen, M_FullscreenAlt,
+│   │       │                        # M_SplitImage, M_VerticalCard
+│   │       └── styles/
+│   └── saved/
+│       ├── GuardadosPage.jsx        # Carpetas de guardados del usuario
+│       └── FolderContentPage.jsx    # Contenido de una carpeta guardada
+│
+├── services/                        # Capa de servicios API (axios centralizado)
+│   ├── api.js                       # Instancia axios con interceptor JWT automático
+│   ├── authService.js               # login, register, OAuth, reset password
+│   ├── userService.js               # perfil, follow, búsqueda
+│   ├── postService.js               # CRUD posts
+│   ├── offerService.js              # Ofertas de trabajo
+│   ├── educationalOfferService.js   # Ofertas educativas
+│   ├── blogService.js               # Artículos del blog
+│   ├── magazineService.js           # Revistas
+│   ├── industryService.js           # Directorio industria
+│   ├── folderService.js             # Carpetas de guardados
+│   └── tagService.js                # Etiquetas
+│
 └── utils/
     ├── locations.js                 # Datos de ciudades y países
     └── socialMediaUtils.js          # Utilidades para redes sociales
@@ -992,22 +1032,40 @@ PROTEGIDAS (requieren auth admin):
 
 ## 11. ESTADO ACTUAL DEL PROYECTO
 
-### Migración de perfil en progreso
+### Migración de arquitectura completada (marzo 2026)
 
-El sistema de perfil está migrando de la arquitectura antigua a una nueva:
+El frontend ha sido migrado progresivamente desde una estructura plana en `components/controlPanel/` a una arquitectura por capas. Todo el código de producción está operativo.
 
-| Ruta antigua | Ruta nueva | Estado |
-|---|---|---|
-| `/editProfile` | `/myprofile/edit` | Redirect activo |
-| `/misOfertas` | `/myprofile/offers` | Redirect activo |
-| `/configuracion` | `/myprofile/settings` | Redirect activo |
-| `/mi-perfil/*` | `/myprofile/*` | Redirect activo |
+**Estructura anterior (plana):**
+```
+components/controlPanel/   ← ~40 JSX mezclados (páginas + layouts + modales)
+```
 
-Los nuevos componentes están en `frontend/src/pages/profile/`.
+**Estructura actual (por capas):**
+```
+layouts/        ← AppLayout, Header, Sidebar, AuthLayout, Mobile*
+contexts/       ← CreatePostContext, AuthContext
+components/     ← modals/, search/, forms/, profile/, landing/
+pages/          ← blog/, community/, creatives/, explorer/, fashion/,
+                   industry/, legal/, magazine/, offers/, post/,
+                   profile/, saved/, creativos/, profesionales/
+services/       ← api.js (axios con interceptor JWT) + 10 service files
+```
+
+`components/controlPanel/` solo contiene ahora subcarpetas de subcomponentes internos (EducationalOfferDetail/, CreateEducationalOffer/, editProfile/, userProfile/, miPerfil/) y el directorio `css/`.
+
+### Redirecciones de compatibilidad activas
+
+| Ruta antigua | Ruta nueva |
+|---|---|
+| `/editProfile` | `/myprofile/edit` |
+| `/misOfertas` | `/myprofile/offers` |
+| `/configuracion` | `/myprofile/settings` |
+| `/mi-perfil/*` | `/myprofile/*` |
 
 ### Landing page
 
-La landing ha sido completamente renovada. Los componentes activos son:
+Completamente renovada. Flujo de componentes activo:
 
 ```
 LandingHeader → LandingHero → LandingLinkSection → LandingTemplatesParallax
@@ -1016,12 +1074,22 @@ LandingHeader → LandingHero → LandingLinkSection → LandingTemplatesParalla
 
 ### Limpieza realizada (marzo 2026)
 
-Eliminados los siguientes archivos huérfanos:
+Eliminados archivos huérfanos:
 - `CallToAction.jsx`, `FooterHome.jsx`, `HeaderHome.jsx` (landing antigua)
-- `LandingAddressTo.jsx`, `LandingHowItWorks.jsx` (imports muertos en Home.jsx)
+- `LandingAddressTo.jsx`, `LandingHowItWorks.jsx` (imports muertos)
 - `Parallax.jsx`, `ParallaxContent.jsx` (sustituidos por LandingTemplatesParallax)
 - `LandingTypewriter.js` (vanilla JS incompatible con React)
 - `css/header-footer.css`, `css/efecto-parallex.css`, `css/page-wrapper.css`, `css/style.css`
+
+### SEO y metadatos (marzo 2026)
+
+`index.html` actualizado con:
+- Favicon correcto (`/favicon.png`, tipo `image/png`)
+- Apple touch icon y `theme-color`
+- Open Graph completo (`og:title`, `og:description`, `og:image`, `og:locale`, `og:site_name`)
+- Twitter Card (`summary_large_image`)
+- JSON-LD schema `WebSite`
+- Imagen OG 1200×630px (`/og-thefolder.png`)
 
 ### Tipos de usuario
 

@@ -273,7 +273,7 @@
 /* COOKIE DESKTOP */
 .tf-cookie{
   position: fixed;
-  left: 34px;
+  right: 34px;
   bottom: 36px;
   width: 300px;
   background: #f2f2f2;

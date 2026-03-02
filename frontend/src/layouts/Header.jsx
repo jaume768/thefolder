@@ -4,8 +4,8 @@ import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
 
 import ProfileOptionsModal from '../components/modals/ProfileOptionsModal';
-import SearchResults from '../components/controlPanel/SearchResults';
-import SearchFullScreen from '../components/controlPanel/SearchFullScreen';
+import SearchResults from '../components/search/SearchResults';
+import SearchFullScreen from '../components/search/SearchFullScreen';
 
 
 const getUsernameFromToken = () => {

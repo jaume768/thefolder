@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaUser, FaImage, FaBriefcase, FaGraduationCap, FaSpinner, FaArrowRight } from 'react-icons/fa';
-import './css/searchResults.css';
+import '../controlPanel/css/searchResults.css';
 
 const SearchResults = ({ results, onResultClick, isLoading, onViewAll }) => {
 const { users = [], posts = [], offers = [], educationalOffers = [] } = results || {};

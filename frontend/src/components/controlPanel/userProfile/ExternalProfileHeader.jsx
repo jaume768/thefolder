@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import axios from "axios";
 import ProfileOptionsModal from '../../modals/ProfileOptionsModal';
-import { useCreatePost } from "../CreatePostContext";
+import { useCreatePost } from "../../../contexts/CreatePostContext";
 
 const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, viewedAvatar, isDark }) => {
   const navigate = useNavigate();

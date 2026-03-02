@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaSpinner, FaSearch } from 'react-icons/fa';
-import './css/searchResults.css';
+import '../controlPanel/css/searchResults.css';
 
 // ✅ Ahora NO congelamos initialResults/initialQuery en state.
 // ✅ Usamos props reactivos que vienen del Header.

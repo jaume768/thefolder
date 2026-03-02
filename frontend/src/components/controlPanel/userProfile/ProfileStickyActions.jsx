@@ -1,7 +1,7 @@
 // ProfileStickyActions.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useCreatePost } from "../CreatePostContext";
+import { useCreatePost } from "../../../contexts/CreatePostContext";
 import "../css/ProfileStickyActions.css";
 
 const ProfileStickyActions = ({ username }) => {

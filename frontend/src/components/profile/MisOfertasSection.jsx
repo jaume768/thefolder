@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaCheck, FaTimesCircle } from 'react-icons/fa';
-import './css/MisOfertasSection.css';
+import '../controlPanel/css/MisOfertasSection.css';
 
 const MisOfertasSection = ({ userRole, professionalType }) => {
     const navigate = useNavigate();

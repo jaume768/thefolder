@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import ExtraQuestionsForm from '../../components/controlPanel/ExtraQuestionsForm';
+import ExtraQuestionsForm from '../../components/forms/ExtraQuestionsForm';
 import VerificationRequiredModal from '../../components/modals/VerificationRequiredModal';
 import '../../components/controlPanel/css/create-offer.css';
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/controlPanel/Sidebar';
+import Sidebar from './Sidebar';
 import Header from './Header';
 import MobileSideMenu from './MobileSideMenu';
 import MobileTopHeader from './MobileTopHeader';
 import CreatePostModal from '../components/modals/CreatePostModal';
-import { CreatePostProvider } from '../components/controlPanel/CreatePostContext';
+import { CreatePostProvider } from '../contexts/CreatePostContext';
 
 
 const AppLayout = ({ children, contentClassName }) => {

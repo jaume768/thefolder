@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import './css/blog.css';
-import './css/article-detail.css';
-import { FaCalendarAlt, FaUser, FaArrowLeft, FaSpinner, FaExclamationTriangle, FaArrowRight, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
+import '../../components/controlPanel/css/blog.css';
+import '../../components/controlPanel/css/article-detail.css';
+import { FaArrowLeft, FaSpinner, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 
 const ArticleDetail = () => {
     const { id } = useParams();

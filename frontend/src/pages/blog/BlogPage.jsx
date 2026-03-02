@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import './css/blog.css';
+import '../../components/controlPanel/css/blog.css';
 import { FaSearch, FaSpinner, FaExclamationTriangle, FaCalendarAlt, FaUser, FaArrowRight } from 'react-icons/fa';
 
 const Blog = () => {

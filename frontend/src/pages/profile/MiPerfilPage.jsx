@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./css/UserProfileExtern.css"; // ✅ reutilizamos el CSS del externo para que sea IDENTICO
-import "./css/miPerfil.css";
+import "../../components/controlPanel/css/UserProfileExtern.css";
+import "../../components/controlPanel/css/miPerfil.css";
+
 import { FaTimes, FaCopy } from "react-icons/fa";
 
-import ExternalProfileHeader from "./userProfile/ExternalProfileHeader";
-import ProfileHeroTemplates from "../../pages/profile/heroTemplates/ProfileHeroTemplates";
-import UserBiographySection from "./userProfile/UserBiographySection";
-import UserProfessionalExperienceSection from "./userProfile/UserProfessionalExperienceSection";
-import UserSkillsSection from "./userProfile/UserSkillsSection";
-import UserSoftwareSection from "./userProfile/UserSoftwareSection";
-import UserEducationSection from "./userProfile/UserEducationSection";
-import UserSocialSection from "./userProfile/UserSocialSection";
-import UserDownloadableFilesSection from "./userProfile/UserDownloadableFilesSection";
-import UserCompanyTagsSection from "./userProfile/UserCompanyTagsSection";
-import UserMilestoneSection from "./userProfile/UserMilestoneSection";
-import UserCompanyOffersSection from "./userProfile/UserCompanyOffersSection";
-import UserEducationalOffersSection from "./userProfile/UserEducationalOffersSection";
-import ProfileStickyActions from "./userProfile/ProfileStickyActions";
-import UserLanguagesSection from "./userProfile/UserLanguagesSection";
-import UserGallery from "./userProfile/UserGallery";
+import ProfileHeroTemplates from "./heroTemplates/ProfileHeroTemplates";   
+
+import ExternalProfileHeader from "../../components/controlPanel/userProfile/ExternalProfileHeader";
+import UserBiographySection from "../../components/controlPanel/userProfile/UserBiographySection";
+import UserProfessionalExperienceSection from "../../components/controlPanel/userProfile/UserProfessionalExperienceSection";
+import UserSkillsSection from "../../components/controlPanel/userProfile/UserSkillsSection";
+import UserSoftwareSection from "../../components/controlPanel/userProfile/UserSoftwareSection";
+import UserEducationSection from "../../components/controlPanel/userProfile/UserEducationSection";
+import UserSocialSection from "../../components/controlPanel/userProfile/UserSocialSection";
+import UserDownloadableFilesSection from "../../components/controlPanel/userProfile/UserDownloadableFilesSection"; 
+import UserCompanyTagsSection from "../../components/controlPanel/userProfile/UserCompanyTagsSection";
+import UserMilestoneSection from "../../components/controlPanel/userProfile/UserMilestoneSection";
+import UserCompanyOffersSection from "../../components/controlPanel/userProfile/UserCompanyOffersSection";
+import UserEducationalOffersSection from "../../components/controlPanel/userProfile/UserEducationalOffersSection"; 
+import ProfileStickyActions from "../../components/controlPanel/userProfile/ProfileStickyActions";
+import UserLanguagesSection from "../../components/controlPanel/userProfile/UserLanguagesSection";
+import UserGallery from "../../components/controlPanel/userProfile/UserGallery";
 
 import chevronDown from "../../../public/iconos/chevrondown.svg";
 

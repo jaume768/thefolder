@@ -24,7 +24,7 @@ import Layout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 
 // ControlPanel páginas
-import MiPerfil from "./components/controlPanel/MiPerfil";
+import MiPerfil from "./pages/profile/MiPerfilPage";
 import UserProfile from "./pages/profile/UserProfilePage";
 
 import UserPost from "./pages/post/UserPostPage";

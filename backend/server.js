@@ -9,6 +9,9 @@ const helmet = require('helmet');
 
 const app = express();
 
+// Confiar en el proxy inverso (Caddy) para X-Forwarded-For, req.ip, etc.
+app.set('trust proxy', 1);
+
 const { ensureRoleTags } = require('./utils/ensureTags');
 
 connectDB()

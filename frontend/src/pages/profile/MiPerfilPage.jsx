@@ -104,7 +104,6 @@ const MiPerfil = () => {
 
         setLoading(false);
       } catch (e) {
-        console.error(e);
         setError("No se pudo cargar tu perfil.");
         setLoading(false);
         setPostsLoading(false);
@@ -144,7 +143,6 @@ const MiPerfil = () => {
         const res = await axios.get(endpoint);
         setCompanyOffers(res.data?.offers || []);
       } catch (e) {
-        console.error("Error ofertas:", e);
         setCompanyOffers([]);
       }
     };

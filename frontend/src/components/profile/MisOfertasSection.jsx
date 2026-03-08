@@ -74,10 +74,8 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                     );
                     appliedOffersData = appliedOffersResponse.data.offers || [];
                 } catch (appliedError) {
-                    console.error("Error fetching applied offers:", appliedError);
                 }
             } else {
-                console.log("User is NOT creative, skipping applied offers fetch");
             }
             
             // Filtrar ofertas caducadas (si hay fecha de expiración y ya pasó)
@@ -102,7 +100,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             setAppliedOffers(appliedOffersData);
             setExpiredOffers(processedExpiredOffers);
         } catch (error) {
-            console.error('Error al obtener ofertas:', error);
             setError('No se pudieron cargar las ofertas. Inténtalo de nuevo más tarde.');
         } finally {
             setLoading(false);
@@ -187,7 +184,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                 setCandidates([]);
             }
         } catch (error) {
-            console.error('Error al obtener candidatos:', error);
             setError('No se pudieron cargar los candidatos. Inténtalo de nuevo más tarde.');
         } finally {
             setLoading(false);
@@ -217,7 +213,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             );
             
         } catch (error) {
-            console.error(`Error al ${action === 'accepted' ? 'seleccionar' : 'descartar'} candidato:`, error);
         }
     };
     
@@ -291,7 +286,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                     offerType: 'job' // Marcar como oferta de trabajo
                 }));
             } else {
-                console.error('Error al obtener ofertas de trabajo:', jobOffersResponse.reason);
             }
             
             // Procesar ofertas educativas
@@ -334,7 +328,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                     });
                 }
             } else {
-                console.error('Error al obtener ofertas educativas:', educationalOffersResponse.reason);
             }
             
             // Combinar ambos tipos de ofertas
@@ -346,7 +339,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             setCompanyOffers(allOffers);
             setTotalResults(allOffers.length);
         } catch (error) {
-            console.error('Error al obtener ofertas:', error);
             setError('No se pudieron cargar tus ofertas publicadas. Inténtalo de nuevo más tarde.');
         } finally {
             setLoading(false);
@@ -389,7 +381,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             closeModals();
             fetchCompanyOffers();
         } catch (error) {
-            console.error(`Error al cambiar estado de la oferta a ${newStatus}:`, error);
             closeModals();
         }
     };
@@ -428,7 +419,6 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             closeModals();
             fetchCompanyOffers();
         } catch (error) {
-            console.error('Error al eliminar la oferta:', error);
             closeModals();
         }
     };

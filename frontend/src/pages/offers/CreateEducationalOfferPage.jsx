@@ -86,7 +86,6 @@ const CreateEducationalOffer = () => {
                     }
                 }
             } catch (error) {
-                console.error('Error al cargar el perfil:', error);
                 toast.error('Error al cargar el perfil');
             }
         };
@@ -211,8 +210,6 @@ const CreateEducationalOffer = () => {
                 navigate('/fashion');
             }
         } catch (error) {
-            console.error('Error al crear la oferta educativa:', error);
-            
             if (error.response) {
                 // Errores específicos del servidor
                 const errorMessage = error.response.data?.message || 'Error al crear la oferta educativa';

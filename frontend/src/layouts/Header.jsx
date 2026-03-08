@@ -145,7 +145,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
 
         setAvatarUrl(user.profile?.profilePicture || profilePicture || '/multimedia/usuarioDefault.jpg');
       } catch (error) {
-        console.error('Error fetching user type:', error);
       }
     };
 
@@ -178,7 +177,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
       setIsSearching(false);
       return response.data.results;
     } catch (error) {
-      console.error('Error en la búsqueda:', error);
       setIsSearching(false);
       return null;
     }

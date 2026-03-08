@@ -1063,7 +1063,6 @@ const handleSocialUsernameChange = (e, network) => {
 
         setLoading(false);
       } catch (e) {
-        console.error(e);
         setError("No se pudo cargar tu perfil.");
         setLoading(false);
         setPostsLoading(false);
@@ -1114,7 +1113,6 @@ const handleSocialUsernameChange = (e, network) => {
           setAutosaveStatus("idle");
         }, 1500);
       } catch (e) {
-        console.error(e);
         setAutosaveStatus("error");
       }
     }, 900);
@@ -1266,7 +1264,6 @@ const handleSocialUsernameChange = (e, network) => {
       setIsDirty(false);
       setAutosaveStatus("saved");
     } catch (e) {
-      console.error("🔴 Error guardando perfil:", e?.response?.data || e.message);
       setAutosaveStatus("error");
       setIsDirty(false);
     } finally {

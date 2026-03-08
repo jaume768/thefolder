@@ -24,7 +24,6 @@ const Magazine = () => {
                     setError('No se pudieron cargar las revistas');
                 }
             } catch (err) {
-                console.error('Error al cargar revistas:', err);
                 setError('Error al conectar con el servidor');
             } finally {
                 setLoading(false);

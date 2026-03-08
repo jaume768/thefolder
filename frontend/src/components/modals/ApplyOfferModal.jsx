@@ -60,7 +60,6 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
             await onSubmitApplication(answers);
             onClose();
         } catch (error) {
-            console.error('Error al enviar la aplicación:', error);
             alert('Hubo un error al enviar tu aplicación. Por favor, intenta de nuevo.');
         } finally {
             setIsSubmitting(false);

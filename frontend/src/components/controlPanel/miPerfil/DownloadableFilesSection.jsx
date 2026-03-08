@@ -21,7 +21,6 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                 
                 setProfileData(res.data);
             } catch (error) {
-                console.error("Error al cargar datos para impresión:", error);
             }
         };
         

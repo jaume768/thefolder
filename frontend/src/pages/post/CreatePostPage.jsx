@@ -281,7 +281,6 @@ const CreatePost = ({ onClose } = {}) => {
       try {
         if ("indexedDB" in window) draftFiles = await idbReadImages();
       } catch (e) {
-        console.warn("No se pudieron leer imágenes del borrador:", e);
       }
 
       setImages(draftFiles.length > 0 ? draftFiles : []);
@@ -322,7 +321,6 @@ const CreatePost = ({ onClose } = {}) => {
         });
       }
     } catch (e) {
-      console.warn("No se pudo cargar el borrador:", e);
     } finally {
       draftLoadedRef.current = true;
     }
@@ -576,7 +574,6 @@ const CreatePost = ({ onClose } = {}) => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(meta));
       } catch (e) {
-        console.warn("No se pudo guardar borrador (localStorage):", e);
       }
     }, 300);
 
@@ -611,7 +608,6 @@ const CreatePost = ({ onClose } = {}) => {
 
       // ✅ Si hay imágenes, guardamos el orden actual
       idbWriteImages(images).catch((e) => {
-        console.warn("No se pudieron guardar imágenes del borrador:", e);
       });
     }, 400);
 
@@ -705,7 +701,6 @@ const CreatePost = ({ onClose } = {}) => {
 
         setSuggestedUsers(response.data.users || []);
       } catch (error) {
-        console.error('Error buscando usuarios:', error);
         setSuggestedUsers([]);
       } finally {
         setLoadingUsers(false);
@@ -1100,8 +1095,6 @@ const CreatePost = ({ onClose } = {}) => {
         'Error al publicar el post';
 
       showDesktopToast({ message: msg, details: [] });
-
-      console.error('Error al publicar el post', error);
     } finally {
       setIsLoading(false);
     }

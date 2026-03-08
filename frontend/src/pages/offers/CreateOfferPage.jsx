@@ -63,7 +63,6 @@ const CreateOffer = () => {
             }
             setFormDataCompanyName(user.companyName || '');
         } catch (err) {
-            console.error('Error al cargar datos del usuario:', err);
         }
     };
 
@@ -100,7 +99,6 @@ const CreateOffer = () => {
                 setPreviewLogo(offer.companyLogo);
             }
         } catch (err) {
-            console.error('Error al cargar oferta:', err);
             setError('No se pudo cargar la oferta. Intenta de nuevo.');
         } finally {
             setLoading(false);
@@ -214,7 +212,6 @@ const CreateOffer = () => {
             }
             navigate('/misOfertas');
         } catch (err) {
-            console.error(err);
             setError(err.response?.data?.message || 'Error al enviar la oferta');
         } finally {
             setLoading(false);

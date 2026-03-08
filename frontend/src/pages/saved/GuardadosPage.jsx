@@ -203,8 +203,6 @@ const Guardados = () => {
 
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     } catch (error) {
-      console.error('Error al mover imágenes:', error);
-
       // quitamos "guardando" de las que estuvieran marcadas
       selectedImages.map(p => getKey(p)).filter(Boolean).forEach(removeSavingKey);
 
@@ -248,7 +246,6 @@ const Guardados = () => {
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
 
     } catch (error) {
-      console.error('Error al mover la imagen:', error);
       removeSavingKey(key);
       setNotification({ show: true, message: 'Error al mover la imagen', type: 'error' });
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
@@ -314,7 +311,6 @@ const Guardados = () => {
           setIdeasSinOrganizar(unorganizedImages);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
         setNotification({ show: true, message: 'Error al cargar los datos. Recarga la página.', type: 'error' });
         setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
       }
@@ -351,7 +347,6 @@ const Guardados = () => {
         setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
       }
     } catch (error) {
-      console.error('Error al crear carpeta:', error);
       setNotification({ show: true, message: 'Error al crear la carpeta', type: 'error' });
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     }
@@ -374,7 +369,6 @@ const Guardados = () => {
       setNotification({ show: true, message: 'Carpeta eliminada correctamente', type: 'success' });
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     } catch (error) {
-      console.error('Error al eliminar carpeta:', error);
       setNotification({ show: true, message: 'Error al eliminar la carpeta', type: 'error' });
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     }
@@ -424,7 +418,6 @@ const Guardados = () => {
         setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
       }
     } catch (error) {
-      console.error('Error al actualizar nombre de carpeta:', error);
       setNotification({ show: true, message: 'Error al actualizar el nombre', type: 'error' });
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     }
@@ -463,7 +456,6 @@ const Guardados = () => {
 
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     } catch (error) {
-      console.error('Error al mover la imagen:', error);
       setNotification({ show: true, message: 'Error al mover la imagen', type: 'error' });
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     }

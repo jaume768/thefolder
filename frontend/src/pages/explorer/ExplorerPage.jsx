@@ -67,7 +67,6 @@ const Explorer = () => {
         });
         setSavedPosts(map);
       } catch (err) {
-        console.error('Error cargando posts guardados:', err);
       }
     };
     fetchSavedPosts();
@@ -124,7 +123,6 @@ const Explorer = () => {
         setPostImages(prev => (page === 1 ? newImgs : [...prev, ...newImgs]));
         setHasMore(res.data.hasMore);
       } catch (err) {
-        console.error('Error cargando imágenes:', err);
         if (err.response?.status === 401) setHasMore(false);
       } finally {
         setLoading(false);
@@ -197,7 +195,6 @@ const Explorer = () => {
         });
       }
     } catch (err) {
-      console.error('Error guardando:', err);
     }
   };
 

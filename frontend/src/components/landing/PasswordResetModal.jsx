@@ -34,7 +34,6 @@ const PasswordResetModal = ({ onClose, onSwitchToLogin }) => {
             setSuccessMsg(data.message || 'Email enviado. Revisa tu bandeja para el código.');
             setStep("verify");
         } catch (err) {
-            console.error(err);
             setError('Error de red, inténtalo nuevamente.');
         }
     };
@@ -58,7 +57,6 @@ const PasswordResetModal = ({ onClose, onSwitchToLogin }) => {
             setSuccessMsg(data.message || 'Código verificado.');
             setStep("reset");
         } catch (err) {
-            console.error(err);
             setError('Error de red, inténtalo nuevamente.');
         }
     };
@@ -89,7 +87,6 @@ const PasswordResetModal = ({ onClose, onSwitchToLogin }) => {
                 onSwitchToLogin();
             }, 2000);
         } catch (err) {
-            console.error(err);
             setError('Error de red, inténtalo nuevamente.');
         }
     };

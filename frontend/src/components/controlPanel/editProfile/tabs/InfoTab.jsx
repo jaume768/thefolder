@@ -53,7 +53,6 @@ export default function InfoTab({
         const res = await axios.get(`${backendUrl}/api/tags?type=role&status=active`);
         setRoleOptions(res.data.tags || []);
       } catch (e) {
-        console.error("Error cargando tags:", e);
       }
     };
     fetchRoles();

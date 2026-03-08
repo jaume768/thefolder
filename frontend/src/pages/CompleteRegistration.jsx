@@ -52,7 +52,6 @@ const CompleteRegistration = () => {
           clearInterval(intervalId);
         }
       } catch (err) {
-        console.error(err);
       }
     }, 500);
 
@@ -200,7 +199,6 @@ const CompleteRegistration = () => {
         setError(data?.error || "No se pudo guardar tu perfil.");
       }
     } catch (err) {
-      console.error(err);
       setError("Error de red. Inténtalo de nuevo.");
     }
   };

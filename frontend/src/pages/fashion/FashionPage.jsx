@@ -289,7 +289,6 @@ const activeChips = [
                     ...new Set(data.map((i) => i.location?.city).filter(Boolean)),
                 ]);
             } catch (err) {
-                console.error(err);
                 setError('No se pudieron cargar las instituciones.');
             } finally {
                 setLoading(false);

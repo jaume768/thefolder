@@ -46,7 +46,6 @@ const FolderContent = () => {
                     setFolderItems([]);
                 }
             } catch (error) {
-                console.error('Error fetching folder content:', error);
                 setFolderItems([]);
             } finally {
                 setLoading(false);
@@ -144,7 +143,6 @@ const FolderContent = () => {
             setItemToDelete(null);
             
         } catch (error) {
-            console.error('Error al eliminar imagen de la carpeta:', error);
             setNotification({
                 show: true,
                 message: 'Error al eliminar la imagen',

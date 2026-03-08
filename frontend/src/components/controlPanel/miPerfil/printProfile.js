@@ -435,7 +435,6 @@ export const printUserProfile = (profileData) => {
   // Para documentar: solo queremos imprimir una vez, por lo que usamos una variable global
   // para rastrear si ya se ha iniciado la impresión
   if (window._hasPrintStarted) {
-    console.log('Ya hay una impresión en curso, cancelando...');
     return;
   }
   
@@ -461,7 +460,6 @@ export const printUserProfile = (profileData) => {
         }
       }, 2000);
     } catch (error) {
-      console.error('Error al imprimir:', error);
       window._hasPrintStarted = false; // Resetear en caso de error
       alert('Hubo un problema al intentar imprimir. Por favor, inténtalo de nuevo.');
     }

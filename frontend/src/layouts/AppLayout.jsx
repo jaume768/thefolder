@@ -46,7 +46,6 @@ const AppLayout = ({ children, contentClassName }) => {
           }
         }
       } catch (error) {
-        console.error("Error al obtener la foto de perfil:", error);
       }
     };
 

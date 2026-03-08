@@ -105,7 +105,6 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
 
         setUserPic(resolveImg(backendUrl, picRaw));
       } catch (err) {
-        console.error("Error fetching profile:", err);
       }
     };
 

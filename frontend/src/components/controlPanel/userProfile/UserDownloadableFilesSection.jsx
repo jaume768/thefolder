@@ -27,7 +27,6 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
           setProfileData(res.data);
           setIsLoading(false);
         } catch (error) {
-          console.error('Error al cargar los datos del perfil para imprimir:', error);
           setIsLoading(false);
         }
       };

@@ -53,11 +53,9 @@ const ViewOffer = () => {
                             setIsOwner(userResponse.data._id === offerData.publisher);
                         }
                     } catch (err) {
-                        console.error('Error al verificar propietario:', err);
                     }
                 }
             } catch (err) {
-                console.error('Error al cargar los detalles de la oferta:', err);
                 setError('No se pudo cargar la información de la oferta. Por favor, inténtalo de nuevo más tarde.');
             } finally {
                 setLoading(false);
@@ -73,7 +71,6 @@ const ViewOffer = () => {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('es-ES', options);
         } catch (error) {
-            console.error('Error al formatear la fecha:', error);
             return dateString;
         }
     };
@@ -83,7 +80,6 @@ const ViewOffer = () => {
             window.open(offer.externalLink, '_blank');
         } else {
             // Si no es externo, se puede implementar lógica para aplicar internamente
-            console.log('Aplicando a la oferta interna');
             // TODO: Implementar aplicación interna
         }
     };

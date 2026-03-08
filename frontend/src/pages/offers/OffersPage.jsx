@@ -51,7 +51,6 @@ const Offers = () => {
                 setUniqueCountries([...new Set(sorted.map(o => o.country).filter(Boolean))]);
                 setUniqueCities([...new Set(sorted.map(o => o.city).filter(Boolean))]);
             } catch (e) {
-                console.error(e);
                 setError('No se pudieron cargar las ofertas.');
             } finally {
                 setLoading(false);

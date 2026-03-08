@@ -76,7 +76,6 @@ const MyComunity = () => {
         setProfiles(profilesList || []);
         setTotalPages(data.totalPages || 1);
       } catch (err) {
-        console.error(`Error al cargar ${activeTab}:`, err);
         setError(`No se pudieron cargar los ${activeTab}.`);
       } finally {
         setLoading(false);
@@ -107,7 +106,6 @@ const MyComunity = () => {
         if (fw.data?.totalFollowing !== undefined) setFollowingCount(fw.data.totalFollowing);
         if (fo.data?.totalFollowers !== undefined) setFollowersCount(fo.data.totalFollowers);
       } catch (err) {
-        console.error('Error al cargar contadores:', err);
       }
     };
     fetchCounts();
@@ -122,7 +120,6 @@ const MyComunity = () => {
         const all = res.data.tags || [];
         setProfessionalProfileOptions(all.filter(t => !!t.group));
       } catch (e) {
-        console.error("Error cargando /api/tags:", e);
       }
     };
     fetchTags();

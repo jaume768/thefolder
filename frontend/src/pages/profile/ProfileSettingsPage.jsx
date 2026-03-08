@@ -46,7 +46,6 @@ export default function ProfileSettingsPage() {
         });
         setUserData(res.data?.user || res.data);
       } catch (e) {
-        console.error(e);
       } finally {
         setLoading(false);
       }
@@ -146,7 +145,6 @@ export default function ProfileSettingsPage() {
       localStorage.removeItem("userRole");
       navigate("/");
     } catch (e) {
-      console.error(e);
       setDeleteError("Ha ocurrido un error al eliminar la cuenta.");
       setIsDeleting(false);
     }

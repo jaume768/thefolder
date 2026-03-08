@@ -175,7 +175,6 @@ const UserPost = () => {
         );
       } catch (err) {
         if (err?.code === "ERR_CANCELED") return;
-        console.error("Error cargando Ver más:", err);
         setMoreHasMore(false);
       } finally {
         setMoreLoading(false);
@@ -223,7 +222,6 @@ const UserPost = () => {
           setCurrentUserId(userResponse.data._id);
         }
       } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
       }
     };
 
@@ -252,7 +250,6 @@ const UserPost = () => {
 
         setSavedPosts(savedImagesMap);
       } catch (error) {
-        console.error("Error al cargar posts guardados:", error);
       }
     };
 
@@ -318,9 +315,6 @@ const UserPost = () => {
         });
 
         setPost(response.data.post);
-        console.log("peopleTags saved:", response.data.post?.peopleTags);
-
-
         if (clickedImageUrl && response.data.post.images) {
           const clickedIndex = response.data.post.images.findIndex(
             (img) => img === clickedImageUrl
@@ -347,7 +341,6 @@ const UserPost = () => {
 
         setSavedImages(savedImagesMap);
       } catch (error) {
-        console.error("Error al cargar la publicación o favoritos:", error);
       } finally {
         setLoading(false);
       }
@@ -425,7 +418,6 @@ const UserPost = () => {
 
         setTaggedUsersInfo(map);
       } catch (error) {
-        console.error("Error al verificar usuarios etiquetados:", error);
       }
     };
 
@@ -640,7 +632,6 @@ const UserPost = () => {
         2000
       );
     } catch (error) {
-      console.error("Error al actualizar favoritos:", error);
     }
   };
 
@@ -717,11 +708,7 @@ const UserPost = () => {
         });
       }, 2000);
     } catch (error) {
-      console.error("Error al guardar/desguardar post:", {
-        error: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
+      // error handled silently
     }
   };
 
@@ -734,7 +721,6 @@ const UserPost = () => {
       });
       navigate(-1);
     } catch (error) {
-      console.error("Error al eliminar el post:", error);
     }
   };
 

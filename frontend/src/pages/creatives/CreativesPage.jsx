@@ -214,7 +214,6 @@ const Creatives = () => {
         const all = res.data.tags || [];
         setProfessionalProfileOptions(all.filter(t => !!t.group));
       } catch (e) {
-        console.error("Error cargando /api/tags:", e);
       }
     };
     fetchProfiles();
@@ -227,7 +226,6 @@ const Creatives = () => {
         const res = await axios.get(`${backendUrl}/api/tags/cities`);
         setCityCounts(res.data.cities || {});
       } catch (e) {
-        console.error("Error cargando contadores de ciudades:", e);
       }
     };
     fetchCityCounts();
@@ -295,7 +293,6 @@ const Creatives = () => {
 
       } catch (error) {
         if (error.name === "CanceledError" || error.code === "ERR_CANCELED") return;
-        console.error("Error al cargar creativos:", error);
         setError("No se pudieron cargar los creativos. Por favor, inténtalo de nuevo más tarde.");
         if (page === 1) setHasFetchedOnce(true);
       } finally {

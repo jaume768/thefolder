@@ -24,7 +24,6 @@ const EducationalOfferDetail = () => {
                 const response = await axios.get(`${backendUrl}/api/offers/educational/${offerId}`);
                 setOffer(response.data.offer);
             } catch (error) {
-                console.error('Error cargando detalles de la oferta educativa:', error);
                 setError('No se pudo cargar la información de la oferta educativa');
             } finally {
                 setLoading(false);

@@ -44,7 +44,6 @@ const ArticleDetail = () => {
                     setError('No se pudo cargar el artículo');
                 }
             } catch (error) {
-                console.error('Error al cargar el artículo:', error);
                 setError('Ocurrió un error al cargar el artículo. Por favor, inténtalo de nuevo más tarde.');
             } finally {
                 setLoading(false);

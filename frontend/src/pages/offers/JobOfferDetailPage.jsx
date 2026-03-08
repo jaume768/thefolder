@@ -25,7 +25,6 @@ const JobOfferDetail = () => {
                 const response = await axios.get(`${backendUrl}/api/offers/${offerId}`);
                 setOffer(response.data.offer);
             } catch (error) {
-                console.error('Error cargando detalles de la oferta:', error);
                 setError('No se pudo cargar la información de la oferta');
             } finally {
                 setLoading(false);
@@ -59,7 +58,6 @@ const JobOfferDetail = () => {
                 
                 setUserApplied(response.data.hasApplied);
             } catch (error) {
-                console.error('Error al verificar aplicación:', error);
             }
         };
         
@@ -87,7 +85,6 @@ const JobOfferDetail = () => {
                 
                 setIsSaved(isSavedOffer);
             } catch (error) {
-                console.error('Error al verificar si la oferta está guardada:', error);
             }
         };
         
@@ -131,7 +128,6 @@ const JobOfferDetail = () => {
             setUserApplied(true);
             return true;
         } catch (error) {
-            console.error('Error al enviar la aplicación:', error);
             throw error;
         }
     };
@@ -171,7 +167,6 @@ const JobOfferDetail = () => {
                 setSaveFeedback({ show: false, text: "" });
             }, 2000);
         } catch (error) {
-            console.error('Error al guardar/desguardar oferta:', error);
         } finally {
             setSavingOffer(false);
         }

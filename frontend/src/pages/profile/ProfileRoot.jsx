@@ -46,7 +46,6 @@ export default function ProfileRoot() {
           featuredHeaderImage: user.featuredHeaderImage || user.featuredHeaderImage || "",
         });
       } catch (e) {
-        console.error("Error cargando perfil:", e);
         setUserData(null);
       } finally {
         setLoading(false);
@@ -96,7 +95,6 @@ export default function ProfileRoot() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Error al actualizar foto:", data?.error || data);
         return;
       }
 
@@ -108,7 +106,6 @@ export default function ProfileRoot() {
 
       handleCancelProfileImageEdit();
     } catch (err) {
-      console.error("Error en subida de foto:", err);
     } finally {
       setIsUploadingProfilePicture(false);
     }

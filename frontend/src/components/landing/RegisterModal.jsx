@@ -172,7 +172,6 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
 
       setStep("verify");
     } catch (error) {
-      console.log(error);
       setBackendError('Error al conectar con el servidor.');
     }
   };
@@ -245,7 +244,6 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
       // navigate("/complete-registration", { state: { username: formData.username } }); // (comentado)
 
     } catch (err) {
-      console.log(err);
       setVerificationError('Error de red.');
     }
   };
@@ -272,7 +270,6 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
 
       setResendMessage(data.message || 'Código reenviado exitosamente.');
     } catch (error) {
-      console.log(error);
       setVerificationError('Error de red.');
     }
   };

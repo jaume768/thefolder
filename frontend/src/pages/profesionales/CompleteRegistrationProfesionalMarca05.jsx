@@ -43,11 +43,9 @@ const CompleteRegistrationProfesionalMarca05 = () => {
                 navigate('/creativo/registro/final');
             } else {
                 setError(data.error || "Ha ocurrido un error.");
-                console.error(data.error);
             }
         } catch (error) {
             setError("Error en la conexión o en el servidor.");
-            console.error(error);
         }
     };
 

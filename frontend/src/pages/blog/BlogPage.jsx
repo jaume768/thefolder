@@ -39,7 +39,6 @@ const Blog = () => {
                     setError('No se pudieron cargar los artículos del blog');
                 }
             } catch (error) {
-                console.error('Error al cargar los artículos del blog:', error);
                 setError('Ocurrió un error al cargar los artículos. Por favor, inténtalo de nuevo más tarde.');
             } finally {
                 setLoading(false);

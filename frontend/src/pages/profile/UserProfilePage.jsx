@@ -153,13 +153,11 @@ const UserProfile = () => {
             }
           } catch (authError) {
             // no crítico
-            console.log("Error al obtener información del usuario autenticado:", authError);
           }
         }
 
         setLoading(false);
       } catch (e) {
-        console.error("Error al cargar el perfil del usuario", e);
         setError(
           "No se pudo cargar el perfil del usuario. El usuario puede no existir o haber ocurrido un error en el servidor."
         );
@@ -184,7 +182,6 @@ const UserProfile = () => {
 
         setRoleLabelById(map);
       } catch (e) {
-        console.error("Error cargando tags role:", e);
         setRoleLabelById({});
       }
     };
@@ -224,7 +221,6 @@ const UserProfile = () => {
         const res = await axios.get(endpoint);
         setCompanyOffers(res.data?.offers || []);
       } catch (e) {
-        console.error("Error al cargar las ofertas:", e);
         setCompanyOffers([]);
       }
     };
@@ -251,8 +247,6 @@ const UserProfile = () => {
       setIsNotificationActive(true);
       showNotification("success", "Ahora sigues a este usuario");
     } catch (e) {
-      console.error("Error al seguir al usuario", e);
-
       let errorMessage = "Ha ocurrido un error. Por favor, inténtalo de nuevo.";
       if (e.response) {
         if (e.response.status === 401) {
@@ -289,8 +283,6 @@ const UserProfile = () => {
       setIsNotificationActive(false);
       showNotification("success", "Has dejado de seguir a este usuario");
     } catch (e) {
-      console.error("Error al dejar de seguir al usuario", e);
-
       let errorMessage = "Ha ocurrido un error. Por favor, inténtalo de nuevo.";
       if (e.response) {
         if (e.response.status === 401) {
@@ -334,7 +326,6 @@ const UserProfile = () => {
 
       setIsNotificationActive((prev) => !prev);
     } catch (e) {
-      console.error("Error al cambiar el estado de las notificaciones", e);
     }
   };
 

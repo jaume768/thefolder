@@ -1,0 +1,14 @@
+# Frontend público
+thefolder.es, www.thefolder.es {
+    reverse_proxy frontend:80
+}
+
+# API Backend
+api.thefolder.es {
+    reverse_proxy backend:5000
+}
+
+# Panel de administración
+admin.thefolder.es {
+    reverse_proxy frontend-admin:80
+}

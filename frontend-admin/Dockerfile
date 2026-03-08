@@ -6,6 +6,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Variables de entorno de Vite (se inyectan en build time)
+ARG VITE_BACKEND_URL
+ARG VITE_RUTA_FRONTEND
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_RUTA_FRONTEND=$VITE_RUTA_FRONTEND
+
 # Copiamos el resto del código y generamos el build de producción
 COPY . .
 RUN npm run build

@@ -27,8 +27,7 @@ app.use(morgan('dev'));
 const allowedOrigins = [
   'https://thefolder.es',
   'https://www.thefolder.es',
-  'https://frontend-student-station-production.up.railway.app',
-  'https://frontend-admin-student-station-production.up.railway.app',
+  'https://admin.thefolder.es',
   ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000', 'http://localhost:3001'] : [])
 ];
 

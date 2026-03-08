@@ -1,0 +1,63 @@
+services:
+  # ─── Reverse proxy + SSL automático ───
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - frontend-admin
+      - backend
+
+  # ─── Base de datos ───
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+  # ─── Backend API ───
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    env_file:
+      - ./backend/.env
+
+  # ─── Frontend público ───
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_BACKEND_URL: https://api.thefolder.es
+    container_name: frontend
+    restart: unless-stopped
+
+  # ─── Panel de administración ───
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+      args:
+        VITE_BACKEND_URL: https://api.thefolder.es
+        VITE_RUTA_FRONTEND: https://thefolder.es
+    container_name: frontend-admin
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,258 @@
+.settings-container {
+  padding: 20px 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.settings-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 25px;
+}
+
+.settings-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.settings-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.settings-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.settings-tab:hover {
+  color: var(--primary-color);
+}
+
+.settings-tab.active {
+  color: var(--primary-color);
+}
+
+.settings-tab.active::after {
+  background-color: var(--primary-color);
+}
+
+.settings-content {
+  min-height: 400px;
+}
+
+.settings-panel {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--input-background);
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.password-requirements {
+  background-color: var(--background-light);
+  padding: 15px;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 20px;
+}
+
+.password-requirements p {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.password-requirements ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.password-requirements li {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.security-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.security-alert {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background-color: #FFF8E1;
+  border-left: 4px solid #FFC107;
+  border-radius: var(--border-radius-md);
+}
+
+.security-icon {
+  font-size: 24px;
+  color: #FFC107;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.security-alert h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: var(--text-primary);
+}
+
+.security-alert p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.account-info {
+  background-color: var(--background-light);
+  padding: 15px;
+  border-radius: var(--border-radius-md);
+}
+
+.account-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--text-primary);
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.info-label {
+  width: 40%;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.info-value {
+  width: 60%;
+  color: var(--text-secondary);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .settings-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .settings-tab {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+  
+  .security-info {
+    flex-direction: column;
+  }
+  
+  .security-alert {
+    flex-direction: column;
+  }
+  
+  .security-icon {
+    align-self: flex-start;
+  }
+  
+  .info-row {
+    flex-direction: column;
+  }
+  
+  .info-label, .info-value {
+    width: 100%;
+  }
+  
+  .info-label {
+    margin-bottom: 4px;
+  }
+}

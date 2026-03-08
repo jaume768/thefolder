@@ -1,0 +1,824 @@
+/* Estilos generales para secciones de estadísticas */
+.stats-section {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.section-icon {
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+}
+
+/* Grid para tarjetas de estadísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon {
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+
+.stat-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-percentage {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+}
+
+.stat-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Estilos para publicaciones populares */
+.popular-posts-section {
+  margin-top: 2rem;
+}
+
+.popular-posts-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+/* Estilos para las pestañas de publicaciones populares */
+.popular-posts-tabs {
+  margin-top: 1rem;
+}
+
+.tabs-header {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.tab-button:hover {
+  color: var(--primary-color);
+}
+
+.tab-button.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.tab-icon {
+  margin-right: 0.5rem;
+}
+
+.tab-content {
+  position: relative;
+}
+
+.popular-posts-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+}
+
+.popular-post-card {
+  display: flex;
+  align-items: center;
+  width: 400px;
+  height: 250px;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.popular-post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.post-rank {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-right: 1rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.post-image {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  margin-right: 1rem;
+}
+
+.post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card-background);
+  color: var(--text-light);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.post-info {
+  flex: 1;
+}
+
+.post-info h4 {
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.post-info p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Estilos para distribución de etiquetas */
+.tags-distribution {
+  margin-top: 2rem;
+}
+
+.tags-distribution h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+}
+
+.tag-item {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.tag-item:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-hover);
+}
+
+.tag-count {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  margin-left: 0.5rem;
+}
+
+/* Estilos para distribución de posts por usuario */
+.distribution-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.distribution-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.distribution-label {
+  width: 100px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.distribution-bar-container {
+  flex: 1;
+  height: 12px;
+  background-color: var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.distribution-bar {
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: 6px;
+}
+
+.distribution-value {
+  width: 30px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.distribution-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.distribution-icon {
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Estilos para estadísticas del blog */
+.blog-stats {
+  margin-top: 2rem;
+}
+
+.blog-stats h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.blog-stats h4 {
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+  color: var(--text-secondary);
+}
+
+.categories-grid, .sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.category-item, .size-item {
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem;
+  text-align: center;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.category-item:hover, .size-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.category-name, .size-name {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.category-count, .size-count {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Estilos para distribución por perfiles */
+.profile-distribution-section {
+  margin-top: 2rem;
+}
+
+.subsection-title {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.subsection-title .section-icon {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.profile-types-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.profile-type-group {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-type-title {
+  font-size: 1.1rem;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.profile-type-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.profile-type-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.profile-type-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.profile-type-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.profile-type-details {
+  flex: 1;
+}
+
+.profile-type-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-type-count {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Estilos para gráfico de crecimiento */
+.growth-chart-container {
+  margin-top: 2rem;
+}
+
+.growth-chart-container h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.growth-chart {
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1rem;
+}
+
+.chart-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.chart-bar-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.chart-bar-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.chart-bar {
+  width: 80%;
+  background-color: var(--primary-color);
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  transition: height var(--transition-normal);
+  min-height: 5px;
+}
+
+.chart-bar-value {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0 0.75rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: var(--primary-color);
+  margin-right: 0.5rem;
+}
+
+.legend-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Estilos para estadísticas de ofertas educativas */
+.education-type-distribution,
+.modality-distribution,
+.features-stats,
+.geographic-distribution {
+  margin-top: 2rem;
+}
+
+.education-type-distribution h3,
+.modality-distribution h3,
+.features-stats h3,
+.geographic-distribution h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+/* Estilos para distribución por tipo de educación */
+.education-type-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+}
+
+.education-type-item {
+  width: 100%;
+}
+
+.education-type-bar-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.education-type-bar {
+  height: 24px;
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius-sm);
+  margin-right: 1rem;
+  min-width: 30px;
+  position: relative;
+  transition: width var(--transition-normal);
+}
+
+.education-type-label {
+  width: 100px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.education-type-value {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Estilos para distribución por modalidad */
+.modality-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+}
+
+.modality-donut-chart {
+  display: flex;
+  height: 40px;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.modality-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-white);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: width var(--transition-normal);
+}
+
+.modality-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.modality-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modality-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.modality-legend-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Estilos para características destacadas */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.feature-card {
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  text-align: center;
+  transition: transform var(--transition-fast);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+}
+
+.feature-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.feature-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Estilos para distribución geográfica */
+.locations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.location-item {
+  display: flex;
+  align-items: center;
+  background-color: var(--card-background-hover);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem 1rem;
+  transition: transform var(--transition-fast);
+}
+
+.location-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.location-rank {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-right: 0.75rem;
+  min-width: 24px;
+}
+
+.location-name {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.location-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .popular-posts-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .profile-types-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-type-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .popular-posts-list {
+    grid-template-columns: 1fr;
+  }
+
+  .growth-chart {
+    height: 150px;
+  }
+
+  .chart-bar-value {
+    font-size: 0.7rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .locations-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs-header {
+    overflow-x: auto;
+  }
+  
+  .tab-button {
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+  }
+  
+  .profile-type-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-type-item {
+    padding: 0.5rem;
+  }
+  
+  .profile-type-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .profile-type-name {
+    font-size: 0.85rem;
+  }
+  
+  .profile-type-count {
+    font-size: 1rem;
+  }
+}

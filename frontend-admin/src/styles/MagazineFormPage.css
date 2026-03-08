@@ -1,0 +1,169 @@
+/* Estilos para el formulario de revistas */
+
+.magazine-form-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.magazine-form-page .form-container {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.magazine-form-page .admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
+}
+
+.magazine-form-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.magazine-form-page .form-group label {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.magazine-form-page .form-group input[type="text"],
+.magazine-form-page .form-group input[type="number"],
+.magazine-form-page .form-group input[type="file"] {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  background-color: var(--bg-primary);
+  color: var(--text-color);
+}
+
+.magazine-form-page .form-group input[type="number"] {
+  max-width: 200px;
+}
+
+.magazine-form-page .checkbox-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.magazine-form-page .checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.magazine-form-page .form-help-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.magazine-form-page .image-preview {
+  margin-top: 0.5rem;
+  max-width: 300px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.magazine-form-page .image-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.magazine-form-page .form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.magazine-form-page .btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  border: none;
+  transition: all 0.2s;
+}
+
+.magazine-form-page .btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.magazine-form-page .btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.magazine-form-page .btn-secondary {
+  background-color: var(--bg-primary);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.magazine-form-page .btn-secondary:hover {
+  background-color: var(--bg-hover);
+}
+
+.magazine-form-page .btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.magazine-form-page .alert {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.magazine-form-page .alert-error {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.magazine-form-page .alert-success {
+  background-color: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.magazine-form-page .loading-indicator {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .magazine-form-page .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .magazine-form-page .form-actions {
+    flex-direction: column;
+  }
+  
+  .magazine-form-page .btn {
+    width: 100%;
+  }
+}

@@ -18,7 +18,10 @@ services:
       - ./backend/.env
 
   contenedor-frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_BACKEND_URL: http://localhost:5000
     container_name: frontend
     ports:
       - "3000:80" 

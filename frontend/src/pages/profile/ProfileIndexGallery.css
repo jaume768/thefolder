@@ -1,0 +1,456 @@
+/* =============================================================================
+   ProfileIndexGallery — layout editorial tipo índice de photobook
+   Referencia: monográficos Juergen Teller / Wolfgang Tillmans
+   Grid asimétrico de 12 columnas, tipografía pequeña, sin sombras ni bordes.
+   ============================================================================= */
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+.pig-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #fafafa;
+  font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  flex-direction: column;
+}
+
+/* ── Botón volver ────────────────────────────────────────────────────────── */
+.pig-back {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: #999;
+  text-transform: uppercase;
+  transition: color 0.14s ease;
+}
+
+.pig-back:hover { color: #111; text-decoration: underline; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.pig-sidebar {
+  align-self: flex-start;
+  width: 100%;
+  height: -webkit-fill-available;
+  min-height: 20vh;
+  padding: 36px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  flex-direction: row;
+  gap: 62px;
+  scrollbar-width: none;
+  grid-auto-flow: column;
+  align-content: flex-start;
+}
+
+.pig-sidebar::-webkit-scrollbar { display: none; }
+
+/* Identidad */
+.pig-identity {
+  display: flex;
+  flex-direction: column;
+  grid-column: 2 / 5;
+}
+
+.pig-name {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #333;
+  letter-spacing: .02em;
+  margin-bottom: 2px;
+}
+
+.pig-role {
+  font-size: 10px;
+  font-weight: 300;
+  color: #777;
+  line-height: 1.55;
+  letter-spacing: .015em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.pig-location {
+  font-size: 10px;
+  color: #777;
+  letter-spacing: 0.05em;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* Toggle PORTFOLIO / CV */
+.pig-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  position: absolute;
+  height: 50%;
+  justify-content: center;
+}
+
+.pig-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  color: #c0c0c0;
+  text-transform: uppercase;
+  transition: color 0.14s ease;
+  line-height: 1;
+}
+
+.pig-toggle-btn--active {
+  color: #111;
+  font-weight: 500;
+}
+
+.pig-toggle-btn:hover:not(.pig-toggle-btn--active) {
+  color: #666;
+}
+
+.pig-toggle-sep {
+  font-size: 10px;
+  color: #d8d8d8;
+  user-select: none;
+}
+
+/* Acciones */
+.pig-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  grid-column: 11 / 13;
+  width: 100%;
+  align-items: flex-end;
+}
+
+.pig-action-btn {
+  background: none;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #777;
+  text-align: left;
+  line-height: 1;
+  transition: border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
+  border-radius: 0;
+  border: transparent solid 0px;
+}
+
+.pig-action-btn:hover {
+  border-color: #555;
+  color: #111;
+  text-decoration: underline;
+}
+
+.pig-action-btn--following {
+  color: #777;
+  font-style: italic;
+}
+
+.pig-action-btn--ghost {
+  border-color: transparent;
+  color: #777;
+}
+
+.pig-action-btn--ghost:hover {
+  border-color: transparent;
+  color: #333;
+  text-decoration: underline;
+}
+
+/* Website */
+.pig-website {
+  font-size: 10px;
+  color: #777;
+  text-decoration: none;
+  letter-spacing: .02em;
+  margin-top: auto;
+  transition: color .14s ease;
+  grid-column: 9 / 11;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 100%;
+  letter-spacing: 0.04em;
+}
+
+.pig-website:hover { color: #111; text-decoration: underline; }
+
+/* ── Área principal ──────────────────────────────────────────────────────── */
+.pig-main {
+    padding: 36px;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    align-content: start;
+    gap: 0 0;
+}
+
+.pig-status {
+  font-size: 11px;
+  color: #c0c0c0;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  padding-top: 8px;
+}
+
+/* ── Hijos de pig-main que ocupan todo el ancho ─────────────────────────── */
+.pig-toggle,
+.pig-status,
+.pig-grid {
+  grid-column: 1 / -1;
+}
+
+/* ── Grid editorial asimétrico ───────────────────────────────────────────── */
+.pig-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 62px 32px;
+  align-items: start;
+  justify-items: end;
+}
+
+/* ── Tarjeta ─────────────────────────────────────────────────────────────── */
+.pig-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  outline: none;
+}
+
+/* Contenedor de imagen */
+.pig-card__image-wrap {
+  width: 100%;
+  overflow: hidden;
+  max-width: 150px;
+}
+
+/* Variantes de proporción — las alturas varían el ritmo visual */
+.pig-card--tall .pig-card__image-wrap   {
+   aspect-ratio: 3 / 4;
+   max-width: 150px;
+  }
+
+.pig-card__image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: opacity .18s ease;
+    max-width: 150px;
+    display: flex;
+}
+
+.pig-card__placeholder {
+  width: 100%;
+  height: 100%;
+  background: #dedede;
+}
+
+/* Caption editorial: pequeño, sin peso, mucho aire */
+.pig-card__caption {
+  display: flex;
+  gap: 2px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pig-card__title {
+  font-size: 9px;
+  font-weight: 400;
+  color: #444;
+  letter-spacing: .015em;
+  transform: rotate(180deg);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pig-card__count {
+  font-size: 9px;
+  color: #444;
+  letter-spacing: .04em;
+  font-weight: 300;
+  transform: rotate(180deg);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* ── Bio en sidebar ──────────────────────────────────────────────────────── */
+.pig-bio {
+  font-size: 10px;
+  line-height: 13px;
+  letter-spacing: 0.04em;
+  font-weight: 300;
+  color: #222;
+  text-align: left;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  grid-column: 5 / 8;
+}
+
+/* ── CV — tipografía limpia ──────────────────────────────────────────────── */
+.pig-cv {
+  grid-column: 5 / 10;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding-top: 4px;
+  margin-left: 16px;
+}
+
+.pig-cv__bio {
+  font-size: 13px;
+  font-weight: 300;
+  color: #444;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+/* ── Barra social sticky bottom ──────────────────────────────────────────── */
+.pig-social-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1000;
+  padding: 0px 24px;
+}
+
+.pig-social-bar__item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  color: #888;
+  text-decoration: none;
+  transition: color 0.14s ease, background 0.14s ease;
+  white-space: nowrap;
+}
+
+.pig-social-bar__item:hover {
+  color: #111;
+  text-decoration: underline;
+}
+
+/* Compensar la barra en el padding del layout */
+.pig-layout { padding-bottom: 32px; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+
+  .pig-grid {
+    display: flex;
+    gap: 45px;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  /* Recalcular spans a escala de 6 columnas */
+  .pig-card { grid-column: span 3 !important; }
+
+  .pig-cv {
+    width: -webkit-fill-available;
+  }
+}
+
+@media (max-width: 768px) {
+  .pig-layout { 
+    flex-direction: column;
+    padding-top: 82px;
+  }
+
+  .pig-back {
+    display: none;
+  }
+
+  .pig-website {
+    justify-content: flex-end;
+  }
+
+  .pig-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    padding: 20px 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 14px 20px;
+    grid-auto-flow: row;
+  }
+
+  .pig-identity {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .pig-bio {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .pig-actions {
+    grid-column: 1 / 2;
+    grid-row: 3;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pig-website {
+    grid-column: 2 / 3;
+    grid-row: 3;
+    align-items: flex-start;
+    height: auto;
+  }
+
+  .pig-main {
+    padding: 24px;
+    grid-template-columns: 1fr;
+  }
+
+  .pig-cv {
+    grid-column: 1 / -1;
+  }
+
+  .pig-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 45px;
+  }
+
+  .pig-card { grid-column: span 2 !important; }
+}

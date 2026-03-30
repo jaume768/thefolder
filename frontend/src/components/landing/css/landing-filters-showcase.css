@@ -1,0 +1,212 @@
+/* landing-filter-showcase.css */
+
+/* =========================================================
+   SCROLL CONTAINER — 300vh para dar recorrido de scroll
+========================================================= */
+/* =========================================================
+   STICKY CONTAINER — 100vh, se queda fijo mientras scrolleas
+========================================================= */
+.tf-filter-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  align-items: center;
+  overflow: hidden;
+  background: #fdfdfd;
+}
+
+/* =========================================================
+   CORCHETES
+========================================================= */
+.tf-filter__bracket {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(60px, 8vw, 120px);
+  font-weight: 300;
+  color: #0b0b0b;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.tf-filter__bracket--left  { left: 16px; }
+.tf-filter__bracket--right {
+  right: 16px;
+  bottom: 14%;
+  top: auto;
+  transform: none;
+}
+
+/* =========================================================
+   TEXTO — cols 1-7
+========================================================= */
+.tf-filter__text {
+  grid-column: 1 / 14;
+  padding-left: 64px; /* espacio para el corchete */
+  padding-right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tf-filter__line {
+  margin: 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(20px, 2.8vw, 40px);
+  font-weight: 500;
+  line-height: 1.2;
+  color: #c8c8c8; /* gris — inactivo */
+  transition: color 0.4s ease;
+  cursor: default;
+}
+
+.tf-filter__line.is-active {
+  color: #0b0b0b; /* negro — activo */
+}
+
+.tf-filter__sub {
+  margin: 40px 0 0 80px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #444;
+}
+
+.tf-filter__tags {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 200px;
+  margin-top: 8px;
+}
+
+.tf-filter__tags span {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #444;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   IMÁGENES — cols 8-12, posiciones fijas
+========================================================= */
+.tf-filter__images {
+  grid-column: 8 / 13;
+  height: 100vh;
+}
+
+.tf-filter__img {
+  position: absolute;
+  opacity: 0.15;
+  transition: opacity 0.5s ease;
+}
+
+.tf-filter__img.is-active {
+  opacity: 1;
+}
+
+.tf-filter__img img {
+  display: block;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.10);
+}
+
+/* Posición top — imagen arriba derecha */
+.tf-filter__img--top {
+  top: 8%;
+  right: 8%;
+  width: clamp(100px, 12vw, 180px);
+}
+.tf-filter__img--top img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+/* Posición center — imagen centro */
+.tf-filter__img--center {
+  top: 50%;
+  right: 14%;
+  transform: translateY(-50%);
+  width: clamp(100px, 12vw, 180px);
+}
+.tf-filter__img--center img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+/* Posición bottom — imagen abajo derecha */
+.tf-filter__img--bottom {
+  bottom: 10%;
+  right: 4%;
+  width: clamp(100px, 12vw, 180px);
+}
+.tf-filter__img--bottom img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+/* =========================================================
+   MOBILE — max 768px
+========================================================= */
+@media (max-width: 768px) {
+
+  .tf-filter-sticky {
+    grid-template-columns: 1fr;
+    align-content: center;
+    padding: 0 24px;
+  }
+
+  .tf-filter__bracket--left  { font-size: 48px; left: 8px; }
+  .tf-filter__bracket--right { font-size: 48px; right: 8px; bottom: 10%; }
+
+  .tf-filter__text {
+    grid-column: 1;
+    padding-left: 32px;
+    padding-right: 0;
+  }
+
+  .tf-filter__line {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+
+  .tf-filter__sub {
+    margin-left: 0;
+    margin-top: 32px;
+  }
+
+  .tf-filter__tags {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  /* Imágenes en mobile: esquina derecha superpuestas */
+  .tf-filter__images {
+    grid-column: 1;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 30vw;
+    pointer-events: none;
+  }
+
+  .tf-filter__img--top    { width: 28vw; top: 6%; right: 2%; }
+  .tf-filter__img--center { width: 28vw; right: 2%; }
+  .tf-filter__img--bottom { width: 28vw; bottom: 8%; right: 2%; }
+}
+
+/* =========================================================
+   REDUCE MOTION
+========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .tf-filter__line,
+  .tf-filter__img {
+    transition: none !important;
+  }
+}

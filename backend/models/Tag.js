@@ -7,6 +7,7 @@ const TagSchema = new mongoose.Schema(
     label: { type: String, required: true },            // texto visible
     status: { type: String, default: "active" },
     group: { type: String, required: true },            // macro bloque
+    subgroup: { type: String, default: null },          // subgrupo opcional dentro del grupo
     order: { type: Number, default: 0 }                 // orden interno
   },
   { timestamps: true }

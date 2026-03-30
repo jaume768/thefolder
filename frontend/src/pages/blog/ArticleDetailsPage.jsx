@@ -263,12 +263,9 @@ const ArticleDetail = () => {
                             onClick={() => setShowFullScreenPreview(false)}
                             aria-label="Cerrar"
                         >
-                            <img 
-                                src="/iconos/close.svg" 
-                                alt="Cerrar" 
-                                className="close-icon"
-                                style={{ width: '24px', height: '24px' }}
-                            />
+                            <span className='tagged-person__role'>
+                            CERRAR
+                            </span>
                         </button>
                         <img
                             src={selectedImage}

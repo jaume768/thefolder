@@ -42,11 +42,6 @@ const CompleteRegistrationCreativo03 = () => {
       setError("El archivo debe ser una imagen.");
       return;
     }
-    if (f.size > 5 * 1024 * 1024) {
-      setError("La imagen pesa demasiado (máximo 5MB).");
-      return;
-    }
-
     setFile(f);
     setError("");
   };

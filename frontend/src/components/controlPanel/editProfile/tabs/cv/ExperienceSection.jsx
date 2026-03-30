@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/trash-delete.svg";
@@ -25,6 +25,7 @@ export default function ExperienceSection({
   uploadExperienceLogo,
 }) {
   const list = Array.isArray(experiences) ? experiences : [];
+  const [logoUploading, setLogoUploading] = useState(false);
 
   return (
     <div id="sec-cv-experiencia" className="ux-anchor-target">
@@ -156,14 +157,16 @@ export default function ExperienceSection({
                     type="file"
                     accept="image/*"
                     style={{ display: "none" }}
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (!file) return;
-                      uploadExperienceLogo(file);
                       e.target.value = "";
+                      setLogoUploading(true);
+                      try { await uploadExperienceLogo(file); } finally { setLogoUploading(false); }
                     }}
                   />
 
+                  {logoUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
                   {expDraft.companyLogo ? (
                     <img src={expDraft.companyLogo} alt="Logo" />
                   ) : (

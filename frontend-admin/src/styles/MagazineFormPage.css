@@ -148,7 +148,8 @@
 .magazine-form-page .loading-indicator {
   padding: 2rem;
   text-align: center;
-  color: var(--text-muted);
+  color: #888;
+  letter-spacing: 0.02em;
 }
 
 /* Responsive */

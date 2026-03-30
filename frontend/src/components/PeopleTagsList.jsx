@@ -56,10 +56,15 @@ export default function PeopleTagsList({
           person.image ||
           null;
 
-        const displayUserText = rawName || (username ? `@${username}` : "—");
+        const displayUserText = isRegistered
+          ? (rawName || (username ? `@${username}` : "—")).toLowerCase()
+          : (rawName || (username ? `@${username}` : "—"));
 
         const clickable = (isRegistered && !!username) || isExternalClickable;
-        const clickableClass = clickable ? "is-clickable" : "";
+        const clickableClass = [
+          clickable ? "is-clickable" : "",
+          isExternalClickable ? "is-external" : "",
+        ].filter(Boolean).join(" ");
 
         const handleClick = (e) => {
           e.preventDefault();
@@ -101,9 +106,9 @@ export default function PeopleTagsList({
                         {safeInitials(displayUserText)}
                       </span>
                     )
-                  ) : (
+                  ) : isExternalClickable ? (
                     <span className="tagged-person__hover-external">[link externo ↗]</span>
-                  )}
+                  ) : null}
                 </span>
               </span>
 

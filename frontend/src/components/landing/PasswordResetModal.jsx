@@ -92,8 +92,8 @@ const PasswordResetModal = ({ onClose, onSwitchToLogin }) => {
     };
 
     return (
-        <div className="login-modal">
-            <div className="login-card">
+        <div className="login-modal" onClick={onClose}>
+            <div className="login-card" onClick={(e) => e.stopPropagation()}>
 
                 {step === "email" && (
                     <>
@@ -180,7 +180,7 @@ const PasswordResetModal = ({ onClose, onSwitchToLogin }) => {
                             onSwitchToLogin();
                         }}
                     >
-                       ← Volver al inicio de sesión
+                       Volver al inicio de sesión
                     </a>
                 </div>
             </div>

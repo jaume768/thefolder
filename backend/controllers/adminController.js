@@ -10,6 +10,7 @@ const Industry = require('../models/Industry'); // Agregar modelo de industria
 const cloudinary = require('../config/cloudinary');
 const streamifier = require('streamifier');
 const { escapeRegex } = require('../utils/textUtils');
+const { processImageIfNeeded } = require('../utils/imageProcessor');
 
 
 const parseJsonArray = (value, fallback = []) => {
@@ -60,29 +61,42 @@ const parseTags = (value) => {
  */
 exports.getAllUsers = async (req, res) => {
     try {
-        const { role, search, status, creativeType, professionalType, limit = 10, page = 1 } = req.query;
+        const { role, accountType, search, status, creativeType, professionalType, industryType, limit = 10, page = 1 } = req.query;
         const skip = (page - 1) * limit;
-        
+
         // Construir filtro
         const filter = {};
-        
+
         // Por defecto, mostrar usuarios activos a menos que se solicite específicamente inactivos
+        // Usamos $ne: false para incluir también documentos donde isActive no está definido
         if (status === 'inactive') {
             filter.isActive = false;
         } else if (status === 'all') {
-            // No filtrar por isActive si se quieren ver todos
+            // No filtrar por isActive
         } else {
-            filter.isActive = true; // Por defecto, mostrar solo activos
+            filter.isActive = { $ne: false };
         }
-        
-        if (role) {
+
+        // Sistema nuevo: filtrar por accountType
+        if (accountType) {
+            filter.accountType = accountType;
+            if (accountType === 'creative' && creativeType) {
+                filter.creativeLevel = parseInt(creativeType);
+            }
+            if (accountType === 'industry' && industryType) {
+                filter.industryType = industryType;
+            }
+        }
+
+        // Sistema viejo: filtrar por role (solo si no se usa accountType)
+        if (role && !accountType) {
             filter.role = role;
-            
+
             // Filtrar por tipo de perfil creativo si se especifica
             if (role === 'Creativo' && creativeType) {
                 filter.creativeType = parseInt(creativeType);
             }
-            
+
             // Filtrar por tipo de perfil profesional si se especifica
             if (role === 'Profesional' && professionalType) {
                 filter.professionalType = parseInt(professionalType);
@@ -709,6 +723,40 @@ exports.getDashboardStats = async (req, res) => {
             }}
         ]);
         
+        // Distribución por accountType (sistema nuevo)
+        const usersByAccountType = await User.aggregate([
+            { $match: { accountType: { $ne: null } } },
+            { $group: { _id: "$accountType", count: { $sum: 1 } } },
+        ]);
+
+        // Distribución de creativos por creativeLevel (sistema nuevo)
+        const creativesByLevel = await User.aggregate([
+            { $match: { accountType: 'creative', creativeLevel: { $ne: null } } },
+            { $group: { _id: "$creativeLevel", count: { $sum: 1 } } },
+            { $project: {
+                _id: 1,
+                count: 1,
+                level: {
+                    $switch: {
+                        branches: [
+                            { case: { $eq: ["$_id", 1] }, then: "Newcomer" },
+                            { case: { $eq: ["$_id", 2] }, then: "Graduated" },
+                            { case: { $eq: ["$_id", 3] }, then: "Emerging" },
+                            { case: { $eq: ["$_id", 4] }, then: "Professional" },
+                            { case: { $eq: ["$_id", 5] }, then: "Curated" },
+                        ],
+                        default: "No especificado"
+                    }
+                }
+            }}
+        ]);
+
+        // Distribución de industria por industryType (sistema nuevo)
+        const industryByType = await User.aggregate([
+            { $match: { accountType: 'industry', industryType: { $ne: null } } },
+            { $group: { _id: "$industryType", count: { $sum: 1 } } },
+        ]);
+
         // Contar usuarios activos vs inactivos
         const usersByStatus = await User.aggregate([
             { $group: { _id: "$isActive", count: { $sum: 1 } } }
@@ -963,7 +1011,11 @@ exports.getDashboardStats = async (req, res) => {
                     distribucionProfesionales: professionalsByType.map(item => ({
                         tipo: item.type,
                         count: item.count
-                    }))
+                    })),
+                    // Sistema nuevo
+                    porAccountType: Object.fromEntries(usersByAccountType.map(i => [i._id, i.count])),
+                    creativosPorNivel: creativesByLevel.map(i => ({ nivel: i.level, count: i.count })),
+                    industriaPorTipo: Object.fromEntries(industryByType.map(i => [i._id, i.count]))
                 },
                 ofertas: {
                     total: totalOffers,
@@ -1035,8 +1087,9 @@ exports.createAdmin = async (req, res) => {
             email,
             fullName,
             password, // Se encriptará en el middleware pre-save
-            role: 'Admin',
-            isAdmin: true,
+            role: 'Admin',       // legacy — se mantiene para compatibilidad
+            isAdmin: true,       // legacy — se mantiene para compatibilidad
+            accountType: 'admin',
             isActive: true,
             isVerified: true,
             profileCompleted: true
@@ -1293,7 +1346,8 @@ exports.createBlogPost = async (req, res) => {
         let additionalImages = [];
         
         // Función para subir imágenes a Cloudinary
-        const streamUpload = (file) => {
+        const streamUpload = async (file) => {
+            const buf = await processImageIfNeeded(file.buffer);
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'blog_posts' },
@@ -1302,7 +1356,7 @@ exports.createBlogPost = async (req, res) => {
                         else reject(error);
                     }
                 );
-                streamifier.createReadStream(file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
         
@@ -1437,7 +1491,8 @@ exports.updateBlogPost = async (req, res) => {
         let additionalImages = blogPost.additionalImages || []; // Mantener las imágenes adicionales actuales
         
         // Función para subir imágenes a Cloudinary
-        const streamUpload = (file) => {
+        const streamUpload = async (file) => {
+            const buf = await processImageIfNeeded(file.buffer);
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'blog_posts' },
@@ -1446,7 +1501,7 @@ exports.updateBlogPost = async (req, res) => {
                         else reject(error);
                     }
                 );
-                streamifier.createReadStream(file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
         
@@ -1643,22 +1698,17 @@ exports.createPost = async (req, res) => {
             for (const file of req.files) {
                 try {
                     // Crear stream de datos para Cloudinary
-                    let streamUpload = (file) => {
+                    let streamUpload = async (file) => {
+                        const buf = await processImageIfNeeded(file.buffer);
                         return new Promise((resolve, reject) => {
                             let stream = cloudinary.uploader.upload_stream(
-                                {
-                                    folder: "posts",
-                                    resource_type: "image"
-                                },
+                                { folder: "posts", resource_type: "image" },
                                 (error, result) => {
-                                    if (result) {
-                                        resolve(result);
-                                    } else {
-                                        reject(error);
-                                    }
+                                    if (result) resolve(result);
+                                    else reject(error);
                                 }
                             );
-                            streamifier.createReadStream(file.buffer).pipe(stream);
+                            streamifier.createReadStream(buf).pipe(stream);
                         });
                     };
                     
@@ -1733,22 +1783,17 @@ exports.updatePost = async (req, res) => {
             for (const file of req.files) {
                 try {
                     // Crear stream de datos para Cloudinary
-                    let streamUpload = (file) => {
+                    let streamUpload = async (file) => {
+                        const buf = await processImageIfNeeded(file.buffer);
                         return new Promise((resolve, reject) => {
                             let stream = cloudinary.uploader.upload_stream(
-                                {
-                                    folder: "posts",
-                                    resource_type: "image"
-                                },
+                                { folder: "posts", resource_type: "image" },
                                 (error, result) => {
-                                    if (result) {
-                                        resolve(result);
-                                    } else {
-                                        reject(error);
-                                    }
+                                    if (result) resolve(result);
+                                    else reject(error);
                                 }
                             );
-                            streamifier.createReadStream(file.buffer).pipe(stream);
+                            streamifier.createReadStream(buf).pipe(stream);
                         });
                     };
                     
@@ -2165,7 +2210,8 @@ exports.createMagazine = async (req, res) => {
         let imageUrl = '';
         
         // Función para subir imagen a Cloudinary
-        const streamUpload = (file) => {
+        const streamUpload = async (file) => {
+            const buf = await processImageIfNeeded(file.buffer);
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'magazines' },
@@ -2174,7 +2220,7 @@ exports.createMagazine = async (req, res) => {
                         else reject(error);
                     }
                 );
-                streamifier.createReadStream(file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
         
@@ -2247,7 +2293,8 @@ exports.updateMagazine = async (req, res) => {
         let imageUrl = magazine.image; // Mantener la imagen actual por defecto
         
         // Función para subir imagen a Cloudinary
-        const streamUpload = (file) => {
+        const streamUpload = async (file) => {
+            const buf = await processImageIfNeeded(file.buffer);
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'magazines' },
@@ -2256,7 +2303,7 @@ exports.updateMagazine = async (req, res) => {
                         else reject(error);
                     }
                 );
-                streamifier.createReadStream(file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
         
@@ -2403,7 +2450,8 @@ exports.createIndustry = async (req, res) => {
     let imageUrl = '';
 
     // Función para subir imagen a Cloudinary
-    const streamUpload = (file) => {
+    const streamUpload = async (file) => {
+      const buf = await processImageIfNeeded(file.buffer);
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: 'industry' },
@@ -2412,7 +2460,7 @@ exports.createIndustry = async (req, res) => {
             else reject(error);
           }
         );
-        streamifier.createReadStream(file.buffer).pipe(stream);
+        streamifier.createReadStream(buf).pipe(stream);
       });
     };
 
@@ -2558,5 +2606,51 @@ exports.deleteIndustry = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error al eliminar el perfil' });
+  }
+};
+
+
+// ── Validación de creativos profesionales ────────────────────────────────────
+
+/**
+ * GET /api/admin/pending-professionals
+ * Devuelve todos los usuarios con requestedCreativeLevel: 4 (pendientes de validar)
+ */
+exports.getPendingProfessionals = async (req, res) => {
+  try {
+    const users = await User.find({ requestedCreativeLevel: 4 })
+      .select('username fullName email profile city country creativeLevel creativeLevelName requestedCreativeLevel accountType role createdAt')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error al obtener usuarios pendientes.' });
+  }
+};
+
+/**
+ * PUT /api/admin/users/:userId/validate-professional
+ * Body: { action: 'approve' | 'reject' }
+ * approve → creativeLevel: 4, creativeLevelName: 'professional', requestedCreativeLevel: null
+ * reject  → requestedCreativeLevel: null (mantiene creativeLevel actual)
+ */
+exports.validateProfessional = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { action } = req.body;
+
+    if (!['approve', 'reject'].includes(action)) {
+      return res.status(400).json({ success: false, message: 'action debe ser "approve" o "reject".' });
+    }
+
+    const update = action === 'approve'
+      ? { creativeLevel: 4, creativeLevelName: 'professional', requestedCreativeLevel: null }
+      : { requestedCreativeLevel: null };
+
+    const user = await User.findByIdAndUpdate(userId, { $set: update }, { new: true });
+    if (!user) return res.status(404).json({ success: false, message: 'Usuario no encontrado.' });
+
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error al validar el usuario.' });
   }
 };

@@ -7,6 +7,8 @@ import LandingHero from '../components/landing/LandingHero';
 import LandingLinkSection from "../components/landing/LandingLinkSection";
 import LandingTemplatesParallax from "../components/landing/LandingTemplatesParallax";
 import LandingCreatorsShowcase from "../components/landing/LandingCreatorsShowcase";
+import LandingFiltersShowcase from "../components/landing/LandingFiltersShowcase";
+import LandingHeader from '../components/landing/LandingHeader';
 import LandingFinalCTA from "../components/landing/LandingFinalCTA";
 import LandingFooter from '../components/landing/LandingFooter';
 
@@ -20,6 +22,7 @@ const Home = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (location.state?.showRegister) {
@@ -41,27 +44,35 @@ const Home = () => {
 
   return (
   <div className="page-wrapper">
+    <LandingHeader
+      menuOpen={menuOpen}
+      setMenuOpen={setMenuOpen}
+      onLoginClick={() => setShowLogin(true)}
+      onRegisterClick={() => setShowRegister(true)}
+    />
+
     {/* Always render the landing page content */}
-    <LandingHero
+    {/* <LandingHero
       onRegisterClick={() => setShowRegister(true)}
       onLoginClick={() => setShowLogin(true)}
-    />
-    
-    <LandingLinkSection 
-    onCtaClick={() => setShowRegister(true)} />
+    /> */}
 
-    <LandingTemplatesParallax 
-    onCtaClick={() => setShowRegister(true)} />
+    {/* <LandingLinkSection
+    onCtaClick={() => setShowRegister(true)} /> */}
 
-    <LandingCreatorsShowcase
+    {/* <LandingTemplatesParallax
+    onCtaClick={() => setShowRegister(true)} /> */}
+
+    {/* <LandingCreatorsShowcase
       explorePath="/creatives"
       onRegisterClick={() => setShowRegister(true)}
-    />
+    /> */}
+
+    {/* <LandingFiltersShowcase /> */}
 
     <LandingFinalCTA
       onCtaClick={() => setShowRegister(true)}
     />
-
 
     <LandingFooter />
 

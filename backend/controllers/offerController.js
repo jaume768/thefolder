@@ -4,24 +4,25 @@ const User = require('../models/User');
 const streamifier = require('streamifier');
 const cloudinary = require('../config/cloudinary');
 const { escapeRegex } = require('../utils/textUtils');
+const { processImageIfNeeded } = require('../utils/imageProcessor');
 
 /**
  * Crear una nueva oferta.
- * Solo los usuarios con professionalType 1, 2 o 3 pueden crear ofertas de trabajo.
+ * Permitido: professionalType [1,2,3,5] (sistema viejo) o accountType 'industry' (sistema nuevo).
  */
 exports.createOffer = async (req, res) => {
     try {
-        const allowedTypes = [1, 2, 3, 5];
-        if (!allowedTypes.includes(req.user.professionalType)) {
-            return res.status(403).json({ 
-                message: "No tienes permiso para crear ofertas de trabajo. Solo los profesionales de tipo 1, 2 o 3 pueden crear ofertas.",
-                professionalType: req.user.professionalType 
+        const canCreate = [1, 2, 3, 5].includes(req.user.professionalType) || req.user.accountType === 'industry';
+        if (!canCreate) {
+            return res.status(403).json({
+                message: "No tienes permiso para crear ofertas de trabajo.",
             });
         }
 
         let companyLogo = null;
         if (req.file) {
             try {
+                const _bufOL = await processImageIfNeeded(req.file.buffer);
                 const result = await new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
                         { folder: 'company_logos' },
@@ -30,7 +31,7 @@ exports.createOffer = async (req, res) => {
                             else reject(error);
                         }
                     );
-                    streamifier.createReadStream(req.file.buffer).pipe(stream);
+                    streamifier.createReadStream(_bufOL).pipe(stream);
                 });
                 companyLogo = result.secure_url;
             } catch (uploadError) {
@@ -145,6 +146,7 @@ exports.createEducationalOffer = async (req, res) => {
                 }
 
                 // Subir imagen a Cloudinary
+                const _bufEO = await processImageIfNeeded(file.buffer);
                 const result = await new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
                         { folder: 'educational_offers' },
@@ -153,7 +155,7 @@ exports.createEducationalOffer = async (req, res) => {
                             else reject(error);
                         }
                     );
-                    streamifier.createReadStream(file.buffer).pipe(stream);
+                    streamifier.createReadStream(_bufEO).pipe(stream);
                 });
                 
                 headerImageUrl = result.secure_url;
@@ -841,16 +843,14 @@ exports.applyToOffer = async (req, res) => {
 
 /**
  * Obtener ofertas publicadas por la empresa autenticada.
- * Solo los usuarios con professionalType 1, 2 o 4 pueden acceder a esta función.
+ * Permitido: professionalType [1,2,4] (sistema viejo) o accountType 'industry' (sistema nuevo).
  */
 exports.getCompanyOffers = async (req, res) => {
     try {
-        // Verificar que el usuario autenticado es una empresa o institución
-        const allowedTypes = [1, 2, 4];
-        if (!allowedTypes.includes(req.user.professionalType)) {
-            return res.status(403).json({ 
-                message: "No tienes permiso para acceder a esta función. Solo las empresas e instituciones pueden ver sus ofertas publicadas.",
-                professionalType: req.user.professionalType 
+        const canAccess = [1, 2, 4].includes(req.user.professionalType) || req.user.accountType === 'industry';
+        if (!canAccess) {
+            return res.status(403).json({
+                message: "No tienes permiso para acceder a esta función.",
             });
         }
 

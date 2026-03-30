@@ -9,6 +9,9 @@ import React, {
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../components/controlPanel/css/MobileTopHeader.css";
+import LoginModal from "../components/landing/LoginModal";
+import RegisterModal from "../components/landing/RegisterModal";
+import SearchFullScreen from "../components/search/SearchFullScreen";
 
 // Mantén tus rutas
 const topMenuItems = [
@@ -16,8 +19,6 @@ const topMenuItems = [
   { label: "Creativos", to: "/creatives", auth: false },
   // { label: "Estudiar moda", to: "/fashion", auth: false },
   // { label: "Industria", to: "/industry", auth: false },
-  { label: "Guardados", to: "/guardados", auth: true },
-  { label: "Mi comunidad", to: "/community", auth: true },
 ];
 
 const resolveImg = (backendUrl, maybeUrl) => {
@@ -27,11 +28,13 @@ const resolveImg = (backendUrl, maybeUrl) => {
   return `${backendUrl}${clean}`;
 };
 
-const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
+const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [open, setOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const btnRef = useRef(null);
   const menuDialogRef = useRef(null);
 
@@ -39,17 +42,97 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
   const [userPic, setUserPic] = useState("");
   const [myUsername, setMyUsername] = useState("");
 
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showFullScreenSearch, setShowFullScreenSearch] = useState(false);
+  const searchTimeoutRef = useRef(null);
+  const mobileSearchInputRef = useRef(null);
+
   const token = localStorage.getItem("authToken");
   const menuItems = useMemo(() => topMenuItems, []);
 
   // visibilidad header según scroll (igual)
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(!hideAtTop);
   const lastYRef = useRef(0);
   const tickingRef = useRef(false);
 
   const headerRef = useRef(null);
 
-  useEffect(() => setOpen(false), [location.pathname]);
+  useEffect(() => {
+    setOpen(false);
+    setShowMobileSearch(false);
+    setSearchQuery("");
+    setSearchResults(null);
+    setShowFullScreenSearch(false);
+  }, [location.pathname]);
+
+  const performSearch = useCallback(async (term) => {
+    if (!term || term.trim().length < 2) {
+      setSearchResults(null);
+      return null;
+    }
+    try {
+      setIsSearching(true);
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const response = await axios.get(`${backendUrl}/api/users/search`, {
+        params: {
+          query: term.trim(),
+          searchByFullName: true,
+          searchByUsername: true,
+          includePosts: true,
+          includeUserPosts: true,
+        },
+      });
+      setSearchResults(response.data.results);
+      setIsSearching(false);
+      return response.data.results;
+    } catch {
+      setIsSearching(false);
+      return null;
+    }
+  }, []);
+
+  const handleMobileSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    clearTimeout(searchTimeoutRef.current);
+    if (!value || value.trim() === "") {
+      setSearchResults(null);
+      setShowFullScreenSearch(false);
+      return;
+    }
+    searchTimeoutRef.current = setTimeout(async () => {
+      if (value.trim().length >= 2) {
+        await performSearch(value);
+      }
+    }, 350);
+  };
+
+  const handleMobileSearchKeyDown = async (e) => {
+    if (e.key === "Enter" && searchQuery.trim().length >= 2) {
+      clearTimeout(searchTimeoutRef.current);
+      await performSearch(searchQuery);
+      setShowFullScreenSearch(true);
+    }
+    if (e.key === "Escape") {
+      setShowMobileSearch(false);
+      setSearchQuery("");
+      setSearchResults(null);
+      setShowFullScreenSearch(false);
+    }
+  };
+
+  const handleMobileSearchResultClick = (type, item) => {
+    setShowMobileSearch(false);
+    setOpen(false);
+    setSearchQuery("");
+    setSearchResults(null);
+    setShowFullScreenSearch(false);
+    if (type === "user") navigate(`/${item.username}`);
+    else if (type === "post") navigate(`/post/${item._id}`);
+  };
 
   useLayoutEffect(() => {
     const el = headerRef.current;
@@ -165,9 +248,9 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
           return;
         }
 
-        if (y <= 8) {
+        if (y <= 8 && !hideAtTop) {
           setIsHeaderVisible(true);
-        } else {
+        } else if (y > 8) {
           const delta = y - lastY;
           const threshold = 8;
           if (delta > threshold) setIsHeaderVisible(false);
@@ -225,12 +308,12 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
 
   const goRegister = () => {
     setOpen(false);
-    navigate("/", { state: { showRegister: true } });
+    setShowRegisterModal(true);
   };
 
   const goLogin = () => {
     setOpen(false);
-    navigate("/", { state: { showLogin: true } });
+    setShowLogin(true);
   };
 
   // (se mantienen por si luego quieres usar nombre/foto)
@@ -269,8 +352,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
           aria-expanded={open}
           aria-haspopup="dialog"
         >
-          MENÚ
-          {showMenuDot && <span className="header-dot" />}
+          {open ? "[ - ]" : "[ + ]"}
         </button>
       </div>
 
@@ -290,7 +372,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
               className="mobile-top-leftlink"
               onClick={() => go("/explorer", false)}
             >
-              THEFOLDER /
+              THEFOLDER
             </button>
 
             <button
@@ -299,12 +381,29 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
               onClick={() => setOpen(false)}
               aria-label="Cerrar"
             >
-              CERRAR
+              [  x  ]
             </button>
           </div>
 
           <div className="tf-menu__content register">
             {/* Links */}
+            {/* Buscador mobile */}
+
+          <div className="mth-search-container">
+            <div className="mth-search-trigger">
+              <button
+                type="button"
+                className="mth-search-icon-btn"
+                aria-label="Buscar"
+                onClick={() => {
+                  setShowMobileSearch(true);
+                  setTimeout(() => mobileSearchInputRef.current?.focus(), 50);
+                }}
+              >
+                <img src="/iconos/search.svg" alt="Buscar" className="mth-search-icon" />
+              </button>
+            </div>
+
             <div className="tf-menu__links register" role="menu">
               {menuItems.map((item) => {
                 const isActive = location.pathname.startsWith(item.to);
@@ -322,7 +421,9 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
                   </button>
                 );
               })}
-            </div>
+          </div>
+
+          </div>
 
             {/* ✅ NUEVO: bloque acciones (como preview) */}
             {token ? (
@@ -332,24 +433,47 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
                   className="mth-action mth-action--primary"
                   onClick={() => go("/createPost", true)}
                 >
+                  <img src="/iconos/upload-picture.png" alt="" className="mth-action-icon mth-action-icon--invert" aria-hidden="true" />
                   PUBLICAR
                 </button>
 
-                <button
-                  type="button"
-                  className="mth-action mth-action--ghost"
-                  onClick={goMyPublicProfile}
-                >
-                  MI PERFIL
-                </button>
+                <div className="mth-flex">
+                  <button
+                    type="button"
+                    className="mth-action mth-action--ghost"
+                    onClick={goMyPublicProfile}
+                  >
+                    <img src="/iconos/my-profile.png" alt="" className="mth-action-icon" aria-hidden="true" />
+                    MI PERFIL
+                  </button>
 
-                <button
-                  type="button"
-                  className="mth-action mth-action--ghost"
-                  onClick={() => go("/myprofile/edit", true)}
-                >
-                  EDITAR PERFIL
-                </button>
+                  <button
+                    type="button"
+                    className="mth-action mth-action--ghost"
+                    onClick={() => go("/myprofile/edit", true)}
+                  >
+                    <img src="/iconos/edit-my-profile.png" alt="" className="mth-action-icon" aria-hidden="true" />
+                    EDITAR PERFIL
+                  </button>
+
+                  <button
+                    type="button"
+                    className="mth-action mth-action--ghost"
+                    onClick={() => go("/community", true)}
+                  >
+                    <img src="/iconos/community.png" alt="" className="mth-action-icon icon-community" aria-hidden="true" />
+                    MI COMUNIDAD
+                  </button>
+
+                  <button
+                    type="button"
+                    className="mth-action mth-action--ghost"
+                    onClick={() => go("/guardados", true)}
+                  >
+                    <img src="/iconos/saved.png" alt="" className="mth-action-icon" aria-hidden="true" />
+                    GUARDADOS
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="tf-menu__actions">
@@ -379,7 +503,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
                   className="mth-footerlink"
                   onClick={handleLogout}
                 >
-                  CERRAR SESIÓN
+                  Cerrar sesión
                 </button>
 
                 <span className="mth-footersep" aria-hidden="true" />
@@ -389,12 +513,70 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp }) => {
                   className="mth-footerlink"
                   onClick={() => go("/myprofile/settings", true)}
                 >
-                  CONFIGURACIÓN
+                  Configuración
                 </button>
               </div>
             )}
           </div>
         </div>
+      )}
+
+      {showMobileSearch && (
+        <div className="mth-search-overlay" role="dialog" aria-modal="true" aria-label="Buscar">
+          <div className="mth-search-overlay__inner">
+            <button
+              type="button"
+              className="mth-search-close"
+              aria-label="Cerrar búsqueda"
+              onClick={() => {
+                setShowMobileSearch(false);
+                setSearchQuery("");
+                setSearchResults(null);
+                setShowFullScreenSearch(false);
+              }}
+            >
+              CERRAR
+            </button>
+
+            <div className="dashboard-search-pill expanded mth-search-pill">
+              <img src="/iconos/search.svg" alt="" className="mth-search-icon" aria-hidden="true" />
+              <input
+                ref={mobileSearchInputRef}
+                type="search"
+                className="modern-search-input"
+                placeholder="Buscar creativos, publicaciones..."
+                value={searchQuery}
+                onChange={handleMobileSearchChange}
+                onKeyDown={handleMobileSearchKeyDown}
+                autoComplete="off"
+              />
+            </div>
+
+            {showFullScreenSearch && searchQuery.trim().length >= 2 && (
+              <SearchFullScreen
+                results={searchResults || {}}
+                query={searchQuery}
+                isSearching={isSearching}
+                onResultClick={handleMobileSearchResultClick}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {showLogin && (
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onSwitchToRegister={() => { setShowLogin(false); setShowRegisterModal(true); }}
+          onSwitchToReset={() => setShowLogin(false)}
+        />
+      )}
+
+      {showRegisterModal && (
+        <RegisterModal
+          onClose={() => setShowRegisterModal(false)}
+          onSwitchToLogin={() => { setShowRegisterModal(false); setShowLogin(true); }}
+        />
       )}
     </>
   );

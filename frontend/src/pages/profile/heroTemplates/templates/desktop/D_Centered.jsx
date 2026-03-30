@@ -16,7 +16,7 @@ export default function D_Centered({
       : profile?.fullName || "Mi nombre";
 
     const tags = Array.isArray(profileHeadlines)
-      ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean)
+      ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean).slice(0, 2)
       : [];
 
   return (
@@ -54,14 +54,6 @@ export default function D_Centered({
         </div>
 
       </div>
-
-      {/* Chevron */}
-      <div className="hero__scroll" aria-hidden="true">
-        <svg width="16" height="12" viewBox="0 0 22 12">
-          <path d="M1 1 L11 11 L21 1" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      </div>
-
     </div>
   );
 }

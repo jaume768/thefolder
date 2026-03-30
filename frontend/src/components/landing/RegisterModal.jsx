@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/register-modal.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const RegisterModal = ({ onClose, onSwitchToLogin }) => {
   const [step, setStep] = useState("register");
@@ -30,6 +31,8 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
   const [verificationError, setVerificationError] = useState('');
   const [verificationSuccess, setVerificationSuccess] = useState('');
   const [resendMessage, setResendMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -278,7 +281,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
     <div className="login-modal" onClick={onClose}>
       <div className="register-shell" onClick={(e) => e.stopPropagation()}>
         <div className="register-left">
-          <img className="register-image" src="/multimedia/templates- (3)-login.jpg" alt="" />
+          <img className="register-image" src="/multimedia/login-thefolder-ainhoa.gif" alt="" />
         </div>
 
         <div className={`login-card login-card-register ${backendError || errors.incomplete || errors.passwordMismatch || verificationError ? 'with-error' : ''}`}>
@@ -330,7 +333,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                 <div className="input-group">
                   <label htmlFor="password">Contraseña</label>
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
                     placeholder="••••••"
@@ -338,12 +341,20 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                     onChange={handleChange}
                     required
                   />
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowPassword(v => !v)}
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  >
+                    {showPassword ? <FaEye /> : <FaEyeSlash />}
+                  </button>
                 </div>
 
                 <div className="input-group">
                   <label htmlFor="confirmPassword">Repetir contraseña</label>
                   <input
-                    type="password"
+                    type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="••••••"
@@ -351,6 +362,14 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                     onChange={handleChange}
                     required
                   />
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowConfirmPassword(v => !v)}
+                    aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  >
+                    {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
+                  </button>
                   {errors.passwordMismatch && <p className="error">{errors.passwordMismatch}</p>}
                 </div>
 

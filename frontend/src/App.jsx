@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthContextProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
-import CompleteRegistration from "./pages/CompleteRegistration";
+import CompleteRegistration from "./pages/CompleteRegistration"; // DEPRECATED
+import OnboardingWizard from "./pages/onboarding/OnboardingWizard";
 
 // Registro creativos
 import CompleteRegistrationCreativo from "./pages/creativos/CompleteRegistrationCreativo";
@@ -35,6 +36,7 @@ import FolderContent from "./pages/saved/FolderContentPage";
 
 import Industry from "./pages/industry/IndustryPage";
 import Explorer from "./pages/explorer/ExplorerPage";
+import TagFeed from "./pages/explorer/TagFeedPage";
 import Creatives from "./pages/creatives/CreativesPage";
 import Fashion from "./pages/fashion/FashionPage";
 import MyComunity from "./pages/community/CommunityPage";
@@ -67,8 +69,10 @@ import ProfileSettingsPage from "./pages/profile/ProfileSettingsPage";
 import "./pages/css/control-panel.css";
 
 function App() {
-  const AppWithLayout = ({ children, activeMenu, contentClassName }) => (
-    <Layout activeMenu={activeMenu} contentClassName={contentClassName}>
+  const isLoggedIn = !!localStorage.getItem("authToken");
+
+  const AppWithLayout = ({ children, activeMenu, contentClassName, hideAtTop }) => (
+    <Layout activeMenu={activeMenu} contentClassName={contentClassName} hideAtTop={hideAtTop}>
       {children}
     </Layout>
   );
@@ -118,8 +122,11 @@ function App() {
         <Route path="/mi-perfil/configuracion" element={<Navigate to="/myprofile/settings" replace />} />
         <Route path="/token-handler" element={<TokenHandler />} />
 
-        {/* Registro */}
-        <Route path="/complete-registration" element={<CompleteRegistration />} />
+        {/* Registro — wizard nuevo */}
+        <Route path="/complete-registration" element={<OnboardingWizard />} />
+
+        {/* Rutas deprecated del onboarding viejo — no borrar */}
+        <Route path="/complete-registration-legacy" element={<CompleteRegistration />} />
         <Route path="/creativo/registro" element={<CompleteRegistrationCreativo />} />
         <Route path="/photo/registro/03" element={<CompleteRegistrationCreativo03 />} />
         <Route path="/profesional/registro" element={<CompleteRegistrationProfesional />} />
@@ -131,6 +138,7 @@ function App() {
 
         {/* Públicas con Layout */}
         <Route path="/explorer" element={<AuthLayout activeMenu="explorer"><Explorer /></AuthLayout>} />
+        <Route path="/tags/:tag" element={<AuthLayout activeMenu="explorer"><TagFeed /></AuthLayout>} />
         <Route path="/post/:id" element={<AppWithLayout activeMenu="explorer"><ProtectedRoute><UserPost /></ProtectedRoute></AppWithLayout>}/>
         <Route path="/offers" element={<AppWithLayout activeMenu="offers"><Offers /></AppWithLayout>} />
         <Route path="/offers/:offerId" element={<AppWithLayout activeMenu="offers"><Offers /></AppWithLayout>} />
@@ -150,8 +158,8 @@ function App() {
         
 
         {/* Perfil público */}
-        <Route path="/profile/:username" element={<AppWithLayout activeMenu="creatives"><UserProfile /></AppWithLayout>} />
-        <Route path="/:username" element={<AppWithLayout activeMenu="creatives"><UserProfile /></AppWithLayout>} />
+        <Route path="/profile/:username" element={<AppWithLayout activeMenu="creatives" hideAtTop={!isLoggedIn}><UserProfile /></AppWithLayout>} />
+        <Route path="/:username" element={<AppWithLayout activeMenu="creatives" hideAtTop={!isLoggedIn}><UserProfile /></AppWithLayout>} />
 
         {/* Protegidas */}
         <Route path="/profile" element={<AppWithLayout activeMenu="profile"><ProtectedRoute><MiPerfil /></ProtectedRoute></AppWithLayout>} />

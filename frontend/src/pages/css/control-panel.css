@@ -153,11 +153,14 @@
 }
 
 .profile-wrapper.open .profile-options-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   opacity: 1;
   pointer-events: auto;
   border: 1px solid #d2d2d2;
   border-radius: 12px;
-  width: 230px;
+  width: 250px;
   padding: 12px 12px 24px;
   background: #fdfdfdcc;
   backdrop-filter: blur(12px) saturate(120%);
@@ -167,37 +170,77 @@
 .profile-options-modal-ul {
   list-style: none;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: #dbdad88a;
-  border-radius: 10px;
-  padding: 20px 0px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  border: none;
+}
+
+.profile-options-modal-ul li:nth-child(1),
+.profile-options-modal-ul li:nth-child(2) {
+  grid-column: 1 / -1;
 }
 
 .profile-options-modal li {
-  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 56px;
+  padding: 10px 12px;
+  background: #FDFDFD62;
+  border: 1px solid #D8D8D8;
+  border-radius: 12px;
   color: #333;
-  border: 0px;
-  font-size: 11px;
+  font-size: 10.5px;
   text-transform: uppercase;
-  line-height: 16px;
+  line-height: 14px;
   font-weight: 400;
-  font-family: 'Inter Tight',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   cursor: pointer;
-  transition: all .3s ease-in-out;
-  letter-spacing: 0.02rem;
-  text-align: center;
-  padding: 8px 16px;
+  transition: border-color .2s ease;
+  letter-spacing: 0.04rem;
+  text-align: left;
 }
 
 .profile-options-modal li:hover {
-  color: #333;
+  border-color: #aaa;
 }
 
-.profile-options-modal img {
-  width: 70px;
-  height: 90px;
+.profile-options-modal li:first-child {
+  background: #222;
+  color: #fff;
+  border-color: #222;
+}
+
+.profile-options-modal li.active {
+  border: solid 1.5px #333;
+}
+
+.profile-options-modal li:first-child .pom-icon {
+  filter: invert(1) !important;
+}
+
+.pom-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.community-pom-icon {
+  width: 20px;
+  height: 18px;
+  object-fit: cover;
+}
+
+.saved-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: cover;
 }
 
 /* Header user block (nuevo) */
@@ -219,7 +262,7 @@
 }
 
 .profile-options-name{
-  font-family: "Adamina", serif;
+  font-family: Inter, sans-serif;
   font-size: 22px;
   font-weight: 500;
   color:#111;
@@ -229,19 +272,9 @@
 /* Ajustes lista */
 .profile-wrapper.open .profile-options-modal-ul{
   background: transparent;
-  padding: 4px 0;
-  gap: 10px;
-}
-
-.profile-wrapper.open .profile-options-modal li{
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: solid 1px #d2d2d2;
-  color: #666;
-}
-
-.profile-wrapper.open .profile-options-modal li:hover{
-  color:#111;
+  padding: 0;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 /* Pill debajo del nombre */
@@ -257,7 +290,7 @@
   text-transform: uppercase;
   font-weight: 400;
   padding: 8px 16px;
-  border-radius: 50px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all ease-in-out 0.2s;
 }
@@ -267,29 +300,23 @@
 }
 
 /* Logout */
-.profile-options-logout{
-  padding-top: 12px;
-}
 
 .profile-options-logout-btn{
   width: 100%;
   border: 0;
   background: transparent;
   text-align: center;
-  padding: 8px 22px;
-  border-radius: 6px;
   cursor: pointer;
 
-  color: #555;
+  color: #b42318;
   font-family: 'Inter Tight',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-  letter-spacing: .02em;
-  font-size: 10px;
-  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 11px;
   font-weight: 400;
 }
 
 .profile-options-logout-btn:hover{
-  color: #111;
+  color: #b42318;
   text-decoration: underline;
 }
 
@@ -413,7 +440,7 @@
   justify-content: center;
   width: 100%;
   gap: 40px;
-  margin-top: 32px;
+  margin-top: 12px;
 }
 
 .my-masonry-grid_column {
@@ -591,7 +618,8 @@
   align-items: center;
   justify-content: center;
   margin: 2rem 0;
-  color: #666;
+  color: #888;
+  letter-spacing: 0.02em;
 }
 
 .spinner {
@@ -634,6 +662,7 @@
   padding: 20px;
   margin: 20px 0;
   width: 100%;
+  letter-spacing: 0.02em;
 }
 
 .end-message {
@@ -685,7 +714,7 @@
 
 /* 3 columnas */
 .header-left {
-  width: 240px;
+  width: 168px;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -736,7 +765,7 @@ button.header-left-link {
   align-content: center;
   gap: 5px;
   padding-right: 12px;
-  opacity: 0.55;
+  opacity: 0.65;
 }
 
 button.header-left-link.active {
@@ -750,8 +779,8 @@ button.header-left-link::after {
 }
 
 button.button.header-left-link.--text-medium {
-    font-size: 16px;
-    line-height: 16px;
+    font-size: 15px;
+    line-height: 17px;
     font-weight: 300;
 }
 
@@ -811,14 +840,14 @@ button.button.header-left-link.--text-medium {
 
 .create-main-btn.has-draft::after{
   content: "";
+  display: block;
   position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 10px;
-  height: 10px;
+  top: -1px;
+  right: -7px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
-  background: #2f6bff;
-  box-shadow: 0 0 0 2px #fff;
+  background: #0002ff;
   z-index: 5;
   pointer-events: none;
 }
@@ -873,7 +902,7 @@ img.search-sparkles-icon:hover {
 .header-dot {
   display: block;
   width: 1px;
-  height: 11px;
+  height: 12px;
   border-radius: 5%;
   background: currentColor;
   transform: rotate(15deg);
@@ -1013,6 +1042,12 @@ button.button.header-left-link:hover {
 
 /* <= 767px: MOBILE real (antes tenías 768 y te rompía iPad 768) */
 @media (max-width: 767px) {
+
+  .dashboard-search-pill {
+    width: -webkit-fill-available;
+    margin-top: 12px;
+  }
+
   .dashboard-sidebar {
     display: none;
   }
@@ -1045,7 +1080,6 @@ button.button.header-left-link:hover {
     padding: 0px 16px;
     margin-left: 0;
     margin-top: 4rem;
-    margin-bottom: 100px;
     padding-top: 64px;
   }
 
@@ -1061,12 +1095,13 @@ button.button.header-left-link:hover {
   .my-masonry-grid {
     width: 100%;
     gap: 24px;
+    margin-top: 0px;
   }
 
   h1.centerTitle {
     font-family: Inter Tight, sans-serif;
-    font-size: 90px;
-    line-height: 90px;
+    font-size: 10vw;
+    line-height: 10vw;
     font-weight: 500;
     color: #111;
     text-transform: uppercase;
@@ -1096,6 +1131,20 @@ button.button.header-left-link:hover {
   .user-info img {
     width: 24px;
     height: 24px;
+  }
+
+  .header-dot {
+    width: 1px;
+    height: 12px;
+  }
+
+  .header-dot.thefolder-dot {
+    display: block;
+    width: 1px;
+    height: 12px;
+    border-radius: 5%;
+    background: currentColor;
+    transform: rotate(15deg);
   }
 }
 

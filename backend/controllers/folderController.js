@@ -37,7 +37,7 @@ exports.addPostToFolder = async (req, res) => {
             return res.status(404).json({ message: 'Carpeta no encontrada' });
         }
         
-        if (folder.user.toString() !== req.user.id) {
+        if (folder.user.toString() !== req.user.id.toString()) {
             return res.status(403).json({ message: 'No tienes permiso para modificar esta carpeta' });
         }
         

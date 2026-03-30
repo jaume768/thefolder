@@ -5,11 +5,6 @@ import GalleryPreview from "../templates/GalleryPreview";
 import editCard from "../../../../../public/iconos/edit-card.svg";
 import trashDelete from "../../../../../public/iconos/trash-delete.svg";
 
-const MAX_HEADER_MB    = 2;
-const MAX_COVER_MB     = 1;
-const MAX_HEADER_BYTES = MAX_HEADER_MB * 1024 * 1024;
-const MAX_COVER_BYTES  = MAX_COVER_MB  * 1024 * 1024;
-
 const GALLERY_OPTIONS = [
   {
     id: "gap",
@@ -41,31 +36,29 @@ export default function ProfileAppearanceTab({
 
   headerDesktopFileRef,
   headerMobileFileRef,
-  creativeCoverFileRef,
 
   uploadHeaderVariant,
   deleteHeaderVariant,
-  uploadCreativeCover,
-  deleteCreativeCover,
 
   // ── Galería ──────────────────────────────────────────────────────────────
   galleryStyle,
   setGalleryStyle,
-}) {
-  const [activeTab, setActiveTab]               = useState("plantilla");
-  const [portadaModalOpen, setPortadaModalOpen] = useState(false);
-  const [headerSizeError, setHeaderSizeError]   = useState("");
-  const [coverSizeError,  setCoverSizeError]     = useState("");
 
-  const isDesktop        = coverView === "desktop";
-  const headerRef        = isDesktop ? headerDesktopFileRef : headerMobileFileRef;
-  const headerImage      = isDesktop ? draft?.featuredHeaderImageDesktop : draft?.featuredHeaderImageMobile;
+  // ── Layout de página ─────────────────────────────────────────────────────
+  profileLayout,
+  setProfileLayout,
+}) {
+  const [activeSubTab, setActiveSubTab]         = useState("portada");
+  const [portadaModalOpen, setPortadaModalOpen] = useState(false);
+  const [headerUploading, setHeaderUploading]   = useState(false);
+
+  const isClassic    = (profileLayout || "default") === "default";
+  const isDesktop    = coverView === "desktop";
+  const headerRef    = isDesktop ? headerDesktopFileRef : headerMobileFileRef;
+  const headerImage  = isDesktop ? draft?.featuredHeaderImageDesktop : draft?.featuredHeaderImageMobile;
   const selectedTemplate = isDesktop ? selectedTemplateDesktop : selectedTemplateMobile;
 
-  const closePortadaModal = () => {
-    setPortadaModalOpen(false);
-    setHeaderSizeError("");
-  };
+  const closePortadaModal = () => setPortadaModalOpen(false);
 
   const visibleTemplates = MOCK_TEMPLATES.filter((tpl) => {
     if (!tpl.supportedViews) return true;
@@ -79,216 +72,197 @@ export default function ProfileAppearanceTab({
       <div className="ux-card-main">
         <h2 className="ux-card-title-h2">Apariencia del perfil</h2>
         <p className="ux-card-subtitle">
-          Define tu portada (desktop y móvil), el estilo de tu hero y la imagen que se ve en el explorador.
+          Elige la plantilla de tu perfil y personaliza su apariencia.
         </p>
       </div>
 
-      {/* ── Barra de tabs ───────────────────────────────────────────────── */}
-      <div className="guardados-header-actions-bar">
-        <div className="ux-coverview-tabs" style={{ marginBottom: 0 }}>
-          <button
-            type="button"
-            className={`ux-edit-tab ${activeTab === "plantilla" ? "active" : ""}`}
-            onClick={() => setActiveTab("plantilla")}
-          >
-            Plantillas
-          </button>
-          <button
-            type="button"
-            className={`ux-edit-tab ${activeTab === "galeria" ? "active" : ""}`}
-            onClick={() => setActiveTab("galeria")}
-          >
-            Galería
-          </button>
-          <button
-            type="button"
-            className={`ux-edit-tab ${activeTab === "explorador" ? "active" : ""}`}
-            onClick={() => setActiveTab("explorador")}
-          >
-            Explorador
-          </button>
+      {/* ══════════════════════════════════════════════════════════════════
+          SELECTOR DE PLANTILLA
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="ux-card">
+        <div className="ux-iv-head">
+          <div className="ux-iv-title">Elige tu plantilla</div>
+          <div className="ux-iv-subtitle">
+            El contenido es el mismo, cambia la presentación.
+          </div>
         </div>
-      </div>
 
-      {/* ══════════════════════════════════════════════════════════════════
-          TAB 1 — PLANTILLAS
-      ══════════════════════════════════════════════════════════════════ */}
-      {activeTab === "plantilla" && (
-        <section className="ux-card">
+        <div className="ux-gallery-options">
 
+          {/* Opción 1 — Clásico */}
           <button
             type="button"
-            className="new-tablero-button new-profile"
-            onClick={() => setPortadaModalOpen(true)}
+            className={`ux-template-card ux-gallery-option ${isClassic ? "is-selected" : ""}`}
+            onClick={() => setProfileLayout("default")}
           >
-            <img src="/iconos/more.svg" alt="Cambiar" className="button-icon invert" />
-            Cambiar foto de portada
+            <div className="ux-layout-preview ux-layout-preview--default">
+              <div className="ulp-hero" />
+              <div className="ulp-content">
+                <div className="ulp-sidebar ulp-centered">
+                  <div className="ulp-line" />
+                  <div className="ulp-line ulp-line--short" />
+                </div>
+                <div className="ulp-grid ulp-grid--masonry">
+                  <div className="ulp-thumb ulp-thumb--tall" />
+                  <div className="ulp-thumb" />
+                  <div className="ulp-thumb ulp-thumb--tall" />
+                  <div className="ulp-thumb" />
+                </div>
+              </div>
+            </div>
+            <div className="ux-gallery-option-label">Clásico</div>
+            <div className="ux-gallery-option-desc">Hero de portada + galería de proyectos.</div>
+            {isClassic && <div className="ux-template-check">✓</div>}
           </button>
 
-          <div className="ux-iv-head">
-            <div className="ux-iv-title">Plantilla de portada</div>
-            <div className="ux-iv-subtitle">
-              Elige el estilo de tu portada. Selecciona una plantilla y adapta tu foto.
+          {/* Opción 2 — Índice editorial */}
+          <button
+            type="button"
+            className={`ux-template-card ux-gallery-option ${profileLayout === "index-gallery" ? "is-selected" : ""}`}
+            onClick={() => setProfileLayout("index-gallery")}
+          >
+            <div className="ux-layout-preview ux-layout-preview--index">
+              <div className="ulp-content ulp-content--full">
+                <div className="ulp-sidebar ulp-sidebar--narrow">
+                  <div className="ulp-line" />
+                  <div className="ulp-line ulp-line--short" />
+                  <div className="ulp-line ulp-line--short" />
+                </div>
+                <div className="ulp-grid ulp-grid--asymmetric">
+                  <div className="ulp-thumb ulp-thumb--wide" />
+                  <div className="ulp-thumb ulp-thumb--tall" />
+                  <div className="ulp-thumb ulp-thumb--sq" />
+                  <div className="ulp-thumb ulp-thumb--wide ulp-thumb--half" />
+                  <div className="ulp-thumb ulp-thumb--half" />
+                </div>
+              </div>
             </div>
-          </div>
+            <div className="ux-gallery-option-label">Editorial Index (BETA)</div>
+            <div className="ux-gallery-option-desc">Grid asimétrico tipo índice editorial.</div>
+            {profileLayout === "index-gallery" && <div className="ux-template-check">✓</div>}
+          </button>
 
-          <div className="ux-coverview-tabs">
-            <button
-              type="button"
-              className={`ux-edit-tab ${isDesktop ? "active" : ""}`}
-              onClick={() => setCoverView("desktop")}
-            >
-              Vista en ordenador
-              <span className="ux-coverview-icon" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className={`ux-edit-tab ${!isDesktop ? "active" : ""}`}
-              onClick={() => setCoverView("mobile")}
-            >
-              Vista en móvil
-              <span className="ux-coverview-icon mobile" aria-hidden="true" />
-            </button>
-          </div>
+        </div>
 
-          <div className="ux-template-grid">
-            {visibleTemplates.map((tpl) => {
-              const isSelected = selectedTemplate === tpl.id;
-              return (
+        {/* ── Sub-tabs: solo si Clásico está seleccionado ─────────────── */}
+        {isClassic && (
+          <div className="ux-card sub-tabs">
+            <div className="ux-coverview-tabs" style={{ marginBottom: 0 }}>
+              <button
+                type="button"
+                className={`ux-edit-tab ${activeSubTab === "portada" ? "active" : ""}`}
+                onClick={() => setActiveSubTab("portada")}
+              >
+                Portada
+              </button>
+              <button
+                type="button"
+                className={`ux-edit-tab ${activeSubTab === "galeria" ? "active" : ""}`}
+                onClick={() => setActiveSubTab("galeria")}
+              >
+                Galería
+              </button>
+            </div>
+
+            {/* SUB-TAB: PORTADA */}
+            {activeSubTab === "portada" && (
+              <>
                 <button
-                  key={`${coverView}-${tpl.id}`}
                   type="button"
-                  className={`ux-template-card ${isSelected ? "is-selected" : ""}`}
-                  onClick={() => selectTemplate(tpl.id)}
+                  className="new-tablero-button new-profile"
+                  onClick={() => setPortadaModalOpen(true)}
                 >
-                  <div className={`ux-template-preview ${!isDesktop ? "ux-template-preview--mobile" : ""}`}>
-                    <MiniHeroPreview
-                      templateId={tpl.id}
-                      profile={draft}
-                      isCompany={isCompany}
-                      isEducationalInstitution={isEducationalInstitution}
-                      imageUrl={coverPreviewImage}
-                      view={coverView}
-                    />
+                  <img src="/iconos/more.svg" alt="Cambiar" className="button-icon invert" />
+                  Cambiar foto de portada
+                </button>
+
+                <div className="ux-iv-head">
+                  <div className="ux-iv-title">Plantilla de portada</div>
+                  <div className="ux-iv-subtitle">
+                    Elige el estilo de tu portada. Selecciona una plantilla y adapta tu foto.
                   </div>
-                  {isSelected && <div className="ux-template-check">✓</div>}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════
-          TAB 2 — GALERÍA
-      ══════════════════════════════════════════════════════════════════ */}
-      {activeTab === "galeria" && (
-        <section className="ux-card">
-          <div className="ux-iv-head">
-            <div className="ux-iv-title">Estilo de galería</div>
-            <div className="ux-iv-subtitle">
-              Elige cómo se muestran tus publicaciones en tu perfil.
-            </div>
-          </div>
-
-          <div className="ux-gallery-options">
-            {GALLERY_OPTIONS.map((opt) => {
-              const isSelected = (galleryStyle || "gap") === opt.id;
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  className={`ux-template-card ux-gallery-option ${isSelected ? "is-selected" : ""}`}
-                  onClick={() => setGalleryStyle(opt.id)}
-                >
-                  {opt.preview}
-                  <div className="ux-gallery-option-label">{opt.label}</div>
-                  <div className="ux-gallery-option-desc">{opt.description}</div>
-                  {isSelected && <div className="ux-template-check">✓</div>}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════
-          TAB 3 — EXPLORADOR
-      ══════════════════════════════════════════════════════════════════ */}
-      {activeTab === "explorador" && (
-        <section className="ux-card">
-          <div className="ux-iv-head">
-            <div className="ux-iv-title">Imagen para el explorador de creativos</div>
-            <div className="ux-iv-subtitle">
-              Se muestra en la cuadrícula del explorador de Creativos.
-            </div>
-          </div>
-
-          <div className="ux-creative-card">
-            <div
-              className="ux-creative-preview"
-              role="button"
-              tabIndex={0}
-              onClick={() => creativeCoverFileRef.current?.click()}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") creativeCoverFileRef.current?.click();
-              }}
-              style={{ cursor: "pointer" }}
-              title="Haz clic para subir/cambiar imagen"
-            >
-              <input
-                ref={creativeCoverFileRef}
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  if (file.size > MAX_COVER_BYTES) {
-                    setCoverSizeError(`La imagen pesa ${(file.size / 1024 / 1024).toFixed(1)} MB. El límite es ${MAX_COVER_MB} MB.`);
-                    e.target.value = "";
-                    return;
-                  }
-                  setCoverSizeError("");
-                  uploadCreativeCover(file);
-                  e.target.value = "";
-                }}
-              />
-              {draft?.creativeCoverDesktop ? (
-                <img className="ux-creative-bg" src={draft.creativeCoverDesktop} alt="Imagen para explorador" />
-              ) : (
-                <div className="ux-iv-placeholder ux-creative-placeholder">
-                  <span className="ux-iv-camera">📷</span>
                 </div>
-              )}
-            </div>
 
-            <div className="ux-creative-footer">
-              <div className="ux-iv-actions ux-creative-actions">
-                <button className="ux-link-btn" type="button" onClick={() => creativeCoverFileRef.current?.click()}>
-                  <img src={editCard} className="ux-icon" alt="Editar" /> Editar
-                </button>
-                <span className="ux-iv-sep">|</span>
-                <button className="ux-link-btn danger" type="button" onClick={() => deleteCreativeCover()}>
-                  <img src={trashDelete} className="ux-icon" alt="Borrar" /> Borrar
-                </button>
-              </div>
-
-              <div className="ux-iv-hints">
-                {coverSizeError && (
-                  <p className="ux-msg-error" style={{ marginBottom: 8 }}>{coverSizeError}</p>
-                )}
-                <div>Peso máximo recomendado: <strong>Menos de 1 MB</strong></div>
-                <div>
-                  <strong>Consejo:</strong> Evita usar la misma imagen que en tu portada.
-                  Combinar imágenes distintas hace tu perfil más interesante visualmente.
+                <div className="ux-coverview-tabs">
+                  <button
+                    type="button"
+                    className={`ux-edit-tab ${isDesktop ? "active" : ""}`}
+                    onClick={() => setCoverView("desktop")}
+                  >
+                    Ordenador
+                    <span className="ux-coverview-icon" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`ux-edit-tab ${!isDesktop ? "active" : ""}`}
+                    onClick={() => setCoverView("mobile")}
+                  >
+                    Móvil
+                    <span className="ux-coverview-icon mobile" aria-hidden="true" />
+                  </button>
                 </div>
-                <div className="ux-iv-note">Este cambio puede tardar unos minutos en establecerse.</div>
-              </div>
-            </div>
+
+                <div className="ux-template-grid">
+                  {visibleTemplates.map((tpl) => {
+                    const isSelected = selectedTemplate === tpl.id;
+                    return (
+                      <button
+                        key={`${coverView}-${tpl.id}`}
+                        type="button"
+                        className={`ux-template-card ${isSelected ? "is-selected" : ""}`}
+                        onClick={() => selectTemplate(tpl.id)}
+                      >
+                        <div className={`ux-template-preview ${!isDesktop ? "ux-template-preview--mobile" : ""}`}>
+                          <MiniHeroPreview
+                            templateId={tpl.id}
+                            profile={draft}
+                            isCompany={isCompany}
+                            isEducationalInstitution={isEducationalInstitution}
+                            imageUrl={coverPreviewImage}
+                            view={coverView}
+                          />
+                        </div>
+                        {isSelected && <div className="ux-template-check">✓</div>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* SUB-TAB: GALERÍA */}
+            {activeSubTab === "galeria" && (
+              <>
+                <div className="ux-iv-head">
+                  <div className="ux-iv-title">Estilo de galería</div>
+                  <div className="ux-iv-subtitle">
+                    Elige cómo se muestran tus publicaciones en tu perfil.
+                  </div>
+                </div>
+
+                <div className="ux-gallery-options">
+                  {GALLERY_OPTIONS.map((opt) => {
+                    const isSelected = (galleryStyle || "gap") === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        className={`ux-template-card ux-gallery-option ${isSelected ? "is-selected" : ""}`}
+                        onClick={() => setGalleryStyle(opt.id)}
+                      >
+                        {opt.preview}
+                        <div className="ux-gallery-option-label">{opt.label}</div>
+                        <div className="ux-gallery-option-desc">{opt.description}</div>
+                        {isSelected && <div className="ux-template-check">✓</div>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       {/* ══════════════════════════════════════════════════════════════════
           MODAL — IMAGEN DE PORTADA
@@ -321,17 +295,17 @@ export default function ProfileAppearanceTab({
                 <button
                   type="button"
                   className={`ux-edit-tab ${isDesktop ? "active" : ""}`}
-                  onClick={() => { setCoverView("desktop"); setHeaderSizeError(""); }}
+                  onClick={() => { setCoverView("desktop"); }}
                 >
-                  Vista en ordenador
+                  Ordenador
                   <span className="ux-coverview-icon" aria-hidden="true" />
                 </button>
                 <button
                   type="button"
                   className={`ux-edit-tab ${!isDesktop ? "active" : ""}`}
-                  onClick={() => { setCoverView("mobile"); setHeaderSizeError(""); }}
+                  onClick={() => { setCoverView("mobile"); }}
                 >
-                  Vista en móvil
+                  Móvil
                   <span className="ux-coverview-icon mobile" aria-hidden="true" />
                 </button>
               </div>
@@ -352,19 +326,15 @@ export default function ProfileAppearanceTab({
                   type="file"
                   accept="image/*"
                   style={{ display: "none" }}
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    if (file.size > MAX_HEADER_BYTES) {
-                      setHeaderSizeError(`La imagen pesa ${(file.size / 1024 / 1024).toFixed(1)} MB. El límite es ${MAX_HEADER_MB} MB.`);
-                      e.target.value = "";
-                      return;
-                    }
-                    setHeaderSizeError("");
-                    uploadHeaderVariant(isDesktop ? "desktop" : "mobile", file);
                     e.target.value = "";
+                    setHeaderUploading(true);
+                    try { await uploadHeaderVariant(isDesktop ? "desktop" : "mobile", file); } finally { setHeaderUploading(false); }
                   }}
                 />
+                {headerUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
                 {headerImage ? (
                   <img src={headerImage} alt={`Portada - ${isDesktop ? "desktop" : "móvil"}`} />
                 ) : (
@@ -374,7 +344,7 @@ export default function ProfileAppearanceTab({
                 )}
               </div>
 
-              <div className="ux-iv-caption">{isDesktop ? "Vista en ordenador" : "Vista en móvil"}</div>
+              <div className="ux-iv-caption">{isDesktop ? "Imagen en ordenador" : "Imagen en móvil"}</div>
 
               <div className="ux-iv-actions">
                 <button className="ux-link-btn" type="button" onClick={() => headerRef.current?.click()}>
@@ -390,20 +360,8 @@ export default function ProfileAppearanceTab({
                 </button>
               </div>
 
-              {headerSizeError && (
-                <p className="ux-msg-error" style={{ marginTop: 8 }}>{headerSizeError}</p>
-              )}
-
               <div className="ux-iv-hints" style={{ marginTop: 12 }}>
-                {isDesktop ? (
-                  <div>Peso máximo recomendado: <strong>Menos de 2 MB</strong></div>
-                ) : (
-                  <>
-                    <div>Tamaño recomendado: <strong>Vertical 9:16</strong></div>
-                    <div>Ejemplo: <strong>1080×1920 px</strong></div>
-                    <div>Peso máximo recomendado: <strong>Menos de 2 MB</strong></div>
-                  </>
-                )}
+                <div>Cualquier formato (JPG, PNG, HEIC…). Se optimiza automáticamente.</div>
                 <div className="ux-iv-note">Este cambio puede tardar unos minutos en establecerse.</div>
               </div>
 

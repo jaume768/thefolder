@@ -1,74 +1,146 @@
-:root{
+/* =============================================
+   THEFOLDER — LANDING HERO
+   Grid: 12 columnas
+   Mobile: responsive
+   ============================================= */
+
+:root {
   --text: #0b0b0b;
   --muted: #6a6a6a;
   --hair: rgba(0,0,0,.10);
   --shadow: 0 12px 35px rgba(0,0,0,.08);
   --radius: 14px;
   --radius-pill: 999px;
-
-  /* Cambia aquí si tienes fuentes de marca */
   --font-sans: 'Inter Tight', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-  --font-serif: "Adamina", ui-serif, Georgia, "Times New Roman", serif;
+  --font-serif: Inter, sans-serif;
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Grid */
+  --cols: 12;
+  --gutter: 0px;
+  --page-px: 48px; /* padding lateral página */
 }
 
-.tf-hero{
+/* =============================================
+   HERO SECTION
+   ============================================= */
+
+.tf-hero {
   color: var(--text);
   min-height: 100vh;
   position: relative;
   overflow: hidden;
 }
 
-/* NAV */
+/* =============================================
+   HERO GRID — 12 columnas
+   Copy: col 1-6
+   Media: col 7-12 (sangra al borde derecho)
+   ============================================= */
+
+.tf-hero__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: 100vh;
+  gap: var(--gutter);
+  /* Sin padding derecho — la imagen sangra al borde */
+  padding-left: var(--page-px);
+  padding-right: 0;
+}
+
+/* COPY — columnas 1 a 6 */
+.tf-hero__copy {
+  grid-column: 1 / 7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 120px !important; /* espacio para el navbar */
+  padding-right: 48px;
+}
+
+/* MEDIA — columnas 7 a 13 (sangra al borde) */
+.tf-hero__media {
+  grid-column: 7 / 13;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* =============================================
+   TIPOGRAFÍA
+   ============================================= */
+
+.tf-h1 {
+  font-family: "Inter Tight", var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0px;
+  line-height: 64px;
+  margin: 0 0 8px;
+  font-size: 60px;
+}
+
+.tf-sub {
+  margin: 0;
+  color: #444;
+  font-family: "Inter Tight", var(--font-sans);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 23px;
+  letter-spacing: .02em;
+}
+
+/* =============================================
+   RESPONSIVE — Visibility helpers
+   ============================================= */
+
+.tf-only-mobile-h1 { display: none; }
+.tf-only-mobile    { display: none; }
+.tf-only-desktop   { display: block; }
+
+/* =============================================
+   NAV
+   ============================================= */
+
 .tf-nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 50;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 14px 34px;
-
-  /* Glass */
   background: rgba(253, 253, 253, 0.48);
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
-
-  /* Fade inferior */
-  mask-image: linear-gradient(
-    to bottom,
-    rgba(0,0,0,1) 70%,
-    rgba(0,0,0,0) 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    rgba(0,0,0,1) 70%,
-    rgba(0,0,0,0) 100%
-  );
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
 }
 
-.tf-nav__left {
-    width: 230px;
-}
+.tf-nav__left  { width: 230px; }
 
-
-.tf-logo{
+.tf-logo {
   font-family: var(--font-serif);
   font-weight: 600;
   letter-spacing: -0.5px;
   font-size: 34px;
 }
 
-.tf-nav__center{
-  display:flex;
+.tf-nav__center {
+  display: flex;
   gap: 34px;
-  align-items:center;
+  align-items: center;
 }
 
-.tf-nav__link{
+.tf-nav__link {
   background: transparent;
   border: 0;
   color: var(--text);
@@ -79,199 +151,74 @@
   cursor: pointer;
   opacity: .8;
 }
-.tf-nav__link:hover{ opacity: 1; }
+.tf-nav__link:hover { opacity: 1; }
 
-.tf-nav__right{
-  display:flex;
+.tf-nav__right {
+  display: flex;
   gap: 16px;
-  align-items:center;
+  align-items: center;
 }
 
-.tf-btn{
+/* =============================================
+   BOTONES
+   ============================================= */
+
+.tf-btn {
   border: 1px solid transparent;
-  cursor:pointer;
+  cursor: pointer;
   font-family: var(--font-sans);
 }
 
-.tf-btn--primary{
+.tf-btn--primary {
   background: #000;
-  color:#fff;
+  color: #fff;
   border-radius: 6px;
   padding: 6px 16px;
   font-size: 11px;
   letter-spacing: .06em;
   text-transform: uppercase;
 }
-.tf-btn--primary:hover{ filter: brightness(.92); }
+.tf-btn--primary:hover { filter: brightness(.92); }
 
-.tf-btn--pill{
-  background:#000;
-  color:#fff;
+.tf-btn--pill {
+  background: #000;
+  color: #fff;
   border-radius: 8px;
   padding: 8px 16px;
   font-size: 11px;
   letter-spacing: .06em;
   text-transform: uppercase;
-  display:inline-flex;
-  align-items:center;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
+  transition: transform .22s var(--ease-luxe), filter .22s var(--ease-luxe);
 }
-.tf-italic{ font-style: italic; opacity: .9; }
-
-/* Burger (solo mobile) */
-.tf-burger{
-  display:none;
-  width: 42px;
-  height: 42px;
-  border: 0;
-  background: transparent;
-  cursor:pointer;
-  align-items:center;
-  justify-content:center;
-  gap: 5px;
-  flex-direction: column;
-}
-.tf-burger span{
-  display:block;
-  width: 18px;
-  height: 1.5px;
-  background: var(--text);
-  opacity: .7;
+.tf-btn--pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(.95);
 }
 
-.tf-creatorCard__meta {
-    margin-top: 4px;
-}
+.tf-italic { font-style: italic; opacity: .9; }
 
-/* HERO GRID */
-.tf-hero__grid{
-  height: 100vh;
-  display:flex;
-  flex-direction: row;
-  gap: 26px;
-  align-items: center;
-  justify-content: space-around;
-  padding: 110px 34px 70px;
-}
-
-.tf-dots{
-  position: fixed;
-  display:flex;
-  flex-direction: column;
-  align-items:center;
-  gap: 18px;
-  padding-top: 160px;
-  padding-bottom: 100px;
-  padding-left: 40px;
-  height: 100vh;
-  justify-content: space-around;
-  width: 20px;
-}
-.tf-dot{
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: #111;
-  opacity: .8;
-}
-.tf-dot--spacer{
-  opacity: 0;
-  height: 60px;
-}
-
-.tf-hero__copy{
-  max-width: 720px;
-  padding-top: 8px;
-}
-
-.tf-h1{
-  font-family: 'Inter Tight', var(--font-sans);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: .02em;
-  line-height: .95;
-  margin: 0 0 12px 0;
-  font-size: 42px;
-}
-
-.tf-sub{
-  margin: 0;
-  color:#444;
-  font-family: 'Inter Tight', var(--font-sans);
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 17px;
-  letter-spacing: 0.02em;
-  margin-bottom: 8px;
-}
-
-/* Right image stack */
-.tf-hero__media{
-  display: flex;
-  justify-content: center;
-  height: 80vh;
-}
-
-.tf-stack{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  height: 100%;
-}
-
-.tf-card {
-  width: 120px;
-}
-
-@media (min-width: 1680px) {
-  .tf-card {
-    width: 160px;
-  }
-}
-
-@media (min-width: 1920px) {
-  .tf-card {
-    width: 200px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .tf-card {
-    width: 240px;
-  }
-}
-
-.tf-card img {
+.tf-btn.tf-btn--CTA {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  background: #000;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  text-align: left;
+  font-family: "Inter Tight", sans-serif;
 }
 
-/* Ultra wide (opcional) */
-@media (min-width: 2560px) {
-  .tf-card img {
-    max-width: 220px;
-  }
-}
+/* =============================================
+   COOKIE — Desktop
+   ============================================= */
 
-.tf-hero__media{
-  height: clamp(500px, 80vh, 900px);
-}
-
-/* Chevron */
-.tf-chevron{
-  position:absolute;
-  left: 50%;
-  bottom: 40px;
-  transform: translateX(-50%);
-  opacity: .6;
-}
-
-/* COOKIE DESKTOP */
-.tf-cookie{
+.tf-cookie {
   position: fixed;
   right: 34px;
   bottom: 36px;
@@ -282,17 +229,17 @@
   box-shadow: var(--shadow);
   z-index: 40;
 }
-.tf-cookie__text{
+.tf-cookie__text {
   margin: 0 0 14px;
   font-family: var(--font-sans);
   font-size: 13px;
   color: #5d5d5d;
   line-height: 1.45;
 }
-.tf-btn--cookie{
-  width:100%;
-  background:#000;
-  color:#fff;
+.tf-btn--cookie {
+  width: 100%;
+  background: #000;
+  color: #fff;
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 13px;
@@ -300,73 +247,95 @@
   font-weight: 300;
   letter-spacing: 0.02em;
 }
-
-.tf-btn.tf-btn--CTA {
-  width:100%;
-  background:#000;
-  color:#fff;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 13px;
-  line-height: 17px;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-}
-
-.tf-cookie__link{
-  display:block;
-  text-align:center;
+.tf-cookie__link {
+  display: block;
+  text-align: center;
   margin-top: 10px;
   font-size: 12px;
   color: #7a7a7a;
   text-decoration: none;
 }
-.tf-cookie__link:hover{ text-decoration: underline; }
+.tf-cookie__link:hover { text-decoration: underline; }
 
-/* MOBILE MENU */
-.tf-menu{
+/* =============================================
+   COOKIE — Mobile sheet
+   ============================================= */
+
+.tf-cookieSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: flex-end;
+}
+.tf-cookieSheet__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.25);
+}
+.tf-cookieSheet__panel {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  padding: 22px 18px 18px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.tf-cookieSheet__btn {
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.tf-cookieSheet { z-index: 6000; }
+
+/* =============================================
+   MOBILE MENU
+   ============================================= */
+
+.tf-menu {
   position: fixed;
   inset: 0;
   background: #fff;
-  z-index: 60;
-  display:flex;
+  z-index: 5999;
+  display: flex;
   flex-direction: column;
 }
-.tf-menu__top{
-  display:flex;
-  align-items:center;
+.tf-menu__top {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 14px 34px;
 }
-.tf-x{
+.tf-x {
   width: 42px;
   height: 42px;
   background: transparent;
   border: 0;
   font-size: 28px;
-  cursor:pointer;
-  opacity:.7;
+  cursor: pointer;
+  opacity: .7;
 }
-.tf-menu__content{
-  flex:1;
-  display:flex;
+.tf-menu__content {
+  flex: 1;
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items:center;
+  align-items: center;
   gap: 26px;
   padding: 0 20px 24px;
 }
-.tf-menu__links{
+.tf-menu__links {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  justify-content: flex-end;
+  gap: 12px;
 }
-.tf-menu__link{
+.tf-menu__link {
   background: transparent;
   border: 0;
-  cursor:pointer;
+  cursor: pointer;
   font-family: var(--font-sans);
   text-transform: uppercase;
   letter-spacing: .06em;
@@ -374,12 +343,12 @@
   opacity: .75;
   color: #444;
 }
-.tf-menu__divider{
+.tf-menu__divider {
   width: min(520px, 80%);
   height: 1px;
   background: var(--hair);
 }
-.tf-menu__actions{
+.tf-menu__actions {
   display: flex;
   flex-direction: row;
   gap: 12px;
@@ -388,200 +357,71 @@
   align-items: center;
   justify-content: space-between;
 }
-.tf-btn--wide{
+.tf-btn--wide {
   width: 100%;
   border-radius: 12px;
   padding: 14px 16px;
 }
-.tf-btn--ghost{
+.tf-btn--ghost {
   background: #fff;
-  color:#000;
+  color: #000;
   border: 1px solid var(--hair);
   text-transform: uppercase;
   letter-spacing: .06em;
   font-size: 12px;
 }
 
-/* Cookie sheet mobile */
-.tf-cookieSheet{
-  position: fixed;
-  inset: 0;
-  z-index: 55;
-  display:flex;
-  align-items:flex-end;
+/* =============================================
+   BURGER
+   ============================================= */
+
+.tf-burger {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-direction: column;
 }
-.tf-cookieSheet__overlay{
-  position:absolute;
-  inset:0;
-  background: rgba(0,0,0,.25);
+.tf-burger span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--text);
+  opacity: .7;
 }
-.tf-cookieSheet__panel{
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-  background: #fff;
-  padding: 22px 18px 18px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  box-shadow: var(--shadow);
+.tf-burger-x {
+  font-size: 28px;
+  line-height: 1;
+  opacity: .7;
 }
-
-
-.tf-cookieSheet__btn{
-  border-radius: 12px;
-  text-transform: uppercase;
-  letter-spacing: .08em;
+.tf-burger.is-open {
+  width: auto;
+  padding: 0 6px;
 }
-
-/* Responsive */
-.tf-only-mobile-h1{ display:none; }
-.tf-only-mobile{ display:none; }
-.tf-only-desktop{ display:block; }
-
-@media (max-width: 960px){
-
-  .tf-nav__center,
-  .tf-nav__login,
-  .tf-nav__cta{
-    display:none;
-  }
-
-  .tf-burger{ display:flex; }
-
-  .tf-hero__grid{
-    flex-direction: column-reverse;
-    padding: 80px 24px 80px;
-    gap: 24px;
-  }
-  .tf-dots{ display:none; }
-
-  .tf-hero__media{
-    justify-content: center;
-    height: fit-content;
-  }
-  .tf-stack{ gap: 10px; align-items: center; }
-
-  .tf-card {
-    width: 77.5%; 
-  }
-
-  .tf-card img{
-    max-width: 120px;
-  }
-
-  .tf-cta-mobile {
-    font-size: 13px;
-  }
-
-  .tf-hero__copy{
-    text-align: left;
-    max-width: 520px;
-    margin: 0 auto;
-  }
-  .tf-h1{
-    font-size: 44px;
-    line-height: .95;
-  }
-
-  .tf-only-mobile{ display:block; font-size: 13px; letter-spacing: 0.02rem;}
-  .tf-only-mobile-h1{ display:block; font-size: 22px; margin-bottom: 8px; text-align: center; }
-  .tf-only-desktop{ display:none; }
-
-  p.tf-sub.tf-only-mobile.tf-reveal {
-    margin-top: 8px;
-  }
-
-
-  /* En mobile, el cookie desktop no */
-  .tf-cookie.tf-only-desktop{ display:none; }
-}
- 
-/* ===== Ajustes premium: más lento + menos blur ===== */
-
-:root{
-  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+span.tf-close-text {
+  font-family: 'Inter Tight';
+  letter-spacing: 0.06em;
+  width: fit-content;
+  background: transparent;
+  opacity: .6;
+  font-size: 11px;
+  height: fit-content;
 }
 
-/* NAV (un pelín más lento) */
-.tf-hero.tf-ready .tf-nav{
-  opacity: 0;
-  transform: translateY(-10px);
-  animation: tfNavIn .8s var(--ease-luxe) forwards;
-}
-@keyframes tfNavIn{
-  to { opacity: 1; transform: translateY(0); }
+/* =============================================
+   LANDING HEADER OVERRIDES
+   ============================================= */
+
+.landing-header .mobile-top-menubtn { display: none; }
+@media (max-width: 960px) {
+  .landing-header .mobile-top-menubtn { display: inline-flex; }
 }
 
-/* TITULO (más presencia) */
-.tf-hero.tf-ready .tf-hero__copy .tf-h1{
-  opacity: 0;
-  transform: translateY(12px);
-  animation: tfTitleIn .85s var(--ease-luxe) forwards;
-  animation-delay: .18s;
-  text-align: left;
-}
-
-@keyframes tfTitleIn{
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* SUB (más lento y con menos salto) */
-.tf-hero.tf-ready .tf-hero__copy .tf-sub{
-  opacity: 0;
-  transform: translateY(8px);
-  animation: tfSubIn .75s var(--ease-luxe) forwards;
-  animation-delay: .45s;
-}
-@keyframes tfSubIn{
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* CTA (entra con calma) */
-.tf-hero.tf-ready .tf-hero__copy .tf-btn--pill{
-  opacity: 0;
-  transform: translateY(6px) scale(.985);
-  animation: tfCtaIn .65s var(--ease-luxe) forwards;
-  animation-delay: .70s;
-}
-@keyframes tfCtaIn{
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Hover micro-luxe (un pelín más suave) */
-.tf-btn--pill{
-  transition: transform .22s var(--ease-luxe), filter .22s var(--ease-luxe);
-}
-.tf-btn--pill:hover{
-  transform: translateY(-1px);
-  filter: brightness(.95);
-}
-
-/* IMAGENES: menos blur + más lento */
-.tf-hero.tf-ready .tf-card{
-  opacity: 0;
-  transform: translateY(16px);
-  filter: blur(3px);              /* antes 8px */
-  animation: tfCardIn 1.05s var(--ease-luxe) forwards; /* antes 0.75s */
-}
-@keyframes tfCardIn{
-  to { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
-
-/* Stagger más “editorial” (más espacio entre entradas) */
-.tf-hero.tf-ready .tf-card:nth-child(1){ animation-delay: .55s; }
-.tf-hero.tf-ready .tf-card:nth-child(2){ animation-delay: .75s; }
-.tf-hero.tf-ready .tf-card:nth-child(3){ animation-delay: .95s; }
-
-@keyframes tfChevronIn{
-  to { opacity: .6; }
-}
-@keyframes tfChevronFloat{
-  50% { transform: translateX(-50%) translateY(6px); }
-}
-
-/* ====== LandingHeader usando estilos del header registrado ====== */
-
-/* Alineación consistente del botón THEFOLDER */
 .tf-nav .header-left-link {
   background: transparent;
   border: 0;
@@ -590,25 +430,9 @@
   align-items: center;
   gap: 8px;
 }
-
-/* Evita que el botón herede cosas raras del reset */
-.tf-nav .button.header-left-link {
-  padding: 0;
-}
-
-button.button.header-left-link {
-    padding-right: 0px;
-}
-
-/* Asegura que el dot no rompa la altura del nav */
-.tf-nav .header-dot {
-  display: inline-block;
-}
-
-/* Mobile: ocultar navegación central (ya lo haces, pero garantizamos por si cambia) */
-@media (max-width: 960px){
-  .tf-nav__center { display: none !important; }
-}
+button.button.header-left-link { padding: 0; }
+button.button.header-left-link { padding-right: 0px; }
+.tf-nav .header-dot { display: inline-block; }
 
 .tf-nav .tf-nav__left .header-left-link {
   font-family: var(--font-serif);
@@ -618,8 +442,6 @@ button.button.header-left-link {
   text-transform: none;
   opacity: 1;
 }
-
-/* THEFOLDER como marca en el menú móvil */
 .tf-menu__brand {
   font-family: var(--font-serif);
   font-weight: 600;
@@ -631,12 +453,166 @@ button.button.header-left-link {
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .dashboard-header { display: none !important; }
+header.dashboard-header.landing-header { justify-content: space-between; }
+
+.landing-header__row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* Landing: permitir que el dashboard-header se vea en mobile */
+.landing-mobile-panel { display: none; width: 100%; margin-top: 10px; padding-top: 12px; }
+header.dashboard-header.landing-header.is-open .landing-mobile-panel {
+  display: flex;
+  height: 85dvh;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 100px;
+}
+.landing-mobile-panel__links {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 6px 0 12px;
+  align-items: center;
+}
+.landing-mobile-panel__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 24px;
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+
+.tf-hero.tf-ready .tf-nav {
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: tfNavIn .8s var(--ease-luxe) forwards;
+}
+@keyframes tfNavIn { to { opacity: 1; transform: translateY(0); } }
+
+.tf-hero.tf-ready .tf-hero__copy .tf-h1 {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: tfTitleIn .85s var(--ease-luxe) forwards;
+  animation-delay: .18s;
+}
+@keyframes tfTitleIn { to { opacity: 1; transform: translateY(0); } }
+
+.tf-hero.tf-ready .tf-hero__copy .tf-sub {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: tfSubIn .75s var(--ease-luxe) forwards;
+  animation-delay: .45s;
+}
+@keyframes tfSubIn { to { opacity: 1; transform: translateY(0); } }
+
+.tf-hero.tf-ready .tf-hero__media {
+  opacity: 0;
+  animation: tfMediaIn 1.1s var(--ease-luxe) forwards;
+  animation-delay: .3s;
+}
+@keyframes tfMediaIn { to { opacity: 1; } }
+
+/* =============================================
+   TABLET — max 1024px
+   ============================================= */
+
+@media (max-width: 1024px) {
+  :root {
+    --page-px: 32px;
+  }
+
+  .tf-h1 { font-size: 36px; }
+
+  /* Copy ocupa más columnas */
+  .tf-hero__copy  { grid-column: 1 / 7; padding-right: 24px; }
+  .tf-hero__media { grid-column: 7 / 13; }
+}
+
+/* =============================================
+   MOBILE — max 768px
+   ============================================= */
+
 @media (max-width: 768px) {
+  :root { --page-px: 24px; }
+
+  /* Grid pasa a una columna */
+  .tf-hero__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    grid-template-rows: 100vh;
+    gap: var(--gutter);
+    padding-left: var(--page-px);
+    padding-right: 0;
+    align-items: start;
+  }
+
+  /* Imagen arriba, ocupa todo el ancho */
+  .tf-hero__media {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    height: 55vw;
+    min-height: 280px;
+    max-height: 420px;
+  }
+
+  /* Copy debajo */
+  .tf-hero__copy {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 32px var(--page-px) 120px; /* 120px para el CTA sticky */
+    padding-top: 28px;
+  }
+
+  .tf-h1 {
+    font-size: 28px;
+    line-height: .95;
+    margin-bottom: 12px;
+  }
+
+  /* Visibility */
+  .tf-only-mobile    { display: block; font-size: 13px; letter-spacing: 0.04rem; }
+  .tf-only-mobile-h1 { display: block; font-size: 28px; margin-bottom: 8px; }
+  .tf-only-desktop   { display: none; }
+
+  /* Nav */
+  .tf-nav__center,
+  .tf-nav__login,
+  .tf-nav__cta { display: none; }
+  .tf-burger   { display: flex; }
+
+  /* Cookie desktop oculta en mobile */
+  .tf-cookie.tf-only-desktop { display: none; }
+
+  /* Dashboard header fixes */
+  .dashboard-header { padding: 0 24px; }
+  .landing-header__row { height: 42px; }
+  header.dashboard-header.landing-header {
+    height: auto !important;
+    flex-direction: column;
+  }
+
+  /* Nav mobile overrides */
+  header.dashboard-header.landing-header nav.header-left-nav--desktop { display: none !important; }
+  .tf-nav__login, .tf-nav__cta { display: none !important; }
+  .tf-burger { display: flex !important; }
+  header.dashboard-header.landing-header .header-left { display: flex !important; }
+  button.button.header-left-link.landing-mobile-link { font-size: 16px; color: #444; padding: 12px; }
+  .tf-btn--primary { font-size: 12px; }
+  .tf-btn--ghost   { font-size: 12px; }
+}
+
+/* =============================================
+   DASHBOARD HEADER — landing overrides
+   ============================================= */
+
+@media (max-width: 768px) {
+  .dashboard-header { display: none !important; }
   .dashboard-header.landing-header {
     display: flex !important;
     left: 12px;
@@ -645,126 +621,11 @@ button.button.header-left-link {
   }
 }
 
-/* Landing: en móvil ocultamos la nav de escritorio (igual patrón base) */
 @media (max-width: 960px) {
-  .landing-header .header-left-nav--desktop {
-    display: none !important;
-  }
+  .landing-header .header-left-nav--desktop { display: none !important; }
 }
 
-header.dashboard-header.landing-header {
-    justify-content: space-between;
-}
-
-/* ===== Overlay por encima del header base ===== */
-.tf-menu{
-  z-index: 5000; /* > dashboard-header (2000) */
-}
-
-/* Botón X dentro del burger */
-.tf-burger-x{
-  font-size: 28px;
-  line-height: 1;
-  opacity: .7;
-}
-
-/* En mobile ocultamos nav inline desktop (los links van al overlay) */
-@media (max-width: 960px) {
-  header.dashboard-header.landing-header nav.header-left-nav--desktop{
-    display: none !important;
-  }
-}
-
-.tf-cookieSheet{ z-index: 4000; }
-
-/* --- FIX: en mobile tu base oculta .header-left; en landing lo forzamos visible --- */
-@media (max-width: 960px) {
-  header.dashboard-header.landing-header .header-left {
-    display: flex !important;
-  }
-}
-
-/* Fila superior del landing header */
-.landing-header__row{
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* En mobile, el header debe poder crecer (no height:42 fija) */
-@media (max-width: 960px) {
-  header.dashboard-header.landing-header{
-    height: auto !important;
-    flex-direction: column;
-    margin: 0px 12px 12px;
-  }
-}
-
-/* Panel desplegable: oculto por defecto, aparece al abrir */
-.landing-mobile-panel{
-  display: none;
-  width: 100%;
-  margin-top: 10px;
-  padding-top: 12px;
-}
-
-header.dashboard-header.landing-header.is-open .landing-mobile-panel{
-  display: block;
-  height: 85vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 100px;
-}
-
-/* Layout interno del panel */
-.landing-mobile-panel__links{
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 6px 0 12px;
-  align-items: center;
-}
-
-.landing-mobile-panel__actions{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-bottom: 12px;
-}
-
-/* Burger X */
-.tf-burger-x{
-  font-size: 28px;
-  line-height: 1;
-  opacity: .7;
-}
-
-/* Mobile: ocultamos nav desktop inline + ocultamos login/cta si quieres,
-   y dejamos visible el burger */
-@media (max-width: 960px) {
-  header.dashboard-header.landing-header nav.header-left-nav--desktop{
-    display: none !important;
-  }
-
-  .tf-nav__login,
-  .tf-nav__cta{
-    display: none !important;
-  }
-
-  .tf-burger{
-    display: flex !important;
-  }
-
-  button.button.header-left-link.landing-mobile-link {
-    font-size: 18px;
-    color: #444;
-    padding: 12px;
-  }
-}
-
-.tf-burger-close-text{
+.tf-burger-close-text {
   font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 11px;
   letter-spacing: .08em;
@@ -773,16 +634,4 @@ header.dashboard-header.landing-header.is-open .landing-mobile-panel{
   opacity: .85;
 }
 
-.tf-burger.is-open{
-  width: auto;
-  padding: 0 6px;
-}
-
-
-span.tf-close-text {
-    width: fit-content;
-    background: transparent;
-    opacity: .7;
-    font-size: 12px;
-    height: fit-content;
-}
+.tf-creatorCard__meta { margin-top: 4px; }

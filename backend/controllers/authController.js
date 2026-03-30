@@ -2,6 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const cloudinary = require('../config/cloudinary');
+const streamifier = require('streamifier');
+const { processImageIfNeeded } = require('../utils/imageProcessor');
 const jwt = require('jsonwebtoken');
 
 const { validateUsername } = require('../utils/username');
@@ -207,7 +209,7 @@ exports.verifyCodePreRegistration = async (req, res) => {
   const token = jwt.sign(
     { id: newUser._id, email: newUser.email },
     process.env.JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: '30d' }
   );
 
   return res.status(200).json({ message: "Usuario registrado exitosamente.", token, user: newUser });
@@ -269,7 +271,14 @@ exports.register = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ message: 'La foto de perfil es obligatoria.' });
         }
-        const result = await cloudinary.uploader.upload(req.file.path, { folder: 'profile_pictures' });
+        const _bufAuth = await processImageIfNeeded(req.file.buffer);
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'profile_pictures' },
+                (error, result) => (result ? resolve(result) : reject(error))
+            );
+            streamifier.createReadStream(_bufAuth).pipe(stream);
+        });
         profilePictureUrl = result.secure_url;
 
         // ✅ Bloquear usernames reservados (por las URLs bonitas /:username)
@@ -362,20 +371,21 @@ exports.login = (req, res, next) => {
         if (!user.isVerified) return res.status(403).json({ message: 'Cuenta no verificada.' });
 
         const token = jwt.sign(
-            { 
-                id: user._id, 
+            {
+                id: user._id,
                 email: user.email,
-                professionalType: user.professionalType 
-            }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '7d' }
+                professionalType: user.professionalType,
+                accountType: user.accountType ?? null,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '30d' }
         );
         return res.status(200).json({ message: 'Login exitoso', token, user });
     })(req, res, next);
 };
 
 exports.googleCallback = (req, res) => {
-    const token = jwt.sign({ id: req.user._id, email: req.user.email, professionalType: req.user.professionalType }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: req.user._id, email: req.user.email, professionalType: req.user.professionalType, accountType: req.user.accountType ?? null }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
     if (req.user.profileCompleted) {
         return res.redirect(`${process.env.FRONTEND_URL}/token-handler?token=${token}`);
@@ -565,4 +575,91 @@ exports.changeEmail = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
+};
+
+// ── NUEVO: completar registro desde el wizard unificado ───────────────────
+const CREATIVE_LEVEL_NAMES = { 1: 'newcomer', 2: 'graduated', 3: 'emerging', 4: 'professional' };
+
+exports.completeRegistration = async (req, res) => {
+    const { accountType, username, fullName, creativeLevel, city, country, industryType, companyName, shortDescription, links } = req.body;
+
+    const validAccountTypes = ['creative', 'industry', 'guest'];
+    if (!accountType || !validAccountTypes.includes(accountType)) {
+        return res.status(400).json({ error: 'accountType inválido. Valores permitidos: creative, industry, guest.' });
+    }
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
+        }
+
+        const update = { accountType, profileCompleted: true };
+
+        if (accountType === 'creative') {
+            if (!username || !creativeLevel || !city || !country) {
+                return res.status(400).json({ error: 'Para cuenta creativa se requiere: username, creativeLevel, city, country.' });
+            }
+            const level = parseInt(creativeLevel, 10);
+            if (![1, 2, 3, 4].includes(level)) {
+                return res.status(400).json({ error: 'creativeLevel debe ser 1, 2, 3 o 4 en el registro.' });
+            }
+            const usernameCheck = validateUsername(username);
+            if (!usernameCheck.ok) {
+                return res.status(400).json({ error: usernameCheck.error });
+            }
+            const normalizedUsername = usernameCheck.username;
+            const existing = await User.findOne({
+                username: { $regex: new RegExp(`^${normalizedUsername}$`, 'i') },
+                _id: { $ne: user._id }
+            });
+            if (existing) {
+                return res.status(400).json({ error: 'Ese nombre de usuario ya está en uso.' });
+            }
+            const savedLevel = level === 4 ? 3 : level;
+            update.username = normalizedUsername;
+            update.creativeLevel = savedLevel;
+            update.creativeLevelName = CREATIVE_LEVEL_NAMES[savedLevel];
+            if (level === 4) update.requestedCreativeLevel = 4;
+            if (fullName) update.fullName = fullName.trim();
+            update.city = city.trim();
+            update.country = country.trim();
+        }
+
+        if (accountType === 'industry') {
+            if (!username || !industryType || !companyName || !city || !country) {
+                return res.status(400).json({ error: 'Para cuenta de industria se requiere: username, industryType, companyName, city, country.' });
+            }
+            const validIndustryTypes = ['brand', 'showroom', 'agency', 'media', 'production', 'other'];
+            if (!validIndustryTypes.includes(industryType)) {
+                return res.status(400).json({ error: 'industryType inválido.' });
+            }
+            const usernameCheck = validateUsername(username);
+            if (!usernameCheck.ok) {
+                return res.status(400).json({ error: usernameCheck.error });
+            }
+            const normalizedUsername = usernameCheck.username;
+            const existing = await User.findOne({
+                username: { $regex: new RegExp(`^${normalizedUsername}$`, 'i') },
+                _id: { $ne: user._id }
+            });
+            if (existing) {
+                return res.status(400).json({ error: 'Ese nombre de usuario ya está en uso.' });
+            }
+            update.username = normalizedUsername;
+            update.industryType = industryType;
+            update.companyName = companyName.trim();
+            update.city = city.trim();
+            update.country = country.trim();
+            if (shortDescription) update.shortDescription = shortDescription.trim();
+            if (Array.isArray(links)) update.links = links.filter(Boolean);
+        }
+
+        // guest: no requiere campos extra, solo accountType + profileCompleted: true
+
+        await User.findByIdAndUpdate(user._id, { $set: update });
+        return res.status(200).json({ message: 'Perfil completado correctamente.' });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
 };

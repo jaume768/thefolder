@@ -7,6 +7,11 @@
    1. CONTENEDOR PRINCIPAL
    ============================================================================= */
 
+.public-container {
+  margin-top: 80px;
+}
+
+
 .creatives-container {
   display: flex;
   flex-direction: column;
@@ -32,8 +37,12 @@
 
 @media (max-width: 992px) {
   .creatives-content {
-    width: 95%;
+    width: 100%;
     flex-direction: column;
+  }
+
+  .creative-card-meta {
+    padding-left: 4px;
   }
 }
 
@@ -55,11 +64,11 @@
   max-width: 2980px;
   margin: 0 auto;
   text-align: center;
-  margin-top: 15%;
+  margin-top: 7.5%;
 }
 
 .creatives-hero-inner.miPerfil-hero {
-    margin-top: 12%;
+    margin-top: 15%;
 }
 
 .creatives-subtitle {
@@ -87,10 +96,6 @@ span.creatives-count {
 }
 
 @media (max-width: 768px) {
-  .creatives-hero-inner {
-    margin-top: 260px;
-  }
-
   .creatives-subtitle {
     font-size: 13px;
     width: fit-content;
@@ -100,7 +105,7 @@ span.creatives-count {
 @media (max-width: 480px) {
   .creatives-hero-inner {
     min-height: 100px !important;
-    margin-top: 200px !important;
+    margin-top: 100px !important;
   }
 
   .creatives-subtitle {
@@ -113,11 +118,19 @@ span.creatives-count {
     justify-content: center;
     padding: 0 12px;
     margin-top: 80px;
+    width: 75%;
   }
 
   .centerTitle {
-    font-size: 48px !important;
-    line-height: 48px !important;
+    font-size: 15vw !important;
+    line-height: 15vw !important;
+    margin-bottom: 8px;
+  }
+
+  h1.centerTitle.tag-title {
+    font-size: 12vw !important;
+    line-height: 12vw !important;
+    margin-bottom: 12px;
   }
 
   span.creatives-count {
@@ -145,7 +158,7 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 }
 
 .my-masonry-grid.--big-gap {
-  gap: 40px;
+  gap: 24px;
 }
 
 @media (max-width: 992px) {
@@ -196,6 +209,7 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 .creative-card-media {
   position: relative;
   width: 100%;
+  min-width: 100px;
   overflow: hidden;
   background: #f5f5f5;
   height: auto;
@@ -251,9 +265,9 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 .creative-location {
   margin-top: 0;
   font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
   font-size: 9px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: #666;
 }
 
@@ -282,13 +296,13 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   font-family: 'Inter Tight', sans-serif;
   font-size: 12px;
   font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .error-message {
   color: #e74c3c;
   text-align: center;
   padding: 20px;
-  background-color: #feeaeb;
   border-radius: 5px;
   margin: 20px 0;
   font-family: 'Inter Tight', sans-serif;
@@ -332,8 +346,15 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   display: flex;
   justify-content: center;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 48px;
+  width: 20px;
+}
+
+.filters-triggers-left.filters-explorer {
+  justify-content: center;
+  flex: 1;
+  margin-top: 7.5%;
 }
 
 .filter-section-trigger {
@@ -355,6 +376,10 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   letter-spacing: 0.02em;
 }
 
+button.filter-section-trigger:hover {
+  text-decoration: underline;
+}
+
 .filter-section-trigger.is-active {
   font-weight: 500;
   color: #000;
@@ -369,7 +394,7 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 
 .filter-section-trigger.has-selection .filter-section-label,
 .filter-section-trigger.has-selection .filter-section-indicator {
-  color: #3c07cf;
+  color: #111;
   font-weight: 500;
   transition: color 0.2s ease;
 }
@@ -380,13 +405,19 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   color: #666;
 }
 
+@media (max-width: 480px) {
+.filters-triggers-left {
+    gap: 12px 42px;
+    flex-wrap: wrap;
+}
+}
+
 @media (max-width: 768px) {
   .filters-triggers-row {
     padding: 0 24px;
   }
 
   .filters-triggers-left {
-    width: 100%;
     gap: 12px 42px;
     flex-wrap: wrap;
   }
@@ -404,9 +435,8 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 
 @media (max-width: 480px) {
   .filters-triggers-row {
-    margin-top: 24px;
     padding: 0 12px;
-    gap: 24px;
+    gap: 12px;
   }
 
   .filter-section-trigger {
@@ -427,6 +457,8 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 24px;
+  margin-top: 12px;
 }
 
 .filters-open-tags {
@@ -439,7 +471,7 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 .filters-sticky-chip {
   background: #222;
   color: #fff;
-  border-radius: 4px;
+  border-radius: 24px;
   padding: 4px 12px;
   font-family: 'Inter Tight', sans-serif;
   font-size: 11px;
@@ -460,11 +492,10 @@ p.creatives-subtitle.--show-mobile.--margin-top {
 }
 
 button.filters-sticky-chip.clean-all {
-  border-radius: 90px;
   background: transparent;
-  color: #222;
+  color: #444;
   font-weight: 400;
-  border: solid 1px #333;
+  border: 1px solid #ddd;
 }
 
 @media (max-width: 768px) {
@@ -509,7 +540,63 @@ button.filters-sticky-chip.clean-all {
   background: #111;
   color: #fff;
   border-color: #111;
-  text-transform: uppercase;
+}
+
+button.filter-tag.experience-tag {
+  flex: 1;
+  min-width: 120px;
+  min-height: 120px;
+  height: auto;
+  border-radius: 12px;
+  font-family: Inter Tight, sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 12px;
+  letter-spacing: .04em;
+  gap: 4px;
+}
+
+.experience-tag-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  margin-bottom: 2px;
+}
+
+.filter-tag.selected .experience-tag-icon {
+  filter: invert(1);
+}
+
+.experience-tag-desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: #666;
+  line-height: 17px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  text-align: left;
+}
+
+.filter-tag.selected .experience-tag-desc {
+  color: #aaa;
+}
+
+
+.filters-level-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filters-tags--level {
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .filters-tags {
@@ -529,12 +616,12 @@ button.filters-sticky-chip.clean-all {
 
 @media (max-width: 768px) {
   .filter-tag {
-    font-size: 16px;
+    font-size: 14px;
     padding: 8px 16px;
   }
 
   .filters-tags {
-    gap: 24px;
+    gap: 12px;
   }
 }
 
@@ -552,6 +639,7 @@ button.filters-sticky-chip.clean-all {
   align-items: center;
   justify-content: center;
   padding: 24px;
+  cursor: pointer;
 }
 
 .filters-modal-panel {
@@ -559,10 +647,12 @@ button.filters-sticky-chip.clean-all {
   background: #FDFDFD;
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 6px;
-  overflow: hidden;
-  height: 60vh;
+  overflow: scroll;
+  height: 75vh;
   display: flex;
   flex-direction: column;
+  cursor: default;
+  justify-content: space-between;
 }
 
 @media (max-width: 768px) {
@@ -656,14 +746,13 @@ button.filters-sticky-chip.clean-all {
 }
 
 .filters-col-title {
-  font-family: 'Inter Tight', sans-serif;
-  font-size: 9px;
+  font-family: Inter Tight, sans-serif;
+  font-size: 14px;
   line-height: 12px;
-  font-weight: 300;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #666;
-  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: #222;
+  margin-bottom: 4px;
   text-align: left;
 }
 
@@ -723,7 +812,7 @@ button.filters-sticky-chip.clean-all {
 }
 
 .filters-list-item.has-selection .filters-list-text {
-  color: #3c07cf;
+  color: #111;
   font-weight: 500;
   transition: color 0.2s ease;
 }
@@ -881,4 +970,143 @@ img.image-icon {
 .creative-card:hover .creative-location-hover {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* =============================================================================
+   PRIMER PROYECTO — CTA modal
+   ============================================================================= */
+
+.first-post-cta-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.first-post-cta-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 40px 36px 32px;
+  width: min(460px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.first-post-cta-eyebrow {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0;
+}
+
+.first-post-cta-title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #111;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.first-post-cta-body {
+  font-size: 12px;
+  color: #555;
+  line-height: 17px;
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+
+.first-post-cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.first-post-cta-btn--primary {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: opacity 0.15s;
+}
+
+.first-post-cta-btn--primary:hover {
+  opacity: 0.75;
+}
+
+.first-post-cta-btn--ghost {
+  background: transparent;
+  color: #888;
+  border: none;
+  padding: 10px 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.first-post-cta-btn--ghost:hover {
+  color: #111;
+}
+
+@media (max-width: 480px) {
+  .first-post-cta-card {
+    padding: 32px 24px 28px;
+  }
+  .first-post-cta-title {
+    font-size: 24px;
+  }
+}
+
+/* =============================================================================
+   GUEST WALL — muro para usuarios no registrados
+   ============================================================================= */
+
+.creatives-guest-wall {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background: linear-gradient(to bottom, transparent 0%, #fff 55%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 3.5rem;
+  gap: 12px;
+  pointer-events: none;
+  padding: 24px 24px;
+  align-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.creatives-guest-wall__text {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.creatives-guest-wall .new-tablero-button {
+  pointer-events: auto;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
 }

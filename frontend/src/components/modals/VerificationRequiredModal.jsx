@@ -12,8 +12,8 @@ const VerificationRequiredModal = ({ onClose }) => {
     };
 
     return (
-        <div className="verification-modal-overlay">
-            <div className="verification-modal-container">
+        <div className="verification-modal-overlay" onClick={onClose}>
+            <div className="verification-modal-container" onClick={(e) => e.stopPropagation()}>
                 
                 <div className="verification-modal-content">
                     <h2>Verificación Requerida</h2>

@@ -1,227 +1,221 @@
-.tf-creators{
-    display: flex;
-    flex-direction: column;
-    padding: 28px 24px 120px;
-    color: var(--text);
-    gap: 12px;
+/* landing-creators-showcase.css */
+
+/* =========================================================
+   SECCIÓN
+========================================================= */
+.tf-creators {
+  color: var(--text, #0b0b0b);
+  padding: 48px 0 80px;
 }
 
-/* ====== VISIBILIDAD COPY ====== */
-.tf-creators__cta--desktop{ display: none; width: 80%; gap: 0px; }
-.tf-creators__cta--mobile{ display: block; }
+/* =========================================================
+   HEADER — grid 12 columnas
+   Título: cols 1-4
+   Textos derecha: cols 6-12
+========================================================= */
+.tf-creators__header {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  padding: 0 34px;
+  margin-bottom: 32px;
+  align-items: start;
+}
 
-/* ===== Header mobile (captura) ===== */
-.tf-creators__headlineMobile{
+.tf-creators__title {
+  grid-column: 1 / 5;
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-sans, 'Inter Tight', sans-serif);
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: .02em;
+  font-size: clamp(28px, 3.5vw, 48px);
   line-height: 1.05;
-  font-size: 22px;
+  letter-spacing: -.01em;
+  color: #0b0b0b;
+  text-transform: none;
 }
 
-.tf-creators__kickerMobile{
-  margin: 8px 0 0;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  color: rgba(0,0,0,.45);
-}
-
-/* ===== Lista vertical en mobile ===== */
-.tf-creators__row{
+.tf-creators__headerRight {
+  grid-column: 6 / 13;
   display: flex;
   flex-direction: column;
-  gap: 42px;
-  margin-top: 18px;
+  align-items: flex-end;
+  gap: 48px;
+  padding-top: 8px;
+}
+
+.tf-creators__floatText {
+  margin: 0;
+  font-family: var(--font-sans, 'Inter Tight', sans-serif);
+  font-size: 13px;
+  font-weight: 400;
+  color: #444;
+  letter-spacing: .01em;
+}
+
+/* =========================================================
+   FILA DE IMÁGENES — 4 columnas pegadas, sin gap
+========================================================= */
+.tf-creators__row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
   width: 100%;
 }
 
 /* Card */
-.tf-creatorCard{
+.tf-creatorCard {
   background: transparent;
   border: 0;
   padding: 0;
   cursor: pointer;
   text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 
-.tf-creatorCard__media{ width: 100%; }
-
-.tf-creatorCard__img{
-  background: #f3f3f3;
+/* Imagen */
+.tf-creatorCard__imgWrap {
+  position: relative;
+  width: 100%;
   overflow: hidden;
 }
 
-.tf-creatorCard__img img{
+/* Alturas según captura:
+   col 0 — media
+   col 1 — alta (la más alta)
+   col 2 — media-alta
+   col 3 — media
+*/
+.tf-creatorCard--0 .tf-creatorCard__imgWrap { height: 46vw; max-height: 500px; }
+.tf-creatorCard--1 .tf-creatorCard__imgWrap { height: 56vw; max-height: 620px; }
+.tf-creatorCard--2 .tf-creatorCard__imgWrap { height: 46vw; max-height: 500px; }
+.tf-creatorCard--3 .tf-creatorCard__imgWrap { height: 36vw; max-height: 400px; }
+
+.tf-creatorCard__imgWrap img {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
+  display: block;
 }
 
-/* Imagen tipo banner (mobile) */
-.tf-creatorCard__img--single{
-  height: 160px;
-  width: 115px;
+/* Count badge — esquina superior derecha */
+.tf-creatorCard__count {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: var(--font-sans, 'Inter Tight', sans-serif);
+  font-size: 10px;
+  color: #666;
+  background: rgba(255,255,255,0.85);
+  padding: 2px 6px;
+  border-radius: 2px;
 }
 
-/* Meta */
-.tf-creatorCard__nameRow{
+/* Meta — debajo de la imagen, pegado izquierda */
+.tf-creatorCard__meta {
+  padding: 6px 8px 0;
+}
+
+.tf-creatorCard__nameRow {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 14px;
 }
 
-.tf-creatorCard__name{
+.tf-creatorCard__name {
   margin: 0;
-  font-family: Inter Tight, sans-serif;
-  letter-spacing: -.01em;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 11px;
   font-weight: 400;
-  line-height: 1.05;
   color: #666;
-  letter-spacing: .01em;
   text-decoration: underline;
+  letter-spacing: .01em;
+  line-height: 1.3;
 }
 
-.tf-creatorCard__arrow{
-  font-family: var(--font-sans);
-  opacity: .6;
-  font-size: 16px;
-  transform: translateY(-1px);
-  color: var(--muted);
-}
-
-.tf-creatorCard__role{
-  margin-top: 4px;
-  font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+.tf-creatorCard__role {
+  margin: 2px 0 0;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 9px;
   letter-spacing: .02em;
   text-transform: uppercase;
   color: #666;
 }
 
-/* Footer mobile (solo link) */
-.tf-creators__footerMobile{
-  margin-top: 16px;
+/* Hover */
+.tf-creatorCard__imgWrap {
+  transition: filter .28s ease;
+}
+.tf-creatorCard:hover .tf-creatorCard__imgWrap {
+  filter: brightness(.97);
 }
 
-.tf-creators__exploreLink{
-  background: transparent;
-  border: 0;
-  padding: 10px 0;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  color: rgba(0,0,0,.65);
-}
-.tf-creators__exploreLink:hover{
-  color: rgba(0,0,0,.9);
-  text-decoration: underline;
-}
+/* Imagen mobile vs desktop */
+.tf-creatorCard__imgWrap .tf-img--desktop { display: block; }
+.tf-creatorCard__imgWrap .tf-img--mobile  { display: none; }
 
-/* Hover suave */
-.tf-creatorCard__img{
-  transition: transform .28s var(--ease-luxe, ease), filter .28s var(--ease-luxe, ease);
-  transform-origin: center;
-}
-.tf-creatorCard:hover .tf-creatorCard__img{
-  transform: translateY(-2px);
-  filter: brightness(.98);
+/* =========================================================
+   TABLET — max 1024px
+========================================================= */
+@media (max-width: 1024px) {
+  .tf-creators__header { padding: 0 24px; }
+  .tf-creators__title  { grid-column: 1 / 6; font-size: 28px; }
+  .tf-creators__headerRight { grid-column: 6 / 13; gap: 32px; }
 }
 
-/* ===== DESKTOP ===== */
-@media (min-width: 960px){
-  .tf-creators{
-    /* aquí puedes volver a tu layout desktop */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 34px 80px;
-  }
-
-
-  .tf-creators__headlineMobile{ 
-    font-size: 19px;
-    line-height: 23px;
-    }
-    .tf-creators__kickerMobile {
-        font-size: 14px;
-    }
-  /* swap: en desktop mostramos tu copy original */
-  .tf-creators__cta--mobile{ display: none; }
-  .tf-creators__cta--desktop{ display: flex; flex-direction: column; gap: 8px;}
-
-  /* cards en fila */
-  .tf-creators__row{
-    flex-direction: row;
-    justify-content: center;
-    padding: 0 40px;
-    gap: 10%;
-    align-items: flex-start;
-    margin-top: 10px;
-    margin-bottom: 70px;
-    flex-wrap: wrap;
-  }
-
-  .tf-creatorCard__media{
-    display: flex;
-  }
-
-  /* el footer mobile no se muestra en desktop */
-  .tf-creators__footerMobile{
-    display: none;
-  }
-
-  /* tus acciones desktop */
-  .tf-creators__actions{
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  /* ===== Lista vertical en mobile ===== */
-  .tf-creators__row{
-    display: flex;
-    flex-direction: row !important;
-    gap: 66px;
-    margin-top: 18px;
-    width: 100%;
-    justify-content: center !important;
-  }
-}
-
-
-
-/* ===== Imagen mobile vs desktop (robusto) ===== */
-.tf-creatorCard__img .tf-img--desktop { display: none; }
-.tf-creatorCard__img .tf-img--mobile { display: block; }
-
-@media (min-width: 960px){
-  .tf-creatorCard__img .tf-img--desktop { display: block; }
-  .tf-creatorCard__img .tf-img--mobile { display: none; }
-
-  .tf-link__cta { padding: 8px 0px; }
-  .tf-chevron { bottom: 18px; }
-}
-
+/* =========================================================
+   MOBILE — max 768px
+========================================================= */
 @media (max-width: 768px) {
-  .tf-creatorCard__img--single{
-    height: 160px;
-    width: 100%;
+  .tf-creators { padding: 40px 0 100px; }
+
+  /* Header mobile: columna única */
+  .tf-creators__header {
+    grid-template-columns: 1fr;
+    padding: 0 24px;
+    gap: 20px;
+    margin-bottom: 24px;
   }
+
+  .tf-creators__title {
+    grid-column: 1;
+    font-size: 22px;
+  }
+
+  .tf-creators__headerRight {
+    grid-column: 1;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .tf-creators__floatText {
+    font-size: 12px;
+    color: #888;
+  }
+
+  /* Imágenes: 2 columnas en mobile */
+  .tf-creators__row {
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  /* Alturas mobile uniformes */
+  .tf-creatorCard--0 .tf-creatorCard__imgWrap,
+  .tf-creatorCard--1 .tf-creatorCard__imgWrap,
+  .tf-creatorCard--2 .tf-creatorCard__imgWrap,
+  .tf-creatorCard--3 .tf-creatorCard__imgWrap {
+    height: 52vw;
+    max-height: none;
+  }
+
+  /* Imagen mobile */
+  .tf-creatorCard__imgWrap .tf-img--desktop { display: none; }
+  .tf-creatorCard__imgWrap .tf-img--mobile  { display: block; }
 }
 
-/* ========= REVEAL SYSTEM (scroll enter) ========= */
-
-/* Estado inicial */
+/* =========================================================
+   REVEAL SYSTEM
+========================================================= */
 .tf-creators .tf-reveal {
   opacity: 0;
   transform: translateY(12px);
@@ -232,18 +226,11 @@
   will-change: transform, opacity;
 }
 
-/* Cuando la sección entra en viewport */
 .tf-creators.is-in .tf-reveal {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Si el título usa spans por línea, que se comporten como bloques animables */
-.tf-link__title > span {
-  display: inline-block;
-}
-
-/* Cartas: un poquito más “pop” al entrar */
 .tf-creatorCard.tf-reveal {
   transform: translateY(16px) scale(0.985);
 }
@@ -252,14 +239,10 @@
   transform: translateY(0) scale(1);
 }
 
-/* Hover sin pelearse con el reveal:
-   usamos translateY con un wrapper virtual mediante filter/sombra,
-   pero si quieres movimiento, aplica solo cuando ya está 'is-in' */
 .tf-creators.is-in .tf-creatorCard:hover {
   transform: translateY(-2px) scale(1);
 }
 
-/* Accesibilidad: reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .tf-creators .tf-reveal {
     opacity: 1 !important;

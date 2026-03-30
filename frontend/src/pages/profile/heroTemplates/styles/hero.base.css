@@ -4,7 +4,7 @@
 .hero {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 98.5dvh;
   overflow: hidden;
   z-index: 9;
   margin-bottom: 38px;
@@ -12,7 +12,7 @@
 
 /* ── Tipografía base (sin color — cada plantilla lo define) ─────────────── */
 .hero__name {
-  font-family: "Adamina", serif;
+  font-family: Inter, sans-serif;
   font-size: 32px;
   font-weight: 300;
   line-height: 1.3;

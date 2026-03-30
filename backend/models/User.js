@@ -11,11 +11,25 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String }, // Puede quedar vacío en registro con Google
     googleId: { type: String },
-    role: { type: String, enum: ['Creativo', 'Profesional', 'Admin'] },
-    isAdmin: { type: Boolean, default: false }, // Campo adicional para facilitar verificaciones
+    role: { type: String, enum: ['Creativo', 'Profesional', 'Admin'] }, // DEPRECATED - sustituido por accountType
+    isAdmin: { type: Boolean, default: false }, // DEPRECATED - sustituido por accountType: 'admin'
+
+    // ── SISTEMA NUEVO DE TIPOS ─────────────────────────────────────────────
+    accountType: { type: String, enum: ['creative', 'industry', 'guest', 'admin'], default: null },
+    creativeLevel: { type: Number, enum: [1, 2, 3, 4, 5], default: null },
+    creativeLevelName: { type: String, enum: ['newcomer', 'graduated', 'emerging', 'professional', 'curated'], default: null },
+    industryType: { type: String, enum: ['brand', 'showroom', 'agency', 'media', 'production', 'other'], default: null },
+    shortDescription: { type: String, default: null },
+    links: { type: [String], default: [] },
+    isScout: { type: Boolean, default: false },
+    scoutCompany: { type: String, default: null },
+    requestedCreativeLevel: { type: Number, default: null }, // nivel solicitado (4=professional), pendiente validación manual
+    // ──────────────────────────────────────────────────────────────────────
     dateOfBirth: { type: Date },
     country: { type: String },
     city: { type: String },
+    country2: { type: String },
+    city2: { type: String },
     customCountry: { type: String, default: "" },
     referralSource: { type: String }, // ¿Cómo nos has conocido?
     termsAccepted: { type: Boolean },
@@ -57,33 +71,37 @@ const UserSchema = new mongoose.Schema({
     // Estilo de galería
     galleryStyle: { type: String, enum: ["gap", "nogap"], default: "gap" },
 
+    // Layout del perfil público (plantilla de página completa)
+    profileLayout: { type: String, enum: ["default", "index-gallery"], default: "default" },
+
 
     // Campos específicos para Creativos
     // creativeType: 1 (Estudiantes), 2 (Graduados), 3 (Estilistas), 4 (Diseñador de marca propia), 5 (Otro)
-    creativeType: { type: Number },
-    formationType: { type: String },     // Para estudiantes: “por tu cuenta” o “por una escuela/universidad”
-    institution: { type: String },         // Para graduados: nombre de la escuela o institución
-    creativeOther: { type: String },       // Para “Otro” (simple almacenamiento del texto)
-    brandName: { type: String },           // Para “Diseñador de marca propia”
+    creativeType: { type: Number }, // DEPRECATED - sustituido por creativeLevel
+    formationType: { type: String }, // DEPRECATED - onboarding viejo creativo
+    institution: { type: String }, // DEPRECATED - onboarding viejo creativo
+    creativeOther: { type: String }, // DEPRECATED - onboarding viejo creativo
+    brandName: { type: String }, // DEPRECATED - onboarding viejo creativo
 
     // Campos específicos para Profesionales
     // professionalType: 1 (Pequeña marca), 2 (Empresa mediana-grande), 3 (Agencia), 4 (Instituciones), 5 (Otra)
-    professionalType: { type: Number },
+    professionalType: { type: Number }, // DEPRECATED - sustituido por industryType
     companyName: { type: String },
-    foundingYear: { type: Number },          // Año de fundación (marca, empresa, agencia)
-    productServiceType: { type: String },    // Para Pequeña marca: tipo de productos o servicios
-    sector: { type: String },                // Para Empresa mediana-grande: sector o industria
-    employeeRange: { type: String },         // Para Empresa mediana-grande y Agencia: rango de empleados (ej. "1-10", "11-50", etc.)
-    institutionName: { type: String },       // Para Instituciones: nombre de la institución
-    institutionType: { type: String },       // Para Instituciones: tipo de institución
-    institutionOwnership: { 
-        type: String, 
-        enum: ['public', 'private', 'other', ''], // Add empty string as valid
+    foundingYear: { type: Number }, // DEPRECATED - onboarding viejo profesional
+    productServiceType: { type: String }, // DEPRECATED - onboarding viejo profesional
+    sector: { type: String }, // DEPRECATED - onboarding viejo profesional
+    employeeRange: { type: String }, // DEPRECATED - onboarding viejo profesional
+    institutionName: { type: String }, // DEPRECATED - onboarding viejo profesional
+    institutionType: { type: String }, // DEPRECATED - onboarding viejo profesional
+    institutionOwnership: {
+        type: String,
+        enum: ['public', 'private', 'other', ''],
         default: 'public',
-        required: false // Explicitly make it not required
-    },    agencyName: { type: String },            // Para Agencia: nombre de la compañía o agencia
-    agencyServices: { type: String },        // Para Agencia: servicios que ofrece (puede ser una lista en cadena)
-    website: { type: String },               // Enlace web o sitio (común para ambos tipos)
+        required: false
+    }, // DEPRECATED - onboarding viejo profesional
+    agencyName: { type: String }, // DEPRECATED - onboarding viejo profesional
+    agencyServices: { type: String }, // DEPRECATED - onboarding viejo profesional
+    website: { type: String },
     showNameCompany: { type: Boolean },
     showFoundingYearCompany: { type: Boolean },
 
@@ -127,7 +145,10 @@ const UserSchema = new mongoose.Schema({
             currentlyEnrolled: { type: Boolean },
             // Nuevos campos
             institutionLogo: { type: String }, // URL del logo de la institución
-            location: { type: String } // Ciudad, País
+            location: { type: String }, // Ciudad, País
+            educationType: { type: String, default: "" }, // Grado, Máster, FP, etc.
+            educationHours: { type: String, default: "" }, // Horas (Curso/Taller o Certificación)
+            educationOtherType: { type: String, default: "" } // Texto libre si educationType === "OTRO"
         }
     ],
     skills: { type: [String], default: [] },

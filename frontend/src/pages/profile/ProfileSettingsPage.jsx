@@ -4,14 +4,34 @@ import { useNavigate } from "react-router-dom";
 
 import "../../components/controlPanel/css/UserProfileExtern.css";
 
+const normalizeUsername = (value) =>
+  String(value || '').replace(/\s+/g, '').toLowerCase();
+
 export default function ProfileSettingsPage() {
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // ── Estados de edición ───────────────────────────────────────────────────
-  const [editingSection, setEditingSection] = useState(null); // "password" | "email" | null
+  const [editingSection, setEditingSection] = useState(null); // "username" | "password" | "email" | null
+
+  // Username
+  const [newUsername, setNewUsername]           = useState("");
+  const [usernameChecking, setUsernameChecking] = useState(false);
+  const [usernameTaken, setUsernameTaken]       = useState(false);
+  const [usernameMsg, setUsernameMsg]           = useState({ type: "", text: "" });
+
+  const usernameLocalError = useMemo(() => {
+    const v = newUsername.trim();
+    if (!v) return '';
+    if (v.length > 20) return 'Máximo 20 caracteres.';
+    if (!/^[a-z0-9-]+$/.test(v)) return 'Solo letras minúsculas, números y guiones.';
+    if (v.startsWith('-') || v.endsWith('-')) return 'No puede empezar ni acabar con guión.';
+    if (v.includes('--')) return 'No puede contener guión doble.';
+    return '';
+  }, [newUsername]);
 
   // Contraseña
   const [currentPassword, setCurrentPassword] = useState("");
@@ -58,14 +78,74 @@ export default function ProfileSettingsPage() {
     setEditingSection(key);
     setPasswordMsg({ type: "", text: "" });
     setEmailMsg({ type: "", text: "" });
+    setUsernameMsg({ type: "", text: "" });
     setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
     setNewEmail(""); setEmailPassword("");
+    setNewUsername(""); setUsernameTaken(false);
   };
 
   const cancelSection = () => {
     setEditingSection(null);
     setPasswordMsg({ type: "", text: "" });
     setEmailMsg({ type: "", text: "" });
+    setUsernameMsg({ type: "", text: "" });
+  };
+
+  // ── Disponibilidad de username (debounce) ────────────────────────────────
+  useEffect(() => {
+    if (editingSection !== "username") return;
+    const v = newUsername.trim();
+    setUsernameMsg({ type: "", text: "" });
+    if (!v || usernameLocalError) { setUsernameTaken(false); setUsernameChecking(false); return; }
+
+    const controller = new AbortController();
+    const token = localStorage.getItem("authToken");
+    const t = setTimeout(async () => {
+      setUsernameChecking(true);
+      try {
+        const res = await fetch(
+          `${backendUrl}/api/users/check-username?username=${encodeURIComponent(v)}`,
+          { headers: { Authorization: `Bearer ${token}` }, signal: controller.signal }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setUsernameTaken(data?.available === false);
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') setUsernameTaken(false);
+      } finally {
+        setUsernameChecking(false);
+      }
+    }, 350);
+
+    return () => { clearTimeout(t); controller.abort(); };
+  }, [newUsername, usernameLocalError, editingSection, backendUrl]);
+
+  // ── Cambiar username ─────────────────────────────────────────────────────
+  const handleChangeUsername = async () => {
+    setUsernameMsg({ type: "", text: "" });
+    const v = newUsername.trim();
+    if (!v || usernameLocalError) {
+      setUsernameMsg({ type: "error", text: usernameLocalError || "Introduce un nombre de usuario válido." });
+      return;
+    }
+    if (usernameTaken) {
+      setUsernameMsg({ type: "error", text: "Ese nombre ya está en uso." });
+      return;
+    }
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await axios.put(
+        `${backendUrl}/api/users/change-username`,
+        { username: v },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUserData(prev => ({ ...prev, username: res.data.user?.username || v }));
+      setUsernameMsg({ type: "ok", text: "Nombre de usuario actualizado. Recarga para visitar tu perfil." });
+      setTimeout(() => cancelSection(), 1500);
+    } catch (e) {
+      setUsernameMsg({ type: "error", text: e?.response?.data?.error || "Error al cambiar el nombre de usuario." });
+    }
   };
 
   const handleLogout = () => {
@@ -170,6 +250,87 @@ export default function ProfileSettingsPage() {
       <section id="card-settings">
         <div className="ux-editprofile-section">
 
+          {/* ── 0. NOMBRE DE USUARIO ─────────────────────────────────────── */}
+          <div className="ux-form-block">
+            <div className="ux-settings-row">
+              <div className="ux-settings-row-info">
+                <label className="ux-form-label">Nombre de usuario</label>
+                <p className="ux-settings-current-value">@{userData?.username || "—"}</p>
+              </div>
+
+              {editingSection !== "username" && (
+                <button
+                  type="button"
+                  className="ux-link-btn"
+                  onClick={() => openSection("username")}
+                >
+                  Cambiar
+                </button>
+              )}
+            </div>
+
+            {editingSection === "username" && (
+              <div className="ux-settings-edit-area">
+                <p className="ux-form-hint" style={{ marginBottom: 10 }}>
+                  Solo letras minúsculas, números y guiones. Máximo 20 caracteres.
+                </p>
+
+                {/* Input estilo registro: thefolder.es/username */}
+                <div className="ux-username-field">
+                  <span className="ux-username-prefix">thefolder.es/</span>
+                  <input
+                    className="ux-username-input"
+                    value={newUsername}
+                    onChange={e => { setNewUsername(normalizeUsername(e.target.value)); setUsernameTaken(false); }}
+                    onKeyDown={e => { if (e.key === ' ') e.preventDefault(); }}
+                    onPaste={e => { e.preventDefault(); setNewUsername(normalizeUsername(e.clipboardData.getData('text'))); }}
+                    maxLength={20}
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    placeholder={userData?.username || "mi-usuario"}
+                  />
+                  <span
+                    className={[
+                      'ux-username-status',
+                      usernameChecking ? 'is-checking' : '',
+                      usernameTaken ? 'is-bad' : '',
+                      (newUsername && !usernameLocalError && !usernameChecking && !usernameTaken) ? 'is-ok' : '',
+                    ].filter(Boolean).join(' ')}
+                  >
+                    {usernameChecking ? '…' : usernameTaken ? '×' : (newUsername && !usernameLocalError && !usernameChecking && !usernameTaken) ? '✓' : ''}
+                  </span>
+                </div>
+
+                {usernameLocalError && newUsername && (
+                  <p className="ux-msg-error">{usernameLocalError}</p>
+                )}
+                {usernameTaken && !usernameChecking && !usernameLocalError && (
+                  <p className="ux-msg-error">Ese nombre ya está en uso. Prueba con otro.</p>
+                )}
+                {usernameMsg.text && (
+                  <p className={usernameMsg.type === "ok" ? "ux-msg-ok" : "ux-msg-error"}>
+                    {usernameMsg.text}
+                  </p>
+                )}
+
+                <div className="ux-settings-actions">
+                  <button
+                    type="button"
+                    className="ux-btn-primary"
+                    onClick={handleChangeUsername}
+                    disabled={!newUsername || !!usernameLocalError || usernameChecking || usernameTaken}
+                  >
+                    Guardar nombre de usuario
+                  </button>
+                  <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* ── 1. EMAIL ─────────────────────────────────────────────────── */}
           <div className="ux-form-block">
             <div className="ux-settings-row">
@@ -191,7 +352,7 @@ export default function ProfileSettingsPage() {
 
             {editingSection === "email" && (
               <div className="ux-settings-edit-area">
-                <div className="ux-form-row" style={{ gridTemplateColumns: "1fr" }}>
+                <div className="ux-form-column" style={{ gridTemplateColumns: "1fr" }}>
                   <div className="ux-form-field">
                     <label className="ux-form-label" htmlFor="newEmail">Nuevo email</label>
                     <input
@@ -241,8 +402,6 @@ export default function ProfileSettingsPage() {
             )}
           </div>
 
-          <div className="ux-divider" />
-
           {/* ── 2. CONTRASEÑA ────────────────────────────────────────────── */}
           <div className="ux-form-block">
             <div className="ux-settings-row">
@@ -264,7 +423,7 @@ export default function ProfileSettingsPage() {
 
             {editingSection === "password" && (
               <div className="ux-settings-edit-area">
-                <div className="ux-form-row" style={{ gridTemplateColumns: "1fr" }}>
+                <div className="ux-form-column" style={{ gridTemplateColumns: "1fr" }}>
                   {!isGoogleUser && (
                     <div className="ux-form-field">
                       <label className="ux-form-label" htmlFor="currentPwd">Contraseña actual</label>
@@ -325,8 +484,6 @@ export default function ProfileSettingsPage() {
             )}
           </div>
 
-          <div className="ux-divider" />
-
           {/* ── 3. CERRAR SESIÓN ─────────────────────────────────────────── */}
           <div className="ux-form-block">
             <div className="ux-settings-row">
@@ -339,8 +496,6 @@ export default function ProfileSettingsPage() {
               </button>
             </div>
           </div>
-
-          <div className="ux-divider" />
 
           {/* ── 4. ELIMINAR CUENTA ───────────────────────────────────────── */}
           <div className="ux-form-block">

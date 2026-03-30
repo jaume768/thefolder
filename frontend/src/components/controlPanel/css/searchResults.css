@@ -174,7 +174,7 @@
     transition: all 0.2s ease;
     cursor: pointer;
     padding: 8px;
-    border-radius: 12px;
+    border-radius: 6px;
 }
 
 .result-item:hover {
@@ -305,10 +305,10 @@
 /* Estilos para el componente de búsqueda pantalla completa */
 .search-fullscreen {
     position: fixed;
-    top: 0;
-    left: 0;
     right: 0;
     bottom: 0;
+    margin-top: 62px;
+    z-index: -5;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -402,6 +402,7 @@
 @media (max-width: 768px) {
     .search-fullscreen-content {
         margin-left: 0;
+        padding: 0px;
     }
 }
 
@@ -452,7 +453,7 @@
 }
 
 .filter-tab-count {
-    color: #555;
+    color: #999;
     border-radius: 10px;
     padding: 2px 5px;
     font-size: 11px;
@@ -479,7 +480,7 @@
     font-size: 12px;
     color: #444;
     margin-bottom: 16px;
-    font-family: Inter Tight, serif;
+    font-family: Inter Tight, sans-serif;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -735,7 +736,6 @@ img.offer-grid-img {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fff;
 }
 
 /* Ya no usas ese header dentro del fullscreen */
@@ -751,6 +751,9 @@ img.offer-grid-img {
 @media (max-width: 768px){
   .search-fullscreen{
     left: 0; /* en tablet/móvil normalmente no hay sidebar */
+    margin-top: 12px;
+    height: 100%;
+    padding-bottom: 80px;
   }
 }
 

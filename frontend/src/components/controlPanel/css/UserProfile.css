@@ -423,13 +423,11 @@
 }
 
 .notification.success {
-    background-color: #e6f7ee;
     border-left: 4px solid #08b599;
     color: #08b599;
 }
 
 .notification.error {
-    background-color: #feeaeb;
     border-left: 4px solid #e74c3c;
     color: #e74c3c;
 }

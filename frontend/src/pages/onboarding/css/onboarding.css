@@ -1,0 +1,283 @@
+/* Onboarding wizard — extiende complete-registration.css */
+/* Las clases .ob-* base vienen de pages/css/complete-registration.css  */
+
+/* ── Type step — selector de tipo ──────────────────────────────────────── */
+
+.ob-type-options {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: min(60%, 92vw);
+  margin-top: 28px;
+}
+
+.ob-type-btn {
+  width: 33%;
+  padding: 16px 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  justify-content: space-between;
+}
+
+.ob-type-btn:hover {
+  border-color: #aaa;
+}
+
+.ob-type-btn.selected {
+  border-color: #111;
+  background: #f9f9f9;
+}
+
+.ob-type-btn__title {
+  font-size: 14px;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 500;
+  color: #111;
+  letter-spacing: .04em;
+  display: flex;
+  flex-direction: column;
+}
+
+.ob-type-btn__desc {
+  font-size: 12px;
+  color: #888;
+  font-weight: 400;
+}
+
+.ob-field-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  justify-content: center;
+}
+
+.ob-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 50%;
+}
+
+label.ob-field__label {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* ── ProfileStep — selector de nivel/tipo ────────────────────────────── */
+
+.ob-level-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  width: 80%;
+  margin-top: 8px;
+}
+
+.ob-level-btn {
+  flex: 1;
+  min-width: 110px;
+  min-height: 120px;
+  height: auto;
+  padding: 12px;
+  border: 1px solid #D8D8D8;
+  border-radius: 12px;
+  background: #FDFDFD;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.ob-level-btn:hover {
+  border-color: #aaa;
+}
+
+.ob-level-btn.selected {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.ob-level-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  margin-bottom: 2px;
+}
+
+.ob-level-btn.selected .ob-level-icon {
+  filter: invert(1);
+}
+
+.ob-level-btn__name {
+  font-size: 14px;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 500;
+  letter-spacing: .04em;
+  line-height: 16px;
+}
+
+.ob-level-btn__desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: #666;
+  line-height: 17px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.ob-level-btn.selected .ob-level-btn__desc {
+  color: #aaa;
+}
+
+/* ── Links (industria) ───────────────────────────────────────────────── */
+
+.ob-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ob-link-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ob-link-row .ob-input-box {
+  flex: 1;
+}
+
+.ob-link-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.ob-link-remove:hover {
+  color: #d64545;
+}
+
+.ob-add-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  padding: 6px 0;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ob-add-link:hover {
+  color: #111;
+}
+
+/* ── Textarea ────────────────────────────────────────────────────────── */
+
+.ob-textarea {
+  width: 100%;
+  border: transparent;
+  border-bottom: 1px solid #e5e5e5;
+  border-radius: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.ob-textarea:focus {
+  border-color: #111;
+}
+
+/* ── Select ──────────────────────────────────────────────────────────── */
+
+.ob-select {
+  width: 100%;
+  height: 32px;
+  border: transparent;
+  border-bottom: 1px solid #e5e5e5;
+  border-radius: 0;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+  color: #111;
+}
+
+.ob-select:focus {
+  border-color: #111;
+}
+
+/* ── Char counter ────────────────────────────────────────────────────── */
+
+.ob-char-count {
+  font-size: 11px;
+  color: #aaa;
+  text-align: right;
+  margin-top: 4px;
+}
+
+
+@media (max-width: 768px) { 
+
+  .ob-type-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      margin-top: 28px;
+      height: auto;
+      align-items: center;
+  }
+
+  .ob-type-btn {
+    width: 80%;
+  }
+
+  .ob-field-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.ob-fields {
+  width: 90%;
+}
+
+.ob-level-btn {
+  min-height: 100px;
+}
+
+.ob-level-options {
+  width: 100%;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+}

@@ -21,7 +21,7 @@ const UserLanguagesSection = ({ languages = [] }) => {
         level: (item?.level || "").trim(),
       };
     })
-    .filter((x) => x.language);
+    .filter((x) => x.language && x.language.trim() !== "");
 
   if (normalized.length === 0) return null;
 

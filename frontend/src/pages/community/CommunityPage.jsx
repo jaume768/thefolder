@@ -2,9 +2,52 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
+import '../../components/controlPanel/css/explorer.css';
 import '../../components/controlPanel/css/MyComunity.css';
 
-// ─── Mismos grupos que Creatives ────────────────────────────────────────────
+const FLAG_IMAGES = {
+  AD: '/iconos/flag/andorra.png',
+  AR: '/iconos/flag/argentina.png',
+  BE: '/iconos/flag/belgium.png',
+  BR: '/iconos/flag/brazil.png',
+  CL: '/iconos/flag/chile.png',
+  CO: '/iconos/flag/colombia.png',
+  DE: '/iconos/flag/germany.png',
+  DK: '/iconos/flag/denmark.png',
+  ES: '/iconos/flag/spain-flag.png',
+  FR: '/iconos/flag/france-flag.png',
+  GB: '/iconos/flag/united-kingdom.png',
+  IT: '/iconos/flag/italy.png',
+  MX: '/iconos/flag/mexico.png',
+  NL: '/iconos/flag/netherlands.png',
+  PE: '/iconos/flag/peru.png',
+  PT: '/iconos/flag/portugal.png',
+  US: '/iconos/flag/united-states.png',
+};
+
+const normalize = str => String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').toLowerCase().trim();
+
+const GROUP_ICONS = {
+  'Accesorios':          '/iconos/specialty/accesories.png',
+  'Beauty (MUAH)':       '/iconos/specialty/beauty.png',
+  'Fotografía & Vídeo':  '/iconos/specialty/camera-photo.png',
+  'Dirección Creativa':  '/iconos/specialty/creative-direction.png',
+  'Diseño':              '/iconos/specialty/fashion-design.png',
+  'Digital & 3D':        '/iconos/specialty/graphic-design.png',
+  'Ilustración':         '/iconos/specialty/illustration.png',
+  'Styling':             '/iconos/specialty/styling.png',
+  'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
+};
+
+const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
+
+const CREATIVE_LEVELS = [
+  { value: 1, label: 'Newcomer',     icon: 'newcomer.png',     description: 'Estudiantes o recién graduados.' },
+  { value: 2, label: 'Graduated',    icon: 'graduated.png',    description: 'Formación completada.' },
+  { value: 3, label: 'Emerging',     icon: 'emerging.png',     description: '1-3 años de experiencia.' },
+  { value: 4, label: 'Professional', icon: 'professional.png', description: 'Trayectoria y portfolio sólidos.' },
+];
+
 const GROUP_ORDER = [
   "Diseño",
   "Dirección Creativa",
@@ -15,6 +58,8 @@ const GROUP_ORDER = [
   "Digital & 3D",
   "Ilustración",
 ];
+
+const EMPTY_FILTERS = { city: [], professionalProfile: [], creativeLevel: [] };
 
 const MyComunity = () => {
   const [activeTab, setActiveTab] = useState('seguidos');
@@ -30,28 +75,20 @@ const MyComunity = () => {
   const [followingCount, setFollowingCount] = useState(0);
   const [followersCount, setFollowersCount] = useState(0);
 
-  // tags de especialidad (igual que Creatives)
-  const [professionalProfileOptions, setProfessionalProfileOptions] = useState([]);
+  // tags de especialidad
+  const [tagOptions, setTagOptions] = useState([]);
+  const [rolesByGroup, setRolesByGroup] = useState({});
 
   const limit = 10;
   const navigate = useNavigate();
 
   // ── Filtros ──────────────────────────────────────────────────────────────
-  const [filters, setFilters] = useState({
-    city: [],
-    professionalProfile: [],
-  });
-
-  // ── Modal abierto: null | "location" | "professionalProfile" ─────────────
-  const [openKey, setOpenKey] = useState(null);
-
-  // ── Panel izquierda de cada modal ────────────────────────────────────────
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [activeCountryPanel, setActiveCountryPanel] = useState(null);
   const [activeRoleGroup, setActiveRoleGroup] = useState(null);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Fetch profiles
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── Fetch profiles ───────────────────────────────────────────────────────
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
@@ -84,7 +121,7 @@ const MyComunity = () => {
     fetchProfiles();
   }, [activeTab, page, navigate]);
 
-  // ── Contadores iniciales ──────────────────────────────────────────────────
+  // ── Contadores iniciales ─────────────────────────────────────────────────
   useEffect(() => {
     const fetchCounts = async () => {
       try {
@@ -111,50 +148,32 @@ const MyComunity = () => {
     fetchCounts();
   }, []);
 
-  // ── Tags de especialidad (igual que Creatives) ───────────────────────────
+  // ── Tags de especialidad ─────────────────────────────────────────────────
   useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const res = await axios.get(`${backendUrl}/api/tags?type=role&status=active`);
-        const all = res.data.tags || [];
-        setProfessionalProfileOptions(all.filter(t => !!t.group));
-      } catch (e) {
-      }
-    };
-    fetchTags();
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    axios.get(`${backendUrl}/api/tags?type=role&status=active`)
+      .then(res => {
+        const all = (res.data.tags || []).filter(t => !!t.group && t.count > 0);
+        setTagOptions(all);
+        const map = {};
+        for (const t of all) {
+          if (!map[t.group]) map[t.group] = [];
+          map[t.group].push(t);
+        }
+        setRolesByGroup(map);
+      })
+      .catch(() => {});
   }, []);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Memos
-  // ─────────────────────────────────────────────────────────────────────────
-  const professionalProfileLabelById = useMemo(() => {
+  // ── Memos ────────────────────────────────────────────────────────────────
+  const tagLabelById = useMemo(() => {
     const m = {};
-    for (const t of professionalProfileOptions) m[t.id] = t.label;
+    for (const t of tagOptions) m[t.id] = t.label;
     return m;
-  }, [professionalProfileOptions]);
+  }, [tagOptions]);
 
-  const rolesByGroup = useMemo(() => {
-    const map = {};
-    for (const t of professionalProfileOptions) {
-      const g = (t.group || '').trim();
-      if (!g) continue;
-      if (!map[g]) map[g] = [];
-      map[g].push(t);
-    }
-    for (const g of Object.keys(map)) {
-      map[g].sort((a, b) => {
-        const ao = Number(a.order ?? 9999);
-        const bo = Number(b.order ?? 9999);
-        if (ao !== bo) return ao - bo;
-        return String(a.label || '').localeCompare(String(b.label || ''), 'es');
-      });
-    }
-    return map;
-  }, [professionalProfileOptions]);
-
-  const orderedRoleGroups = useMemo(() => {
-    const groups = Object.keys(rolesByGroup || {});
+  const orderedGroups = useMemo(() => {
+    const groups = Object.keys(rolesByGroup);
     const rank = Object.fromEntries(GROUP_ORDER.map((g, i) => [g, i]));
     return groups.sort((a, b) => {
       const ra = rank[a] ?? 9999;
@@ -164,21 +183,21 @@ const MyComunity = () => {
     });
   }, [rolesByGroup]);
 
-  const profileTagIds = useMemo(() => {
-    const set = new Set();
-    profiles.forEach(u => (u.professionalTags || []).forEach(id => set.add(id)));
-    return set;
-  }, [profiles]);
-
-  const orderedRoleGroupsWithUsers = useMemo(() => {
-    return orderedRoleGroups.filter(g =>
-      (rolesByGroup[g] || []).some(t => profileTagIds.has(t.id))
+  // Grupos que tienen al menos un perfil en la lista actual
+  const groupsWithProfiles = useMemo(() => {
+    const profileTagSet = new Set();
+    profiles.forEach(u => (u.professionalTags || []).forEach(id => profileTagSet.add(id)));
+    return orderedGroups.filter(g =>
+      (rolesByGroup[g] || []).some(t => profileTagSet.has(t.id))
     );
-  }, [orderedRoleGroups, rolesByGroup, profileTagIds]);
+  }, [orderedGroups, rolesByGroup, profiles]);
 
   const profileCities = useMemo(() => {
     const set = new Set();
-    profiles.forEach(u => { if (u.city) set.add(u.city.trim()); });
+    profiles.forEach(u => {
+      if (u.city) set.add(u.city.trim());
+      if (u.city2) set.add(u.city2.trim());
+    });
     return set;
   }, [profiles]);
 
@@ -188,133 +207,33 @@ const MyComunity = () => {
     );
   }, [profileCities]);
 
-  // ← NUEVO: ciudades libres (no en LOCATIONS) con usuarios
   const otherCities = useMemo(() => {
     const knownCities = new Set(Object.values(LOCATIONS).flat());
-    const counts = {};
-    profiles.forEach(u => {
-      const city = (u.city || "").trim();
-      if (city && !knownCities.has(city)) {
-        counts[city] = (counts[city] || 0) + 1;
-      }
-    });
-    return Object.entries(counts)
-      .filter(([, count]) => count > 0)
-      .map(([city, count]) => ({ city, count }))
-      .sort((a, b) => a.city.localeCompare(b.city, "es"));
+    return [...profileCities]
+      .filter(city => !knownCities.has(city))
+      .sort((a, b) => a.localeCompare(b, 'es'));
+  }, [profileCities]);
+
+  // Niveles presentes en los perfiles actuales
+  const levelsWithProfiles = useMemo(() => {
+    const set = new Set(profiles.map(u => u.creativeLevel).filter(Boolean));
+    return CREATIVE_LEVELS.filter(lvl => set.has(lvl.value));
   }, [profiles]);
 
-  const firstCountry = useMemo(() => countriesWithUsers[0] || null, [countriesWithUsers]);
-  const firstGroupWithUsers = useMemo(() => orderedRoleGroupsWithUsers[0] || null, [orderedRoleGroupsWithUsers]);
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Modal: apertura / cierre / tecla Escape
-  // ─────────────────────────────────────────────────────────────────────────
-  const closeModal = useCallback(() => {
-    setOpenKey(null);
-    setActiveCountryPanel(null);
-    setActiveRoleGroup(null);
-  }, []);
-
-  const toggleSection = useCallback((key) => {
-    setOpenKey(prev => prev === key ? null : key);
-  }, []);
-
+  // ── Cerrar modal con Escape ──────────────────────────────────────────────
   useEffect(() => {
-    if (openKey !== 'location') return;
-    if (activeCountryPanel) return;
-
-    const selectedCities = new Set(filters.city || []);
-    if (selectedCities.size > 0) {
-      const match = ALL_COUNTRIES.find(c =>
-        (LOCATIONS[c] || []).some(city => selectedCities.has(city))
-      );
-      if (match) { setActiveCountryPanel(match); return; }
-      if (otherCities.some(({ city }) => selectedCities.has(city))) {
-        setActiveCountryPanel("__otros__");
-        return;
-      }
-    }
-    if (firstCountry) setActiveCountryPanel(firstCountry);
-  }, [openKey, activeCountryPanel, firstCountry, filters.city, otherCities]);
-
-  useEffect(() => {
-    if (openKey !== 'professionalProfile') return;
-    if (activeRoleGroup) return;
-
-    const selected = new Set(filters.professionalProfile || []);
-    if (selected.size > 0) {
-      const match = orderedRoleGroupsWithUsers.find(g =>
-        (rolesByGroup[g] || []).some(t => selected.has(t.id))
-      );
-      if (match) { setActiveRoleGroup(match); return; }
-    }
-    if (firstGroupWithUsers) setActiveRoleGroup(firstGroupWithUsers);
-  }, [openKey, activeRoleGroup, firstGroupWithUsers, orderedRoleGroupsWithUsers, rolesByGroup, filters.professionalProfile]);
-
-  useEffect(() => {
-    if (!openKey) return;
-    const onKeyDown = (e) => { if (e.key === 'Escape') closeModal(); };
-    document.addEventListener('keydown', onKeyDown);
-    const prev = document.body.style.overflow;
+    if (!showFiltersModal) return;
+    const onKey = e => { if (e.key === 'Escape') setShowFiltersModal(false); };
+    document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = prev;
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
     };
-  }, [openKey, closeModal]);
+  }, [showFiltersModal]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Handlers
-  // ─────────────────────────────────────────────────────────────────────────
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setPage(1);
-    setFilters({ city: [], professionalProfile: [] });
-    closeModal();
-  };
-
-  const toggleTag = (key, tag) => {
-    setFilters(prev => {
-      const current = Array.isArray(prev[key]) ? prev[key] : [];
-      const exists = current.includes(tag);
-      return { ...prev, [key]: exists ? current.filter(t => t !== tag) : [...current, tag] };
-    });
-  };
-
-  const removeTag = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: (prev[key] || []).filter(t => t !== value) }));
-  };
-
-  const clearAllFilters = () => {
-    setFilters({ city: [], professionalProfile: [] });
-    closeModal();
-  };
-
-  const navigateToProfile = (username) => navigate(`/${username}`);
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Lista filtrada
-  // ─────────────────────────────────────────────────────────────────────────
-  const finalProfiles = useMemo(() => {
-    return profiles.filter(user => {
-      if (filters.city.length > 0) {
-        if (!filters.city.includes((user.city || '').trim())) return false;
-      }
-      if (filters.professionalProfile.length > 0) {
-        const userTags = user.professionalTags || [];
-        if (!filters.professionalProfile.some(id => userTags.includes(id))) return false;
-      }
-      return true;
-    });
-  }, [profiles, filters]);
-
-  const hasActiveFilters = filters.city.length > 0 || filters.professionalProfile.length > 0;
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Chips activos
-  // ─────────────────────────────────────────────────────────────────────────
-  const activeChips = [
+  // ── Chips activos ────────────────────────────────────────────────────────
+  const activeChips = useMemo(() => [
     ...(filters.city || []).map(v => {
       const country = ALL_COUNTRIES.find(c => (LOCATIONS[c] || []).includes(v));
       const code = country ? COUNTRY_CODES[country] : null;
@@ -322,250 +241,279 @@ const MyComunity = () => {
     }),
     ...(filters.professionalProfile || []).map(id => ({
       key: 'professionalProfile',
-      label: professionalProfileLabelById[id] || id,
+      label: tagLabelById[id] || id,
       value: id,
     })),
-  ];
+    ...(filters.creativeLevel || []).map(v => ({
+      key: 'creativeLevel',
+      label: CREATIVE_LEVELS.find(l => l.value === v)?.label || v,
+      value: v,
+    })),
+  ], [filters, tagLabelById]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Render trigger
-  // ─────────────────────────────────────────────────────────────────────────
-  const renderTrigger = (key, label) => {
-    const selectedCount = key === 'location'
-      ? (filters.city || []).length
-      : (filters[key] || []).length;
-    const isSelected = selectedCount > 0;
-    const isOpen = openKey === key;
+  const hasActiveFilters = activeChips.length > 0;
 
-    const triggerClass = [
-      'filter-section-trigger',
-      isOpen ? 'is-open is-active' : '',
-      isSelected ? 'has-selection is-active' : '',
-    ].filter(Boolean).join(' ');
+  // ── Lista filtrada ───────────────────────────────────────────────────────
+  const finalProfiles = useMemo(() => {
+    return profiles.filter(user => {
+      if (filters.city.length > 0) {
+        if (!filters.city.some(fc => normalize(fc) === normalize(user.city || '') || normalize(fc) === normalize(user.city2 || ''))) return false;
+      }
+      if (filters.professionalProfile.length > 0) {
+        const userTags = user.professionalTags || [];
+        if (!filters.professionalProfile.some(id => userTags.includes(id))) return false;
+      }
+      if (filters.creativeLevel.length > 0) {
+        if (!filters.creativeLevel.includes(user.creativeLevel)) return false;
+      }
+      return true;
+    });
+  }, [profiles, filters]);
 
-    return (
-      <button
-        type="button"
-        className={triggerClass}
-        onClick={() => toggleSection(key)}
-        aria-expanded={isOpen}
-      >
-        <span className="filter-section-label">
-          {label}{isSelected ? ` [${selectedCount}]` : ''}
-        </span>
-        <span className="filter-section-indicator" aria-hidden="true">
-          {isOpen ? '/' : !isSelected ? '+' : null}
-        </span>
-      </button>
-    );
+  // ── Handlers ─────────────────────────────────────────────────────────────
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setPage(1);
+    setFilters(EMPTY_FILTERS);
+    setShowFiltersModal(false);
+    setActiveRoleGroup(null);
+    setActiveCountryPanel(null);
   };
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Render modal
-  // ─────────────────────────────────────────────────────────────────────────
-  const renderModal = () => {
-    if (!openKey) return null;
+  const toggleTag = useCallback((key, tag) => {
+    setFilters(prev => {
+      const current = Array.isArray(prev[key]) ? prev[key] : [];
+      const exists = current.includes(tag);
+      return { ...prev, [key]: exists ? current.filter(t => t !== tag) : [...current, tag] };
+    });
+  }, []);
 
-    // ── Panel UBICACIÓN ────────────────────────────────────────────────────
-    if (openKey === 'location') {
-      const citiesToShow = activeCountryPanel === "__otros__"
-        ? otherCities.map(({ city }) => city)
-        : activeCountryPanel
-          ? (LOCATIONS[activeCountryPanel] || []).filter(city => profileCities.has(city))
-          : [];
+  const removeChip = useCallback((key, value) => {
+    setFilters(prev => ({ ...prev, [key]: (prev[key] || []).filter(t => t !== value) }));
+  }, []);
 
-      return (
-        <div
-          className="filters-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Panel Ubicación"
-          onMouseDown={e => { if (e.target === e.currentTarget) closeModal(); }}
-        >
-          <div className="filters-modal-panel" onMouseDown={e => e.stopPropagation()}>
-            <div className="filters-panel-header">
-              <div className="filters-panel-title">Ubicación</div>
-              <button type="button" className="filters-panel-close" onClick={closeModal} aria-label="Cerrar">
-                <img src="/iconos/close.svg" alt="Cerrar" className="image-icon" />
-              </button>
+  const clearAll = useCallback(() => {
+    setFilters(EMPTY_FILTERS);
+    setShowFiltersModal(false);
+    setActiveRoleGroup(null);
+    setActiveCountryPanel(null);
+  }, []);
+
+  const navigateToProfile = (username) => navigate(`/${username}`);
+
+  // ── Modal de filtros (igual que Explorer) ────────────────────────────────
+  const renderAllFiltersModal = () => (
+    <div className="filters-modal-overlay" onClick={() => setShowFiltersModal(false)}>
+      <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
+
+        <div className="filters-modal-header">
+          <span className="filters-modal-title">Filtros</span>
+          <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
+        </div>
+
+        {/* ── EXPERIENCIA ───────────────────────────────────── */}
+        {levelsWithProfiles.length > 0 && (
+          <div className="filters-modal-section">
+            <p className="filters-col-title">Experiencia</p>
+            <div className="filters-tags filters-tags--level">
+              {levelsWithProfiles.map(lvl => {
+                const sel = (filters.creativeLevel || []).includes(lvl.value);
+                return (
+                  <button
+                    key={lvl.value}
+                    type="button"
+                    className={`filter-tag experience-tag ${sel ? 'selected' : ''}`}
+                    onClick={() => toggleTag('creativeLevel', lvl.value)}
+                  >
+                    <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
+                    <span className="experience-tag-label">{lvl.label}</span>
+                    <span className="experience-tag-desc">{lvl.description}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── UBICACIÓN ─────────────────────────────────────── */}
+        {(countriesWithUsers.length > 0 || otherCities.length > 0) && (
+          <div className="filters-modal-section">
+            <p className="filters-col-title">Ubicación</p>
+            <div className="filters-tags filters-tags--level">
+              {countriesWithUsers.map(country => {
+                const code = COUNTRY_CODES[country];
+                const isActive = activeCountryPanel === country;
+                const hasSelection = (LOCATIONS[country] || []).some(city => (filters.city || []).includes(city));
+                return (
+                  <button
+                    key={country}
+                    type="button"
+                    className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                    onClick={() => setActiveCountryPanel(prev => prev === country ? null : country)}
+                  >
+                    <span className="country-flag-circle">
+                      {FLAG_IMAGES[code]
+                        ? <img src={FLAG_IMAGES[code]} alt={country} />
+                        : flagEmoji(code)}
+                    </span>
+                    {country}
+                  </button>
+                );
+              })}
+              {otherCities.length > 0 && (
+                <button
+                  type="button"
+                  className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
+                  onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
+                >
+                  <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="Otros" /></span>
+                  Otros
+                </button>
+              )}
             </div>
 
-            <div className="filters-panel-body">
-              <div className="filters-two-col">
-
-                <div className="filters-col filters-col-left">
-                  <div className="filters-col-title">País</div>
-                  <div className="filters-list">
-
-                    {countriesWithUsers.map(country => {
-                      const isActive = activeCountryPanel === country;
-                      const hasSelection = (LOCATIONS[country] || []).some(city =>
-                        (filters.city || []).includes(city)
-                      );
-                      return (
-                        <button
-                          key={country}
-                          type="button"
-                          className={`filters-list-item ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
-                          onClick={() => setActiveCountryPanel(isActive ? null : country)}
-                        >
-                          <span className="filters-list-dot" aria-hidden="true" />
-                          <span className="filters-list-text">
-                            {country}{hasSelection ? ' /' : ''}
-                          </span>
-                        </button>
-                      );
-                    })}
-
-                    {/* ← NUEVO: Otros */}
-                    {otherCities.length > 0 && (() => {
-                      const isActive = activeCountryPanel === "__otros__";
-                      const othersHasSelection = otherCities.some(({ city }) =>
-                        (filters.city || []).includes(city)
-                      );
-                      return (
-                        <button
-                          key="__otros__"
-                          type="button"
-                          className={`filters-list-item ${isActive ? 'is-active' : ''} ${othersHasSelection ? 'has-selection' : ''}`}
-                          onClick={() => setActiveCountryPanel(isActive ? null : "__otros__")}
-                        >
-                          <span className="filters-list-dot" aria-hidden="true" />
-                          <span className="filters-list-text">
-                            Otros{othersHasSelection ? ' /' : ''}
-                          </span>
-                        </button>
-                      );
-                    })()}
-
-                  </div>
-                </div>
-
-                <div className="filters-col filters-col-right">
-                  <div className="filters-col-title">Ciudad</div>
-                  <div className="filters-tags">
-                    {!activeCountryPanel ? (
-                      <div className="filters-empty">Selecciona un país</div>
-                    ) : citiesToShow.length === 0 ? (
-                      <div className="filters-empty">Sin perfiles en este país</div>
-                    ) : (
-                      citiesToShow.map(city => {
-                        const selected = (filters.city || []).includes(city);
+            {activeCountryPanel && (() => {
+              const cities = activeCountryPanel === '__otros__'
+                ? otherCities
+                : (LOCATIONS[activeCountryPanel] || []).filter(city => profileCities.has(city));
+              return (
+                <div className="filters-country-cities">
+                  {cities.length === 0 ? (
+                    <p className="filters-empty">Sin perfiles en este país</p>
+                  ) : (
+                    <div className="filters-tags filters-tags--level">
+                      {cities.map(city => {
+                        const sel = (filters.city || []).includes(city);
                         const count = profiles.filter(u => (u.city || '').trim() === city).length;
                         return (
                           <button
-                            type="button"
                             key={city}
-                            className={`filter-tag ${selected ? 'selected' : ''}`}
+                            type="button"
+                            className={`filter-tag ${sel ? 'selected' : ''}`}
                             onClick={() => toggleTag('city', city)}
                           >
                             {city}{count > 0 ? ` (${count})` : ''}
                           </button>
                         );
-                      })
-                    )}
-                  </div>
+                      })}
+                    </div>
+                  )}
                 </div>
-
-              </div>
-            </div>
+              );
+            })()}
           </div>
-        </div>
-      );
-    }
+        )}
 
-    // ── Panel ESPECIALIDAD ─────────────────────────────────────────────────
-    if (openKey === 'professionalProfile') {
-      return (
-        <div
-          className="filters-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Panel Especialidad"
-          onMouseDown={e => { if (e.target === e.currentTarget) closeModal(); }}
-        >
-          <div className="filters-modal-panel" onMouseDown={e => e.stopPropagation()}>
-            <div className="filters-panel-header">
-              <div className="filters-panel-title">Especialidad</div>
-              <button type="button" className="filters-panel-close" onClick={closeModal} aria-label="Cerrar">
-                <img src="/iconos/close.svg" alt="Cerrar" className="image-icon" />
-              </button>
+        {/* ── ESPECIALIDAD ──────────────────────────────────── */}
+        {groupsWithProfiles.length > 0 && (
+          <div className="filters-modal-section filters-modal-section--specialty">
+            <p className="filters-col-title">Especialidad</p>
+            <div className="filters-tags filters-tags--level">
+              {groupsWithProfiles.map(group => {
+                const isActive = activeRoleGroup === group;
+                const hasSelection = (rolesByGroup[group] || []).some(t => (filters.professionalProfile || []).includes(t.id));
+                const icon = GROUP_ICONS[group];
+                return (
+                  <button
+                    key={group}
+                    type="button"
+                    className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                    onClick={() => setActiveRoleGroup(prev => prev === group ? null : group)}
+                  >
+                    {icon && (
+                      <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />
+                    )}
+                    {group}
+                  </button>
+                );
+              })}
             </div>
-
-            <div className="filters-panel-body">
-              <div className="filters-two-col">
-
-                <div className="filters-col filters-col-left">
-                  <div className="filters-col-title">Categorías</div>
-                  <div className="filters-list">
-                    {orderedRoleGroupsWithUsers.map(group => {
-                      const isActive = activeRoleGroup === group;
-                      const hasSelection = (rolesByGroup[group] || []).some(t =>
-                        (filters.professionalProfile || []).includes(t.id)
-                      );
+            {activeRoleGroup && (() => {
+              const profileTagSet = new Set();
+              profiles.forEach(u => (u.professionalTags || []).forEach(id => profileTagSet.add(id)));
+              const tags = (rolesByGroup[activeRoleGroup] || []).filter(t => profileTagSet.has(t.id));
+              return (
+                <div className="filters-country-cities">
+                  <div className="filters-tags filters-tags--level">
+                    {tags.map(t => {
+                      const sel = (filters.professionalProfile || []).includes(t.id);
+                      const count = profiles.filter(u => (u.professionalTags || []).includes(t.id)).length;
                       return (
                         <button
-                          key={group}
+                          key={t.id}
                           type="button"
-                          className={`filters-list-item ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
-                          onClick={() => setActiveRoleGroup(isActive ? null : group)}
+                          className={`filter-tag ${sel ? 'selected' : ''}`}
+                          onClick={() => toggleTag('professionalProfile', t.id)}
                         >
-                          <span className="filters-list-dot" aria-hidden="true" />
-                          <span className="filters-list-text">
-                            {group}{hasSelection ? ' /' : ''}
-                          </span>
+                          {t.label} ({count})
                         </button>
                       );
                     })}
                   </div>
                 </div>
-
-                <div className="filters-col filters-col-right">
-                  <div className="filters-col-title">Perfil</div>
-                  <div className="filters-tags">
-                    {!activeRoleGroup ? (
-                      <div className="filters-empty">Selecciona una categoría</div>
-                    ) : (
-                      (rolesByGroup[activeRoleGroup] || [])
-                        .filter(t => profileTagIds.has(t.id))
-                        .map(t => {
-                          const selected = (filters.professionalProfile || []).includes(t.id);
-                          const count = profiles.filter(u =>
-                            (u.professionalTags || []).includes(t.id)
-                          ).length;
-                          return (
-                            <button
-                              type="button"
-                              key={t.id}
-                              className={`filter-tag ${selected ? 'selected' : ''}`}
-                              onClick={() => toggleTag('professionalProfile', t.id)}
-                            >
-                              {t.label} ({count})
-                            </button>
-                          );
-                        })
-                    )}
-                  </div>
-                </div>
-
-              </div>
-            </div>
+              );
+            })()}
           </div>
+        )}
+
+        <div className="filters-modal-footer">
+          {hasActiveFilters ? (
+            <button type="button" className="filters-modal-clear" onClick={clearAll}>
+              Limpiar filtros
+            </button>
+          ) : <span />}
+          <button type="button" className="filters-modal-apply" onClick={() => setShowFiltersModal(false)}>
+            Filtrar
+          </button>
         </div>
-      );
-    }
 
-    return null;
-  };
+      </div>
+    </div>
+  );
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Render
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div>
       <p className="creatives-subtitle --show-mobile">
         Conoce los perfiles que sigues y quienes te siguen. Explora tu red, descubre conexiones relevantes y filtra por ciudad o especialidad.
       </p>
+
+              <div className="mycomunity-filters">
+            <div className="filters-triggers-row --mycomunity">
+              <div className="filters-triggers-left filters-explorer">
+                <button
+                  type="button"
+                  className={`new-tablero-button explorer-filtros-btn ${hasActiveFilters ? 'has-selection' : ''}`}
+                  onClick={() => { setActiveCountryPanel(null); setActiveRoleGroup(null); setShowFiltersModal(true); }}
+                >
+                  <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
+                  Filtros
+                  {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
+                </button>
+              </div>
+
+              {hasActiveFilters && (
+                <div className="filters-open-area">
+                  <div className="filters-open-tags">
+                    {activeChips.map(chip => (
+                      <button
+                        key={`${chip.key}-${chip.value}`}
+                        type="button"
+                        className="filters-sticky-chip"
+                        onClick={() => removeChip(chip.key, chip.value)}
+                        aria-label={`Quitar ${chip.label}`}
+                      >
+                        {chip.label} <span className="chip-x">×</span>
+                      </button>
+                    ))}
+                    <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
+                      Limpiar filtros
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
 
       <div className="mycomunity-container">
         <div className="mycomunity-header">
@@ -579,53 +527,19 @@ const MyComunity = () => {
               className={`mycomunity-tab ${activeTab === 'seguidos' ? 'active' : ''}`}
               onClick={() => handleTabChange('seguidos')}
             >
-              Seguidos ({followingCount})
+              Seguidos [{followingCount}]
             </button>
             <button
               type="button"
               className={`mycomunity-tab ${activeTab === 'seguidores' ? 'active' : ''}`}
               onClick={() => handleTabChange('seguidores')}
             >
-              Seguidores ({followersCount})
+              Seguidores [{followersCount}]
             </button>
-          </div>
-
-          <div className="mycomunity-filters">
-            <div className="filters-triggers-row --mycomunity">
-              <div className="filters-triggers-left">
-                {renderTrigger('location', 'Ubicación')}
-                {renderTrigger('professionalProfile', 'Especialidad')}
-              </div>
-
-              {activeChips.length > 0 && (
-                <div className="filters-open-area">
-                  <div className="filters-open-tags">
-                    {activeChips.map((chip, idx) => (
-                      <button
-                        key={`${chip.key}-${chip.value}-${idx}`}
-                        type="button"
-                        className="filters-sticky-chip"
-                        onClick={() => removeTag(chip.key, chip.value)}
-                        aria-label={`Quitar ${chip.label}`}
-                      >
-                        {chip.label} <span className="chip-x">×</span>
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      className="filters-sticky-chip clean-all"
-                      onClick={clearAllFilters}
-                    >
-                      Limpiar todo
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
 
-        {renderModal()}
+        {showFiltersModal && renderAllFiltersModal()}
 
         {loading ? (
           <div className="loading-indicator">Cargando perfiles...</div>
@@ -665,13 +579,14 @@ const MyComunity = () => {
                     <p className="mycomunity-user-role">
                       {(user.professionalTags || [])
                         .slice(0, 2)
-                        .map(id => professionalProfileLabelById[id] || id)
+                        .map(id => tagLabelById[id] || id)
                         .join(' | ') || user.professionalTitle || ''}
                     </p>
                     <p className="mycomunity-user-location">
-                      {user.city && user.country
+                      ({user.city && user.country
                         ? `${user.city}, ${COUNTRY_CODES[user.country] || user.country}`
                         : user.city || ''}
+                      {user.city2 ? ` · ${user.city2}${user.country2 && COUNTRY_CODES[user.country2] ? `, ${COUNTRY_CODES[user.country2]}` : user.country2 ? `, ${user.country2}` : ''}` : ''})
                     </p>
                   </div>
                 </div>

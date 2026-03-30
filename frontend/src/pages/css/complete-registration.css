@@ -173,8 +173,8 @@ button.button.header-left-link.ob-top-logo {
   background: #111;
   color: #fff;
   font-size: 12px;
-  letter-spacing: 0.02em;
-  font-weight: 500;
+  letter-spacing: 0.06em;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -211,7 +211,7 @@ button.button.header-left-link.ob-top-logo {
   .ob-subtitle{ font-size: 14px; margin-bottom: 4px; }
 
   .ob-prefix{ font-size: 28px; }
-  .ob-input{ font-size: 28px; width: 220px; }
+  .ob-input{ font-size: 28px; width: 320px; }
   .ob-check{ top: 6px; }
   .ob-hint{ font-size: 14px; }
   .ob-dots{ margin-top: 56px; }
@@ -224,7 +224,7 @@ button.button.header-left-link.ob-top-logo {
 @media (max-width: 420px){
   .ob-title{ font-size: 24px; }
   .ob-prefix{ font-size: 24px; }
-  .ob-input{ font-size: 24px; width: 100px; }
+  .ob-input{ font-size: 24px; width: 320px; }
 }
 
 /* aparece al hacer focus o si hay texto */
@@ -301,6 +301,9 @@ button.button.header-left-link.ob-top-logo {
 
 .ob-field{
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .ob-label{
@@ -327,9 +330,7 @@ button.button.header-left-link.ob-top-logo {
   width: 100%;
   height: 32px;
   border: transparent;
-  border-bottom: 1px solid #e5e5e5;
-  border-radius: 0px;
-  padding: 0 12px;
+  padding: 0px;
   font-size: 14px;
   outline: none;
   background: transparent;

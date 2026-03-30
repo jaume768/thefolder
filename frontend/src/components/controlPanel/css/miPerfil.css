@@ -139,6 +139,7 @@
     line-height: 17px;
     font-weight: 300;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .miPerfil-title {
@@ -1268,9 +1269,10 @@ img.pdf-icon {
         column-count: 2;
     }
 
-    .miPerfil-container {
-        padding: 0;
+    .ux-editprofile-section {
+        padding: 0 24px;
     }
+
 
     .miPerfil-company-profile,
     .miPerfil-institution-profile,

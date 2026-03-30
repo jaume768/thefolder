@@ -1,0 +1,171 @@
+.val-container {
+  padding: 20px 0;
+}
+
+.val-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.val-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.val-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.val-badge {
+  background: #f59e0b;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.val-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 60px 0;
+  font-size: 15px;
+}
+
+.val-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--card-background);
+}
+
+.val-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.val-table th {
+  background: var(--background-color);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.val-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.val-table tr:last-child td {
+  border-bottom: none;
+}
+
+.val-table tr:hover td {
+  background: var(--background-color);
+}
+
+.val-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.val-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.val-username {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.val-email {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.val-date {
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.val-level {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.val-level--current {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.val-level--requested {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.val-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.val-btn {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 120ms ease;
+  white-space: nowrap;
+}
+
+.val-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.val-btn--approve {
+  background: #10b981;
+  color: #fff;
+}
+
+.val-btn--approve:hover:not(:disabled) {
+  background: #059669;
+}
+
+.val-btn--reject {
+  background: #fff;
+  color: #ef4444;
+  border: 1px solid #fca5a5;
+}
+
+.val-btn--reject:hover:not(:disabled) {
+  background: #fef2f2;
+}

@@ -14,7 +14,7 @@ export default function M_FullscreenAlt({
       : profile?.fullName || "Mi nombre";
 
   const tags = Array.isArray(profileHeadlines)
-    ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean)
+    ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean).slice(0, 3)
     : [];
 
 
@@ -22,7 +22,7 @@ export default function M_FullscreenAlt({
     <div className="hero hero--fullscreen-alt is-mobile hero--alt-vertical">
       {/* Texto arriba */}
       <div className="hero__header hero__header--alt">
-        <h2 className="hero__name hero__name--dark">{name}</h2>
+        <h2 className="hero__name hero__name--dark">{name} /</h2>
 
         {tags.length > 0 && (
           <div className="hero__tags hero__tags--alt">

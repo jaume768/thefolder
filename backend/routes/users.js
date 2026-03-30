@@ -24,7 +24,7 @@ const documentFilter = (req, file, cb) => {
     }
 };
 
-const uploadImage = multer({ storage, fileFilter: imageFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+const uploadImage = multer({ storage, fileFilter: imageFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 const uploadDocument = multer({ storage, fileFilter: documentFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 
 // Obtener perfil del usuario autenticado
@@ -40,8 +40,14 @@ router.get(
   userController.checkUsernameAvailability
 );
 
+// Cambiar nombre de usuario
+router.put('/change-username', ensureAuthenticated, userController.changeUsername);
+
 // Actualizar perfil
 router.put('/profile', ensureAuthenticated, userController.updateProfile);
+
+// Actualización parcial whitelisteada (reclasificación, etc.)
+router.patch('/me', ensureAuthenticated, userController.patchMe);
 router.get('/profile/:username', userController.getProfileByUsername);
 router.put('/change-password', ensureAuthenticated, userController.changePassword);
 

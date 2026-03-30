@@ -1,10 +1,49 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, useContext } from 'react';
 import axios from 'axios';
 import Masonry from "react-masonry-css";
 import { useNavigate } from 'react-router-dom';
-import { MdTune, MdClose } from 'react-icons/md';
+import '../../components/controlPanel/css/explorer.css';
 import '../../components/controlPanel/css/Creatives.css';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
+import { AuthContext } from '../../contexts/AuthContext';
+import { useCreatePost } from '../../contexts/CreatePostContext';
+import RegisterModal from '../../components/landing/RegisterModal';
+
+const FLAG_IMAGES = {
+  AD: '/iconos/flag/andorra.png',
+  AR: '/iconos/flag/argentina.png',
+  BE: '/iconos/flag/belgium.png',
+  BR: '/iconos/flag/brazil.png',
+  CL: '/iconos/flag/chile.png',
+  CO: '/iconos/flag/colombia.png',
+  DE: '/iconos/flag/germany.png',
+  DK: '/iconos/flag/denmark.png',
+  ES: '/iconos/flag/spain-flag.png',
+  FR: '/iconos/flag/france-flag.png',
+  GB: '/iconos/flag/united-kingdom.png',
+  IT: '/iconos/flag/italy.png',
+  MX: '/iconos/flag/mexico.png',
+  NL: '/iconos/flag/netherlands.png',
+  PE: '/iconos/flag/peru.png',
+  PT: '/iconos/flag/portugal.png',
+  US: '/iconos/flag/united-states.png',
+};
+
+const normalize = str => String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').toLowerCase().trim();
+
+const GROUP_ICONS = {
+  'Accesorios':          '/iconos/specialty/accesories.png',
+  'Beauty (MUAH)':       '/iconos/specialty/beauty.png',
+  'Fotografía & Vídeo':  '/iconos/specialty/camera-photo.png',
+  'Dirección Creativa':  '/iconos/specialty/creative-direction.png',
+  'Diseño':              '/iconos/specialty/fashion-design.png',
+  'Digital & 3D':        '/iconos/specialty/graphic-design.png',
+  'Ilustración':         '/iconos/specialty/illustration.png',
+  'Styling':             '/iconos/specialty/styling.png',
+  'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
+};
+
+const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
 
 const getHeaderGradient = (seed) => {
   let h = 0;
@@ -14,6 +53,13 @@ const getHeaderGradient = (seed) => {
   const hue2 = (hue1 + 40 + (h % 60)) % 360;
   return `linear-gradient(135deg, hsl(${hue1} 80% 55%), hsl(${hue2} 80% 45%))`;
 };
+
+const CREATIVE_LEVELS = [
+  { value: 1, label: 'Newcomer',     icon: 'newcomer.png',     description: 'Estudiantes o recién graduados.' },
+  { value: 2, label: 'Graduated',    icon: 'graduated.png',    description: 'Formación académica completada.' },
+  { value: 3, label: 'Emerging',     icon: 'emerging.png',     description: '1-3 años de experiencia.' },
+  { value: 4, label: 'Professional', icon: 'professional.png', description: 'Trayectoria y portfolio sólidos.' },
+];
 
 const GROUP_ORDER = [
   "Diseño",
@@ -26,140 +72,155 @@ const GROUP_ORDER = [
   "Ilustración",
 ];
 
+const EMPTY_FILTERS = { search: "", city: [], professionalProfile: [], creativeLevel: [] };
+
+// Datos estáticos para el filtro decorativo de usuarios no registrados
+const GUEST_ROLES_BY_GROUP = {
+  'Diseño': [
+    { id: 'g-fashion-design',    label: 'Diseño de Moda' },
+    { id: 'g-textile-design',    label: 'Diseño Textil' },
+    { id: 'g-pattern-making',    label: 'Patronaje' },
+    { id: 'g-accessories',       label: 'Diseño de Accesorios' },
+    { id: 'g-jewelry',           label: 'Joyería' },
+  ],
+  'Dirección Creativa': [
+    { id: 'g-creative-dir',      label: 'Dirección Creativa' },
+    { id: 'g-art-dir',           label: 'Dirección de Arte' },
+    { id: 'g-concept',           label: 'Conceptualización' },
+  ],
+  'Fotografía & Vídeo': [
+    { id: 'g-fashion-photo',     label: 'Fotografía de Moda' },
+    { id: 'g-portrait',          label: 'Fotografía de Retrato' },
+    { id: 'g-video',             label: 'Vídeo & Film' },
+    { id: 'g-bts',               label: 'Behind the Scenes' },
+  ],
+  'Styling': [
+    { id: 'g-fashion-styling',   label: 'Fashion Styling' },
+    { id: 'g-editorial-styling', label: 'Editorial Styling' },
+    { id: 'g-prop-styling',      label: 'Prop Styling' },
+  ],
+  'Beauty (MUAH)': [
+    { id: 'g-makeup',            label: 'Maquillaje' },
+    { id: 'g-hair',              label: 'Peluquería' },
+    { id: 'g-sfx',               label: 'Efectos Especiales' },
+  ],
+  'Accesorios': [
+    { id: 'g-bags',              label: 'Bolsos & Marroquinería' },
+    { id: 'g-shoes',             label: 'Calzado' },
+    { id: 'g-hats',              label: 'Sombrerería' },
+  ],
+  'Digital & 3D': [
+    { id: 'g-3d',                label: 'Diseño 3D' },
+    { id: 'g-motion',            label: 'Motion Graphics' },
+    { id: 'g-cgi',               label: 'CGI & Visual Effects' },
+    { id: 'g-graphic',           label: 'Diseño Gráfico' },
+  ],
+  'Ilustración': [
+    { id: 'g-fashion-illus',     label: 'Ilustración de Moda' },
+    { id: 'g-digital-illus',     label: 'Ilustración Digital' },
+    { id: 'g-traditional',       label: 'Técnicas Tradicionales' },
+  ],
+};
+
 const Creatives = () => {
   const [creatives, setCreatives] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [professionalProfileOptions, setProfessionalProfileOptions] = useState([]);
+  const [tagOptions, setTagOptions] = useState([]);
+  const [rolesByGroup, setRolesByGroup] = useState({});
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
   const [totalCreatives, setTotalCreatives] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
   const [activeCountryPanel, setActiveCountryPanel] = useState(null);
   const [cityCounts, setCityCounts] = useState({});
 
-  const [filters, setFilters] = useState({
-    search: "",
-    city: [],
-    professionalProfile: [],
-  });
-
-  const [appliedFilters, setAppliedFilters] = useState({
-    search: "",
-    city: [],
-    professionalProfile: [],
-  });
-
-  const [randomSeed, setRandomSeed] = useState(() => String(Date.now()));
-  const [openKey, setOpenKey] = useState(null);
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [activeRoleGroup, setActiveRoleGroup] = useState(null);
-  const [hasActiveFilters, setHasActiveFilters] = useState(false);
+  const [randomSeed, setRandomSeed] = useState(() => String(Date.now()));
 
   const navigate = useNavigate();
   const observer = useRef();
 
-  const firstCountry = useMemo(() => {
-    // primer país que tenga al menos una ciudad con usuarios
-    return ALL_COUNTRIES.find((c) =>
-      (LOCATIONS[c] || []).some((city) => cityCounts[city] > 0)
-    ) || ALL_COUNTRIES[0] || null;
-  }, [cityCounts]);
+  const { user } = useContext(AuthContext);
+  const { openCreatePost } = useCreatePost() || {};
+  const isLoggedIn = !!user;
 
-  const closeModal = useCallback(() => {
-    setOpenKey(null);
-    setActiveRoleGroup(null);
-    setActiveCountryPanel(null);
-  }, []);
+  const [showRegisterPopup, setShowRegisterPopup] = useState(false);
 
-  const toggleSection = useCallback((key) => {
-    setOpenKey((prev) => {
-      const next = prev === key ? null : key;
-      if (next !== "professionalProfile") setActiveRoleGroup(null);
-      if (next === null) setActiveRoleGroup(null);
-      return next;
-    });
-  }, []);
-
-  // Al abrir el panel ubicación: abre el país con ciudades seleccionadas,
-  // o si no hay selección, el primero con usuarios
-  useEffect(() => {
-    if (openKey !== "location") return;
-    if (activeCountryPanel) return;
-
-    const selectedCities = new Set(filters.city || []);
-    if (selectedCities.size > 0) {
-      const match = ALL_COUNTRIES.find((country) =>
-        (LOCATIONS[country] || []).some((city) => selectedCities.has(city))
-      );
-      if (match) { setActiveCountryPanel(match); return; }
-    }
-
-    if (firstCountry) setActiveCountryPanel(firstCountry);
-  }, [openKey, activeCountryPanel, firstCountry, filters.city]);
-
-  // Al abrir el panel especialidad: abre el grupo con tags seleccionados,
-  // o si no hay selección, el primero con usuarios
-  useEffect(() => {
-    if (openKey !== "professionalProfile") return;
-    if (activeRoleGroup) return;
-
-    const selected = new Set(filters.professionalProfile || []);
-    if (selected.size > 0) {
-      const match = orderedRoleGroups.find((g) =>
-        (rolesByGroup[g] || []).some((t) => selected.has(t.id))
-      );
-      if (match) { setActiveRoleGroup(match); return; }
-    }
-
-    // primer grupo que tenga algún tag con usuarios
-    const firstGroupWithUsers = orderedRoleGroups.find((g) =>
-      (rolesByGroup[g] || []).some((t) => t.count > 0)
-    );
-    if (firstGroupWithUsers) { setActiveRoleGroup(firstGroupWithUsers); return; }
-
-    if (firstRoleGroup) setActiveRoleGroup(firstRoleGroup);
-  }, [openKey, activeRoleGroup]);
+  // ── Primer proyecto CTA ──────────────────────────────────────────────────
+  const [showFirstPostCta, setShowFirstPostCta] = useState(false);
 
   useEffect(() => {
-    if (!openKey) return;
-    const onKeyDown = (e) => { if (e.key === "Escape") closeModal(); };
-    document.addEventListener("keydown", onKeyDown);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = prevOverflow;
+    if (!user) return;
+    const isCreative = user.accountType === 'creative' || user.role === 'Creativo';
+    if (!isCreative) return;
+
+    const key = `first_post_cta_seen_${user._id}`;
+    if (localStorage.getItem(key)) return;
+
+    const checkPosts = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        const res = await axios.get(`${backendUrl}/api/posts/user/${user.username}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const posts = res.data?.posts || [];
+        if (posts.length === 0) {
+          setShowFirstPostCta(true);
+        } else {
+          localStorage.setItem(key, '1');
+        }
+      } catch {
+        // Si falla la petición, no mostrar el modal
+      }
     };
-  }, [openKey, closeModal]);
 
-  const professionalProfileLabelById = useMemo(() => {
+    checkPosts();
+  }, [user]);
+
+  const dismissFirstPostCta = () => {
+    if (user?._id) localStorage.setItem(`first_post_cta_seen_${user._id}`, '1');
+    setShowFirstPostCta(false);
+  };
+
+  const handlePublicar = () => {
+    dismissFirstPostCta();
+    openCreatePost();
+  };
+
+  // ── Tags y ciudades ──────────────────────────────────────────────────────
+  useEffect(() => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const withPosts = isLoggedIn ? "" : "&withPosts=false";
+    axios.get(`${backendUrl}/api/tags?type=role&status=active${withPosts}`)
+      .then(res => {
+        const all = (res.data.tags || []).filter(t => !!t.group && t.count > 0);
+        setTagOptions(all);
+        const map = {};
+        for (const t of all) {
+          if (!map[t.group]) map[t.group] = [];
+          map[t.group].push(t);
+        }
+        setRolesByGroup(map);
+      })
+      .catch(() => {});
+    axios.get(`${backendUrl}/api/tags/cities${isLoggedIn ? "" : "?withPosts=false"}`)
+      .then(res => setCityCounts(res.data.cities || {}))
+      .catch(() => {});
+  }, [isLoggedIn]);
+
+  const tagLabelById = useMemo(() => {
     const m = {};
-    for (const t of professionalProfileOptions) m[t.id] = t.label;
+    for (const t of tagOptions) m[t.id] = t.label;
     return m;
-  }, [professionalProfileOptions]);
+  }, [tagOptions]);
 
-  const rolesByGroup = useMemo(() => {
-    const map = {};
-    for (const t of professionalProfileOptions) {
-      const g = (t.group || "").trim();
-      if (!g) continue;
-      if (!map[g]) map[g] = [];
-      map[g].push(t);
-    }
-    for (const g of Object.keys(map)) {
-      map[g].sort((a, b) => {
-        const ao = Number(a.order ?? 9999);
-        const bo = Number(b.order ?? 9999);
-        if (ao !== bo) return ao - bo;
-        return String(a.label || "").localeCompare(String(b.label || ""), "es");
-      });
-    }
-    return map;
-  }, [professionalProfileOptions]);
-
-  const orderedRoleGroups = useMemo(() => {
-    const groups = Object.keys(rolesByGroup || {});
+  const orderedGroups = useMemo(() => {
+    const groups = Object.keys(rolesByGroup);
     const rank = Object.fromEntries(GROUP_ORDER.map((g, i) => [g, i]));
     return groups.sort((a, b) => {
       const ra = rank[a] ?? 9999;
@@ -169,68 +230,57 @@ const Creatives = () => {
     });
   }, [rolesByGroup]);
 
-  // Grupos que tienen al menos un tag con usuarios
-  const orderedRoleGroupsWithUsers = useMemo(() => {
-    return orderedRoleGroups.filter((g) =>
-      (rolesByGroup[g] || []).some((t) => t.count > 0)
-    );
-  }, [orderedRoleGroups, rolesByGroup]);
-
-  const selectedRoleIds = useMemo(
-    () => new Set(filters.professionalProfile || []),
-    [filters.professionalProfile]
-  );
-
-  const firstRoleGroup = useMemo(() => {
-    return orderedRoleGroups.length ? orderedRoleGroups[0] : null;
-  }, [orderedRoleGroups]);
-
-
   const otherCities = useMemo(() => {
-  // Todas las ciudades de LOCATIONS (aplanadas)
-  const knownCities = new Set(
-    Object.values(LOCATIONS).flat()
-  );
-  // Ciudades en cityCounts que no están en ningún LOCATIONS y tienen usuarios
-  return Object.entries(cityCounts)
-    .filter(([city, count]) => !knownCities.has(city) && count > 0)
-    .map(([city, count]) => ({ city, count }))
-    .sort((a, b) => a.city.localeCompare(b.city, "es"));
+    const knownCities = new Set(Object.values(LOCATIONS).flat());
+    return Object.entries(cityCounts)
+      .filter(([city, count]) => !knownCities.has(city) && count > 0)
+      .map(([city]) => city)
+      .sort((a, b) => a.localeCompare(b, 'es'));
   }, [cityCounts]);
 
-
+  // ── Debounce 400ms ───────────────────────────────────────────────────────
   useEffect(() => {
-    const checkIfMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
+    const t = setTimeout(() => {
+      setAppliedFilters(filters);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [filters]);
 
+  // ── Cerrar modal con Escape ──────────────────────────────────────────────
   useEffect(() => {
-    const fetchProfiles = async () => {
-      try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const res = await axios.get(`${backendUrl}/api/tags?type=role&status=active`);
-        const all = res.data.tags || [];
-        setProfessionalProfileOptions(all.filter(t => !!t.group));
-      } catch (e) {
-      }
+    if (!showFiltersModal) return;
+    const onKey = e => { if (e.key === 'Escape') setShowFiltersModal(false); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
     };
-    fetchProfiles();
-  }, []);
+  }, [showFiltersModal]);
 
-  useEffect(() => {
-    const fetchCityCounts = async () => {
-      try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const res = await axios.get(`${backendUrl}/api/tags/cities`);
-        setCityCounts(res.data.cities || {});
-      } catch (e) {
-      }
-    };
-    fetchCityCounts();
-  }, []);
+  // ── Chips activos ────────────────────────────────────────────────────────
+  const activeChips = useMemo(() => [
+    ...(appliedFilters.city || []).map(v => {
+      const country = ALL_COUNTRIES.find(c => (LOCATIONS[c] || []).includes(v));
+      const code = country ? COUNTRY_CODES[country] : null;
+      return { key: 'city', label: code ? `${v} (${code})` : v, value: v };
+    }),
+    ...(appliedFilters.professionalProfile || []).map(id => ({
+      key: 'professionalProfile',
+      label: tagLabelById[id] || id,
+      value: id,
+    })),
+    ...(appliedFilters.creativeLevel || []).map(v => ({
+      key: 'creativeLevel',
+      label: CREATIVE_LEVELS.find(l => l.value === v)?.label || v,
+      value: v,
+    })),
+  ], [appliedFilters, tagLabelById]);
 
+  const hasActiveFilters = activeChips.length > 0;
+
+  // ── Infinite scroll ──────────────────────────────────────────────────────
   const lastCreativeElementRef = useCallback(node => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
@@ -240,6 +290,7 @@ const Creatives = () => {
     if (node) observer.current.observe(node);
   }, [loading, hasMore]);
 
+  // ── Fetch creativos ──────────────────────────────────────────────────────
   useEffect(() => {
     const controller = new AbortController();
 
@@ -266,9 +317,10 @@ const Creatives = () => {
           s.split(",").map(x => x.trim()).filter(Boolean).forEach(v => params.append(key, v));
         };
 
-        if (appliedFilters.search) params.append("search", appliedFilters.search);
+        if (appliedFilters.search) params.append("search", normalize(appliedFilters.search));
         appendMulti("city", appliedFilters.city);
         appendMulti("professionalProfile", appliedFilters.professionalProfile);
+        appendMulti("creativeLevel", appliedFilters.creativeLevel);
 
         const token = localStorage.getItem("authToken");
         const response = await axios.get(
@@ -304,346 +356,213 @@ const Creatives = () => {
     return () => controller.abort();
   }, [page, appliedFilters, randomSeed]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAppliedFilters({ ...filters });
-      setPage(1);
-
-      const hasFilters = Object.entries(filters).some(([key, value]) => {
-        if (key === "search") return String(value || "").trim().length > 0;
-        return Array.isArray(value) ? value.length > 0 : Boolean(value);
-      });
-
-      setHasActiveFilters(hasFilters);
-    }, 600);
-
-    return () => clearTimeout(timeout);
-  }, [filters]);
-
+  // ── Handlers ─────────────────────────────────────────────────────────────
   const handleUserClick = (username) => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      navigate('/', { state: { showRegister: true } });
+    if (!isLoggedIn) {
+      setShowRegisterPopup(true);
       return;
     }
     navigate(`/${username}`);
   };
 
-  const toggleTag = (key, tag) => {
+  const toggleTag = useCallback((key, tag) => {
     setFilters((prev) => {
       const current = Array.isArray(prev[key]) ? prev[key] : [];
       const exists = current.includes(tag);
       const next = exists ? current.filter((t) => t !== tag) : [...current, tag];
       return { ...prev, [key]: next };
     });
-  };
+  }, []);
 
-  const removeTag = (key, tag) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: (prev[key] || []).filter((t) => t !== tag),
-    }));
-  };
+  const removeChip = useCallback((key, val) => {
+    setFilters(prev => ({ ...prev, [key]: (prev[key] || []).filter(v => v !== val) }));
+  }, []);
 
-  const clearAllFilters = () => {
-    const empty = {
-      search: "",
-      city: [],
-      professionalProfile: [],
-    };
-    setFilters(empty);
-    setAppliedFilters(empty);
+  const clearAll = useCallback(() => {
+    setFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
     setCreatives([]);
     setHasMore(true);
     setPage(1);
     setRandomSeed(String(Date.now()));
-    setHasActiveFilters(false);
-    setOpenKey(null);
+    setShowFiltersModal(false);
     setActiveRoleGroup(null);
     setActiveCountryPanel(null);
-  };
+  }, []);
 
-  const renderTagSection = (key, label) => {
-    const selectedCount = key === "location"
-      ? (filters.city || []).length
-      : (filters[key] || []).length;
+  // ── Modal de filtros (igual que Explorer) ────────────────────────────────
+  const renderAllFiltersModal = () => (
+    <div className="filters-modal-overlay" onClick={() => setShowFiltersModal(false)}>
+      <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
 
-    const isSelected = selectedCount > 0;
-    const isOpen = openKey === key;
-    const indicator = isOpen ? "/" : !isSelected ? "+" : null;
+        <div className="filters-modal-header">
+          <span className="filters-modal-title">Filtros</span>
+          <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
+        </div>
 
-    const triggerClass = [
-      "filter-section-trigger",
-      isOpen ? "is-open is-active" : "",
-      isSelected ? "has-selection is-active" : "",
-    ].filter(Boolean).join(" ");
+        {/* ── EXPERIENCIA ───────────────────────────────────── */}
+        <div className="filters-modal-section filters-margin-bottom">
+          <p className="filters-col-title">Experiencia</p>
+          <div className="filters-tags filters-tags--level">
+            {CREATIVE_LEVELS.map(lvl => {
+              const sel = (filters.creativeLevel || []).includes(lvl.value);
+              return (
+                <button
+                  key={lvl.value}
+                  type="button"
+                  className={`filter-tag experience-tag ${sel ? 'selected' : ''}`}
+                  onClick={() => toggleTag('creativeLevel', lvl.value)}
+                >
+                  <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
+                  <span className="experience-tag-label">{lvl.label}</span>
+                  <span className="experience-tag-desc">{lvl.description}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-    return (
-      <button
-        type="button"
-        className={triggerClass}
-        onClick={() => toggleSection(key)}
-        aria-expanded={isOpen}
-      >
-        <span className="filter-section-label">
-          {label}{isSelected ? ` [${selectedCount}]` : ""}
-        </span>
-        <span className="filter-section-indicator" aria-hidden="true">{indicator}</span>
-      </button>
-    );
-  };
-
-  const chipsSource = isMobile ? appliedFilters : filters;
-
-  const activeChips = [
-    ...(chipsSource.city || []).map((v) => {
-      const country = ALL_COUNTRIES.find((c) => (LOCATIONS[c] || []).includes(v));
-      const code = country ? COUNTRY_CODES[country] : null;
-      const label = code ? `${v} (${code})` : v;
-      return { key: "city", label, value: v };
-    }),
-    ...(chipsSource.professionalProfile || []).map((id) => ({
-      key: "professionalProfile",
-      label: professionalProfileLabelById[id] || id,
-      value: id,
-    })),
-  ];
-
-  const renderFilterTriggersRow = () => (
-    <div className="filters-triggers-row">
-      <div className="filters-triggers-left">
-        {renderTagSection("location", "Ubicación")}
-        {renderTagSection("professionalProfile", "Especialidad")}
-      </div>
-      <div className="filters-open-area">
-        <div className="filters-open-tags">
-          {activeChips.map((chip, idx) => (
-            <button
-              key={`${chip.key}-${chip.value || chip.label}-${idx}`}
-              type="button"
-              className="filters-sticky-chip"
-              onClick={() => removeTag(chip.key, chip.value || chip.label)}
-              aria-label={`Quitar ${chip.label}`}
-            >
-              {chip.label} <span className="chip-x">×</span>
-            </button>
-          ))}
-          {activeChips.length > 0 && (
-            <button type="button" className="filters-sticky-chip clean-all" onClick={clearAllFilters}>
-              Limpiar todo
-            </button>
+        {/* ── ESPECIALIDAD ──────────────────────────────────── */}
+        <div className="filters-modal-section filters-modal-section--specialty">
+          <p className="filters-col-title">Especialidad del creativo</p>
+          <div className="filters-tags filters-tags--level">
+            {(isLoggedIn ? orderedGroups : GROUP_ORDER).map(group => {
+              const isActive = activeRoleGroup === group;
+              const hasSelection = (GUEST_ROLES_BY_GROUP[group] || rolesByGroup[group] || []).some(t => (filters.professionalProfile || []).includes(t.id));
+              const icon = GROUP_ICONS[group];
+              return (
+                <button
+                  key={group}
+                  type="button"
+                  className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                  onClick={() => setActiveRoleGroup(prev => prev === group ? null : group)}
+                >
+                  {icon && (
+                    <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />
+                  )}
+                  {group}
+                </button>
+              );
+            })}
+          </div>
+          {activeRoleGroup && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                {(isLoggedIn
+                  ? (rolesByGroup[activeRoleGroup] || []).filter(t => t.count > 0)
+                  : (GUEST_ROLES_BY_GROUP[activeRoleGroup] || rolesByGroup[activeRoleGroup] || [])
+                ).map(t => {
+                    const sel = (filters.professionalProfile || []).includes(t.id);
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className={`filter-tag ${sel ? 'selected' : ''}`}
+                        onClick={() => toggleTag('professionalProfile', t.id)}
+                      >
+                        {t.label}{isLoggedIn ? ` (${t.count})` : ''}
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
           )}
         </div>
-      </div>
-    </div>
-  );
 
-  const renderOpenTagsArea = () => {
-    if (!openKey) return null;
-
-    const isLocation = openKey === "location";
-    const isProfessional = openKey === "professionalProfile";
-
-    // ── Panel UBICACIÓN ──────────────────────────────────────────
-    if (isLocation) {
-
-        // ← CAMBIO: citiesToShow ahora contempla "__otros__"
-        const citiesToShow = activeCountryPanel === "__otros__"
-          ? otherCities.map(({ city }) => city)
-          : activeCountryPanel
-            ? (LOCATIONS[activeCountryPanel] || []).filter((city) => cityCounts[city] > 0)
-            : [];
-
-        return (
-          <div
-            className="filters-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Panel Ubicación"
-            onMouseDown={(e) => { if (e.target === e.currentTarget) closeModal(); }}
-          >
-            <div className="filters-modal-panel" onMouseDown={(e) => e.stopPropagation()}>
-              <div className="filters-panel-header">
-                <div className="filters-panel-title">Ubicación</div>
-                <button type="button" className="filters-panel-close" onClick={closeModal} aria-label="Cerrar">
-                  <img src="/iconos/close.svg" alt="Cerrar" className="image-icon" />
-                </button>
-              </div>
-
-              <div className="filters-panel-body">
-                <div className="filters-two-col">
-
-                  {/* Columna izquierda — Países */}
-                  <div className="filters-col filters-col-left">
-                    <div className="filters-col-title">País</div>
-                    <div className="filters-list">
-
-                      {/* Países predefinidos con usuarios */}
-                      {ALL_COUNTRIES
-                        .filter((country) =>
-                          (LOCATIONS[country] || []).some((city) => cityCounts[city] > 0)
-                        )
-                        .map((country) => {
-                          const isActive = activeCountryPanel === country;
-                          const countryHasSelection = (LOCATIONS[country] || []).some((city) =>
-                            (filters.city || []).includes(city)
-                          );
-                          return (
-                            <button
-                              key={country}
-                              type="button"
-                              className={`filters-list-item ${isActive ? "is-active" : ""} ${countryHasSelection ? "has-selection" : ""}`}
-                              onClick={() => setActiveCountryPanel(isActive ? null : country)}
-                            >
-                              <span className="filters-list-dot" aria-hidden="true" />
-                              <span className="filters-list-text">
-                                {country}{countryHasSelection ? " /" : ""}
-                              </span>
-                            </button>
-                          );
-                        })}
-
-                      {/* ← NUEVO: Otros (ciudades libres) */}
-                      {otherCities.length > 0 && (() => {
-                        const isActive = activeCountryPanel === "__otros__";
-                        const othersHasSelection = otherCities.some(({ city }) =>
-                          (filters.city || []).includes(city)
-                        );
-                        return (
-                          <button
-                            key="__otros__"
-                            type="button"
-                            className={`filters-list-item ${isActive ? "is-active" : ""} ${othersHasSelection ? "has-selection" : ""}`}
-                            onClick={() => setActiveCountryPanel(isActive ? null : "__otros__")}
-                          >
-                            <span className="filters-list-dot" aria-hidden="true" />
-                            <span className="filters-list-text">
-                              Otros{othersHasSelection ? " /" : ""}
-                            </span>
-                          </button>
-                        );
-                      })()}
-
-                    </div>
-                  </div>
-
-                  {/* Columna derecha — Ciudades */}
-                  <div className="filters-col filters-col-right">
-                    <div className="filters-col-title">Ciudad</div>
-                    <div className="filters-tags">
-                      {!activeCountryPanel ? (
-                        <div className="filters-empty">Selecciona un país</div>
-                      ) : citiesToShow.length === 0 ? (
-                        <div className="filters-empty">Sin creativos en este país</div>
-                      ) : (
-                        citiesToShow.map((city) => {
-                          const selected = (filters.city || []).includes(city);
-                          const count = cityCounts[city] || 0;
-                          return (
-                            <button
-                              type="button"
-                              key={city}
-                              className={`filter-tag ${selected ? "selected" : ""}`}
-                              onClick={() => toggleTag("city", city)}
-                            >
-                              {city}{count > 0 ? ` (${count})` : ""}
-                            </button>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-    // ── Panel ESPECIALIDAD ───────────────────────────────────────
-    if (isProfessional) {
-      return (
-        <div
-          className="filters-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Panel Especialidad"
-          onMouseDown={(e) => { if (e.target === e.currentTarget) closeModal(); }}
-        >
-          <div className="filters-modal-panel" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="filters-panel-header">
-              <div className="filters-panel-title">Especialidad</div>
-              <button type="button" className="filters-panel-close" onClick={closeModal} aria-label="Cerrar">
-                <img src="/iconos/close.svg" alt="Cerrar" className="image-icon" />
+                {/* ── UBICACIÓN ─────────────────────────────────────── */}
+        <div className="filters-modal-section">
+          <p className="filters-col-title">Ubicación</p>
+          <div className="filters-tags filters-tags--level">
+            {ALL_COUNTRIES
+              .filter(country => isLoggedIn
+                ? (LOCATIONS[country] || []).some(city => cityCounts[city] > 0)
+                : (LOCATIONS[country] || []).length > 0
+              )
+              .map(country => {
+                const code = COUNTRY_CODES[country];
+                const isActive = activeCountryPanel === country;
+                const hasSelection = (LOCATIONS[country] || []).some(city => (filters.city || []).includes(city));
+                return (
+                  <button
+                    key={country}
+                    type="button"
+                    className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                    onClick={() => setActiveCountryPanel(prev => prev === country ? null : country)}
+                  >
+                    <span className="country-flag-circle">
+                      {FLAG_IMAGES[code]
+                        ? <img src={FLAG_IMAGES[code]} alt={country} />
+                        : flagEmoji(code)}
+                    </span>
+                    {country}
+                  </button>
+                );
+              })}
+            {isLoggedIn && otherCities.length > 0 && (
+              <button
+                type="button"
+                className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
+                onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
+              >
+                <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="Otros" /></span>
+                Otros
               </button>
-            </div>
+            )}
+          </div>
 
-            <div className="filters-panel-body">
-              <div className="filters-two-col">
-
-                {/* Columna izquierda — solo grupos con tags con usuarios */}
-                <div className="filters-col filters-col-left">
-                  <div className="filters-col-title">Categorías</div>
-                  <div className="filters-list">
-                    {orderedRoleGroupsWithUsers.map((group) => {
-                      const isActive = activeRoleGroup === group;
-                      const groupHasSelection = (rolesByGroup[group] || []).some((t) =>
-                        selectedRoleIds.has(t.id)
-                      );
+          {activeCountryPanel && (() => {
+            const cities = activeCountryPanel === '__otros__'
+              ? otherCities
+              : isLoggedIn
+                ? (LOCATIONS[activeCountryPanel] || []).filter(city => cityCounts[city] > 0)
+                : (LOCATIONS[activeCountryPanel] || []);
+            return (
+              <div className="filters-country-cities">
+                {cities.length === 0 ? (
+                  <p className="filters-empty">Sin creativos en este país</p>
+                ) : (
+                  <div className="filters-tags filters-tags--level">
+                    {cities.map(city => {
+                      const sel = (filters.city || []).includes(city);
                       return (
                         <button
-                          key={group}
+                          key={city}
                           type="button"
-                          className={`filters-list-item ${isActive ? "is-active" : ""} ${groupHasSelection ? "has-selection" : ""}`}
-                          onClick={() => setActiveRoleGroup(isActive ? null : group)}
+                          className={`filter-tag ${sel ? 'selected' : ''}`}
+                          onClick={() => toggleTag('city', city)}
                         >
-                          <span className="filters-list-dot" aria-hidden="true" />
-                          <span className="filters-list-text">
-                            {group}{groupHasSelection ? " /" : ""}
-                          </span>
+                          {city}{isLoggedIn && cityCounts[city] > 0 ? ` (${cityCounts[city]})` : ''}
                         </button>
                       );
                     })}
                   </div>
-                </div>
-
-                {/* Columna derecha — solo tags con usuarios */}
-                <div className="filters-col filters-col-right">
-                  <div className="filters-col-title">Perfil</div>
-                  <div className="filters-tags">
-                    {!activeRoleGroup ? (
-                      <div className="filters-empty">Selecciona una categoría</div>
-                    ) : (
-                      (rolesByGroup[activeRoleGroup] || [])
-                        .filter((t) => t.count > 0)
-                        .map((t) => {
-                          const selected = (filters.professionalProfile || []).includes(t.id);
-                          return (
-                            <button
-                              type="button"
-                              key={t.id}
-                              className={`filter-tag ${selected ? "selected" : ""}`}
-                              onClick={() => toggleTag("professionalProfile", t.id)}
-                            >
-                              {t.label} ({t.count})
-                            </button>
-                          );
-                        })
-                    )}
-                  </div>
-                </div>
-
+                )}
               </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
-      );
-    }
 
-    return null;
-  };
+        <div className="filters-modal-footer">
+          {hasActiveFilters ? (
+            <button type="button" className="filters-modal-clear" onClick={clearAll}>
+              Limpiar filtros
+            </button>
+          ) : <span />}
+          <button type="button" className="filters-modal-apply" onClick={() => {
+            setShowFiltersModal(false);
+            if (!isLoggedIn) {
+              setShowRegisterPopup(true);
+            }
+          }}>
+            Filtrar
+          </button>
+        </div>
 
+      </div>
+    </div>
+  );
+
+  // ── Galería ───────────────────────────────────────────────────────────────
   const renderCreativesGallery = () => {
     if (error) return <div className="error-message">{error}</div>;
     if (loading && page === 1) {
@@ -662,7 +581,7 @@ const Creatives = () => {
       >
         {creatives.map((creative, index) => {
           const isLastElement = index === creatives.length - 1;
-          const coverImageRaw = creative.creativeCoverDesktop || creative.lastPost?.mainImage;
+          const coverImageRaw = creative.creativeCoverDesktop || creative.profile?.profilePicture || creative.lastPost?.mainImage;
           const coverImage = coverImageRaw
             ? `${coverImageRaw}${coverImageRaw.includes("?") ? "&" : "?"}t=${creative.updatedAt || Date.now()}`
             : null;
@@ -707,21 +626,22 @@ const Creatives = () => {
                   {creative.professionalTags && creative.professionalTags.length > 0
                     ? creative.professionalTags
                         .slice(0, 2)
-                        .map((id) => professionalProfileLabelById[id] || id)
+                        .map((id) => tagLabelById[id] || id)
                         .join(" | ")
                     : creative.skills && creative.skills.length > 0
                       ? creative.skills.slice(0, 2).join(" / ")
                       : "Creative"}
                 </div>
 
-                {creative.city && (
+                {(creative.city || creative.city2) && (
                   <div className="creative-location">
-                    {creative.city}
+                    ({creative.city}
                     {creative.country && COUNTRY_CODES[creative.country]
                       ? `, ${COUNTRY_CODES[creative.country]}`
                       : creative.country
                         ? `, ${creative.country}`
                         : ""}
+                    {creative.city2 ? ` | ${creative.city2}${creative.country2 && COUNTRY_CODES[creative.country2] ? `, ${COUNTRY_CODES[creative.country2]}` : creative.country2 ? `, ${creative.country2}` : ""}` : ""})
                   </div>
                 )}
               </div>
@@ -734,21 +654,84 @@ const Creatives = () => {
 
   return (
     <div className="creatives-container">
+
+      {showFirstPostCta && (
+        <div className="first-post-cta-overlay" onClick={dismissFirstPostCta}>
+          <div className="first-post-cta-card" onClick={(e) => e.stopPropagation()}>
+            <h2 className="first-post-cta-title">¿Quieres verte aquí?</h2>
+            <p className="first-post-cta-body">
+              Publica tu primer proyecto y forma parte del directorio de creativos.
+            </p>
+            <div className="first-post-cta-actions">
+              <button className="first-post-cta-btn--primary" onClick={handlePublicar}>
+                Publicar proyecto
+              </button>
+              <button className="first-post-cta-btn--ghost" onClick={dismissFirstPostCta}>
+                Ahora no
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <p className="creatives-subtitle --show-mobile">
-        Descubre la nueva generación de talentos de la moda. Encuentra a tu próximo equipo: diseñadores, estilistas, directores creativos, fotógrafos y muchos perfiles más. Filtra por ciudad, especialidad o disponibilidad para prácticas.
+        Encuentra o descubre talento. Diseñadores, estilistas, fotógraf@s y más. Filtra a tu medida.
       </p>
+
+      {/* ── Barra de filtros (igual que Explorer) ──────────────────────── */}
+      <div className="filters-triggers-row">
+        <div className="filters-triggers-left filters-explorer">
+          <button
+            type="button"
+            className={`new-tablero-button explorer-filtros-btn ${hasActiveFilters ? 'has-selection' : ''}`}
+              onClick={() => {
+                setActiveCountryPanel(null);
+                setActiveRoleGroup(null);
+                setShowFiltersModal(true);
+              }}
+            >
+              <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
+              Filtros
+              {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
+            </button>
+          </div>
+
+          {hasActiveFilters && (
+            <div className="filters-open-area">
+              <div className="filters-open-tags">
+                {activeChips.map(chip => (
+                  <button
+                    key={`${chip.key}-${chip.value}`}
+                    type="button"
+                    className="filters-sticky-chip"
+                    onClick={() => removeChip(chip.key, chip.value)}
+                  >
+                    {chip.label}
+                    <span className="chip-x">×</span>
+                  </button>
+                ))}
+                <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
+                  Limpiar filtros
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {showFiltersModal && renderAllFiltersModal()}
+
       <div className="creatives-hero-inner">
         <h1 className="centerTitle">
           Creativos <span className="creatives-count">[{totalCreatives}]</span>
         </h1>
 
-        {renderFilterTriggersRow()}
-
         <div className="creatives-toolbar"></div>
-        {renderOpenTagsArea()}
       </div>
 
-      <div className="creatives-content">
+      <div
+        className="creatives-content"
+        style={!isLoggedIn ? { position: 'relative', maxHeight: '300vh', overflow: 'hidden' } : undefined}
+      >
         <main className="creatives-main">
           {renderCreativesGallery()}
 
@@ -758,7 +741,27 @@ const Creatives = () => {
 
           {!hasMore && creatives.length > 0 && <div className="end-message"></div>}
         </main>
+
+        {!isLoggedIn && (
+          <div className="creatives-guest-wall">
+            <p className="creatives-guest-wall__text">Únete para descubrir todos los creativos</p>
+            <button
+              type="button"
+              className="new-tablero-button"
+              onClick={() => setShowRegisterPopup(true)}
+            >
+              Crear cuenta gratis
+            </button>
+          </div>
+        )}
       </div>
+
+      {showRegisterPopup && (
+        <RegisterModal
+          onClose={() => setShowRegisterPopup(false)}
+          onSwitchToLogin={() => setShowRegisterPopup(false)}
+        />
+      )}
     </div>
   );
 };

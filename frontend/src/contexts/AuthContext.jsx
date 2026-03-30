@@ -39,8 +39,17 @@ export function AuthContextProvider({ children }) {
     setIsAuthenticated(false);
   };
 
+  // Actualiza campos parciales del usuario en estado y localStorage
+  const updateUser = (partialUser) => {
+    setUser(prev => {
+      const updated = { ...prev, ...partialUser };
+      localStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -137,8 +137,8 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="apply-offer-modal-overlay">
-            <div className="apply-offer-modal">
+        <div className="apply-offer-modal-overlay" onClick={onClose}>
+            <div className="apply-offer-modal" onClick={(e) => e.stopPropagation()}>
                 <button className="apply-offer-close-button" onClick={onClose}>
                     <i className="fas fa-times"></i>
                 </button>

@@ -104,16 +104,9 @@ const CreateEducationalOffer = () => {
     const handleFileChange = (e) => {
         const { name, files: fileList } = e.target;
         if (fileList && fileList[0]) {
-            // Validar tamaño y tipo de archivo
             const file = fileList[0];
-            const maxSize = 5 * 1024 * 1024; // 5MB
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            
-            if (file.size > maxSize) {
-                toast.error('El archivo es demasiado grande. Máximo 5MB permitido.');
-                return;
-            }
-            
+
             if (!allowedTypes.includes(file.type)) {
                 toast.error('Tipo de archivo no permitido. Solo se aceptan JPG, PNG y GIF.');
                 return;

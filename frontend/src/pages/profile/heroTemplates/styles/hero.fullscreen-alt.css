@@ -23,7 +23,7 @@
 .hero--fullscreen-alt .fsa__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: #00000012;
   pointer-events: none;
 }
 
@@ -39,17 +39,19 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 14px;
+  gap: 8px;
   width: 80%;
 }
 
 .hero--fullscreen-alt .fsa__name {
-  font-family: "Adamina", serif;
-  font-size: 32px;
-  font-weight: 300;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
   line-height: 1.3;
-  letter-spacing: 0.02rem;
-  color: #fff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: right;
+  color: #fdfdfd;
   margin: 0;
 }
 
@@ -63,8 +65,8 @@
 }
 
 .hero--fullscreen-alt .fsa__tag {
-  color: #fff;
-  font-size: 11px;
+  color: #fdfdfd;
+  font-size: 10px;
   letter-spacing: 0.06em;
   font-family: "Inter Tight", sans-serif;
   font-weight: 300;
@@ -98,28 +100,40 @@
   flex-direction: column;
   background: #fff;
   overflow: hidden;
+  justify-content: flex-end;
 }
 
 /* ── Texto arriba centrado ──────────────────────────────────────────────── */
 .hero--alt-vertical .hero__header--alt {
+  position: absolute;
+  right: 0;
+  z-index: 2;
+  margin: 80px 18px 24px;
+  width: 38px;
   flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  padding: 18px 0;
   text-align: center;
-  padding: 180px 28px 28px;
-  gap: 8px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  gap: 4px;
   background: #fdfdfd;
+  height: fit-content;
+  min-height: 70vh;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 2px;
 }
 
 .hero--alt-vertical .hero__name--dark {
-  font-family: "Adamina", serif;
-  font-size: 18px;
-  font-weight: 300;
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.3;
-  letter-spacing: 0.02rem;
-  color: #111;
+  letter-spacing: 0px;
+  text-align: right;
+  color: #222;
   margin: 0;
 }
 
@@ -128,18 +142,18 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-top: 24px;
 }
 
 .hero--alt-vertical .hero__tag--dark {
-  color: #111;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  font-family: "Inter Tight", sans-serif;
-  font-weight: 300;
-  text-transform: uppercase;
-  opacity: 0.75;
+  color: #222;
+  font-size: 12px;
+  letter-spacing: 0px;
+  font-family: IBM Plex Sans, sans-serif;
+  font-weight: 400;
+  text-transform: none;
 }
 
 /* ── Imagen abajo ocupa el resto ────────────────────────────────────────── */

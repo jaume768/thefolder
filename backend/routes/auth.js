@@ -4,6 +4,7 @@ const authController = require('../controllers/authController');
 const passport = require('passport');
 const multer = require('multer');
 const rateLimit = require('express-rate-limit');
+const { ensureAuthenticated } = require('../middlewares/auth');
 
 const storage = multer.memoryStorage();
 const imageFilter = (req, file, cb) => {
@@ -14,7 +15,7 @@ const imageFilter = (req, file, cb) => {
         cb(new Error('Solo se aceptan imágenes (JPEG, PNG, GIF, WebP).'), false);
     }
 };
-const upload = multer({ storage, fileFilter: imageFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+const upload = multer({ storage, fileFilter: imageFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -65,5 +66,8 @@ router.post('/resend-code-pre-registration', codeLimiter, authController.resendC
 
 // Logout
 router.get('/logout', authController.logout);
+
+// Completar registro desde el wizard (requiere JWT de fase 1)
+router.post('/complete-registration', ensureAuthenticated, authController.completeRegistration);
 
 module.exports = router;

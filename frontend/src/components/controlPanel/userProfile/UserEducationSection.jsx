@@ -92,6 +92,16 @@ const UserEducationSection = ({ education }) => {
             </div>
 
             <div className="experience-content">
+              {edu.educationType && (
+                <p className="experience-company" style={{ color: '#555' }}>
+                  {edu.educationType === 'OTRO'
+                    ? edu.educationOtherType
+                    : edu.educationType === 'FP'
+                    ? 'Formación Profesional (FP)'
+                    : edu.educationType}
+                  {edu.educationHours ? ` · ${edu.educationHours}` : ''}
+                </p>
+              )}
               <h3 className="experience-title">{edu.formationName}</h3>
               <p className="experience-company">{edu.institution || edu.otherInstitution}</p>
               <p className="experience-location">{edu.location || ''}</p>

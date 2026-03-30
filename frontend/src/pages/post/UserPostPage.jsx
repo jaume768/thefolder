@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import {
   FaUserCircle,
 } from "react-icons/fa";
 import PeopleTagsList from "../../components/PeopleTagsList";
+import EditPostModal from "../../components/EditPostModal";
 import "../../components/controlPanel/css/UserPost.css";
 import "../../components/controlPanel/css/MorePosts.css";
 import "../../components/controlPanel/css/explorer.css";
@@ -37,9 +38,16 @@ const UserPost = () => {
     name: "",
   });
 
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportSent, setReportSent] = useState(false);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [showFullScreenPreview, setShowFullScreenPreview] = useState(false);
+  const [fsCursorType, setFsCursorType] = useState('default');
   const [randomPosts, setRandomPosts] = useState([]);
   const [morePage, setMorePage] = useState(1);
   const [moreHasMore, setMoreHasMore] = useState(true);
@@ -435,7 +443,8 @@ const UserPost = () => {
   if (!post) return <div>No hay datos del proyecto</div>;
 
   const isOwner =
-    post?.user?._id && currentUserId && post.user._id === currentUserId;
+    currentUserId && post?.user &&
+    String(post.user._id || post.user) === String(currentUserId);
 
   const images = post?.images || [];
 
@@ -458,11 +467,13 @@ const UserPost = () => {
   };
 
 
-  const getImageCredit = (index) => {
-  const tags = post?.imageTags;
-  if (!tags) return "";
-  const v = tags[String(index)] ?? tags[index];
-  return String(v || "").trim();
+  const getImageCredit = (imageUrl) => {
+    const tags = post?.imageTags;
+    if (!tags) return "";
+    const originalIndex = images.indexOf(imageUrl);
+    if (originalIndex === -1) return "";
+    const v = tags[String(originalIndex)] ?? tags[originalIndex];
+    return String(v || "").trim();
   };
 
   const getInitials = (name = "") => {
@@ -538,8 +549,30 @@ const UserPost = () => {
 
   const handleReport = (e) => {
     e?.stopPropagation?.();
-    alert("Gracias. Hemos recibido tu reporte.");
     setShowActionsMenu(false);
+    setReportReason('');
+    setReportSent(false);
+    setShowReportModal(true);
+  };
+
+  const handleSubmitReport = async () => {
+    if (!reportReason.trim()) return;
+    setReportSubmitting(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const currentImg = displayedImages?.[currentImageIndex] || post?.mainImage || '';
+      await axios.post(`${backendUrl}/api/reports`, {
+        postId: id,
+        postImage: currentImg,
+        reason: reportReason.trim(),
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setReportSent(true);
+    } catch {
+      // silencioso — no exponer detalles
+    } finally {
+      setReportSubmitting(false);
+    }
   };
 
   const handleContinueExplorer = (e) => {
@@ -560,6 +593,22 @@ const UserPost = () => {
     setCurrentImageIndex((prev) =>
       prev < displayedImages.length - 1 ? prev + 1 : 0
     );
+  };
+
+  const handleFsMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const isLeft = e.clientX - rect.left < rect.width / 2;
+    const newType = isLeft
+      ? (currentImageIndex > 0 ? 'prev' : 'none')
+      : (currentImageIndex < displayedImages.length - 1 ? 'next' : 'none');
+    setFsCursorType(prev => prev === newType ? prev : newType);
+  };
+
+  const handleFsOverlayClick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const isLeft = e.clientX - rect.left < rect.width / 2;
+    if (isLeft) { if (currentImageIndex > 0) handlePrevious(); }
+    else { if (currentImageIndex < displayedImages.length - 1) handleNext(); }
   };
 
   const handleSaveImage = async (e, imageUrl) => {
@@ -816,9 +865,9 @@ const UserPost = () => {
                         }}
                     />
 
-                        {getImageCredit(realIndex) && (
+                        {getImageCredit(img) && (
                           <div className="image-credit">
-                            {getImageCredit(realIndex)}
+                            {getImageCredit(img)}
                           </div>
                         )}
 
@@ -955,20 +1004,25 @@ const UserPost = () => {
                             </span>
                             <div className="perfil__datos">
                               <div className="perfil__by-user">
-                                  <p className="no-text-decoration"> by </p>
+                                  {post.authorRole && (
+                                    <p className="no-text-decoration">{post.authorRole}</p>
+                                  )}
+                                  <p className="no-text-decoration"> / </p>
                                   <h2 className="perfil__nombre">
                                       {post.user?.professionalType === 1 ||
                                       post.user?.professionalType === 2 ||
                                       post.user?.professionalType === 4
-                                      ? post.user?.companyName || `@${post.user?.username}`
-                                      : post.user?.fullName || `@${post.user?.username}`}
+                                      ? post.user?.companyName || post.user?.username
+                                      : post.user?.fullName || post.user?.username}
                                       <span> ↗</span>
                                   </h2>
                               </div>
                             <p className="perfil__ubicacion">
                                 {post.user?.city && post.user?.country
                                 ? `${post.user?.city}, ${post.user?.country}`
-                                : ""}
+                                : post.user?.city || ""}
+                                {post.user?.city2 ? ` |
+                                 ${post.user.city2}${post.user.country2 ? `, ${post.user.country2}` : ""}` : ""}
                             </p>
                             </div>
                         </div>
@@ -1004,18 +1058,45 @@ const UserPost = () => {
                                   />
                             </div>
                             )}
+
+                        {/* TIPOS DE PROYECTO */}
+                        {Array.isArray(post.projectTypes) && post.projectTypes.length > 0 && (
+                          <div className="publicacion__project-tags">
+                            {post.projectTypes.map(type => (
+                              <Link
+                                key={type}
+                                to={`/tags/${encodeURIComponent(type)}`}
+                                className="project-tag"
+                              >
+                                #{type.toLowerCase().replace(/\s+/g, '')}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                         </div>
                         {isOwner && (
-                        <button
-                                className="delete-post"
-                                type="button"
-                                onClick={() => {
+                          <>
+                            <button
+                              className="delete-post edit-post"
+                              type="button"
+                              onClick={() => {
+                                setActionsForUrl(null);
+                                setShowEditModal(true);
+                              }}
+                            >
+                              Editar publicación (solo texto)
+                            </button>
+                            <button
+                              className="delete-post"
+                              type="button"
+                              onClick={() => {
                                 setActionsForUrl(null);
                                 setShowDeleteModal(true);
-                                }}
+                              }}
                             >
-                                Eliminar publicación
-                                </button>
+                              Eliminar publicación
+                            </button>
+                          </>
                         )}
                     </div>
                 </div>
@@ -1148,13 +1229,22 @@ const UserPost = () => {
         </section>
 
 
+        {/* MODAL EDITAR */}
+        {showEditModal && (
+          <EditPostModal
+            post={post}
+            onClose={() => setShowEditModal(false)}
+            onSaved={(updatedPost) => setPost(updatedPost)}
+          />
+        )}
+
         {/* MODAL ELIMINAR */}
         {showDeleteModal && (
-            <div className="modal-overlay">
-            <div className="modal-content">
+            <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <p>¿Estás seguro de eliminar esta publicación?</p>
                 <div className="modal-actions">
-                <button onClick={handleDeletePost}>Confirmar</button>
+                <button onClick={handleDeletePost}>Eliminar</button>
                 <button onClick={() => setShowDeleteModal(false)}>Cancelar</button>
                 </div>
             </div>
@@ -1205,8 +1295,10 @@ const UserPost = () => {
         {/* FULLSCREEN */}
         {showFullScreenPreview && (
             <div
-            className="fullscreen-preview-overlay"
-            onClick={() => setShowFullScreenPreview(false)}
+            className={`fullscreen-preview-overlay fs-cursor-${fsCursorType}`}
+            onClick={handleFsOverlayClick}
+            onMouseMove={handleFsMouseMove}
+            onMouseLeave={() => setFsCursorType('default')}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -1214,30 +1306,12 @@ const UserPost = () => {
             <div className="fullscreen-preview-content">
                 <button
                 className="fullscreen-close-btn"
-                onClick={() => setShowFullScreenPreview(false)}
+                onClick={(e) => { e.stopPropagation(); setShowFullScreenPreview(false); }}
                 aria-label="Cerrar"
                 >
-                <img
-                    src="/iconos/close.svg"
-                    alt="Cerrar"
-                    className="close-icon"
-                    style={{ width: "20px", height: "20px" }}
-                />
-                </button>
-
-                <button
-                className="fullscreen-prev-btn"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrevious();
-                }}
-                aria-label="Imagen anterior"
-                >
-                <img
-                    src="/iconos/chevronleft.svg"
-                    alt="Anterior"
-                    style={{ width: "30px", height: "30px" }}
-                />
+                  <span className='tagged-person__role'>
+                  CERRAR
+                  </span>
                 </button>
 
                 <img
@@ -1247,26 +1321,16 @@ const UserPost = () => {
                 onClick={(e) => e.stopPropagation()}
                 />
 
-                {getImageCredit(currentImageIndex) && (
-                  <div className="fullscreen-image-credit" onClick={(e) => e.stopPropagation()}>
-                    {getImageCredit(currentImageIndex)}
-                  </div>
-                )}
-
-                <button
-                className="fullscreen-next-btn"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    handleNext();
-                }}
-                aria-label="Siguiente imagen"
-                >
-                <img
-                    src="/iconos/chevronright.svg"
-                    alt="Siguiente"
-                    style={{ width: "30px", height: "30px" }}
-                />
-                </button>
+                <div className="fullscreen-post-info" onClick={(e) => e.stopPropagation()}>
+                  {post?.title && (
+                    <span className="fullscreen-post-author">{post.title}</span>
+                  )}
+                  {post?.user?.username && (
+                    <span className="fullscreen-post-title">
+                      {post.user.fullName || post.user.username}
+                    </span>
+                  )}
+                </div>
             </div>
             </div>
         )}
@@ -1341,6 +1405,71 @@ const UserPost = () => {
                 </div>
             </div>
             </div>
+        )}
+        {showReportModal && (
+          <div
+            className="report-modal-overlay"
+            onClick={() => setShowReportModal(false)}
+          >
+            <div
+              className="report-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {!reportSent ? (
+                <>
+                  <h3 className="report-modal__title">Reportar publicación</h3>
+                  <p className="report-modal__desc">
+                    Describe brevemente el motivo del reporte. El equipo de TheFolder revisará tu solicitud.
+                  </p>
+                  <textarea
+                    className="report-modal__textarea"
+                    placeholder="Ej: contenido ofensivo, imagen sin consentimiento..."
+                    value={reportReason}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    maxLength={500}
+                    rows={4}
+                    autoFocus
+                  />
+                  <p className="report-modal__notice">
+                    Al enviar confirmas que este reporte es legítimo. Se notificará al administrador.
+                  </p>
+                  <div className="report-modal__actions">
+                    <button
+                      type="button"
+                      className="report-modal__cancel"
+                      onClick={() => setShowReportModal(false)}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      className="report-modal__submit"
+                      onClick={handleSubmitReport}
+                      disabled={!reportReason.trim() || reportSubmitting}
+                    >
+                      {reportSubmitting ? 'Enviando...' : 'Enviar reporte'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="report-modal__title">Reporte enviado</h3>
+                  <p className="report-modal__desc">
+                    Gracias. Hemos recibido tu reporte y lo revisaremos en breve.
+                  </p>
+                  <div className="report-modal__actions">
+                    <button
+                      type="button"
+                      className="report-modal__submit"
+                      onClick={() => setShowReportModal(false)}
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         )}
         </section>
     </div>

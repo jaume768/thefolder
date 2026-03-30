@@ -17,7 +17,9 @@ const PostSchema = new mongoose.Schema({
         avatar: { type: String, default: "" },          // ✅ opcional, ayuda a render rápido
       }
     ],
-    imageTags: { type: Map, of: [String], default: {} },
+    projectTypes: { type: [String], default: [] },
+    imageTags: { type: Map, of: String, default: {} },
+    authorRole: { type: String, default: '' },
     staffPick: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
 });

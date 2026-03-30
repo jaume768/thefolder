@@ -11,7 +11,7 @@ exports.ensureAuthenticated = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Validar datos frescos contra la DB para evitar JWT con permisos obsoletos
-        const freshUser = await User.findById(decoded.id).select('role professionalType isActive isAdmin email');
+        const freshUser = await User.findById(decoded.id).select('role professionalType isActive isAdmin email accountType');
         if (!freshUser) {
             return res.status(401).json({ message: 'Usuario no encontrado' });
         }
@@ -25,6 +25,7 @@ exports.ensureAuthenticated = async (req, res, next) => {
             role: freshUser.role,
             professionalType: freshUser.professionalType,
             isAdmin: freshUser.isAdmin,
+            accountType: freshUser.accountType,
         };
         next();
     } catch (error) {
@@ -37,11 +38,11 @@ exports.ensureAdmin = async (req, res, next) => {
         return res.status(401).json({ message: 'No autorizado, se requiere autenticación' });
     }
     try {
-        const user = await User.findById(req.user.id).select('role isAdmin isActive');
+        const user = await User.findById(req.user.id).select('role isAdmin isActive accountType');
         if (!user || !user.isActive) {
             return res.status(401).json({ message: 'Usuario no encontrado o inactivo' });
         }
-        if (user.role !== 'Admin' && !user.isAdmin) {
+        if (user.role !== 'Admin' && !user.isAdmin && user.accountType !== 'admin') {
             return res.status(403).json({ message: 'Acceso denegado, se requieren permisos de administrador' });
         }
         next();

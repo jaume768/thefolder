@@ -6,6 +6,8 @@ import { FaTimes } from 'react-icons/fa';
 import ProfileOptionsModal from '../components/modals/ProfileOptionsModal';
 import SearchResults from '../components/search/SearchResults';
 import SearchFullScreen from '../components/search/SearchFullScreen';
+import LoginModal from '../components/landing/LoginModal';
+import RegisterModal from '../components/landing/RegisterModal';
 
 
 const getUsernameFromToken = () => {
@@ -23,7 +25,9 @@ try {
 const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOpen }) => {
 
   const [showProfileOptions, setShowProfileOptions] = useState(false);
-  const [showCreateOptions, setShowCreateOptions] = useState(false); // lo mantengo por si lo usas en otro momento
+  const [showCreateOptions, setShowCreateOptions] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false); // lo mantengo por si lo usas en otro momento
   const [professionalType, setProfessionalType] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +36,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   const [showResults, setShowResults] = useState(false);
   const [showFullScreenSearch, setShowFullScreenSearch] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [searchTimeout, setSearchTimeout] = useState(null);
+  const searchTimeoutRef = useRef(null);
 
   const [hasDraft, setHasDraft] = useState(false);
 
@@ -72,24 +76,14 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   }, [searchQuery]);
 
   useEffect(() => {
-    const DRAFT_KEY = "createpost_draft_v1";
+    const DRAFT_KEY = "createpost_draft_v2";
 
     const computeHasDraft = () => {
       try {
         const raw = localStorage.getItem(DRAFT_KEY);
         if (!raw) return false;
-
         const d = JSON.parse(raw);
-
-        const hasText =
-          (d.postTitle && d.postTitle.trim()) ||
-          (d.postDescription && d.postDescription.trim()) ||
-          (Array.isArray(d.postTags) && d.postTags.length > 0) ||
-          (Array.isArray(d.peopleTags) && d.peopleTags.some(p => (p?.name || "").trim() !== ""));
-
-        const hasProgress = Number(d.step || 1) > 1;
-
-        return !!(hasText || hasProgress);
+        return d.version === 2;
       } catch {
         return false;
       }
@@ -188,7 +182,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
     const value = e.target.value;
     setSearchQuery(value);
 
-    if (searchTimeout) clearTimeout(searchTimeout);
+    clearTimeout(searchTimeoutRef.current);
 
     if (!value || value.trim() === '') {
       setSearchResults(null);
@@ -197,7 +191,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
       return;
     }
 
-    const timeout = setTimeout(async () => {
+    searchTimeoutRef.current = setTimeout(async () => {
       if (value && value.trim().length >= 2) {
         const results = await performSearch(value);
         if (results && value.trim().length >= 2) setShowResults(true);
@@ -206,13 +200,14 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         setShowResults(false);
       }
     }, 300);
-
-    setSearchTimeout(timeout);
   };
 
   const handleSearch = async (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+
+      // Always cancel the pending debounce — ref ensures we get the real current ID
+      clearTimeout(searchTimeoutRef.current);
 
       if (!searchQuery || searchQuery.trim().length < 2) {
         setSearchResults(null);
@@ -221,10 +216,12 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         return;
       }
 
+      // Close suggestions immediately
+      setShowResults(false);
+
       const results = await performSearch(searchQuery);
       if (results) {
         setShowFullScreenSearch(true);
-        setShowResults(false);
       }
     }
   };
@@ -248,7 +245,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   const handleAvatarClick = () => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      navigate("/", { state: { showRegister: true } });
+      setShowLoginModal(true);
       return;
     }
 
@@ -257,7 +254,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
     if (uname && uname.toLowerCase() !== "username") {
       navigate(`/${uname}`);
     } else {
-      navigate("/profile"); // o "/myprofile/edit" si prefieres ir al privado
+      navigate("/profile");
     }
   };
 
@@ -265,7 +262,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   const handleChevronToggle = () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      navigate('/', { state: { showRegister: true } });
+      setShowLoginModal(true);
       return;
     }
     setShowProfileOptions(prev => !prev);
@@ -294,6 +291,9 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         break;
       case 'community':
         navigate('/community');
+        break;
+      case 'guardados':
+        navigate('/guardados');
         break;
       case 'misOfertas':
         navigate('/myprofile/offers');
@@ -500,7 +500,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           </div>
         )}
 
-        {showResults && searchResults && searchQuery && searchQuery.trim().length >= 2 && (
+        {showResults && !showFullScreenSearch && searchResults && searchQuery && searchQuery.trim().length >= 2 && (
           <SearchResults
             results={searchResults}
             onResultClick={handleResultClick}
@@ -530,20 +530,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           {isCreatePostOpen && <span className="header-dot" />}
         </button>
 
-        <button
-          className={`button header-left-link ${isGuardados ? "active" : ""}`}
-          onClick={() => {
-            const token = localStorage.getItem("authToken");
-            if (!token) {
-              navigate("/", { state: { showRegister: true } });
-              return;
-            }
-            navigate("/guardados");
-          }}
-        >
-          GUARDADOS
-          {isGuardados && <span className="header-dot" />}
-        </button>
 
         <div className={`profile-wrapper ${showProfileOptions ? 'open' : ''}`} ref={profileRef}>
           <button
@@ -561,7 +547,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             onClick={handleChevronToggle}
             aria-label="Opciones de perfil"
           >
-            +
+            [ + ]
           </button>
 
           {showProfileOptions && (
@@ -589,6 +575,21 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             onResultClick={handleResultClick}
           />
         </div>
+      )}
+
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToRegister={() => { setShowLoginModal(false); setShowRegisterModal(true); }}
+          onSwitchToReset={() => setShowLoginModal(false)}
+        />
+      )}
+
+      {showRegisterModal && (
+        <RegisterModal
+          onClose={() => setShowRegisterModal(false)}
+          onSwitchToLogin={() => { setShowRegisterModal(false); setShowLoginModal(true); }}
+        />
       )}
 
     </header>

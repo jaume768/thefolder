@@ -1,6 +1,5 @@
 .tf-footer {
   background-color: #f8f8f8;
-  padding: 0px 16px 16px 16px;
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -10,10 +9,10 @@
   max-width: 1200px;
   width: 100%;
   margin: 0px;
-  padding: 16px 24px;
+  padding: 16px;
   display: flex;
   justify-content: space-between;
-  gap: 18px;
+  gap: 8px;
 }
 
 /* Izquierda */
@@ -28,7 +27,7 @@
 }
 
 .tf-footer__mark{
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1;
 }
 
@@ -87,7 +86,7 @@
 
   .tf-footer__year,
   .tf-footer__name{
-      font-size: 14px;
+      font-size: 10px;
       line-height: 14px;
       letter-spacing: 0.02em;
       text-transform: uppercase;

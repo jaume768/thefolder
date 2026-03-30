@@ -250,8 +250,6 @@ return (
       getHeaderGradient={getHeaderGradient}
     />
 
-    <div id="white-sentinel" />
-
     <div className="user-extern-content miPerfil-content">
       {/* IZQUIERDA */}
       <div className="user-extern-left-column miPerfil-left-column">
@@ -293,13 +291,14 @@ return (
             )}
           </div>
 
-          {(profile?.city || profile?.country) && (
+          {(profile?.city || profile?.country || profile?.city2) && (
             <div className="resume-section miPerfil-location-section">
               <p className="resume-location miPerfil-location">
                 <span>[</span>
                 {profile?.city && profile?.country
                   ? `${profile.city}, ${profile.country}`
-                  : profile?.city || profile?.country}
+                  : profile?.city || profile?.country || ""}
+                {profile?.city2 ? ` | ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
                 <span>]</span>
               </p>
             </div>

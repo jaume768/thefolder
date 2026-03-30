@@ -34,7 +34,7 @@ export default function MiniHeroPreview({
           <div className="ux-minihero-name">{name}</div>
           {tags.length > 0 && (
             <div className="ux-minihero-tags">
-              {tags.slice(0, 2).map((t, i) => <span key={i} className="ux-minihero-tag">{t}</span>)}
+              {tags.slice(0, 1).map((t, i) => <span key={i} className="ux-minihero-tag">{t}</span>)}
             </div>
           )}
         </div>
@@ -49,11 +49,11 @@ export default function MiniHeroPreview({
         <div className="ux-minihero-bg">
           {imageUrl ? <img src={imageUrl} alt="" className="ux-minihero-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
-        <div className="ux-minihero-content">
+        <div className="ux-minihero-fullscreen-alt-desktop">
           <div className="ux-minihero-name">{name}</div>
           {tags.length > 0 && (
             <div className="ux-minihero-tags">
-              {tags.slice(0, 2).map((t, i) => <span key={i} className="ux-minihero-tag">{t}</span>)}
+              {tags.slice(0, 1).map((t, i) => <span key={i} className="ux-minihero-tag">{t}</span>)}
             </div>
           )}
         </div>
@@ -72,7 +72,7 @@ export default function MiniHeroPreview({
           <div className="ux-minihero-name ux-minihero-name--dark">{name}</div>
           {tags.length > 0 && (
             <div className="ux-minihero-tags ux-minihero-tags--dark ux-si-tags">
-              {tags.slice(0, 2).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
+              {tags.slice(0, 1).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
             </div>
           )}
         </div>
@@ -84,14 +84,16 @@ export default function MiniHeroPreview({
   if (effectiveTemplateId === "vertical-card") {
     return (
       <div className="ux-minihero ux-minihero--vertical-card">
+        <div className="ux-vcard-footer ux-vcard-footer--top">
+          <div className="ux-minihero-name ux-minihero-name--dark">{name}</div>
+        </div>
         <div className="ux-vcard-media">
           {imageUrl ? <img src={imageUrl} alt="" className="ux-vcard-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
         <div className="ux-vcard-footer">
-          <div className="ux-minihero-name ux-minihero-name--dark">{name}</div>
           {tags.length > 0 && (
             <div className="ux-minihero-tags ux-minihero-tags--dark ux-vcard-tags">
-              {tags.slice(0, 2).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
+              {tags.slice(0, 1).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
             </div>
           )}
         </div>
@@ -151,7 +153,7 @@ export default function MiniHeroPreview({
           <div className="ux-minihero-name ux-minihero-name--dark ux-vc-name">{name}</div>
           {tags.length > 0 && (
             <div className="ux-minihero-tags ux-minihero-tags--dark ux-vc-tags">
-              {tags.slice(0, 2).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
+              {tags.slice(0, 1).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
             </div>
           )}
         </div>
@@ -172,7 +174,7 @@ export default function MiniHeroPreview({
           <div className="ux-minihero-name ux-minihero-name--dark">{name}</div>
           {tags.length > 0 && (
             <div className="ux-minihero-tags ux-minihero-tags--dark ux-st-tags">
-              {tags.slice(0, 2).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
+              {tags.slice(0, 1).map((t, i) => <span key={i} className="ux-minihero-tag ux-minihero-tag--dark">{t}</span>)}
             </div>
           )}
         </div>

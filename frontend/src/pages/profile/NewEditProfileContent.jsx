@@ -14,6 +14,7 @@ import PdfTab from "../../components/controlPanel/editProfile/tabs/PdfTab";
 import InfoTab from "../../components/controlPanel/editProfile/tabs/InfoTab";
 import CvTab from "../../components/controlPanel/editProfile/tabs/CvTab";
 import ProfileAppearanceTab from "../../components/controlPanel/editProfile/tabs/ProfileAppearanceTab";
+import DirectorioTab from "../../components/controlPanel/editProfile/tabs/DirectorioTab";
 
 
 import trashDelete from "../../../public/iconos/trash-delete.svg";
@@ -179,13 +180,12 @@ const NewEditProfileContent = () => {
   const didInitLanguagesRef = useRef(false);
 
   const profileFileRef = useRef(null);
+  const creativeLevelChangedRef = useRef(false);
 
   const logoFileRef = useRef(null);
 
   const headerDesktopFileRef = useRef(null);
   const headerMobileFileRef = useRef(null);
-  const creativeCoverFileRef = useRef(null);
-
   const uploadHeaderVariant = async (variant, file) => {
     const token = localStorage.getItem("authToken");
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -229,43 +229,36 @@ const deleteHeaderVariant = async (variant) => {
   setIsDirty(false);
 };
 
-const uploadCreativeCover = async (file) => {
-  const token = localStorage.getItem("authToken");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const uploadCreativeCover = async (file) => {
+    const token = localStorage.getItem("authToken");
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axios.put(
+      `${backendUrl}/api/users/creative-cover`,
+      formData,
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+    );
+    const updatedUser = res.data?.user || res.data;
+    setProfile(updatedUser);
+    applyingServerDraftRef.current = true;
+    setDraft(structuredClone(updatedUser));
+    setIsDirty(false);
+  };
 
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const res = await axios.put(
-    `${backendUrl}/api/users/creative-cover`,
-    formData,
-    { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
-  );
-
-  const updatedUser = res.data.user;
-  setProfile(updatedUser);
-  applyingServerDraftRef.current = true;
-  setDraft(structuredClone(updatedUser));
-  setIsDirty(false);
-};
-
-const deleteCreativeCover = async () => {
-  const token = localStorage.getItem("authToken");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-  const res = await axios.delete(
-    `${backendUrl}/api/users/creative-cover`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const updatedUser = res.data.user;
-  setProfile(updatedUser);
-  applyingServerDraftRef.current = true;
-  setDraft(structuredClone(updatedUser));
-  setIsDirty(false);
-};
-
-
+  const deleteCreativeCover = async () => {
+    const token = localStorage.getItem("authToken");
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const res = await axios.delete(
+      `${backendUrl}/api/users/creative-cover`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const updatedUser = res.data?.user || res.data;
+    setProfile(updatedUser);
+    applyingServerDraftRef.current = true;
+    setDraft(structuredClone(updatedUser));
+    setIsDirty(false);
+  };
 
     // ✅ CV (solo diseño por ahora)
   const [cvInputs, setCvInputs] = useState({
@@ -417,13 +410,7 @@ const emptyLanguageRow = { language: "", level: "" };
 
 const [languagesRows, setLanguagesRows] = useState(() => {
   const saved = Array.isArray(draft?.languages) ? draft.languages : [];
-  if (saved.length) return saved;
-
-  // defaults solo si no hay nada guardado
-  return [
-    { language: "Castellano", level: "" },
-    { language: "Inglés", level: "" },
-  ];
+  return saved;
 });
 
 const addLanguageRow = () => {
@@ -491,15 +478,14 @@ useEffect(() => {
 
   const saved = Array.isArray(draft.languages) ? draft.languages : [];
 
-  if (saved.length) {
-    setLanguagesRows(saved);
-  } else {
-    // defaults si no hay nada guardado
-    setLanguagesRows([
-      { language: "Castellano", level: "" },
-      { language: "Inglés", level: "" },
-    ]);
-  }
+  // Limpia automáticamente los defaults viejos (Castellano/Inglés sin nivel)
+  // que se guardaban en BD antes de este fix.
+  const isLegacyDefaults =
+    saved.length === 2 &&
+    saved[0]?.language === "Castellano" && saved[0]?.level === "" &&
+    saved[1]?.language === "Inglés" && saved[1]?.level === "";
+
+  setLanguagesRows(isLegacyDefaults ? [] : saved);
 
   didInitLanguagesRef.current = true;
 }, [draft?.username]);
@@ -523,6 +509,9 @@ const makeEmptyExp = () => ({
 const makeEmptyEdu = () => ({
   clientId: crypto.randomUUID(),
   institutionLogo: "",
+  educationType: "",
+  educationHours: "",
+  educationOtherType: "",
   institution: "",
   formationName: "",
   location: "",
@@ -643,9 +632,13 @@ const saveEducation = () => {
   const instOk = (eduDraft.institution || "").trim().length > 0;
   const nameOk = (eduDraft.formationName || "").trim().length > 0;
 
-
   if (!instOk || !nameOk) {
     alert("Completa al menos Institución y Nombre de la formación.");
+    return;
+  }
+
+  if (eduDraft.educationType === "OTRO" && !(eduDraft.educationOtherType || "").trim()) {
+    alert("Especifica el tipo de formación.");
     return;
   }
 
@@ -653,6 +646,9 @@ const saveEducation = () => {
     ...eduDraft,
     clientId: eduDraft.clientId || crypto.randomUUID(),
     institutionLogo: (eduDraft.institutionLogo || "").trim(),
+    educationType: (eduDraft.educationType || "").trim(),
+    educationHours: (eduDraft.educationHours || "").trim(),
+    educationOtherType: (eduDraft.educationOtherType || "").trim(),
     institution: (eduDraft.institution || "").trim(),
     formationName: (eduDraft.formationName || "").trim(),
     location: (eduDraft.location || "").trim(),
@@ -1048,6 +1044,9 @@ const handleSocialUsernameChange = (e, network) => {
         if (me?.galleryStyle) {
           setDraftField("galleryStyle", me.galleryStyle);
         }
+        if (me?.profileLayout) {
+          setDraftField("profileLayout", me.profileLayout);
+        }
 
         const userIsCompany =
           me.professionalType === 1 || me.professionalType === 2 || me.professionalType === 3;
@@ -1170,6 +1169,8 @@ const handleSocialUsernameChange = (e, network) => {
           ? (draft?.customCountry || "")
           : (draft?.country || ""),
         city: draft?.city || "",
+        country2: draft?.country2 || "",
+        city2: draft?.city2 || "",
         biography: draft.biography || "",
         professionalTitle: draft.professionalTitle || "",
 
@@ -1213,9 +1214,12 @@ const handleSocialUsernameChange = (e, network) => {
           sitioWeb: draft?.social?.sitioWeb || "",
         },
 
+        ...(creativeLevelChangedRef.current && draft.creativeLevel ? { creativeLevel: draft.creativeLevel } : {}),
+
         coverTemplateDesktop: draft?.coverTemplateDesktop || "fullscreen",
         coverTemplateMobile: draft?.coverTemplateMobile || "fullscreen",
         galleryStyle: draft?.galleryStyle || "gap",
+        profileLayout: draft?.profileLayout || "default",
       };
 
       const res = await axios.put(`${backendUrl}/api/users/profile`, updates, {
@@ -1226,6 +1230,7 @@ const handleSocialUsernameChange = (e, network) => {
 
       setProfile(updatedUser);
       applyingServerDraftRef.current = true;
+      creativeLevelChangedRef.current = false;
 
       setDraft((prev) => {
         const u = structuredClone(updatedUser);
@@ -1571,10 +1576,6 @@ const coverPreviewImage =
 </p>
 
 <div className="creatives-hero-inner miPerfil-hero">
-  {/* Foto centrada entre texto y título */}
-  <div className="miPerfil-hero-avatar">
-    <img src={profileImage} alt="Foto de perfil" />
-  </div>
 
   <div className="guardados-header miPerfil-header">
     <h1 className="centerTitle guardados miPerfil-title">EDITA TU PERFIL</h1>
@@ -1609,6 +1610,13 @@ const coverPreviewImage =
         onClick={() => setTopTab("apariencia")}
       >
         Apariencia
+      </div>
+
+      <div
+        className={`tab-save tab-save--small ${topTab === "directorio" ? "active" : ""}`}
+        onClick={() => setTopTab("directorio")}
+      >
+        Directorio
       </div>
 
       <div
@@ -1660,6 +1668,11 @@ const coverPreviewImage =
                     splitName={splitName}
                     setDraftField={setDraftField}
                     setIsDirty={setIsDirty}
+                    onLevelChange={(v) => {
+                      creativeLevelChangedRef.current = true;
+                      setDraftField('creativeLevel', v);
+                      setIsDirty(true);
+                    }}
                   />
                   <AutosaveStatus autosaveStatus={autosaveStatus} isDirty={isDirty} />
                 </div>
@@ -1769,13 +1782,10 @@ const coverPreviewImage =
                   // --- refs
                   headerDesktopFileRef={headerDesktopFileRef}
                   headerMobileFileRef={headerMobileFileRef}
-                  creativeCoverFileRef={creativeCoverFileRef}
 
                   // --- uploads
                   uploadHeaderVariant={uploadHeaderVariant}
                   deleteHeaderVariant={deleteHeaderVariant}
-                  uploadCreativeCover={uploadCreativeCover}
-                  deleteCreativeCover={deleteCreativeCover}
 
                   galleryStyle={draft?.galleryStyle || "gap"}
                   setGalleryStyle={(val) => {
@@ -1783,10 +1793,28 @@ const coverPreviewImage =
                     setIsDirty(true);
                   }}
 
+                  profileLayout={draft?.profileLayout || "default"}
+                  setProfileLayout={(val) => {
+                    setDraftField("profileLayout", val);
+                    setIsDirty(true);
+                  }}
+
                 />
                 <AutosaveStatus autosaveStatus={autosaveStatus} isDirty={isDirty} />
               </div>
             )}
+
+              {/* DIRECTORIO */}
+              {topTab === "directorio" && (
+                <div>
+                  <DirectorioTab
+                    coverImage={draft?.creativeCoverDesktop || ""}
+                    onUpload={uploadCreativeCover}
+                    onDelete={deleteCreativeCover}
+                  />
+                  <AutosaveStatus autosaveStatus={autosaveStatus} isDirty={isDirty} />
+                </div>
+              )}
 
               {/* PDF */}
               {topTab === "pdf" && (

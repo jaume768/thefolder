@@ -14,7 +14,6 @@ export default function LandingHero({
 }) {
   const navigate = useNavigate();
 
-  // ====== MENU MOVIL ======
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -24,7 +23,6 @@ export default function LandingHero({
     };
   }, [menuOpen]);
 
-  // ====== COOKIES ======
   const STORAGE_KEY = "thefolder_cookie_basic_ok";
   const [cookieOpen, setCookieOpen] = useState(false);
 
@@ -38,18 +36,16 @@ export default function LandingHero({
     setCookieOpen(false);
   };
 
-  // ✅ Un solo navItems compartido (header + overlay)
   const navItems = useMemo(
     () => [
       { label: "CREATIVOS", to: "/creatives" },
-      // { label: "ESTUDIAR MODA", to: "/fashion" },
-      // { label: "Industria", to: "/industry" },
     ],
     []
   );
 
   return (
     <section className="tf-hero tf-ready">
+
       {/* ===== NAVBAR ===== */}
       <LandingHeader
         navItems={navItems}
@@ -59,66 +55,38 @@ export default function LandingHero({
         setMenuOpen={setMenuOpen}
       />
 
-      {/* ===== HERO ===== */}
+      {/* ===== HERO GRID ===== */}
       <div className="tf-hero__grid">
-        <div className="tf-hero__copy">
-          <h1 className="tf-h1 tf-only-desktop">
-            LA NUEVA GENERACIÓN //
-            <br />
-            DE CREATIVOS EN MODA
-          </h1>
 
+        {/* COPY — columnas 1-6 */}
+        <div className="tf-hero__copy">
+          {/* Desktop */}
+          <h1 className="tf-h1 tf-only-desktop">
+            El directorio que reúne todo el talento emergente en moda
+          </h1>
+          {/* Mobile */}
           <h1 className="tf-h1 tf-only-mobile-h1">
-            TU PORTFOLIO + CV
-            <br />
-            EN UN SOLO LINK
+            El directorio del talento emergente en moda
           </h1>
 
           <p className="tf-sub tf-only-desktop">
-            Publica tu <strong>CV y Portfolio</strong> en minutos.
-            <br />
-            Forma parte del directorio donde las marcas encuentran talento por especialidad.
+            Publica tu perfil. Conecta con la industria.
           </p>
-
           <p className="tf-sub tf-only-mobile">
-            Crea tu perfil profesional en minutos y forma parte del
-            <br />
-            directorio donde las marcas encuentran talento por especialidad.
+            Publica tu perfil. Conecta con la industria.
           </p>
-
-          <button
-            type="button"
-            className="tf-btn tf-btn--pill"
-            onClick={onRegisterClick}
-          >
-            <span className="tf-only-desktop">
-              CREA TU PORTFOLIO <em className="tf-italic">[GRATIS]</em>
-            </span>
-
-            <span className="tf-only-mobile tf-cta-mobile">CREA TU PERFIL</span>
-          </button>
         </div>
 
+        {/* IMAGEN — columnas 7-12, sangra al borde */}
         <div className="tf-hero__media">
-          <div className="tf-stack" aria-label="Hero collage">
-            {heroImages.slice(0, 3).map((src, idx) => (
-              <div className="tf-card" key={src + idx}>
-                <img src={src} alt="" loading={idx === 0 ? "eager" : "lazy"} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="tf-chevron" aria-hidden="true">
-        <svg width="22" height="12" viewBox="0 0 22 12">
-          <path
-            d="M1 1 L11 11 L21 1"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
+          <img
+            src={heroImages[0]}
+            alt=""
+            className="tf-hero__img"
+            loading="eager"
           />
-        </svg>
+        </div>
+
       </div>
 
       {/* ===== COOKIE CONSENT ===== */}
@@ -132,11 +100,9 @@ export default function LandingHero({
               <br />
               mejorar tu experiencia.
             </p>
-
             <button type="button" className="tf-btn tf-btn--cookie" onClick={acceptCookies}>
               Continuar
             </button>
-
             <a className="tf-cookie__link" href="/cookies">
               Política de cookies
             </a>
@@ -150,7 +116,6 @@ export default function LandingHero({
                 <br />
                 y mejorar tu experiencia.
               </p>
-
               <button
                 type="button"
                 className="tf-btn tf-btn--cookie tf-cookieSheet__btn"
@@ -158,7 +123,6 @@ export default function LandingHero({
               >
                 CONTINUAR
               </button>
-
               <a className="tf-cookie__link" href="/cookies">
                 Política de cookies
               </a>

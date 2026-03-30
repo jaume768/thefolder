@@ -12,6 +12,22 @@ export default function LanguagesSection({
 }) {
   const rows = Array.isArray(languagesRows) ? languagesRows : [];
 
+  if (rows.length === 0) {
+    return (
+      <div id="sec-cv-idiomas" className="ux-anchor-target">
+        <div className="ux-exp-add">
+          <button
+            type="button"
+            className="ux-btn ux-exp-add-btn"
+            onClick={addLanguageRow}
+          >
+            + Añadir idioma
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div id="sec-cv-idiomas" className="ux-anchor-target">
       <div className="ux-card">

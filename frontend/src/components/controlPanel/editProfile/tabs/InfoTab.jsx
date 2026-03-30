@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { LOCATIONS, ALL_COUNTRIES } from "../../../../utils/locations";
 
 // iconos desde /public (más estable en Vite)
 const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/trash-delete.svg";
+
+const GROUP_ICONS = {
+  'Accesorios':          '/iconos/specialty/accesories.png',
+  'Beauty (MUAH)':       '/iconos/specialty/beauty.png',
+  'Fotografía & Vídeo':  '/iconos/specialty/camera-photo.png',
+  'Dirección Creativa':  '/iconos/specialty/creative-direction.png',
+  'Diseño':              '/iconos/specialty/fashion-design.png',
+  'Digital & 3D':        '/iconos/specialty/graphic-design.png',
+  'Ilustración':         '/iconos/specialty/illustration.png',
+  'Styling':             '/iconos/specialty/styling.png',
+  'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
+};
+
+const GROUP_ORDER = [
+  "Diseño", "Dirección Creativa", "Fotografía & Vídeo", "Styling",
+  "Beauty (MUAH)", "Digital & 3D", "Ilustración", "Accesorios",
+];
 
 export default function InfoTab({
   draft,
@@ -19,14 +36,28 @@ export default function InfoTab({
   splitName,
   setDraftField,
   setIsDirty,
+  onLevelChange,
 }) {
   // ✅ Hooks SIEMPRE dentro del componente
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [roleOptions, setRoleOptions] = React.useState([]);
   const [activeGroup, setActiveGroup] = React.useState(null);
   const [roleQuery, setRoleQuery] = React.useState("");
 
   const [customCountryInput, setCustomCountryInput] = React.useState(draft?.customCountry || "");
   const [customCityInput, setCustomCityInput] = React.useState(draft?.city || "");
+
+  const [showCity2, setShowCity2] = React.useState(!!(draft?.city2 || draft?.country2));
+  const [customCityInput2, setCustomCityInput2] = React.useState(draft?.city2 || "");
+
+  // Sincronizar showCity2 cuando el draft carga después del montaje
+  React.useEffect(() => {
+    if (draft?.city2 || draft?.country2) {
+      setShowCity2(true);
+      setCustomCityInput2(draft.city2 || "");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!draft?.city2, !!draft?.country2]);
 
   const selectedRoleIds = Array.isArray(draft?.professionalTags) ? draft.professionalTags : [];
   const headlines = Array.isArray(draft?.profileHeadlines) ? draft.profileHeadlines : ["", "", ""];
@@ -66,21 +97,27 @@ export default function InfoTab({
 
 
   const rolesByGroup = React.useMemo(() => {
-  const map = {};
-  for (const tag of roleOptions) {
-    if (!map[tag.group]) {
-      map[tag.group] = [];
+    const map = {};
+    for (const tag of roleOptions) {
+      if (!map[tag.group]) map[tag.group] = [];
+      map[tag.group].push(tag);
     }
-    map[tag.group].push(tag);
-  }
-  return map;
+    return map;
   }, [roleOptions]);
+
+  const orderedGroups = React.useMemo(() => {
+    const groups = Object.keys(rolesByGroup);
+    const rank = Object.fromEntries(GROUP_ORDER.map((g, i) => [g, i]));
+    return groups.sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
+  }, [rolesByGroup]);
   
 
+  const normalize = str => String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').toLowerCase().trim();
+
   const filteredRoleOptions = React.useMemo(() => {
-    const q = roleQuery.trim().toLowerCase();
+    const q = normalize(roleQuery);
     if (!q) return roleOptions;
-    return roleOptions.filter((t) => String(t.label || "").toLowerCase().includes(q));
+    return roleOptions.filter((t) => normalize(t.label || "").includes(q));
   }, [roleOptions, roleQuery]);
 
   const toggleRole = (id) => {
@@ -120,6 +157,7 @@ export default function InfoTab({
               </label>
 
               <div className="ux-photo-box">
+                {avatarUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
                 <div className="center ux-photo-preview">
                   <img src={profileImage} alt="Foto de perfil" />
                 </div>
@@ -138,11 +176,12 @@ export default function InfoTab({
                         type="file"
                         accept="image/*"
                         style={{ display: "none" }}
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files[0];
                           if (!file) return;
-                          uploadProfilePicture(file);
                           e.target.value = "";
+                          setAvatarUploading(true);
+                          try { await uploadProfilePicture(file); } finally { setAvatarUploading(false); }
                         }}
                       />
 
@@ -345,6 +384,108 @@ export default function InfoTab({
               )}
 
             </div>
+
+              {/* Segunda ubicación */}
+              {!showCity2 && (
+                <div style={{ marginTop: 12 }}>
+                  <button
+                    type="button"
+                    className="ux-btn ux-exp-add-btn"
+                    onClick={() => setShowCity2(true)}
+                  >
+                    Añadir segunda ubicación
+                  </button>
+                </div>
+              )}
+
+              {showCity2 && (
+                <div style={{ marginTop: 12 }}>
+                  <div className="ux-form-row">
+
+                    {/* País 2 */}
+                    <div className="ux-form-field">
+                      <select
+                        id="country2"
+                        name="country2"
+                        className="ux-input"
+                        value={draft?.country2 || ""}
+                        onChange={(e) => {
+                          setDraftField("country2", e.target.value);
+                          setDraftField("city2", "");
+                          setCustomCityInput2("");
+                          setIsDirty(true);
+                        }}
+                      >
+                        <option value="">País</option>
+                        {ALL_COUNTRIES.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                        <option value="__otro__">Otro país</option>
+                      </select>
+                    </div>
+
+                    {/* Ciudad 2 */}
+                    <div className="ux-form-field">
+                      {draft?.country2 && LOCATIONS[draft?.country2] ? (
+                        <select
+                          id="city2"
+                          name="city2"
+                          className="ux-input"
+                          value={draft?.city2 || ""}
+                          onChange={(e) => {
+                            setDraftField("city2", e.target.value);
+                            setIsDirty(true);
+                          }}
+                        >
+                          <option value="">Ciudad</option>
+                          {(LOCATIONS[draft?.country2] || []).map((city) => (
+                            <option key={city} value={city}>{city}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          id="city2"
+                          name="city2"
+                          type="text"
+                          className="ux-input"
+                          value={customCityInput2}
+                          placeholder={
+                            draft?.country2
+                              ? "¿En qué ciudad estás?"
+                              : "Primero elige un país"
+                          }
+                          disabled={!draft?.country2}
+                          onChange={(e) => setCustomCityInput2(e.target.value)}
+                          onBlur={(e) => {
+                            setDraftField("city2", e.target.value);
+                            setIsDirty(true);
+                          }}
+                          autoComplete="off"
+                        />
+                      )}
+                    </div>
+
+                  </div>
+
+                  <div style={{ marginTop: 8 }}>
+                    <button
+                      type="button"
+                      className="ux-btn"
+                      style={{ fontSize: 12 }}
+                      onClick={() => {
+                        setShowCity2(false);
+                        setDraftField("city2", "");
+                        setDraftField("country2", "");
+                        setCustomCityInput2("");
+                        setIsDirty(true);
+                      }}
+                    >
+                      Eliminar segunda ubicación
+                    </button>
+                  </div>
+                </div>
+              )}
+
           </div>
 
           {/* Especialización + filtros */}
@@ -391,13 +532,17 @@ export default function InfoTab({
               </div>
 
               {/* Separador visual suave */}
-              <div style={{ height: 48 }} />
+              <div style={{ height: 68 }} />
 
               {/* ✅ 2) Cómo filtrar tu perfil - lista cerrada (professionalTags) */}
               <label className="ux-form-label">Cómo filtrar tu perfil</label>
 
+              <div className="ux-helper">
+                Elige hasta 3 etiquetas. Se usan para aparecer en búsquedas.
+              </div>
+
               {selectedRoleIds.length > 0 && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
                   {selectedRoleIds.map((id) => (
                     <button
                       key={id}
@@ -413,29 +558,20 @@ export default function InfoTab({
                 </div>
               )}
 
-              <input
-                type="text"
-                className="ux-input"
-                value={roleQuery}
-                onChange={(e) => setRoleQuery(e.target.value)}
-                placeholder="Etiquetas para aparecer en búsquedas (máx. 3)"
-                autoComplete="off"
-                style={{ marginBottom: 10 }}
-              />
-
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
-                {Object.keys(rolesByGroup).map((group) => {
+              <div className="filters-tags filters-tags--level">
+                {orderedGroups.map((group) => {
                   const isActive = activeGroup === group;
-
+                  const hasSelection = (rolesByGroup[group] || []).some(t => selectedRoleIds.includes(t.id));
+                  const icon = GROUP_ICONS[group];
                   return (
                     <button
                       key={group}
                       type="button"
-                      className={`filter-tag role-by-group ${isActive ? "is-active" : ""}`}
+                      className={`filter-tag filter-country-tag${isActive ? ' is-active' : ''}${hasSelection ? ' has-selection' : ''}`}
                       onClick={() => setActiveGroup(isActive ? null : group)}
                     >
-                      <span className="role-group-label">{group}</span>
-                      <span className="role-group-plus" />
+                      {icon && <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />}
+                      {group}
                     </button>
                   );
                 })}
@@ -443,25 +579,24 @@ export default function InfoTab({
 
               {/* SUBETIQUETAS DEL BLOQUE SELECCIONADO */}
               {activeGroup && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {rolesByGroup[activeGroup]
-                    .filter((t) => !selectedRoleIds.includes(t.id))
-                    .map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className="filter-tag"
-                        onClick={() => toggleRole(t.id)}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
+                <div className="filters-country-cities">
+                  <div className="filters-tags filters-tags--level">
+                    {(rolesByGroup[activeGroup] || []).map((t) => {
+                      const sel = selectedRoleIds.includes(t.id);
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          className={`filter-tag${sel ? ' selected' : ''}`}
+                          onClick={() => toggleRole(t.id)}
+                        >
+                          {t.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
-
-              <div className="ux-helper" style={{ marginTop: 10 }}>
-                Elige hasta 3 etiquetas. Se usan para aparecer en búsquedas.
-              </div>
             </div>
           </div>
 
@@ -530,6 +665,45 @@ export default function InfoTab({
               />
             </div>
           </div>
+
+          {/* Nivel de experiencia */}
+          {!isCompany && !isEducationalInstitution && (
+            <div className="ux-form-block">
+              <label className="ux-form-label">Nivel de experiencia</label>
+              {draft?.requestedCreativeLevel === 4 ? (
+                <p className="ux-form-hint ux-form-hint--pending">
+                  ⏳ Tu solicitud de nivel <strong>Professional</strong> está en revisión. El equipo la validará en <strong>1-2 días hábiles</strong>.
+                </p>
+              ) : (
+                <p className="ux-form-hint">¿En qué punto de tu carrera estás?</p>
+              )}
+              <div className="ux-level-options">
+                {[
+                  { value: 1, name: 'Newcomer',     icon: 'newcomer.png',     desc: 'Estudiantes o recién graduados.' },
+                  { value: 2, name: 'Graduated',    icon: 'graduated.png',    desc: 'Formación académica completada.' },
+                  { value: 3, name: 'Emerging',     icon: 'emerging.png',     desc: '1-3 años de experiencia.' },
+                  { value: 4, name: 'Professional', icon: 'professional.png', desc: 'Trayectoria sólida — requiere validación.' },
+                ].map(lvl => {
+                  const isPending = lvl.value === 4 && draft?.requestedCreativeLevel === 4;
+                  const selected  = draft?.creativeLevel === lvl.value || isPending;
+                  return (
+                    <button
+                      key={lvl.value}
+                      type="button"
+                      className={`ux-level-btn ${selected ? 'selected' : ''} ${isPending ? 'pending' : ''}`}
+                      onClick={() => onLevelChange(lvl.value)}
+                    >
+                      <img className="ux-level-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
+                      <span className="ux-level-name">
+                        {lvl.name}{isPending && <span className="ux-level-pending"> (Pendiente · 1-2 días)</span>}
+                      </span>
+                      <span className="ux-level-desc">{lvl.desc}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

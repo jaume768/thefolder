@@ -116,6 +116,14 @@ const ROLE_TAGS = [
     group: "Diseño",
     order: 14,
   },
+  {
+    id: "diseno-produccion",
+    label: "Diseño de producción",
+    type: "role",
+    status: "active",
+    group: "Diseño",
+    order: 15,
+  },
 
   // ============================
   // 2. Dirección Creativa
@@ -160,6 +168,14 @@ const ROLE_TAGS = [
     group: "Dirección Creativa",
     order: 5,
   },
+  {
+    id: "direccion-movimiento",
+    label: "Dirección de movimiento",
+    type: "role",
+    status: "active",
+    group: "Dirección Creativa",
+    order: 6,
+  },
 
   // =====================
   // 3. Fotografía & Vídeo
@@ -170,6 +186,7 @@ const ROLE_TAGS = [
     type: "role",
     status: "active",
     group: "Fotografía & Vídeo",
+    subgroup: "Fotografía",
     order: 1,
   },
   {
@@ -178,6 +195,7 @@ const ROLE_TAGS = [
     type: "role",
     status: "active",
     group: "Fotografía & Vídeo",
+    subgroup: "Fotografía",
     order: 2,
   },
   {
@@ -186,15 +204,26 @@ const ROLE_TAGS = [
     type: "role",
     status: "active",
     group: "Fotografía & Vídeo",
+    subgroup: "Fotografía",
     order: 3,
   },
   {
-    id: "fashion-film",
-    label: "Fashion film",
+    id: "direccion-fotografia",
+    label: "Dirección de fotografía",
     type: "role",
     status: "active",
     group: "Fotografía & Vídeo",
+    subgroup: "Fotografía",
     order: 4,
+  },
+  {
+    id: "edicion-fotografica",
+    label: "Edición fotográfica",
+    type: "role",
+    status: "active",
+    group: "Fotografía & Vídeo",
+    subgroup: "Fotografía",
+    order: 5,
   },
   {
     id: "retoque-digital",
@@ -202,7 +231,44 @@ const ROLE_TAGS = [
     type: "role",
     status: "active",
     group: "Fotografía & Vídeo",
-    order: 5,
+    subgroup: "Fotografía",
+    order: 6,
+  },
+  {
+    id: "tecnico-digital",
+    label: "Técnico digital",
+    type: "role",
+    status: "active",
+    group: "Fotografía & Vídeo",
+    subgroup: "Fotografía",
+    order: 7,
+  },
+  {
+    id: "fashion-film",
+    label: "Fashion film",
+    type: "role",
+    status: "active",
+    group: "Fotografía & Vídeo",
+    subgroup: "Vídeo",
+    order: 8,
+  },
+  {
+    id: "videografia",
+    label: "Videografía",
+    type: "role",
+    status: "active",
+    group: "Fotografía & Vídeo",
+    subgroup: "Vídeo",
+    order: 9,
+  },
+  {
+    id: "edicion-video",
+    label: "Edición de vídeo",
+    type: "role",
+    status: "active",
+    group: "Fotografía & Vídeo",
+    subgroup: "Vídeo",
+    order: 10,
   },
 
   // =====================
@@ -277,12 +343,36 @@ const ROLE_TAGS = [
     order: 2,
   },
   {
+    id: "hair-colorist",
+    label: "Colorista",
+    type: "role",
+    status: "active",
+    group: "Beauty (MUAH)",
+    order: 3,
+  },
+  {
+    id: "groomer",
+    label: "Groomer",
+    type: "role",
+    status: "active",
+    group: "Beauty (MUAH)",
+    order: 4,
+  },
+  {
+    id: "manicurista",
+    label: "Manicurista / Nails",
+    type: "role",
+    status: "active",
+    group: "Beauty (MUAH)",
+    order: 5,
+  },
+  {
     id: "beauty-direction",
     label: "Beauty direction",
     type: "role",
     status: "active",
     group: "Beauty (MUAH)",
-    order: 3,
+    order: 6,
   },
 
   // =====================
@@ -391,6 +481,42 @@ const ROLE_TAGS = [
     status: "active",
     group: "Ilustración",
     order: 2,
+  },
+
+  // =====================
+  // 9. Comunicación & Editorial — NUEVO
+  // =====================
+  {
+    id: "editor-moda",
+    label: "Editor de moda",
+    type: "role",
+    status: "active",
+    group: "Comunicación & Editorial",
+    order: 1,
+  },
+  {
+    id: "editor-beauty",
+    label: "Editor de beauty",
+    type: "role",
+    status: "active",
+    group: "Comunicación & Editorial",
+    order: 2,
+  },
+  {
+    id: "periodismo-moda",
+    label: "Periodismo de moda",
+    type: "role",
+    status: "active",
+    group: "Comunicación & Editorial",
+    order: 3,
+  },
+  {
+    id: "escritura-moda",
+    label: "Escritura de moda",
+    type: "role",
+    status: "active",
+    group: "Comunicación & Editorial",
+    order: 4,
   },
 ];
 

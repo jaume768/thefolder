@@ -16,7 +16,7 @@ const UserSocialSection = ({ social }) => {
   if (!social || Object.values(social).every((value) => !value)) return null;
 
   return (
-    <section className="user-extern-section">
+    <section>
       <div className="user-extern-social-links">
         {social?.instagram && (
           <a

@@ -1,7 +1,10 @@
 // UserProfile.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import ProfileIndexGallery from "./ProfileIndexGallery";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useCreatePost } from "../../contexts/CreatePostContext";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import "../../components/controlPanel/css/UserProfile.css";
 import { FaCheckCircle, FaExclamationCircle, FaCopy, FaTimes } from "react-icons/fa";
@@ -20,16 +23,24 @@ import UserCompanyTagsSection from "../../components/controlPanel/userProfile/Us
 import UserMilestoneSection from "../../components/controlPanel/userProfile/UserMilestoneSection";
 import UserCompanyOffersSection from "../../components/controlPanel/userProfile/UserCompanyOffersSection";
 import UserEducationalOffersSection from "../../components/controlPanel/userProfile/UserEducationalOffersSection"; 
-import ExternalProfileHeader from "../../components/controlPanel/userProfile/ExternalProfileHeader";
 import UserGallery from "../../components/controlPanel/userProfile/UserGallery";
+import ExternalProfileHeader from "../../components/controlPanel/userProfile/ExternalProfileHeader";
+import LandingHeader from "../../components/landing/LandingHeader";
+import CookieBanner from "../../components/CookieBanner";
 
 
 const UserProfile = () => {
 
   const isLoggedIn = !!localStorage.getItem("authToken");
-  
+
   const { username } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const layoutParam = searchParams.get("layout");
+
+  const { user: currentUser } = useContext(AuthContext);
+  const { openCreatePost } = useCreatePost();
+  const isOwner = !!currentUser && currentUser.username === username;
 
   const [profile, setProfile] = useState(null);
 
@@ -49,6 +60,7 @@ const UserProfile = () => {
   // layout + hero
   const [fallbackHeaderImage, setFallbackHeaderImage] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // state general
   const [loading, setLoading] = useState(true);
@@ -72,14 +84,29 @@ const UserProfile = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ ocultar dashboard header global
+  // Ocultar el dashboard-header global mientras se muestra el ext-profile-header propio
   useEffect(() => {
     document.body.classList.add("hide-dashboard-header");
-    return () => document.body.classList.remove("hide-dashboard-header");
+    return () => {
+      document.body.classList.remove("hide-dashboard-header");
+    };
   }, []);
 
   const profileImage =
     profile?.profile?.profilePicture || profile?.profilePicture || "/multimedia/usuarioDefault.jpg";
+
+  const hasCvData = !!(
+    profile?.biography ||
+    profile?.professionalFormation?.length ||
+    profile?.education?.length ||
+    profile?.skills?.length ||
+    profile?.software?.length ||
+    (profile?.languages || profile?.profile?.languages || []).length ||
+    profile?.companyTags?.length ||
+    profile?.professionalMilestones?.length ||
+    profile?.cvUrl ||
+    profile?.portfolioUrl
+  );
 
   const headerImageToShow =
     (isMobile ? profile?.featuredHeaderImageMobile : profile?.featuredHeaderImageDesktop) ||
@@ -347,6 +374,30 @@ const UserProfile = () => {
     );
   }
 
+  // ── Layout alternativo: por profileLayout del usuario (o ?layout=index para preview)
+  if (profile?.profileLayout === "index-gallery" || layoutParam === "index") {
+    return (
+      <ProfileIndexGallery
+        profile={profile}
+        userPosts={userPosts}
+        postsLoading={postsLoading}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOwner={isOwner}
+        isFollowing={isFollowing}
+        followLoading={followLoading}
+        handleFollow={handleFollow}
+        handleUnfollow={handleUnfollow}
+        openCreatePost={openCreatePost}
+        isLoggedIn={isLoggedIn}
+        isCompany={isCompany}
+        isEducationalInstitution={isEducationalInstitution}
+        setShowEmailPopup={setShowEmailPopup}
+        handleBack={handleBack}
+      />
+    );
+  }
+
   const coverTemplateToShow =
     (isMobile ? profile?.coverTemplateMobile : profile?.coverTemplateDesktop) || "fullscreen";
 
@@ -355,29 +406,40 @@ const UserProfile = () => {
 
   return (
     <div className="user-extern-container">
-      <ExternalProfileHeader
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onBack={handleBack}
-        viewedName={
-          isCompany || isEducationalInstitution
-            ? profile?.companyName || profile?.fullName || profile?.username
-            : profile?.fullName || profile?.username
-        }
-        viewedAvatar={profileImage}
-        isDark={headerIsDark}
-      />
-
-      {!isLoggedIn && (
-        <div className="tf-guest-profile" role="dialog" aria-label="Invitación registro">
-          <button
-            type="button"
-            className="tf-btn tf-btn--CTA"
-            onClick={() => navigate("/", { state: { showRegister: true } })}
-          >
-            Publica tu perfil en THEFOLDER /
-          </button>
-        </div>
+      {isLoggedIn ? (
+        <ExternalProfileHeader
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onBack={handleBack}
+          viewedName={
+            isCompany || isEducationalInstitution
+              ? profile?.companyName
+              : profile?.fullName
+          }
+          viewedAvatar={profileImage}
+          isDark={headerIsDark}
+        />
+      ) : (
+        <>
+          <LandingHeader
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+            onLoginClick={() => navigate("/", { state: { showLogin: true } })}
+            onRegisterClick={() => navigate("/", { state: { showRegister: true } })}
+          />
+          <CookieBanner />
+          <div className="tf-guest-profile" role="dialog" aria-label="Invitación registro">
+            <button
+              type="button"
+              className="tf-btn tf-btn--CTA"
+              onClick={() => navigate("/", { state: { showRegister: true } })}
+            >
+              Crea tu perfil
+              <br />
+              en THEFOLDER/
+            </button>
+          </div>
+        </>
       )}
 
       {notification.show && (
@@ -402,8 +464,6 @@ const UserProfile = () => {
         roleLabelById={roleLabelById}
         profileHeadlines={profile?.profileHeadlines || []} 
       />
-
-      <div id="white-sentinel" />
 
       <div className="user-extern-content">
         {/* IZQUIERDA */}
@@ -449,13 +509,14 @@ const UserProfile = () => {
               )}
             </div>
 
-            {(profile?.city || profile?.country) && (
+            {(profile?.city || profile?.country || profile?.city2) && (
               <div className="resume-section">
                 <p className="resume-location">
                   <span>[</span>
                   {profile?.city && profile?.country
                     ? `${profile.city}, ${profile.country}`
-                    : profile?.city || profile?.country}
+                    : profile?.city || profile?.country || ""}
+                  {profile?.city2 ? ` | ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
                   <span>]</span>
                 </p>
               </div>
@@ -463,6 +524,7 @@ const UserProfile = () => {
 
             <div className="user-extern-action-buttons">
               <div className="button-group">
+                {!isOwner && (
                 <button
                   className={`user-extern-follow-button ${isFollowing ? "following" : ""}`}
                   onClick={isFollowing ? handleUnfollow : handleFollow}
@@ -476,6 +538,7 @@ const UserProfile = () => {
                     <p className="normal-14px-text">Seguir +</p>
                   )}
                 </button>
+                )}
 
                 {profile?.email && (
                   <button className="resume-contact-btn" onClick={() => setShowEmailPopup(true)}>
@@ -507,24 +570,26 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* TABS */}
-        <nav className="guardados-tabs" aria-label="Navegación perfil">
-          <button
-            type="button"
-            className={`tab portfolio ${activeTab === "publicaciones" ? "active" : ""}`}
-            onClick={() => setActiveTab("publicaciones")}
-          >
-            Portfolio
-          </button>
+        {/* TABS — solo si hay datos de CV */}
+        {hasCvData && (
+          <nav className="guardados-tabs" aria-label="Navegación perfil">
+            <button
+              type="button"
+              className={`tab portfolio ${activeTab === "publicaciones" ? "active" : ""}`}
+              onClick={() => setActiveTab("publicaciones")}
+            >
+              Portfolio
+            </button>
 
-          <button
-            type="button"
-            className={`tab portfolio ${activeTab === "perfil" ? "active" : ""}`}
-            onClick={() => setActiveTab("perfil")}
-          >
-            CV / Resumé
-          </button>
-        </nav>
+            <button
+              type="button"
+              className={`tab portfolio ${activeTab === "perfil" ? "active" : ""}`}
+              onClick={() => setActiveTab("perfil")}
+            >
+              About (CV)
+            </button>
+          </nav>
+        )}
 
         {/* DERECHA (simplificada + UserGallery) */}
         <div className="user-extern-right-column">
@@ -532,7 +597,19 @@ const UserProfile = () => {
             <UserGallery
               posts={userPosts}
               loading={postsLoading}
-              emptyMessage="Este perfil todavía no tiene publicaciones."
+              emptyMessage={isOwner ? undefined : "Este perfil todavía no tiene publicaciones."}
+              emptyContent={isOwner ? (
+                <p className="user-extern-no-content user-extern-no-content--owner">
+                  <button
+                    type="button"
+                    className="user-extern-publish-link"
+                    onClick={openCreatePost}
+                  >
+                    Publica
+                  </button>
+                  {" tu primer proyecto y forma parte del directorio de creativos."}
+                </p>
+              ) : undefined}
               galleryStyle={profile?.galleryStyle || "gap"}
             />
           )}

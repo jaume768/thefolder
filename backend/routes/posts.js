@@ -10,8 +10,8 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 2 * 1024 * 1024, // ✅ 2MB por imagen (cambia a 10 si quieres)
-    files: 6,                  // ✅ máximo 6 imágenes
+    fileSize: 10 * 1024 * 1024, // 10MB por imagen (Sharp optimizará antes de subir)
+    files: 6,                   // máximo 6 imágenes
   },
 });
 
@@ -24,7 +24,7 @@ const uploadImagesWithErrors = (req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res
         .status(413)
-        .json({ message: 'Una o varias de tus imágenes supera el límite permitido (2MB). Consejo: exporta a 2048px o usa formato WebP/JPEG.' });
+        .json({ message: 'Una o varias de tus imágenes supera el límite permitido (10MB).' });
     }
     if (err.code === 'LIMIT_FILE_COUNT') {
       return res
@@ -57,6 +57,12 @@ router.get('/random', postController.getRandomPostsExcluding);
 
 // Obtener posts para el explorador (sin autenticación)
 router.get('/explorer', postController.getExplorerPosts);
+
+// Tags de posts disponibles para filtrar en el explorador
+router.get('/explorer/post-tags', postController.getExplorerPostTags);
+
+// Imagen de preview por projectType (para hover en filtros del explorador)
+router.get('/tag-previews', postController.getTagPreviews);
 
 // Obtener posts por tag
 router.get('/tags/:tag', postController.getPostsByTag);

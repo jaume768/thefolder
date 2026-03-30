@@ -79,20 +79,12 @@ const LandingHeader = ({
           {/* Burger <-> X (toggle) */}
           <button
             type="button"
-            className={`tf-burger ${menuOpen ? "is-open" : ""}`}
+            className={`mobile-top-menubtn ${menuOpen ? "active" : ""}`}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            {!menuOpen ? (
-              <>
-                <span />
-                <span />
-                <span />
-              </>
-            ) : (
-              <span className="tf-close-text">CERRAR</span>
-            )}
+            {menuOpen ? "[ - ]" : "[ + ]"}
           </button>
         </div>
       </div>
@@ -100,6 +92,24 @@ const LandingHeader = ({
       {/* PANEL MOBILE (DESPLEGABLE) */}
       <div className="landing-mobile-panel" aria-label="Menú móvil">
         <div className="landing-mobile-panel__links">
+          <button
+            type="button"
+            className={`button header-left-link landing-mobile-link ${isHome ? "active" : ""}`}
+            onClick={() => { setMenuOpen(false); navigate("/"); }}
+          >
+            HOME
+            {isHome && <span className="header-dot" />}
+          </button>
+
+          {/* <button
+            type="button"
+            className={`button header-left-link landing-mobile-link ${location.pathname.startsWith("/about") ? "active" : ""}`}
+            onClick={() => { setMenuOpen(false); navigate("/about"); }}
+          >
+            ABOUT
+            {location.pathname.startsWith("/about") && <span className="header-dot" />}
+          </button> */}
+
           {navItems.map((it) => {
             const isActive = location.pathname.startsWith(it.to);
             return (

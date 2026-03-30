@@ -1,15 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MobileSideMenu from './MobileSideMenu';
 import MobileTopHeader from './MobileTopHeader';
 import CreatePostModal from '../components/modals/CreatePostModal';
 import { CreatePostProvider } from '../contexts/CreatePostContext';
+import ReclassifyModal, { shouldShowReclassify } from '../components/modals/ReclassifyModal';
+import { AuthContext } from '../contexts/AuthContext';
 
 
-const AppLayout = ({ children, contentClassName }) => {
+const AppLayout = ({ children, contentClassName, hideAtTop = false }) => {
+  const { user } = useContext(AuthContext);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [profilePicture, setProfilePicture] = useState('/multimedia/usuarioDefault.jpg');
+  const [showReclassify, setShowReclassify] = useState(false);
+
+  useEffect(() => {
+    setShowReclassify(shouldShowReclassify(user));
+  }, [user]);
 
   // 👇 estado del modal Subir publicación"
   const [createPostOpen, setCreatePostOpen] = useState(false);
@@ -82,6 +90,7 @@ const AppLayout = ({ children, contentClassName }) => {
           {isMobile && (
             <MobileTopHeader
               onCreatePost={openCreatePost}
+              hideAtTop={hideAtTop}
             />
           )}
 
@@ -94,6 +103,9 @@ const AppLayout = ({ children, contentClassName }) => {
 
         <CreatePostModal open={createPostOpen} onClose={closeCreatePost} />
 
+        {showReclassify && (
+          <ReclassifyModal onClose={() => setShowReclassify(false)} />
+        )}
       </div>
     </CreatePostProvider>
   );

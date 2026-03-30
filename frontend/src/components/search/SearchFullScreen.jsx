@@ -59,7 +59,6 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
         <div className="no-filter-results">
           <FaSearch style={{ fontSize: '32px', color: '#ddd' }} />
           <p className="loading-indicator">No se encontraron resultados para "{searchQuery}"</p>
-          <p className="loading-indicator">Intenta con términos más generales o revisa la ortografía</p>
         </div>
       );
     }

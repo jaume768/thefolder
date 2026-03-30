@@ -15,11 +15,16 @@ export default function M_VerticalCard({
       : profile?.fullName || "Mi nombre";
 
   const tags = Array.isArray(profileHeadlines)
-    ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean)
+    ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean).slice(0, 2)
     : [];
 
   return (
     <div className="hero hero--vertical-card is-mobile">
+
+      {/* Nombre arriba */}
+      <div className="vcard__footer vcard__footer--top">
+        <h2 className="vcard__name">{name} /</h2>
+      </div>
 
       {/* Imagen vertical centrada */}
       <div className="vcard__media">
@@ -33,9 +38,8 @@ export default function M_VerticalCard({
         )}
       </div>
 
-      {/* Texto centrado debajo */}
+      {/* Tags abajo */}
       <div className="vcard__footer">
-        <h2 className="vcard__name">{name}</h2>
         {tags.length > 0 && (
           <div className="vcard__tags">
             {tags.map((tag, idx) => (

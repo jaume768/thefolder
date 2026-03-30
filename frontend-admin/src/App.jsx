@@ -21,6 +21,8 @@ import NotFoundPage from './pages/NotFoundPage'
 import Layout from './components/common/Layout'
 import IndustryPage from './pages/IndustryPage'
 import IndustryFormPage from './pages/IndustryFormPage'
+import ValidationPage from './pages/ValidationPage'
+import ReportsPage from './pages/ReportsPage'
 
 function App() {
   const { isAuthenticated, loading } = useAuth()
@@ -65,6 +67,8 @@ function App() {
           <Route path="revistas/nueva" element={<MagazineFormPage />} />
           <Route path="revistas/editar/:magazineId" element={<MagazineFormPage />} />
           <Route path="revistas/:magazineId" element={<MagazineFormPage />} />
+          <Route path="validacion" element={<ValidationPage />} />
+          <Route path="reportes" element={<ReportsPage />} />
           <Route path="configuracion" element={<SettingsPage />} />
           <Route path="industria" element={<IndustryPage />} />
           <Route path="industria/nueva" element={<IndustryFormPage />} />

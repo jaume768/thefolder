@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Adamina&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter+Tight:wght@100;200;300;400;500;600;700;800;900&family=Work+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter+Tight:wght@100;200;300;400;500;600;700;800;900&family=Work+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter Tight', sans-serif;
@@ -27,11 +27,35 @@ body {
   font-family: 'Inter Tight', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: inherit;
   font-weight: 400;
-  color-scheme: light dark;
+  color-scheme: light;
   color: black;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Inputs globales: fondo transparente, texto oscuro ──────────────────
+   Evita que iOS Safari (dark mode) aplique fondo negro y texto blanco.
+   Usa -webkit-text-fill-color porque iOS ignora `color` en algunos casos.
+   Las hojas de estilos específicas pueden sobreescribir estos valores.
+──────────────────────────────────────────────────────────────────────── */
+input,
+textarea,
+select {
+  background-color: transparent;
+  color: #222;
+  -webkit-text-fill-color: #222;
+}
+
+.ux-exp-check {
+  cursor: pointer;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #aaa;
+  -webkit-text-fill-color: #aaa;
+  opacity: 1;
 }
 
 #root {
@@ -113,6 +137,7 @@ body.hide-dashboard-header .dashboard-content{
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
+
 
 /* Firefox */
 * {

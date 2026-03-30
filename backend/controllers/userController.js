@@ -4,10 +4,12 @@ const Offer = require('../models/Offer');
 const EducationalOffer = require('../models/EducationalOffer');
 const cloudinary = require('../config/cloudinary');
 const streamifier = require('streamifier');
+const { processImageIfNeeded } = require('../utils/imageProcessor');
 const bcrypt = require('bcryptjs');
 const { validatePassword } = require('../utils/passwordValidation');
 const { normalizeString, createNormalizedRegex, escapeRegex } = require('../utils/textUtils');
-const mongoose = require('mongoose');  
+const { validateUsername } = require('../utils/username');
+const mongoose = require('mongoose');
 
 exports.getProfile = async (req, res) => {
     try {
@@ -102,13 +104,13 @@ exports.updateProfile = async (req, res) => {
       'username', 'fullName', 'role', 'dateOfBirth', 'country', 'city', 'customCountry',
       'referralSource', 'bio', 'biography', 'professionalTitle', 'profileHeadlines',
       'professionalTags', 'languages', 'coverTemplateDesktop', 'coverTemplateMobile',
-      'galleryStyle', 'creativeType', 'formationType', 'institution', 'creativeOther',
+      'galleryStyle', 'profileLayout', 'creativeType', 'formationType', 'institution', 'creativeOther',
       'brandName', 'professionalType', 'companyName', 'foundingYear', 'productServiceType',
       'sector', 'employeeRange', 'institutionName', 'institutionType', 'institutionOwnership',
       'agencyName', 'agencyServices', 'website', 'showNameCompany', 'showFoundingYearCompany',
       'education', 'skills', 'software', 'social', 'professionalMilestones', 'companyTags',
       'offersPractices', 'professionalFormation', 'profileCompleted', 'jobSearchActive',
-      'contract', 'locationType', 'availability',
+      'contract', 'locationType', 'availability', 'city2', 'country2',
       'featuredHeaderImage', 'featuredHeaderImageDesktop', 'featuredHeaderImageMobile',
       'creativeCoverDesktop',
     ];
@@ -116,6 +118,26 @@ exports.updateProfile = async (req, res) => {
     for (const key of ALLOWED_FIELDS) {
       if (req.body[key] !== undefined) {
         updates[key] = req.body[key];
+      }
+    }
+
+    // creativeLevel — nivel 4 requiere validación
+    if (req.body.creativeLevel !== undefined) {
+      const level = parseInt(req.body.creativeLevel, 10);
+      const LEVEL_NAMES = { 1: 'newcomer', 2: 'graduated', 3: 'emerging', 4: 'professional', 5: 'curated' };
+      if ([1, 2, 3, 4, 5].includes(level)) {
+        if (level === 4) {
+          updates.requestedCreativeLevel = 4;
+          const currentUser = await User.findById(req.user.id).select('creativeLevel');
+          if (!currentUser.creativeLevel) {
+            updates.creativeLevel     = 3;
+            updates.creativeLevelName = 'emerging';
+          }
+        } else {
+          updates.creativeLevel          = level;
+          updates.creativeLevelName      = LEVEL_NAMES[level];
+          updates.requestedCreativeLevel = null;
+        }
       }
     }
 
@@ -196,6 +218,13 @@ exports.updateProfile = async (req, res) => {
     else delete updates.galleryStyle;
     }
 
+    // ---------- Layout del perfil público ----------
+    if (updates.profileLayout !== undefined) {
+      const v = String(updates.profileLayout || "").trim();
+      if (["default", "index-gallery"].includes(v)) updates.profileLayout = v;
+      else delete updates.profileLayout;
+    }
+
     // ---------- Disponibilidad laboral ----------
     if (updates.jobSearchActive !== undefined) {
       updates.jobSearchActive = Boolean(updates.jobSearchActive);
@@ -247,23 +276,21 @@ exports.updateProfilePicture = async (req, res) => {
     }
 
     try {
-        const streamUpload = (req) => {
+        const _bufPP = await processImageIfNeeded(req.file.buffer);
+        const streamUpload = (buf) => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'profile_pictures' },
                     (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
+                        if (result) resolve(result);
+                        else reject(error);
                     }
                 );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
 
-        const result = await streamUpload(req);
+        const result = await streamUpload(_bufPP);
 
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
@@ -303,23 +330,21 @@ exports.updateFeaturedHeaderImage = async (req, res) => {
 
     try {
         // 2. subimos a Cloudinary usando el mismo patrón de stream que ya usas
-        const streamUpload = (req) => {
+        const _bufPH = await processImageIfNeeded(req.file.buffer);
+        const streamUpload = (buf) => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'profile_headers' }, // <- carpeta distinta para portada
+                    { folder: 'profile_headers' },
                     (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
+                        if (result) resolve(result);
+                        else reject(error);
                     }
                 );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
 
-        const result = await streamUpload(req);
+        const result = await streamUpload(_bufPH);
 
         // 3. guardamos la URL en el usuario logueado
         const updatedUser = await User.findByIdAndUpdate(
@@ -349,12 +374,13 @@ exports.updateFeaturedHeaderImageVariant = async (req, res) => {
   }
 
   try {
+    const _bufPHV = await processImageIfNeeded(req.file.buffer);
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "profile_headers" },
         (error, result) => (result ? resolve(result) : reject(error))
       );
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
+      streamifier.createReadStream(_bufPHV).pipe(stream);
     });
 
     const field =
@@ -401,12 +427,13 @@ exports.updateCreativeCover = async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file provided" });
 
   try {
+    const _bufCC = await processImageIfNeeded(req.file.buffer);
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "creative_covers" },
         (error, result) => (result ? resolve(result) : reject(error))
       );
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
+      streamifier.createReadStream(_bufCC).pipe(stream);
     });
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -445,7 +472,8 @@ exports.uploadCV = async (req, res) => {
     try {
         // Verificamos si el usuario es una empresa (no puede subir CV)
         const user = await User.findById(req.user.id);
-        if (user.professionalType === 1 || user.professionalType === 2 || user.professionalType === 4) {
+        const isIndustry = [1, 2, 4].includes(user.professionalType) || user.accountType === 'industry';
+        if (isIndustry) {
             return res.status(403).json({ error: 'Las empresas no pueden subir CV' });
         }
 
@@ -504,7 +532,8 @@ exports.uploadPortfolio = async (req, res) => {
     try {
         // Verificamos si el usuario es una empresa (no puede subir Portfolio)
         const user = await User.findById(req.user.id);
-        if (user.professionalType === 1 || user.professionalType === 2 || user.professionalType === 4) {
+        const isIndustry = [1, 2, 4].includes(user.professionalType) || user.accountType === 'industry';
+        if (isIndustry) {
             return res.status(403).json({ error: 'Las empresas no pueden subir Portfolio' });
         }
 
@@ -767,8 +796,8 @@ exports.getAppliedOffers = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
 
-        // Verificar si el usuario es de tipo creativo
-        if (user.role !== 'Creativo') {
+        // Verificar si el usuario es de tipo creativo (sistema viejo o nuevo)
+        if (user.role !== 'Creativo' && user.accountType !== 'creative') {
             return res.status(403).json({ error: 'Solo perfiles creativos pueden ver ofertas aplicadas' });
         }
 
@@ -1042,11 +1071,16 @@ exports.getCreatives = async (req, res) => {
 
     const userIdsWithPosts = usersWithPosts.map(u => u._id);
 
-    // 2) Filtro base
+    // 2) Filtro base — compatibilidad con sistema viejo (professionalType) y nuevo (accountType)
     let filter = {
       _id: { $in: userIdsWithPosts },
       isActive: true,
-      professionalType: { $nin: [1, 2, 3, 4] },
+      $or: [
+        // Sistema viejo: excluir perfiles profesionales por professionalType
+        { accountType: null, professionalType: { $nin: [1, 2, 3, 4] } },
+        // Sistema nuevo: solo creativos
+        { accountType: 'creative' },
+      ],
     };
 
     const andClauses = [];
@@ -1075,7 +1109,7 @@ exports.getCreatives = async (req, res) => {
     const citiesArr = toArray(city);
     if (citiesArr.length) {
       const rx = toRegexArray(citiesArr);
-      andClauses.push({ city: { $in: rx } });
+      andClauses.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }] });
     }
 
     // school
@@ -1115,6 +1149,12 @@ exports.getCreatives = async (req, res) => {
     const profArr = toArray(req.query.professionalProfile ?? req.query.professionalTags);
     if (profArr.length) {
     andClauses.push({ professionalTags: { $in: profArr } });
+    }
+
+    // creativeLevel
+    const creativeLevelArr = toArray(req.query.creativeLevel).map(Number).filter(n => [1,2,3,4].includes(n));
+    if (creativeLevelArr.length) {
+      andClauses.push({ creativeLevel: { $in: creativeLevelArr } });
     }
 
     // internships
@@ -1178,6 +1218,8 @@ exports.getCreatives = async (req, res) => {
           skills: 1,
           professionalTags: 1,
           city: 1,
+          city2: 1,
+          country2: 1,
           creativeCoverDesktop: 1,
           updatedAt: 1,
         }
@@ -1189,7 +1231,7 @@ exports.getCreatives = async (req, res) => {
     // 6) Pin de mi perfil primero (si cumple filtros)
     if (includeMe) {
       const meDoc = await User.findOne({ ...filter, _id: meId })
-        .select("username fullName country professionalTitle profile.profilePicture skills professionalTags city creativeCoverDesktop updatedAt")
+        .select("username fullName country professionalTitle profile.profilePicture skills professionalTags city city2 country2 creativeCoverDesktop updatedAt")
         .lean();
 
       if (meDoc) {
@@ -1213,7 +1255,11 @@ exports.getCreatives = async (req, res) => {
 
     // 8) countries/cities
     const countries = await User.distinct("country", { isActive: true });
-    const cities = await User.distinct("city", { isActive: true });
+    const [cities1, cities2] = await Promise.all([
+      User.distinct("city", { isActive: true }),
+      User.distinct("city2", { isActive: true }),
+    ]);
+    const cities = [...new Set([...cities1, ...cities2])].filter(Boolean);
 
     return res.status(200).json({
       creatives: usersWithLastPost,
@@ -1221,7 +1267,7 @@ exports.getCreatives = async (req, res) => {
       currentPage: pageNumber,
       totalCreatives: total,
       countries: countries.filter(Boolean),
-      cities: cities.filter(Boolean),
+      cities,
     });
 
   } catch (error) {
@@ -1491,6 +1537,36 @@ exports.searchAll = async (req, res) => {
 };
 
 // Check if a username exists
+exports.changeUsername = async (req, res) => {
+  try {
+    const { username: rawUsername } = req.body;
+    const check = validateUsername(rawUsername);
+    if (!check.ok) return res.status(400).json({ error: check.error });
+
+    const newUsername = check.username;
+
+    // Not changing anything
+    const me = await User.findById(req.user.id).select('username');
+    if (me.username === newUsername) {
+      return res.status(400).json({ error: 'Ese ya es tu nombre de usuario actual.' });
+    }
+
+    // Check taken by another user
+    const existing = await User.findOne({ username: newUsername }).select('_id');
+    if (existing) return res.status(409).json({ error: 'Ese nombre ya está en uso.' });
+
+    const updated = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: { username: newUsername } },
+      { new: true }
+    ).select('-password -__v');
+
+    return res.status(200).json({ message: 'Nombre de usuario actualizado.', user: updated });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 exports.checkUsernameExists = async (req, res) => {
   try {
     const raw = req.params.username || "";
@@ -1514,23 +1590,21 @@ exports.uploadCompanyLogo = async (req, res) => {
     }
 
     try {
-        const streamUpload = (req) => {
+        const _bufCL = await processImageIfNeeded(req.file.buffer);
+        const streamUpload = (buf) => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'company_logos' },
                     (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
+                        if (result) resolve(result);
+                        else reject(error);
                     }
                 );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
 
-        const result = await streamUpload(req);
+        const result = await streamUpload(_bufCL);
         
         res.status(200).json({ 
             message: 'Logo subido correctamente', 
@@ -1582,23 +1656,21 @@ exports.uploadInstitutionLogo = async (req, res) => {
     }
 
     try {
-        const streamUpload = (req) => {
+        const _bufIL = await processImageIfNeeded(req.file.buffer);
+        const streamUpload = (buf) => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     { folder: 'institution_logos' },
                     (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
+                        if (result) resolve(result);
+                        else reject(error);
                     }
                 );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
+                streamifier.createReadStream(buf).pipe(stream);
             });
         };
 
-        const result = await streamUpload(req);
+        const result = await streamUpload(_bufIL);
         
         res.status(200).json({ 
             message: 'Logo de institución subido correctamente', 
@@ -1611,6 +1683,61 @@ exports.uploadInstitutionLogo = async (req, res) => {
 
 
 // Cambiar email del usuario autenticado
+// ── PATCH /api/users/me — actualización parcial whitelisteada ─────────────
+const PATCH_ME_LEVEL_NAMES = { 1: 'newcomer', 2: 'graduated', 3: 'emerging', 4: 'professional', 5: 'curated' };
+const PATCH_ME_WHITELIST = ['city', 'country', 'bio', 'professionalTitle'];
+
+exports.patchMe = async (req, res) => {
+    const update = {};
+
+    for (const field of PATCH_ME_WHITELIST) {
+        if (req.body[field] !== undefined) {
+            update[field] = typeof req.body[field] === 'string' ? req.body[field].trim() : req.body[field];
+        }
+    }
+
+    if (req.body.creativeLevel !== undefined) {
+        const level = parseInt(req.body.creativeLevel, 10);
+        if (![1, 2, 3, 4, 5].includes(level)) {
+            return res.status(400).json({ error: 'creativeLevel inválido. Valores permitidos: 1–5.' });
+        }
+        if (level === 4) {
+            // Nivel profesional requiere validación: queda pendiente
+            update.requestedCreativeLevel = 4;
+            // Si no tiene nivel actual, asignamos emerging mientras se valida
+            const currentUser = await User.findById(req.user.id).select('creativeLevel');
+            if (!currentUser.creativeLevel) {
+                update.creativeLevel     = 3;
+                update.creativeLevelName = 'emerging';
+            }
+        } else {
+            update.creativeLevel          = level;
+            update.creativeLevelName      = PATCH_ME_LEVEL_NAMES[level];
+            update.requestedCreativeLevel = null; // limpiar solicitud pendiente si baja de nivel
+        }
+    }
+
+    if (Object.keys(update).length === 0) {
+        return res.status(400).json({ error: 'No se han proporcionado campos válidos para actualizar.' });
+    }
+
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: update },
+            {
+                new: true,
+                select: 'username fullName email accountType role creativeLevel creativeLevelName city country profileCompleted profile professionalTitle bio',
+            }
+        );
+        if (!user) return res.status(404).json({ error: 'Usuario no encontrado.' });
+        return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 exports.changeEmail = async (req, res) => {
   const { newEmail, password } = req.body;
 

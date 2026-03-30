@@ -1,89 +1,116 @@
-/* ========= FINAL CTA WRAPPER ========= */
+/* landing-final-cta.css */
 
+/* =========================================================
+   SECCIÓN
+========================================================= */
 .tf-finalCta {
-  padding: clamp(100px, 8vh, 180px) 24px;
+  background: #fdfdfd;
+  overflow: hidden;
+  height: fit-content;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* ========= MANIFIESTO ========= */
-
-.tf-manifesto {
+/* =========================================================
+   FILA DE IMÁGENES — todo el ancho, sin gap, altura fija
+========================================================= */
+.tf-finalCta__imgRow {
   display: grid;
-  grid-template-columns: 1fr minmax(280px, 420px) 1fr;
-  align-items: center;
-  gap: 32px;
-  margin-bottom: clamp(100px, 14vh, 160px);
-}
-
-.tf-manifesto__side {
-    font-family: 'Inter Tight', sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text);
-}
-
-.tf-manifesto__side:first-child {
-  text-align: right;
-}
-
-.tf-manifesto__center {
-  text-align: center;
-}
-
-.tf-manifesto__image {
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
   width: 100%;
-  max-width: 360px;
-  margin: 0 auto 32px;
+}
+
+.tf-finalCta__imgCell {
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  max-width: 250px;
+}
+
+.tf-finalCta__imgCell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
-.tf-manifesto__title {
-  font-size: 18px;
-  letter-spacing: 0.16em;
-  margin-bottom: 24px;
-}
-
-.tf-manifesto__text {
-  font-size: 15px;
-  line-height: 1.6;
-  color: #555;
-  margin-bottom: 16px;
-}
-
-/* ========= CTA FINAL ========= */
-
-.tf-finalCta__cta {
+/* =========================================================
+   THEFOLDER/ — tipografía gigante full width
+========================================================= */
+.tf-finalCta__brand {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(80px, 13vw, 180px);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: #0b0b0b;
+  padding: 0 0 0 16px;
+  white-space: nowrap;
+  overflow: hidden;
   text-align: center;
 }
 
-.tf-finalCta__title {
-    font-family: 'Inter Tight', sans-serif;
-  font-size: 30px;
-  line-height: 30px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  margin-bottom: 12px;
+/* =========================================================
+   GRID 12 COLS — texto descriptivo
+========================================================= */
+.tf-finalCta__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  padding: 0 34px;
+  margin-top: -8px;
 }
 
-.tf-finalCta__text {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #555;
-  margin-bottom: 32px;
+.tf-finalCta__desc {
+  grid-column: 10 / 14;
+  margin: 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 17px;
+  letter-spacing: 0.02em;
+  color: #333;
+  font-weight: 400;
+}
+
+/* =========================================================
+   CTA — centrado
+========================================================= */
+.tf-finalCta__cta {
+  text-align: center;
+  padding: 60px 24px 80px;
 }
 
 .tf-finalCta__btn {
-  padding-inline: 28px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #0b0b0b;
+  text-decoration: underline;
+  letter-spacing: 0.02em;
+  padding: 0;
 }
 
-/* ========= REVEAL ========= */
+.tf-finalCta__btn:hover {
+  opacity: 0.6;
+}
 
+.tf-italic {
+  font-style: italic;
+}
+
+/* =========================================================
+   REVEAL
+========================================================= */
 .tf-finalCta .tf-reveal {
   opacity: 0;
   transform: translateY(14px);
   transition:
     opacity 520ms ease,
-    transform 650ms cubic-bezier(.2,.8,.2,1);
+    transform 650ms cubic-bezier(.2, .8, .2, 1);
   transition-delay: var(--d, 0ms);
 }
 
@@ -92,33 +119,59 @@
   transform: translateY(0);
 }
 
-/* ========= MOBILE ========= */
-
+/* =========================================================
+   MOBILE — max 768px
+========================================================= */
 @media (max-width: 768px) {
-  .tf-manifesto {
-    grid-template-columns: 1fr;
-    gap: 24px;
+  /* Menos imágenes en mobile — 4 */
+
+  .tf-finalCta__imgCell {
+  aspect-ratio: unset;
+    min-width: 150px;
   }
 
-  .tf-manifesto__side {
+  .tf-finalCta__imgRow {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Ocultar imágenes 5, 6, 7 en mobile */
+  .tf-finalCta__imgCell:nth-child(n+5) {
     display: none;
   }
 
-  .tf-manifesto__image {
-    margin-bottom: 24px;
+  .tf-finalCta__brand {
+    font-size: clamp(48px, 14vw, 80px);
+    padding: 0 16px;
+    white-space: normal;
+    word-break: break-word;
+    margin-top: 56px;
+  }
+
+  /* Grid pasa a 1 col en mobile */
+  .tf-finalCta__grid {
+    grid-template-columns: 1fr;
+    padding: 0 24px;
+    margin-top: 16px;
+  }
+
+  .tf-finalCta__desc {
+    grid-column: 1;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .tf-finalCta__cta {
+    padding: 40px 24px 100px;
   }
 }
 
-img.tf-manifesto__image.tf-reveal {
-    height: 350px;
-    object-fit: contain;
-}
-
-/* Reduce motion */
+/* =========================================================
+   REDUCE MOTION
+========================================================= */
 @media (prefers-reduced-motion: reduce) {
   .tf-finalCta .tf-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }

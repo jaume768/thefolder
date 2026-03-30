@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import Layout from "./AppLayout";
 import LandingHeader from "../components/landing/LandingHeader";
+import LoginModal from "../components/landing/LoginModal";
+import RegisterModal from "../components/landing/RegisterModal";
 
 const AuthLayout = ({ children, activeMenu, contentClassName }) => {
-  const navigate = useNavigate();
-
   const token = localStorage.getItem("authToken");
   const isAuthenticated = !!token;
 
@@ -28,8 +27,11 @@ const AuthLayout = ({ children, activeMenu, contentClassName }) => {
     []
   );
 
-  const onLoginClick = () => navigate("/", { state: { showLogin: true } });
-  const onRegisterClick = () => navigate("/", { state: { showRegister: true } });
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const onLoginClick = () => setShowLoginModal(true);
+  const onRegisterClick = () => setShowRegisterModal(true);
 
   // ✅ Si está logeado: usa Layout (dashboard)
   if (isAuthenticated) {
@@ -51,6 +53,20 @@ const AuthLayout = ({ children, activeMenu, contentClassName }) => {
         setMenuOpen={setMenuOpen}
       />
       {children}
+
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToRegister={() => { setShowLoginModal(false); setShowRegisterModal(true); }}
+          onSwitchToReset={() => setShowLoginModal(false)}
+        />
+      )}
+      {showRegisterModal && (
+        <RegisterModal
+          onClose={() => setShowRegisterModal(false)}
+          onSwitchToLogin={() => { setShowRegisterModal(false); setShowLoginModal(true); }}
+        />
+      )}
     </div>
   );
 };

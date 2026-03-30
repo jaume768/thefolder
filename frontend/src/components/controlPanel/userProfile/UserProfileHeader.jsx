@@ -39,7 +39,8 @@ const UserProfileHeader = ({
                         <p className="user-profile-location">
                             {profile?.city && profile?.country
                                 ? `${profile.city}, ${profile.country}`
-                                : "Ubicación no especificada"}
+                                : profile?.city || "Ubicación no especificada"}
+                            {profile?.city2 ? ` · ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
                         </p>
                         <div className="user-profile-stats">
                             <span className="user-profile-stat">

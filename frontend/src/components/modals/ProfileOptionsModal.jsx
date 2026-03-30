@@ -21,6 +21,26 @@ const ProfileOptionsModal = ({
   const finalName = userName?.trim() || (hasToken ? "Usuario" : "Invitado");
   const finalPic = userAvatar || "/multimedia/usuarioDefault.jpg";
 
+  const finalUsername = useMemo(() => {
+  let uname = (userUsername || "").trim();
+
+  if (!uname) {
+    uname = (localStorage.getItem("myUsername") || "").trim();
+  }
+
+  if (!uname) {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        uname = (payload.username || payload.userName || "").trim();
+      } catch {}
+    }
+  }
+
+  return uname.replace(/^@/, "");
+}, [userUsername]);
+
   useEffect(() => {
     // 1) si vienes con state: { activeMenu: "..." }
     const currentState = location.state?.activeMenu;
@@ -34,6 +54,7 @@ const ProfileOptionsModal = ({
 
     if (last === "editProfile") setActiveSection("editProfile");
     else if (last === "community") setActiveSection("community");
+    else if (last === "guardados") setActiveSection("guardados");
     else if (last === "misOfertas") setActiveSection("misOfertas");
     else if (last === "configuracion") setActiveSection("configuracion");
     else setActiveSection(""); // nada activo por defecto
@@ -89,44 +110,54 @@ const ProfileOptionsModal = ({
           aria-label="Ir a perfil"
         >
           <img className="mth-userblock__avatar" src={finalPic} alt="" />
-          <div className="mth-userblock__name profile">{finalName}</div>
-        </button>
+          <div>
+            <div className="mth-userblock__name profile">{finalName}</div>
 
-        {/* PILL: Editar perfil */}
-        <button
-          type="button"
-          className={`profile-options-pill-btn ${
-            activeSection === "editProfile" ? "active" : ""
-          }`}
-          onClick={() => handleSelect("editProfile")}
-        >
-          Editar perfil
+            {finalUsername && (
+              <div className="mth-userblock__username">
+                {finalUsername}
+              </div>
+            )}
+          </div>
         </button>
       </div>
 
-      {/* Lista principal */}
+      {/* Grid 2×2 de acciones */}
       <ul className="profile-options-modal-ul">
+        <li
+          className={activeSection === "editProfile" ? "active" : ""}
+          onClick={() => handleSelect("editProfile")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && handleSelect("editProfile")}
+        >
+          <img src="/iconos/edit-my-profile.png" alt="" className="pom-icon" aria-hidden="true" />
+          <span>Editar perfil</span>
+        </li>
+
+        <li
+          className={activeSection === "guardados" ? "active" : ""}
+          onClick={() => handleSelect("guardados")}
+          id="guardados"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && handleSelect("guardados")}
+        >
+          <img src="/iconos/saved.png" alt="" className="pom-icon saved-icon" aria-hidden="true" />
+          <span>Guardados</span>
+        </li>
+
         <li
           className={activeSection === "community" ? "active" : ""}
           onClick={() => handleSelect("community")}
+          id="community"
           role="button"
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && handleSelect("community")}
         >
+          <img src="/iconos/community.png" alt="" className="pom-icon community-pom-icon" aria-hidden="true" />
           <span>Mi comunidad</span>
         </li>
-
-        {/*
-        <li
-          className={activeSection === "misOfertas" ? "active" : ""}
-          onClick={() => handleSelect("misOfertas")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && handleSelect("misOfertas")}
-        >
-          <span>Mis ofertas</span>
-        </li>
-        */}
 
         <li
           className={activeSection === "configuracion" ? "active" : ""}
@@ -135,6 +166,7 @@ const ProfileOptionsModal = ({
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && handleSelect("configuracion")}
         >
+          <img src="/iconos/settings.png" alt="" className="pom-icon" aria-hidden="true" />
           <span>Configuración</span>
         </li>
       </ul>

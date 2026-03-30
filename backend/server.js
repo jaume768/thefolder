@@ -76,6 +76,7 @@ app.use('/api/magazines', require('./routes/magazines'));
 app.use('/api/blog', require('./routes/blog'));
 app.use('/api/industry', require('./routes/industry'));
 app.use('/api/tags', require('./routes/tags'));
+app.use('/api/reports', require('./routes/reports'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

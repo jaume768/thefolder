@@ -9,7 +9,7 @@
     flex-direction: column;
     align-items: center;
     max-width: 1980px;   
-    margin: 15% auto 0;
+    margin: 7.5% auto 0;
     text-align: center;
 }
 
@@ -141,23 +141,6 @@
 
 .explorer-filter-button svg {
     font-size: 25px;
-}
-
-/* Mobile styles */
-@media (max-width: 480px) {
-    .explorer-filter-button {
-        top: 80%;
-    }
-
-    .explorer-header {
-    margin-top: 200px;
-    gap: 8px;
-}
-
-.user-location-profile {
-    display: none;
-}
-
 }
 
 /* Panel de filtros para desktop */
@@ -380,7 +363,7 @@
     border: 0px;
     transition: transform 0.2s ease;
     cursor: pointer;
-    margin-bottom: 290px;
+    margin-bottom: 200px;
 }
 
 .masonry-item img {
@@ -486,12 +469,27 @@ img.save-icon {
 
 .centerTitle {
     font-family: 'Inter Tight', sans-serif;
-    font-size: 125px;
-    line-height: 125px;
+    font-size: 10vw;
+    line-height: 10vw;
     font-weight: 500;
     color: #111;
     text-transform: uppercase;
     width: 100%;
+}
+
+h1.centerTitle.tag-title {
+    margin-bottom: 16px;
+}
+
+button.new-tablero-button.explorer-filtros-btn {
+    z-index: 900;
+    background: #fdfdfdc2;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px);
+    color: #444;
+    border-color: transparent;
+    letter-spacing: .04em;
+    border-radius: 0px 6px 6px 0px;
 }
 
 /* Estilos para el contenedor del perfil de usuario en hover */
@@ -528,7 +526,7 @@ img.save-icon {
 }
 
 .username {
-    font-family: "Adamina", serif;
+    font-family: Inter, sans-serif;
     line-height: 16px;
     text-decoration: none;
     text-align: right;
@@ -779,4 +777,309 @@ img.search-sparkles-icon {
 .tooltip-saved {
   background: #000000ab;
   color: #ffffff;
+}
+
+/* ── Panel de nivel (Experiencia) en el explorador ───────────────────────── */
+.filters-level-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filters-tags--level {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ── Botón "Filtros" ─────────────────────────────────────────────────────── */
+.new-tablero-button {
+  border: none;
+  border-radius: 0px 0px 6px 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #111;
+  color: #fdfdfd;
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.new-tablero-button:hover {
+  background: #000;
+}
+
+.explorer-filtros-btn.has-selection {
+  background: #000;
+}
+
+.filtros-count {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ── Modal combinado de filtros ──────────────────────────────────────────── */
+.filters-modal-panel--all {
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.filters-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 12px;
+  border-bottom: 1px solid #ebebeb;
+  position: sticky;
+  top: 0;
+  background: #FDFDFD;
+  z-index: 1;
+}
+
+.filters-modal-title {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: .04em;
+    color: #111;
+    font-family: Inter Tight, system-ui, sans-serif;
+}
+
+.filters-modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+  padding: 0 4px;
+}
+
+.filters-modal-close:hover {
+  color: #111;
+}
+
+.filters-modal-section {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filters-margin-bottom {
+  margin-bottom: 32px;
+}
+
+.filters-specialty-roles {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.filters-modal-footer {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  background: #FDFDFD;
+  border-top: 1px solid #ebebeb;
+  z-index: 1000;
+}
+
+.filters-modal-clear {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  padding: 4px 0;
+}
+
+.filters-modal-clear:hover {
+  color: #111;
+}
+
+.filters-modal-apply {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.filters-modal-apply:hover {
+  background: #333;
+}
+
+/* ── Sin resultados ─────────────────────────────────────────────────────── */
+.explorer-no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 80px 20px;
+  width: 100%;
+  color: #aaa;
+  font-size: 14px;
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.explorer-no-results__clear {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 18px;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.explorer-no-results__clear:hover {
+  border-color: #111;
+  color: #111;
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
+    .explorer-filter-button {
+        top: 80%;
+    }
+
+    .explorer-header {
+    margin-top: 200px;
+    gap: 8px;
+}
+
+.user-location-profile {
+    display: none;
+}
+
+button.new-tablero-button.explorer-filtros-btn {
+    border-radius: 0px 6px 6px 0px !important;
+}
+
+}
+
+/* ── Filtros ubicación — país/ciudad ────────────────────────────────────── */
+.filter-country-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-country-tag.is-active {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.filter-country-tag.is-active .experience-tag-icon {
+  filter: invert(1);
+}
+
+.filter-country-tag.has-selection:not(.is-active) {
+  border-color: #111;
+  font-weight: 500;
+  border: solid 2px;
+}
+
+.country-flag-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.country-flag-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.filter-country-tag.is-active .country-flag-circle {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.filters-country-cities {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #efefef;
+}
+
+/* ── Tags de proyecto con preview hover ─────────────────────────────────── */
+.filter-tag.filter-tag--preview {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.filter-tag.filter-tag--preview::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--tag-preview-img);
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.filter-tag.filter-tag--preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.38);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.filter-tag.filter-tag--preview > * {
+  position: relative;
+  z-index: 2;
+}
+
+.filter-tag.filter-tag--preview:hover::before,
+.filter-tag.filter-tag--preview:hover::after {
+  opacity: 1;
+}
+
+.filter-tag.filter-tag--preview:hover {
+  color: #fff;
+  border-color: transparent;
 }

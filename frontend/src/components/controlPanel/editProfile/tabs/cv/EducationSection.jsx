@@ -172,6 +172,68 @@ export default function EducationSection({
                 <div className="ux-form-column ux-exp-form-column">
 
                   <div className="ux-form-field ux-exp-full">
+                    <label className="ux-form-label ux-form-label-sm" htmlFor="edu-educationType">
+                      Tipo de formación
+                    </label>
+                    <select
+                      id="edu-educationType"
+                      name="educationType"
+                      className="ux-input"
+                      value={eduDraft.educationType}
+                      onChange={(e) => updateEducationField("educationType", e.target.value)}
+                    >
+                      <option value="">Selecciona tipo</option>
+                      <option value="Grado">Grado</option>
+                      <option value="Máster">Máster</option>
+                      <option value="Doctorado">Doctorado</option>
+                      <option value="FP">Formación Profesional (FP)</option>
+                      <option value="Ciclo Superior">Ciclo Superior</option>
+                      <option value="Ciclo Medio">Ciclo Medio</option>
+                      <option value="Bachillerato">Bachillerato</option>
+                      <option value="Certificación Profesional">Certificación Profesional</option>
+                      <option value="Curso / Taller">Curso / Taller</option>
+                      <option value="Autodidacta">Autodidacta</option>
+                      <option value="OTRO">OTRO</option>
+                    </select>
+                  </div>
+
+                  {(eduDraft.educationType === "Certificación Profesional" || eduDraft.educationType === "Curso / Taller") && (
+                    <div className="ux-form-field ux-exp-full">
+                      <label className="ux-form-label ux-form-label-sm" htmlFor="edu-educationHours">
+                        Número de horas cursadas <span className="ux-form-optional">(opcional)</span>
+                      </label>
+                      <input
+                        id="edu-educationHours"
+                        name="educationHours"
+                        type="text"
+                        autoComplete="off"
+                        className="ux-input"
+                        value={eduDraft.educationHours}
+                        onChange={(e) => updateEducationField("educationHours", e.target.value)}
+                        placeholder="Ej: 120 h"
+                      />
+                    </div>
+                  )}
+
+                  {eduDraft.educationType === "OTRO" && (
+                    <div className="ux-form-field ux-exp-full">
+                      <label className="ux-form-label ux-form-label-sm" htmlFor="edu-educationOtherType">
+                        Especifica el tipo de formación <span style={{ color: "#e53" }}>*</span>
+                      </label>
+                      <input
+                        id="edu-educationOtherType"
+                        name="educationOtherType"
+                        type="text"
+                        autoComplete="off"
+                        className="ux-input"
+                        value={eduDraft.educationOtherType}
+                        onChange={(e) => updateEducationField("educationOtherType", e.target.value)}
+                        placeholder="Especifica el tipo de formación"
+                      />
+                    </div>
+                  )}
+
+                  <div className="ux-form-field ux-exp-full">
                     <label className="ux-form-label ux-form-label-sm" htmlFor="edu-institution">
                       Institución
                     </label>

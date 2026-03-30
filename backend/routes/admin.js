@@ -94,6 +94,10 @@ router.post('/magazines', upload.single('image'), adminController.createMagazine
 router.put('/magazines/:magazineId', upload.single('image'), adminController.updateMagazine);
 router.delete('/magazines/:magazineId', adminController.deleteMagazine);
 
+// Validación de creativos profesionales
+router.get('/pending-professionals', adminController.getPendingProfessionals);
+router.put('/users/:userId/validate-professional', adminController.validateProfessional);
+
 // Gestión de industria (directorio)
 router.get('/industry', adminController.getAllIndustry);
 router.get('/industry/:industryId', adminController.getIndustryDetails);

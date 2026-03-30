@@ -15,7 +15,7 @@ export default function M_SplitImage({
       : profile?.fullName || "Mi nombre";
 
   const tags = Array.isArray(profileHeadlines)
-    ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean)
+    ? profileHeadlines.map(t => String(t || "").trim()).filter(Boolean).slice(0, 3)
     : [];
 
   return (
@@ -35,7 +35,7 @@ export default function M_SplitImage({
 
       {/* Franja blanca abajo — nombre izquierda, tags derecha */}
       <div className="si__bar">
-        <h2 className="si__name">{name}</h2>
+        <h2 className="si__name">{name} /</h2>
         {tags.length > 0 && (
           <div className="si__tags">
             {tags.map((tag, idx) => (

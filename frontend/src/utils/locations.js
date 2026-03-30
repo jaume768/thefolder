@@ -1,92 +1,134 @@
 export const LOCATIONS = {
   "España": [
-    // Andalucía
-    "Almería", "Cádiz", "Córdoba", "Granada", "Huelva",
-    "Jaén", "Málaga", "Sevilla",
-    // Aragón
-    "Huesca", "Teruel", "Zaragoza",
-    // Asturias
-    "Asturias",
-    // Baleares
-    "Illes Balears",
-    // Canarias
-    "Las Palmas", "Santa Cruz de Tenerife",
-    // Cantabria
-    "Cantabria",
-    // Castilla y León
-    "Ávila", "Burgos", "León", "Palencia", "Salamanca",
-    "Segovia", "Soria", "Valladolid", "Zamora",
-    // Castilla-La Mancha
-    "Albacete", "Ciudad Real", "Cuenca", "Guadalajara", "Toledo",
-    // Cataluña
-    "Barcelona", "Girona", "Lleida", "Tarragona",
-    // Comunitat Valenciana
-    "Alicante", "Castellón", "Valencia",
-    // Extremadura
-    "Badajoz", "Cáceres",
-    // Galicia
-    "A Coruña", "Lugo", "Ourense", "Pontevedra",
-    // Madrid
-    "Madrid",
-    // Murcia
-    "Murcia",
-    // Navarra
-    "Navarra",
-    // País Vasco
-    "Álava", "Bizkaia", "Gipuzkoa",
-    // La Rioja
-    "La Rioja",
-    // Ciudades Autónomas
-    "Ceuta", "Melilla",
-  ],
-
-  "Francia": [
-    "París", "Marsella", "Lyon", "Toulouse", "Niza",
-    "Nantes", "Montpellier", "Estrasburgo", "Burdeos", "Lille",
-    "Rennes", "Reims", "Saint-Étienne", "Le Havre", "Toulon",
-    "Grenoble", "Dijon", "Angers", "Nîmes", "Aix-en-Provence",
-    "Brest", "Limoges", "Tours", "Amiens", "Metz",
-    "Clermont-Ferrand", "Perpignan", "Orléans", "Cannes", "Versalles",
-  ],
-
-  "Italia": [
-    "Roma", "Milán", "Nápoles", "Turín", "Palermo",
-    "Génova", "Bolonia", "Florencia", "Bari", "Catania",
-    "Venecia", "Verona", "Messina", "Padua", "Trieste",
-    "Brescia", "Parma", "Módena", "Perugia", "Livorno",
-    "Cagliari", "Ferrara", "Salerno", "Rimini", "Siena",
-    "Bergamo", "Trento", "Novara", "Ravenna", "Pisa",
+    "A Coruña", "Albacete", "Alicante", "Almería", "Arteixo",
+    "Asturias", "Álava", "Ávila", "Badajoz", "Barcelona",
+    "Bizkaia", "Burgos", "Cantabria", "Castellón", "Ceuta",
+    "Ciudad Real", "Córdoba", "Cuenca", "El Hierro", "Elche",
+    "Elda", "Formentera", "Fuerteventura", "Girona", "Gipuzkoa",
+    "Gran Canaria", "Granada", "Guadalajara", "Huelva", "Huesca",
+    "Ibiza", "Jaén", "La Gomera", "La Palma", "La Rioja",
+    "Lanzarote", "Las Palmas", "León", "Lleida", "Lugo",
+    "Madrid", "Mallorca", "Málaga", "Menorca", "Murcia",
+    "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca",
+    "Santa Cruz de Tenerife", "Segovia", "Sevilla", "Soria", "Tarragona",
+    "Tenerife", "Teruel", "Toledo", "Ubrique", "Valencia",
+    "Valladolid", "Zamora", "Zaragoza"
   ],
 
   "Portugal": [
-    "Lisboa", "Oporto", "Braga", "Setúbal", "Coimbra",
-    "Funchal", "Guimarães", "Leiria", "Aveiro", "Évora",
-    "Faro", "Viseu", "Viana do Castelo", "Vila Real", "Beja",
-    "Portalegre", "Castelo Branco", "Santarém", "Bragança", "Ponta Delgada",
-  ],
-
-  "Alemania": [
-    "Berlín", "Hamburgo", "Múnich", "Colonia", "Frankfurt",
-    "Stuttgart", "Düsseldorf", "Leipzig", "Dortmund", "Essen",
-    "Bremen", "Dresden", "Hannover", "Núremberg", "Duisburgo",
-    "Bochum", "Wuppertal", "Bielefeld", "Bonn", "Mannheim",
-    "Karlsruhe", "Wiesbaden", "Münster", "Augsburgo", "Aquisgrán",
-    "Braunschweig", "Kiel", "Friburgo", "Erfurt", "Rostock",
+    "Aveiro", "Barcelos", "Beja", "Braga", "Bragança",
+    "Castelo Branco", "Coimbra", "Évora", "Faro", "Felgueiras",
+    "Funchal", "Guimarães", "Leiria", "Lisboa", "Oporto",
+    "Ponta Delgada", "Portalegre", "Santarém", "Setúbal", "Viana do Castelo",
+    "Vila Nova de Famalicão", "Vila Real", "Viseu"
   ],
 
   "Andorra": [
-    "Andorra la Vella", "Escaldes-Engordany", "Encamp",
-    "Sant Julià de Lòria", "La Massana", "Canillo", "Ordino",
+    "Andorra la Vella", "Canillo", "Encamp", "Escaldes-Engordany",
+    "La Massana", "Ordino", "Sant Julià de Lòria"
+  ],
+
+  "Francia": [
+    "Aix-en-Provence", "Amiens", "Angers", "Brest", "Burdeos",
+    "Cannes", "Cholet", "Clermont-Ferrand", "Dijon", "Estrasburgo",
+    "Grenoble", "Le Havre", "Lille", "Limoges", "Lyon",
+    "Marsella", "Metz", "Montpellier", "Nantes", "Niza",
+    "Nîmes", "Orléans", "París", "Perpignan", "Reims",
+    "Rennes", "Saint-Étienne", "Toulon", "Toulouse", "Tours",
+    "Troyes", "Versalles"
+  ],
+
+  "Italia": [
+    "Arezzo", "Bari", "Bergamo", "Biella", "Bolonia",
+    "Brescia", "Cagliari", "Catania", "Como", "Ferrara",
+    "Florencia", "Génova", "Livorno", "Messina", "Milán",
+    "Módena", "Nápoles", "Novara", "Padua", "Palermo",
+    "Parma", "Perugia", "Pisa", "Prato", "Ravenna",
+    "Rimini", "Roma", "Salerno", "Siena", "Trento",
+    "Trieste", "Turín", "Venecia", "Verona", "Vicenza"
+  ],
+
+  "Reino Unido": [
+    "Aberdeen", "Bath", "Belfast", "Birmingham", "Brighton",
+    "Bristol", "Cambridge", "Cardiff", "Coventry", "Derby",
+    "Dundee", "Edimburgo", "Exeter", "Glasgow", "Leeds",
+    "Leicester", "Liverpool", "Londres", "Manchester", "Newcastle",
+    "Nottingham", "Oxford", "Plymouth", "Portsmouth", "Reading",
+    "Sheffield", "Southampton", "Stoke-on-Trent", "Wolverhampton", "York"
+  ],
+
+  "Bélgica": [
+    "Antwerp", "Bruselas", "Gante", "Lieja"
+  ],
+
+  "Países Bajos": [
+    "Amsterdam", "Rotterdam", "La Haya", "Utrecht", "Eindhoven"
+  ],
+
+  "Alemania": [
+    "Aquisgrán", "Augsburgo", "Berlín", "Bielefeld", "Bochum",
+    "Bonn", "Braunschweig", "Bremen", "Dortmund", "Dresden",
+    "Duisburgo", "Düsseldorf", "Erfurt", "Essen", "Frankfurt",
+    "Friburgo", "Hamburgo", "Hannover", "Herzogenaurach", "Karlsruhe",
+    "Kiel", "Leipzig", "Mannheim", "Metzingen", "Múnich",
+    "Münster", "Núremberg", "Rostock", "Stuttgart", "Wiesbaden",
+    "Wuppertal"
+  ],
+
+  "Dinamarca": [
+    "Aalborg", "Aarhus", "Copenhague", "Esbjerg", "Fredericia",
+    "Helsingør", "Herning", "Horsens", "Kolding", "Næstved",
+    "Odense", "Randers", "Roskilde", "Silkeborg", "Vejle"
+  ],
+
+"México": [
+    "Ciudad de México", "Guadalajara", "Monterrey", "Puebla"
+  ],
+
+  "Colombia": [
+    "Bogotá", "Cali", "Medellín"
+  ],
+
+  "Argentina": [
+    "Buenos Aires", "Córdoba", "Rosario"
+  ],
+
+  "Chile": [
+    "Santiago"
+  ],
+
+  "Perú": [
+    "Arequipa", "Lima"
+  ],
+
+  "Brasil": [
+    "Belo Horizonte", "Curitiba", "Fortaleza", "Rio de Janeiro", "São Paulo"
+  ],
+
+  "Estados Unidos": [
+    "Atlanta", "Austin", "Chicago", "Dallas", "Las Vegas",
+    "Los Angeles", "Miami", "New York", "Portland", "San Francisco"
   ],
 };
 
 export const COUNTRY_CODES = {
   "España": "ES",
+  "Portugal": "PT",
+  "Andorra": "AD",
   "Francia": "FR",
   "Italia": "IT",
-  "Portugal": "PT",
+  "Reino Unido": "GB",
+  "Bélgica": "BE",
+  "Países Bajos": "NL",
   "Alemania": "DE",
-  "Andorra": "AD",
+  "Dinamarca": "DK",
+  "México": "MX",
+  "Colombia": "CO",
+  "Argentina": "AR",
+  "Chile": "CL",
+  "Perú": "PE",
+  "Brasil": "BR",
+  "Estados Unidos": "US",
 };
 
 export const ALL_COUNTRIES = Object.keys(LOCATIONS);

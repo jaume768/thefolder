@@ -1,16 +1,18 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  FaChartBar, 
-  FaUsers, 
-  FaBriefcase, 
+import {
+  FaChartBar,
+  FaUsers,
+  FaBriefcase,
   FaGraduationCap,
-  FaNewspaper, 
-  FaSchool, 
+  FaNewspaper,
+  FaSchool,
   FaBlog,
   FaCog,
   FaBook,
-  FaBuilding
+  FaBuilding,
+  FaUserCheck,
+  FaFlag
 } from 'react-icons/fa';
 
 const Sidebar = ({ isMobileOpen, toggleMobileSidebar }) => {
@@ -42,6 +44,16 @@ const Sidebar = ({ isMobileOpen, toggleMobileSidebar }) => {
           <NavLink to="/usuarios" className="sidebar-link" onClick={closeSidebar}>
             <FaUsers className="sidebar-link-icon" />
             <span className="sidebar-link-text">Usuarios</span>
+          </NavLink>
+
+          <NavLink to="/validacion" className="sidebar-link" onClick={closeSidebar}>
+            <FaUserCheck className="sidebar-link-icon" />
+            <span className="sidebar-link-text">Validación</span>
+          </NavLink>
+
+          <NavLink to="/reportes" className="sidebar-link" onClick={closeSidebar}>
+            <FaFlag className="sidebar-link-icon" />
+            <span className="sidebar-link-text">Reportes</span>
           </NavLink>
           
           <NavLink to="/ofertas" className="sidebar-link" onClick={closeSidebar}>

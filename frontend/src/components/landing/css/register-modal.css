@@ -9,6 +9,7 @@
   background: #fdfdfd;
   margin-top: 32px;
   border-radius: 24px;
+  cursor: none;
 }
 
 /* Panel izquierdo vacío para imagen */
@@ -52,6 +53,10 @@
 .terms-row a{
   color: #666;
   text-decoration: underline;
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
 }
 
 /* Verificación */

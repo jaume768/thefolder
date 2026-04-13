@@ -636,6 +636,12 @@ button.post-save-button {
   right: 24px;
 }
 
+@media (min-width: 768px) {
+  .save-button-explorer {
+    display: none;
+  }
+}
+
 .save-button-explorer:hover {
     background: #000;
 }

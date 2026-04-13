@@ -321,7 +321,7 @@
 
 /* ── CV — tipografía limpia ──────────────────────────────────────────────── */
 .pig-cv {
-  grid-column: 5 / 10;
+  grid-column: 4 / 9;
   width: 100%;
   display: flex;
   flex-direction: column;

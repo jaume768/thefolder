@@ -64,8 +64,7 @@
 }
 
 .hero--vertical-centered .vc__image {
-  width: 100%;
-  height: 60%;
+  height: 70%;
   object-fit: cover;
   display: block;
 }

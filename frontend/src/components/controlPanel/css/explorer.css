@@ -628,6 +628,12 @@ img.search-sparkles-icon {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+  right: 18px;
+  top: 18px;
+}
+
+button.post-save-button {
+  right: 24px;
 }
 
 .save-button-explorer:hover {

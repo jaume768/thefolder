@@ -17,7 +17,7 @@ import ProfileAppearanceTab from "../../components/controlPanel/editProfile/tabs
 import DirectorioTab from "../../components/controlPanel/editProfile/tabs/DirectorioTab";
 
 
-import trashDelete from "../../../public/iconos/trash-delete.svg";
+import trashDelete from "../../../public/iconos/bin.png";
 import editCard from "../../../public/iconos/edit-card.svg";
 import moreFull from "../../../public/iconos/more-full.svg";
 import closeIcon from "../../../public/iconos/close.svg";
@@ -410,7 +410,10 @@ const emptyLanguageRow = { language: "", level: "" };
 
 const [languagesRows, setLanguagesRows] = useState(() => {
   const saved = Array.isArray(draft?.languages) ? draft.languages : [];
-  return saved;
+  return saved.map(row => ({
+    ...row,
+    level: row.level === 'advanced' ? 'native' : (row.level || ''),
+  }));
 });
 
 const addLanguageRow = () => {
@@ -504,6 +507,32 @@ const makeEmptyExp = () => ({
   endYear: "",
   currentlyWorking: false,
   description: "",
+});
+
+const makeEmptyPress = () => ({
+  clientId: crypto.randomUUID(),
+  logoUrl: "",
+  title: "",
+  publication: "",
+  role: "",
+  url: "",
+  pubMonth: "",
+  pubYear: "",
+  description: "",
+  isDraft: false,
+});
+
+const makeEmptyAward = () => ({
+  clientId: crypto.randomUUID(),
+  name: "",
+  type: "",
+  otherType: "",
+  issuer: "",
+  awardMonth: "",
+  awardYear: "",
+  description: "",
+  url: "",
+  isDraft: false,
 });
 
 const makeEmptyEdu = () => ({
@@ -616,6 +645,8 @@ const openEditEducationForm = (indexInSorted) => {
   setEduFormOpen(true);
 };
 
+const saveEducationAsDraft = () => saveEducation(true);
+
 const cancelEducationForm = () => {
   const hasAny = educations.length > 0;
   if (!hasAny) return;
@@ -628,22 +659,27 @@ const updateEducationField = (key, value) => {
   setEduDraft((prev) => ({ ...prev, [key]: value }));
 };
 
-const saveEducation = () => {
+const saveEducation = (isDraft = false) => {
   const instOk = (eduDraft.institution || "").trim().length > 0;
   const nameOk = (eduDraft.formationName || "").trim().length > 0;
 
-  if (!instOk || !nameOk) {
+  if (!isDraft && (!instOk || !nameOk)) {
     alert("Completa al menos Institución y Nombre de la formación.");
     return;
   }
+  if (isDraft && !instOk && !nameOk) {
+    alert("Añade al menos Institución o Nombre de la formación para guardar el borrador.");
+    return;
+  }
 
-  if (eduDraft.educationType === "OTRO" && !(eduDraft.educationOtherType || "").trim()) {
+  if (!isDraft && eduDraft.educationType === "OTRO" && !(eduDraft.educationOtherType || "").trim()) {
     alert("Especifica el tipo de formación.");
     return;
   }
 
   const clean = {
     ...eduDraft,
+    isDraft,
     clientId: eduDraft.clientId || crypto.randomUUID(),
     institutionLogo: (eduDraft.institutionLogo || "").trim(),
     educationType: (eduDraft.educationType || "").trim(),
@@ -738,6 +774,8 @@ const openEditExperienceForm = (indexInSorted) => {
   setExpFormOpen(true);
 };
 
+const saveExperienceAsDraft = () => saveExperience(true);
+
 const cancelExperienceForm = () => {
   // Si no hay experiencias, no dejamos la sección vacía: mantenemos el form abierto
   const hasAny = experiences.length > 0;
@@ -751,18 +789,22 @@ const updateExperienceField = (key, value) => {
   setExpDraft((prev) => ({ ...prev, [key]: value }));
 };
 
-const saveExperience = () => {
-  // Validación mínima (puedes endurecerla luego)
+const saveExperience = (isDraft = false) => {
   const titleOk = (expDraft.title || "").trim().length > 0;
   const instOk = (expDraft.institution || "").trim().length > 0;
 
-  if (!titleOk || !instOk) {
+  if (!isDraft && (!titleOk || !instOk)) {
     alert("Completa al menos Cargo y Empresa.");
+    return;
+  }
+  if (isDraft && !titleOk && !instOk) {
+    alert("Añade al menos Cargo o Empresa para guardar el borrador.");
     return;
   }
 
   const clean = {
     ...expDraft,
+    isDraft,
     clientId: expDraft.clientId || crypto.randomUUID(),
     title: (expDraft.title || "").trim(),
     institution: (expDraft.institution || "").trim(),
@@ -840,6 +882,275 @@ const doDeleteExperience = () => {
   setExpToDeleteIndex(null);
 };
 
+
+// ── PRESS PUBLICATIONS ────────────────────────────────────────────────────────
+const MAX_PRESS_DESC = 300;
+
+const pressKey = (x) => String(x?._id || x?.clientId || "");
+
+const [pressFormOpen, setPressFormOpen] = useState(false);
+const [confirmPressDeleteOpen, setConfirmPressDeleteOpen] = useState(false);
+const [pressToDeleteIndex, setPressToDeleteIndex] = useState(null);
+const [pressEditingIndex, setPressEditingIndex] = useState(null);
+const [pressDraft, setPressDraft] = useState(makeEmptyPress());
+
+const pressLogoFileRef = useRef(null);
+
+const pressPublications = useMemo(() => {
+  return Array.isArray(draft?.pressPublications) ? draft.pressPublications : [];
+}, [draft?.pressPublications]);
+
+useEffect(() => {
+  if (!draft?.username) return;
+  const hasAny = Array.isArray(draft?.pressPublications) && draft.pressPublications.length > 0;
+  setPressFormOpen(!hasAny);
+  setPressEditingIndex(null);
+  setPressDraft(makeEmptyPress());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [draft?.username]);
+
+const openNewPressForm = () => {
+  setPressEditingIndex(null);
+  setPressDraft(makeEmptyPress());
+  setPressFormOpen(true);
+};
+
+const openEditPressForm = (idx) => {
+  const item = pressPublications[idx];
+  setPressEditingIndex(idx);
+  setPressDraft({
+    ...makeEmptyPress(),
+    ...item,
+    clientId: item?.clientId || crypto.randomUUID(),
+  });
+  setPressFormOpen(true);
+};
+
+const cancelPressForm = () => {
+  if (pressPublications.length === 0) return;
+  setPressFormOpen(false);
+  setPressEditingIndex(null);
+  setPressDraft(makeEmptyPress());
+};
+
+const updatePressField = (key, value) => {
+  setPressDraft((prev) => ({ ...prev, [key]: value }));
+};
+
+const savePressAsDraft = () => savePress(true);
+
+const savePress = (isDraft = false) => {
+  const titleOk = (pressDraft.title || "").trim().length > 0;
+  const pubOk = (pressDraft.publication || "").trim().length > 0;
+
+  if (!isDraft && (!titleOk || !pubOk)) {
+    alert("Completa al menos Título y Medio o publicación.");
+    return;
+  }
+  if (isDraft && !titleOk && !pubOk) {
+    alert("Añade al menos el Título o el Medio para guardar como borrador.");
+    return;
+  }
+
+  const clean = {
+    ...pressDraft,
+    clientId: pressDraft.clientId || crypto.randomUUID(),
+    title: (pressDraft.title || "").trim(),
+    publication: (pressDraft.publication || "").trim(),
+    role: (pressDraft.role || "").trim(),
+    description: (pressDraft.description || "").trim(),
+    url: (pressDraft.url || "").trim(),
+    pubMonth: pressDraft.pubMonth ? Number(pressDraft.pubMonth) : "",
+    pubYear: pressDraft.pubYear ? Number(pressDraft.pubYear) : "",
+    isDraft,
+  };
+  if (!clean._id) delete clean._id;
+  if (clean.url && !/^https?:\/\//i.test(clean.url)) clean.url = `https://${clean.url}`;
+
+  const base = Array.isArray(draft?.pressPublications) ? [...draft.pressPublications] : [];
+
+  if (pressEditingIndex !== null) {
+    const target = pressPublications[pressEditingIndex];
+    const idx = base.findIndex((x) => pressKey(x) === pressKey(target));
+    if (idx >= 0) base[idx] = clean;
+    else base.push(clean);
+  } else {
+    base.push(clean);
+  }
+
+  setDraftField("pressPublications", base);
+  setPressFormOpen(false);
+  setPressEditingIndex(null);
+  setPressDraft(makeEmptyPress());
+};
+
+const deletePress = (idx) => {
+  const target = pressPublications[idx];
+  const base = Array.isArray(draft?.pressPublications) ? [...draft.pressPublications] : [];
+  const next = base.filter((x) => pressKey(x) !== pressKey(target));
+  setDraftField("pressPublications", next);
+  if (next.length === 0) {
+    setPressFormOpen(true);
+    setPressEditingIndex(null);
+    setPressDraft(makeEmptyPress());
+  }
+};
+
+const confirmDeletePress = (idx) => {
+  setPressToDeleteIndex(idx);
+  setConfirmPressDeleteOpen(true);
+};
+
+const doDeletePress = () => {
+  if (pressToDeleteIndex === null) return;
+  deletePress(pressToDeleteIndex);
+  setConfirmPressDeleteOpen(false);
+  setPressToDeleteIndex(null);
+};
+
+const uploadPressLogo = async (file) => {
+  const token = localStorage.getItem("authToken");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await axios.post(`${backendUrl}/api/users/institution-logo`, formData, {
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+  });
+  const logoUrl = res.data.logoUrl;
+  if (!logoUrl) return;
+  setPressDraft((prev) => ({ ...prev, logoUrl }));
+};
+
+// ── AWARDS ────────────────────────────────────────────────────────────────────
+const MAX_AWARD_DESC = 300;
+
+const awardKey = (x) => String(x?._id || x?.clientId || "");
+
+const [awardFormOpen, setAwardFormOpen] = useState(false);
+const [confirmAwardDeleteOpen, setConfirmAwardDeleteOpen] = useState(false);
+const [awardToDeleteIndex, setAwardToDeleteIndex] = useState(null);
+const [awardEditingIndex, setAwardEditingIndex] = useState(null);
+const [awardDraft, setAwardDraft] = useState(makeEmptyAward());
+
+const awards = useMemo(() => {
+  return Array.isArray(draft?.awards) ? draft.awards : [];
+}, [draft?.awards]);
+
+useEffect(() => {
+  if (!draft?.username) return;
+  const hasAny = Array.isArray(draft?.awards) && draft.awards.length > 0;
+  setAwardFormOpen(!hasAny);
+  setAwardEditingIndex(null);
+  setAwardDraft(makeEmptyAward());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [draft?.username]);
+
+const openNewAwardForm = () => {
+  setAwardEditingIndex(null);
+  setAwardDraft(makeEmptyAward());
+  setAwardFormOpen(true);
+};
+
+const openEditAwardForm = (idx) => {
+  const item = awards[idx];
+  setAwardEditingIndex(idx);
+  setAwardDraft({
+    ...makeEmptyAward(),
+    ...item,
+    clientId: item?.clientId || crypto.randomUUID(),
+  });
+  setAwardFormOpen(true);
+};
+
+const cancelAwardForm = () => {
+  if (awards.length === 0) return;
+  setAwardFormOpen(false);
+  setAwardEditingIndex(null);
+  setAwardDraft(makeEmptyAward());
+};
+
+const updateAwardField = (key, value) => {
+  setAwardDraft((prev) => ({ ...prev, [key]: value }));
+};
+
+const saveAwardAsDraft = () => saveAward(true);
+
+const saveAward = (isDraft = false) => {
+  const nameOk = (awardDraft.name || "").trim().length > 0;
+  const issuerOk = (awardDraft.issuer || "").trim().length > 0;
+
+  if (!isDraft && (!nameOk || !issuerOk)) {
+    alert("Completa al menos Nombre del reconocimiento y Emisor o institución.");
+    return;
+  }
+  if (isDraft && !nameOk && !issuerOk) {
+    alert("Añade al menos el Nombre o el Emisor para guardar como borrador.");
+    return;
+  }
+
+  if (!isDraft && awardDraft.type === "Otro" && !(awardDraft.otherType || "").trim()) {
+    alert("Especifica el tipo de reconocimiento.");
+    return;
+  }
+
+  const clean = {
+    ...awardDraft,
+    clientId: awardDraft.clientId || crypto.randomUUID(),
+    name: (awardDraft.name || "").trim(),
+    type: (awardDraft.type || "").trim(),
+    otherType: (awardDraft.otherType || "").trim(),
+    issuer: (awardDraft.issuer || "").trim(),
+    description: (awardDraft.description || "").trim(),
+    url: (awardDraft.url || "").trim(),
+    awardMonth: awardDraft.awardMonth ? Number(awardDraft.awardMonth) : "",
+    awardYear: awardDraft.awardYear ? Number(awardDraft.awardYear) : "",
+    isDraft,
+  };
+  if (!clean._id) delete clean._id;
+  if (clean.url && !/^https?:\/\//i.test(clean.url)) clean.url = `https://${clean.url}`;
+
+  const base = Array.isArray(draft?.awards) ? [...draft.awards] : [];
+
+  if (awardEditingIndex !== null) {
+    const target = awards[awardEditingIndex];
+    const idx = base.findIndex((x) => awardKey(x) === awardKey(target));
+    if (idx >= 0) base[idx] = clean;
+    else base.push(clean);
+  } else {
+    base.push(clean);
+  }
+
+  setDraftField("awards", base);
+  setAwardFormOpen(false);
+  setAwardEditingIndex(null);
+  setAwardDraft(makeEmptyAward());
+};
+
+const deleteAward = (idx) => {
+  const target = awards[idx];
+  const base = Array.isArray(draft?.awards) ? [...draft.awards] : [];
+  const next = base.filter((x) => awardKey(x) !== awardKey(target));
+  setDraftField("awards", next);
+  if (next.length === 0) {
+    setAwardFormOpen(true);
+    setAwardEditingIndex(null);
+    setAwardDraft(makeEmptyAward());
+  }
+};
+
+const confirmDeleteAward = (idx) => {
+  setAwardToDeleteIndex(idx);
+  setConfirmAwardDeleteOpen(true);
+};
+
+const doDeleteAward = () => {
+  if (awardToDeleteIndex === null) return;
+  deleteAward(awardToDeleteIndex);
+  setConfirmAwardDeleteOpen(false);
+  setAwardToDeleteIndex(null);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 const uploadExperienceLogo = async (file) => {
   const token = localStorage.getItem("authToken");
@@ -1181,6 +1492,8 @@ const handleSocialUsernameChange = (e, network) => {
         professionalFormation: Array.isArray(draft.professionalFormation)
           ? draft.professionalFormation
           : [],
+        pressPublications: Array.isArray(draft.pressPublications) ? draft.pressPublications : [],
+        awards: Array.isArray(draft.awards) ? draft.awards : [],
         skills: Array.isArray(draft.skills) ? draft.skills : [],
         software: Array.isArray(draft.software) ? draft.software : [],
         languages: Array.isArray(draft.languages) ? draft.languages : [],
@@ -1379,8 +1692,8 @@ const setScrollTop = (root, top) => {
         { id: "sec-cv-biografia-personal", label: "Biografía personal" },
         { id: "sec-cv-experiencia", label: "Experiencia laboral" },
         { id: "sec-cv-formacion", label: "Formación educativa" },
-        { id: "sec-cv-hard", label: "HardSkills / Software" },
-        { id: "sec-cv-soft", label: "Softskills / Habilidades" },
+        { id: "sec-cv-hard", label: "HardSkills" },
+        { id: "sec-cv-soft", label: "SoftSkills" },
         { id: "sec-cv-idiomas", label: "Idiomas" },
         { id: "sec-cv-disponibilidad", label: "Disponibilidad laboral" },
       ];
@@ -1701,6 +2014,7 @@ const coverPreviewImage =
                     openNewExperienceForm={openNewExperienceForm}
                     cancelExperienceForm={cancelExperienceForm}
                     saveExperience={saveExperience}
+                    saveExperienceAsDraft={saveExperienceAsDraft}
                     updateExperienceField={updateExperienceField}
                     uploadExperienceLogo={uploadExperienceLogo}
 
@@ -1714,8 +2028,39 @@ const coverPreviewImage =
                     openNewEducationForm={openNewEducationForm}
                     cancelEducationForm={cancelEducationForm}
                     saveEducation={saveEducation}
+                    saveEducationAsDraft={saveEducationAsDraft}
                     updateEducationField={updateEducationField}
                     uploadInstitutionLogo={uploadInstitutionLogo}
+
+                    // Press Publications
+                    pressPublications={pressPublications}
+                    pressFormOpen={pressFormOpen}
+                    pressEditingIndex={pressEditingIndex}
+                    pressDraft={pressDraft}
+                    pressLogoFileRef={pressLogoFileRef}
+                    MAX_PRESS_DESC={MAX_PRESS_DESC}
+                    openEditPressForm={openEditPressForm}
+                    confirmDeletePress={confirmDeletePress}
+                    openNewPressForm={openNewPressForm}
+                    cancelPressForm={cancelPressForm}
+                    savePress={savePress}
+                    savePressAsDraft={savePressAsDraft}
+                    updatePressField={updatePressField}
+                    uploadPressLogo={uploadPressLogo}
+
+                    // Awards
+                    awards={awards}
+                    awardFormOpen={awardFormOpen}
+                    awardEditingIndex={awardEditingIndex}
+                    awardDraft={awardDraft}
+                    MAX_AWARD_DESC={MAX_AWARD_DESC}
+                    openEditAwardForm={openEditAwardForm}
+                    confirmDeleteAward={confirmDeleteAward}
+                    openNewAwardForm={openNewAwardForm}
+                    cancelAwardForm={cancelAwardForm}
+                    saveAward={saveAward}
+                    saveAwardAsDraft={saveAwardAsDraft}
+                    updateAwardField={updateAwardField}
 
                     // Idiomas
                     languagesRows={languagesRows}
@@ -1924,7 +2269,65 @@ const coverPreviewImage =
         </p>
       </Modal>
 
+      <Modal
+        open={confirmPressDeleteOpen}
+        title="Eliminar publicación"
+        onClose={() => {
+          setConfirmPressDeleteOpen(false);
+          setPressToDeleteIndex(null);
+        }}
+        footer={
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+            <button
+              className="ux-btn"
+              type="button"
+              onClick={() => {
+                setConfirmPressDeleteOpen(false);
+                setPressToDeleteIndex(null);
+              }}
+            >
+              Cancelar
+            </button>
+            <button className="ux-btn primary ux-btn-danger" type="button" onClick={doDeletePress}>
+              Sí, eliminar
+            </button>
+          </div>
+        }
+      >
+        <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
+          ¿Seguro que quieres eliminar esta publicación? Esta acción no se puede deshacer.
+        </p>
+      </Modal>
 
+      <Modal
+        open={confirmAwardDeleteOpen}
+        title="Eliminar reconocimiento"
+        onClose={() => {
+          setConfirmAwardDeleteOpen(false);
+          setAwardToDeleteIndex(null);
+        }}
+        footer={
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+            <button
+              className="ux-btn"
+              type="button"
+              onClick={() => {
+                setConfirmAwardDeleteOpen(false);
+                setAwardToDeleteIndex(null);
+              }}
+            >
+              Cancelar
+            </button>
+            <button className="ux-btn primary ux-btn-danger" type="button" onClick={doDeleteAward}>
+              Sí, eliminar
+            </button>
+          </div>
+        }
+      >
+        <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
+          ¿Seguro que quieres eliminar este reconocimiento? Esta acción no se puede deshacer.
+        </p>
+      </Modal>
 
       {/* POPUP EMAIL */}
       {showEmailPopup && (

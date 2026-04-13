@@ -8,6 +8,7 @@ export default function BiographySection({ draft, setDraftField, MAX_BIO }) {
           className="ux-form-label separator"
           htmlFor="biography"
         >
+          <img src="/iconos/biography.png" className="ux-section-icon" alt="" />
           Biografía personal
         </label>
 

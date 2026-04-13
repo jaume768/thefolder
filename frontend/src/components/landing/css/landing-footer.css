@@ -62,6 +62,38 @@
   color: rgba(0,0,0,.85);
 }
 
+.tf-footer__contact {
+  position: relative;
+  cursor: default;
+}
+
+.tf-footer__contact-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  border-radius: 5px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tf-footer__contact-tip a {
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  font-size: 11px;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+.tf-footer__contact:hover .tf-footer__contact-tip {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* Mobile: links arriba, texto debajo */
 @media (max-width: 640px){
   .tf-footer__inner{

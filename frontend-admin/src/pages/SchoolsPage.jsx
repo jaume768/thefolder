@@ -229,7 +229,7 @@ const SchoolsPage = () => {
             onClick={resetFilters}
             className="reset-filters-btn"
           >
-            Limpiar filtros
+            Borrar filtros
           </button>
         </div>
       )}
@@ -290,7 +290,7 @@ const SchoolsPage = () => {
               onClick={resetFilters} 
               className="btn btn-outline"
             >
-              Limpiar filtros
+              Borrar filtros
             </button>
           )}
         </div>

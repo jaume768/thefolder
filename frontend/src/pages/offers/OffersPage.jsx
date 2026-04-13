@@ -7,6 +7,7 @@ import { MdTune } from 'react-icons/md';
 import Draggable from 'react-draggable';
 import '../../components/controlPanel/css/offers.css';
 import '../../components/controlPanel/css/explorer.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const Offers = () => {
     const navigate = useNavigate();
@@ -499,7 +500,7 @@ const Offers = () => {
                             >
                                 <div className="offer-card-logo">
                                     <img
-                                        src={o.companyLogo || '/multimedia/company-default.png'}
+                                        src={clImg.logo(o.companyLogo) || '/multimedia/company-default.png'}
                                         alt={o.companyName}
                                     />
                                 </div>

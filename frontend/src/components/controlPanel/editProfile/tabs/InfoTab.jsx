@@ -4,7 +4,7 @@ import { LOCATIONS, ALL_COUNTRIES } from "../../../../utils/locations";
 
 // iconos desde /public (más estable en Vite)
 const editCard = "/iconos/edit-card.svg";
-const trashDelete = "/iconos/trash-delete.svg";
+const trashDelete = "/iconos/bin.png";
 
 const GROUP_ICONS = {
   'Accesorios':          '/iconos/specialty/accesories.png',
@@ -15,12 +15,16 @@ const GROUP_ICONS = {
   'Digital & 3D':        '/iconos/specialty/graphic-design.png',
   'Ilustración':         '/iconos/specialty/illustration.png',
   'Styling':             '/iconos/specialty/styling.png',
+  'Marketing & PR':           '/iconos/specialty/marketing.png',
+  'Digital & Social':         '/iconos/specialty/content-creator.png',
   'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
+  'Otro':                     '/iconos/specialty/clue.png',
 };
 
 const GROUP_ORDER = [
   "Diseño", "Dirección Creativa", "Fotografía & Vídeo", "Styling",
-  "Beauty (MUAH)", "Digital & 3D", "Ilustración", "Accesorios",
+  "Beauty (MUAH)", "Digital & 3D", "Accesorios",
+  "Comunicación & Editorial", "Marketing & PR", "Digital & Social", "Ilustración", "Otro",
 ];
 
 export default function InfoTab({
@@ -43,6 +47,7 @@ export default function InfoTab({
   const [roleOptions, setRoleOptions] = React.useState([]);
   const [activeGroup, setActiveGroup] = React.useState(null);
   const [roleQuery, setRoleQuery] = React.useState("");
+  const [customInput, setCustomInput] = React.useState('');
 
   const [customCountryInput, setCustomCountryInput] = React.useState(draft?.customCountry || "");
   const [customCityInput, setCustomCityInput] = React.useState(draft?.city || "");
@@ -106,11 +111,21 @@ export default function InfoTab({
   }, [roleOptions]);
 
   const orderedGroups = React.useMemo(() => {
-    const groups = Object.keys(rolesByGroup);
-    const rank = Object.fromEntries(GROUP_ORDER.map((g, i) => [g, i]));
-    return groups.sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
+    const groups = [...Object.keys(rolesByGroup)];
+    const rank = Object.fromEntries(GROUP_ORDER.filter(g => g !== 'Otro').map((g, i) => [g, i]));
+    const sorted = [...new Set(groups)].filter(g => g !== 'Otro').sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
+    sorted.push('Otro');
+    return sorted;
   }, [rolesByGroup]);
-  
+
+  const confirmCustomTag = () => {
+    const trimmed = customInput.trim();
+    if (!trimmed || selectedRoleIds.includes(trimmed) || selectedRoleIds.length >= 3) return;
+    setDraftField("professionalTags", [...selectedRoleIds, trimmed]);
+    setIsDirty(true);
+    setCustomInput('');
+  };
+
 
   const normalize = str => String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').toLowerCase().trim();
 
@@ -140,7 +155,7 @@ export default function InfoTab({
   return (
     <div>
       <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">Identidad</h2>
+        <h2 className="ux-card-title-h2">Tu información de perfil</h2>
         <p className="ux-card-subtitle">
           Gestiona tu foto de perfil, ubicación y especialización.<br />
           Estos son los datos básicos que aparecen en tu perfil público.
@@ -196,7 +211,7 @@ export default function InfoTab({
                       className="ux-link-btn danger"
                       onClick={() => deleteProfilePicture()}
                     >
-                      <img src={trashDelete} className="ux-icon" alt="Borrar" />
+                      <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} />
                       Borrar
                     </button>
                   </div>
@@ -269,7 +284,7 @@ export default function InfoTab({
 
                 <div className="ux-form-field">
                   <label className="ux-form-label" htmlFor="lastName">
-                    Apellido (1)
+                    Apellido/s
                   </label>
                   <input
                     id="lastName"
@@ -311,6 +326,8 @@ export default function InfoTab({
                     }}
                   >
                     <option value="">País</option>
+                    <option value="España">España</option>
+                    <option disabled>──────────</option>
                     {ALL_COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
@@ -417,6 +434,8 @@ export default function InfoTab({
                         }}
                       >
                         <option value="">País</option>
+                        <option value="España">España</option>
+                        <option disabled>──────────</option>
                         {ALL_COUNTRIES.map((c) => (
                           <option key={c} value={c}>{c}</option>
                         ))}
@@ -538,7 +557,11 @@ export default function InfoTab({
               <label className="ux-form-label">Cómo filtrar tu perfil</label>
 
               <div className="ux-helper">
-                Elige hasta 3 etiquetas. Se usan para aparecer en búsquedas.
+                <p className="ob-subtitle">
+                  Selecciona un grupo y elige hasta <b>3 etiquetas en total.</b>
+                  <br />
+                  Se usan para aparecer en búsquedas.
+                </p>
               </div>
 
               {selectedRoleIds.length > 0 && (
@@ -561,7 +584,10 @@ export default function InfoTab({
               <div className="filters-tags filters-tags--level">
                 {orderedGroups.map((group) => {
                   const isActive = activeGroup === group;
-                  const hasSelection = (rolesByGroup[group] || []).some(t => selectedRoleIds.includes(t.id));
+                  const groupTags = group === 'Otro'
+                    ? selectedRoleIds.filter(id => !roleLabelById[id])
+                    : (rolesByGroup[group] || []).filter(t => selectedRoleIds.includes(t.id));
+                  const hasSelection = groupTags.length > 0;
                   const icon = GROUP_ICONS[group];
                   return (
                     <button
@@ -571,14 +597,14 @@ export default function InfoTab({
                       onClick={() => setActiveGroup(isActive ? null : group)}
                     >
                       {icon && <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />}
-                      {group}
+                      {group}{hasSelection && !isActive ? ` (${groupTags.length})` : ''}
                     </button>
                   );
                 })}
               </div>
 
               {/* SUBETIQUETAS DEL BLOQUE SELECCIONADO */}
-              {activeGroup && (
+              {activeGroup && activeGroup !== 'Otro' && (
                 <div className="filters-country-cities">
                   <div className="filters-tags filters-tags--level">
                     {(rolesByGroup[activeGroup] || []).map((t) => {
@@ -594,6 +620,35 @@ export default function InfoTab({
                         </button>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* PANEL "OTRO" → inputs libres */}
+              {activeGroup === 'Otro' && (
+                <div className="filters-country-cities">
+                  <p className="ux-helper" style={{ marginBottom: 8 }}>
+                    Escribe tu especialidad y pulsa Enter o "Añadir".
+                  </p>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <input
+                      className="ux-input"
+                      type="text"
+                      value={customInput}
+                      placeholder="Especialidad personalizada"
+                      maxLength={40}
+                      disabled={selectedRoleIds.length >= 3}
+                      onChange={e => setCustomInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirmCustomTag(); } }}
+                    />
+                    <button
+                      type="button"
+                      className="filter-tag"
+                      onClick={confirmCustomTag}
+                      disabled={!customInput.trim() || selectedRoleIds.length >= 3}
+                    >
+                      Añadir
+                    </button>
                   </div>
                 </div>
               )}
@@ -644,6 +699,44 @@ export default function InfoTab({
                 readOnly
               />
               <div className="ux-counter">El email se cambia desde Configuración.</div>
+            </div>
+          </div>
+
+          {/* Representación */}
+          <div id="sec-representation" className="ux-anchor-target">
+            <div className="ux-form-block">
+              <label className="ux-form-label">Representación</label>
+              <p className="ux-form-hint">Si estás representado por una agencia, añádela aquí.</p>
+              <div className="ux-exp-form-row">
+                <div className="ux-form-block">
+                  <label className="ux-form-label-sm" htmlFor="representationName">
+                    Nombre de la agencia
+                  </label>
+                  <input
+                    id="representationName"
+                    name="representationName"
+                    type="text"
+                    className="ux-input"
+                    value={draft?.social?.representationName || ""}
+                    onChange={(e) => setDraftField("social.representationName", e.target.value)}
+                    placeholder="Nombre de la agencia"
+                  />
+                </div>
+                <div className="ux-form-block">
+                  <label className="ux-form-label-sm" htmlFor="representationWeb">
+                    Enlace a tu agencia o tu perfil de representación
+                  </label>
+                  <input
+                    id="representationWeb"
+                    name="representationWeb"
+                    type="url"
+                    className="ux-input"
+                    value={draft?.social?.representationWeb || ""}
+                    onChange={(e) => setDraftField("social.representationWeb", e.target.value)}
+                    placeholder="agencia.com"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

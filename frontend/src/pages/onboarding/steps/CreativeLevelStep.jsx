@@ -30,16 +30,16 @@ const LEVELS = [
     name: 'Professional',
     icon: 'professional.png',
     desc: {
-      main: 'Profesional en activo / Freelance ',
-      sub: '(≥ 3 años) — Sujeto a validación.',
+      main: 'Profesional en activo.',
+      sub: '— Sujeto a validación.',
     },
   },
 ];
 
 const CreativeLevelStep = ({ creativeLevel, onChange, onNext, onBack }) => (
   <div className="ob-center">
-    <h1 className="ob-title">¿En qué punto de tu carrera estás?</h1>
-    <p className="ob-subtitle">Esto nos ayuda a mostrar tu perfil al público correcto.</p>
+    <h1 className="ob-title">¿En qué punto de tu carrera te encuentras?</h1>
+    <p className="ob-subtitle">Completa tu perfil profesional.</p>
 
     <div className="ob-level-options">
       {LEVELS.map(lvl => (

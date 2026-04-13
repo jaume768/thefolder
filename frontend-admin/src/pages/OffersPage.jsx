@@ -359,7 +359,7 @@ const OffersPage = () => {
             onClick={resetFilters}
             className="btn btn-outline reset-filters-btn"
           >
-            Limpiar filtros
+            Borrar filtros
           </button>
         </div>
       )}
@@ -438,7 +438,7 @@ const OffersPage = () => {
             onClick={resetFilters} 
             className="btn btn-outline"
           >
-            Limpiar filtros
+            Borrar filtros
           </button>
         </div>
       )}

@@ -16,75 +16,72 @@
 /* ── Botón volver ────────────────────────────────────────────────────────── */
 .pig-back {
   position: fixed;
-  top: 16px;
-  left: 16px;
+  top: 6px;
+  left: 6px;
   z-index: 200;
   background: none;
   border: none;
   padding: 0;
-  cursor: pointer;
-  font-family: 'Inter Tight', sans-serif;
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  color: #999;
-  text-transform: uppercase;
+  padding: 6px;
+  border-radius: 0px 4px 4px 0px;
   transition: color 0.14s ease;
 }
 
-.pig-back:hover { color: #111; text-decoration: underline; }
+.pig-back:hover { cursor: pointer; }
+
+.pig-back-arrow {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  color: #444;
+}
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 .pig-sidebar {
   align-self: flex-start;
   width: 100%;
-  height: -webkit-fill-available;
   min-height: 20vh;
   padding: 36px;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  flex-direction: row;
-  gap: 62px;
-  scrollbar-width: none;
   grid-auto-flow: column;
+  gap: 62px;
   align-content: flex-start;
 }
-
-.pig-sidebar::-webkit-scrollbar { display: none; }
 
 /* Identidad */
 .pig-identity {
   display: flex;
   flex-direction: column;
-  grid-column: 2 / 5;
+  grid-column: 1 / 4;
+  margin-left: 12px;
 }
 
 .pig-name {
   font-family: Inter, sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: none;
   color: #333;
-  letter-spacing: .02em;
+  letter-spacing: -0.02em;
   margin-bottom: 2px;
 }
 
 .pig-role {
-  font-size: 10px;
-  font-weight: 300;
+  font-size: 12px;
+  font-weight: 400;
   color: #777;
   line-height: 1.55;
   letter-spacing: .015em;
   margin: 0;
-  text-transform: uppercase;
 }
 
 .pig-location {
   font-size: 10px;
   color: #777;
-  letter-spacing: 0.05em;
-  font-weight: 300;
+  letter-spacing: 0.04em;
+  font-weight: 400;
   margin: 0;
 }
 
@@ -95,9 +92,9 @@
   gap: 7px;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  position: absolute;
+  position: fixed;
   height: 50%;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .pig-toggle-btn {
@@ -108,7 +105,7 @@
   font-family: 'Inter Tight', sans-serif;
   font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.04em;
   color: #c0c0c0;
   text-transform: uppercase;
   transition: color 0.14s ease;
@@ -183,15 +180,15 @@
   color: #777;
   text-decoration: none;
   letter-spacing: .02em;
-  margin-top: auto;
   transition: color .14s ease;
-  grid-column: 9 / 11;
+  grid-column: 7 / 10;
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  height: 100%;
   letter-spacing: 0.04em;
+  text-decoration: underline;
+  height: fit-content;
 }
 
 .pig-website:hover { color: #111; text-decoration: underline; }
@@ -203,7 +200,7 @@
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     align-content: start;
-    gap: 0 0;
+    gap: 62px;
 }
 
 .pig-status {
@@ -225,40 +222,50 @@
 .pig-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 62px 32px;
+  gap: 62px;
   align-items: start;
   justify-items: end;
 }
 
 /* ── Tarjeta ─────────────────────────────────────────────────────────────── */
 .pig-card {
+  width: 100%;
   cursor: pointer;
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
   gap: 4px;
   outline: none;
 }
 
-/* Contenedor de imagen */
-.pig-card__image-wrap {
-  width: 100%;
-  overflow: hidden;
-  max-width: 150px;
+/* Posiciones de columna cíclicas (grid de 12 columnas) */
+/* Ciclo: a b a a b b a a a b */
+.pig-card--col-a { 
+  grid-column: 4 / 7; 
 }
 
-/* Variantes de proporción — las alturas varían el ritmo visual */
-.pig-card--tall .pig-card__image-wrap   {
-   aspect-ratio: 3 / 4;
-   max-width: 150px;
-  }
+.pig-card--col-b { 
+  grid-column: 7 / 10; 
+}
+
+.pig-card--col-c { 
+  grid-column: 10 / 13;
+  justify-content: flex-end;
+}
+
+/* Contenedor de imagen */
+.pig-card__image-wrap {
+  flex-shrink: 0;
+  overflow: hidden;
+}
 
 .pig-card__image {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    transition: opacity .18s ease;
-    max-width: 150px;
-    display: flex;
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  object-fit: cover;
+  transition: opacity .18s ease;
+  display: block;
 }
 
 .pig-card__placeholder {
@@ -308,7 +315,8 @@
   text-align: left;
   word-break: break-word;
   overflow-wrap: break-word;
-  grid-column: 5 / 8;
+  grid-column: 4 / 7;
+  margin-top: 6px;
 }
 
 /* ── CV — tipografía limpia ──────────────────────────────────────────────── */
@@ -318,8 +326,6 @@
   display: flex;
   flex-direction: column;
   gap: 36px;
-  padding-top: 4px;
-  margin-left: 16px;
 }
 
 .pig-cv__bio {
@@ -342,7 +348,8 @@
   display: flex;
   justify-content: space-between;
   z-index: 1000;
-  padding: 0px 24px;
+  padding: 0px 36px;
+  gap: 4px;
 }
 
 .pig-social-bar__item {
@@ -369,6 +376,12 @@
 .pig-layout { padding-bottom: 32px; }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .pig-card--col-c {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
 
   .pig-grid {
@@ -379,35 +392,29 @@
     width: 100%;
   }
 
-  /* Recalcular spans a escala de 6 columnas */
-  .pig-card { grid-column: span 3 !important; }
+  .pig-card--col-a,
+  .pig-card--col-b {
+    grid-column: unset;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
 
   .pig-cv {
     width: -webkit-fill-available;
+    margin-left: 48px;
   }
 }
 
 @media (max-width: 768px) {
-  .pig-layout { 
+  .pig-layout {
     flex-direction: column;
-    padding-top: 82px;
+    padding-top: 52px;
   }
 
-  .pig-back {
-    display: none;
-  }
-
-  .pig-website {
-    justify-content: flex-end;
-  }
+  .pig-back { display: none; }
 
   .pig-sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    border-right: none;
     padding: 20px 20px 24px;
-    display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
     gap: 14px 20px;
@@ -415,8 +422,8 @@
   }
 
   .pig-identity {
-    grid-column: 1 / -1;
     grid-row: 1;
+    margin-left: 0px;
   }
 
   .pig-bio {
@@ -431,11 +438,25 @@
     align-items: flex-start;
   }
 
+  .pig-card__caption {
+    display: flex;
+    gap: 2px;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .pig-social-bar__item {
+    flex: none;
+  }
+
   .pig-website {
     grid-column: 2 / 3;
     grid-row: 3;
     align-items: flex-start;
     height: auto;
+    justify-content: flex-end;
   }
 
   .pig-main {
@@ -443,14 +464,172 @@
     grid-template-columns: 1fr;
   }
 
-  .pig-cv {
-    grid-column: 1 / -1;
-  }
+  .pig-cv { grid-column: 1 / -1; }
 
   .pig-grid {
     grid-template-columns: repeat(1, 1fr);
     gap: 45px;
   }
 
-  .pig-card { grid-column: span 2 !important; }
+  .pig-card--col-a,
+  .pig-card--col-b {
+    grid-column: unset;
+    align-items: flex-start;
+  }
+
+  .pig-social-bar {
+    padding: 0px 12px;
+  }
+}
+
+/* =============================================================================
+   EDITORIAL INDEX — CV OVERRIDES
+   Todos los estilos aquí están scopeados bajo .pig-cv y solo afectan
+   a la plantilla "Editorial Index". No tocan nada del resto de la web.
+   ============================================================================= */
+
+/* ── Secciones generales ─────────────────────────────────────────────────── */
+.pig-cv .user-extern-section {
+  margin-bottom: 0;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.pig-cv .user-extern-section h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #aaa;
+  padding-bottom: 8px;
+}
+
+/* ── Skills / Software ───────────────────────────────────────────────────── */
+.pig-cv .user-extern-chips,
+.pig-cv .user-extern-skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pig-cv .user-extern-skill-tag {
+  background: #f2f2f2;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 12px;
+  font-size: 10px;
+  font-weight: 300;
+  color: #333;
+  letter-spacing: .02em;
+}
+
+/* ── Idiomas ─────────────────────────────────────────────────────────────── */
+.pig-cv .user-extern-languages {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pig-cv .user-languae-text {
+  font-size: 11px;
+  font-weight: 300;
+  color: #444;
+  letter-spacing: 0.02em;
+}
+
+/* ── Experiencia profesional / Formación ─────────────────────────────────── */
+.pig-cv .experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pig-cv .experience-item {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  padding-left: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pig-cv .experience-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pig-cv .experience-logo {
+  flex: 0 0 32px;
+  height: 32px;
+  border-radius: 0;
+  border: 1px solid #eee;
+  background: none;
+}
+
+.pig-cv .experience-logo-placeholder {
+  font-size: 10px;
+  color: #444;
+}
+
+.pig-cv .experience-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pig-cv .experience-title {
+  font-size: 11px;
+  font-weight: 400;
+  color: #444;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.pig-cv .experience-company {
+  font-size: 10px;
+  font-weight: 300;
+  color: #555;
+  margin: 0;
+}
+
+.pig-cv {
+  font-size: 10px;
+  font-weight: 300;
+  color: #888;
+  margin: 0;
+}
+
+.pig-cv .experience-period {
+  font-size: 10px;
+  font-weight: 300;
+  color: #444;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.pig-cv .experience-duration {
+  font-size: 10px;
+  color: #999;
+}
+
+.pig-cv .experience-description {
+  font-size: 10px;
+  font-weight: 300;
+  color: #666;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.pig-cv .experience-website {
+  font-size: 10px;
+  font-weight: 300;
+  color: #888;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+
+.pig-cv .experience-website:hover {
+  color: #111;
 }

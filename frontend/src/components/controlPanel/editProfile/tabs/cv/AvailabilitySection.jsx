@@ -25,6 +25,7 @@ export default function AvailabilitySection({
     <div id="sec-cv-disponibilidad" className="ux-anchor-target">
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="jobSearchActive-yes">
+          <img src="/iconos/job-availability.png" className="ux-section-icon" alt="" />
           Disponibilidad laboral
         </label>
 

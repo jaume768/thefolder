@@ -219,7 +219,7 @@ export const printUserProfile = (profileData) => {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
-      <title>Perfil Profesional - The Folder World</title>
+      <title>Perfil Profesional - THEFOLDER</title>
       <style>
         body {
           font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

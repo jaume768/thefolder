@@ -1,6 +1,7 @@
 // UserProfessionalExperienceSection.jsx
 import React from "react";
 import "../css/professionalExperience.css";
+import { clImg } from "../../../utils/optimizeImage";
 
 const normalizeUrl = (raw = "") => {
   const v = String(raw).trim();
@@ -15,7 +16,7 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
   if (!professionalFormation || professionalFormation.length === 0) return null;
 
   const validExperience = professionalFormation.filter(
-    (exp) => exp.title?.trim() || exp.institution?.trim()
+    (exp) => !exp.isDraft && (exp.title?.trim() || exp.institution?.trim())
   );
   if (validExperience.length === 0) return null;
 
@@ -35,9 +36,9 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
 
     const months =
       (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-      (endDate.getMonth() - startDate.getMonth());
+      (endDate.getMonth() - startDate.getMonth()) + 1;
 
-    if (months < 1) return "0 meses";
+    if (months < 1) return "";
 
     if (months < 12) {
       return `${months} ${months === 1 ? "mes" : "meses"}`;
@@ -88,7 +89,7 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
             <div key={index} className="experience-item">
               <div className="experience-logo">
                 {exp.companyLogo ? (
-                  <img src={exp.companyLogo} alt={exp.institution || "Empresa"} />
+                  <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || "Empresa"} />
                 ) : (
                   <div className="experience-logo-placeholder">
                     {exp.institution ? exp.institution.charAt(0).toUpperCase() : "E"}
@@ -114,13 +115,15 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
 
                 {!!exp.location && <p className="experience-location">{exp.location}</p>}
 
-                <p className="experience-period">
-                  {formatDate(exp.startMonth, exp.startYear)}
-                  {" · "}
-                  {exp.currentlyWorking ? "Actual" : formatDate(exp.endMonth, exp.endYear)}
-                  {" · "}
-                  <span className="experience-duration">{calculateDuration(exp)}</span>
-                </p>
+                {(exp.startMonth && exp.startYear) && (
+                  <p className="experience-period">
+                    {formatDate(exp.startMonth, exp.startYear)}
+                    {" · "}
+                    {exp.currentlyWorking ? "Actual" : formatDate(exp.endMonth, exp.endYear)}
+                    {" · "}
+                    <span className="experience-duration">{calculateDuration(exp)}</span>
+                  </p>
+                )}
 
                 {exp.description && (
                   <div className="experience-description">{exp.description}</div>

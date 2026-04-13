@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Masonry from "react-masonry-css";
+import { clImg } from "../../../utils/optimizeImage";
 
 const BREAKPOINT_COLS = {
   default: 4,
@@ -9,8 +10,12 @@ const BREAKPOINT_COLS = {
   600:     1,
 };
 
-const UserGallery = ({ posts = [], loading = false, emptyMessage, emptyContent, galleryStyle = "gap" }) => {
+const UserGallery = ({ posts = [], loading = false, emptyMessage, emptyContent, galleryStyle = "gap", onPostClick }) => {
   const navigate = useNavigate();
+  const handlePostClick = (postId) => {
+    if (typeof onPostClick === "function") onPostClick(postId);
+    else navigate(`/post/${postId}`);
+  };
 
   const countPostImages = (post) => {
     if (!post) return 0;
@@ -75,17 +80,17 @@ const UserGallery = ({ posts = [], loading = false, emptyMessage, emptyContent, 
           <div
             key={post._id || index}
             className="user-extern-project-card"
-            onClick={() => navigate(`/post/${post._id}`)}
+            onClick={() => handlePostClick(post._id)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ")
-                navigate(`/post/${post._id}`);
+                handlePostClick(post._id);
             }}
           >
             <div className="user-extern-project-media">
               <img
-                src={post.mainImage}
+                src={clImg.post(post.mainImage)}
                 alt={post.title || `Publicación ${index + 1}`}
                 className="user-extern-project-image"
               />

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../components/controlPanel/css/jobOfferDetail.css';
 import ApplyOfferModal from '../../components/modals/ApplyOfferModal';
+import { clImg } from '../../utils/optimizeImage';
 import { FaBookmark, FaRegBookmark, FaTimes } from 'react-icons/fa';
 
 const JobOfferDetail = () => {
@@ -196,7 +197,7 @@ const JobOfferDetail = () => {
                 {/* Imagen grande (puedes cambiarla si tienes otra imagen de banner) */}
                 <div className="job-offer-banner-jobdetail">
                     <img
-                        src={offer.companyLogo || '/multimedia/company-default.png'}
+                        src={clImg.logo(offer.companyLogo) || '/multimedia/company-default.png'}
                         alt={offer.companyName}
                         className="banner-image-jobdetail"
                     />
@@ -206,8 +207,8 @@ const JobOfferDetail = () => {
             <div className="article-content-container">
                 <div className="job-offer-title-section-jobdetail">
                     <div className="job-offer-company-name-jobdetail">
-                        <img 
-                            src={offer.companyLogo || '/multimedia/company-default.png'}
+                        <img
+                            src={clImg.logo(offer.companyLogo) || '/multimedia/company-default.png'}
                             alt={offer.companyName}
                             className="perfil__avatar"
                         />

@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContextProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
+import CookieBanner from "./components/CookieBanner";
 import Home from "./pages/Home";
 import CompleteRegistration from "./pages/CompleteRegistration"; // DEPRECATED
 import OnboardingWizard from "./pages/onboarding/OnboardingWizard";
@@ -56,6 +57,8 @@ import AvisoLegal from "./pages/legal/AvisoLegalPage";
 import Privacidad from "./pages/legal/PrivacidadPage";
 import Cookies from "./pages/legal/CookiesPage";
 import Contacto from "./pages/legal/ContactoPage";
+import Terminos from "./pages/legal/TerminosPage";
+import PerfilesLanding from "./pages/perfiles/PerfilesLanding";
 
 import About from "./pages/legal/AboutPage";
 
@@ -91,6 +94,7 @@ function App() {
     <AuthContextProvider>
     <Router>
       <ScrollToTop />
+      <CookieBanner />
       <Routes>
         {/* ✅ NUEVA ZONA PERFIL */}
         <Route
@@ -139,7 +143,7 @@ function App() {
         {/* Públicas con Layout */}
         <Route path="/explorer" element={<AuthLayout activeMenu="explorer"><Explorer /></AuthLayout>} />
         <Route path="/tags/:tag" element={<AuthLayout activeMenu="explorer"><TagFeed /></AuthLayout>} />
-        <Route path="/post/:id" element={<AppWithLayout activeMenu="explorer"><ProtectedRoute><UserPost /></ProtectedRoute></AppWithLayout>}/>
+        <Route path="/post/:id" element={<AuthLayout activeMenu="explorer"><UserPost /></AuthLayout>}/>
         <Route path="/offers" element={<AppWithLayout activeMenu="offers"><Offers /></AppWithLayout>} />
         <Route path="/offers/:offerId" element={<AppWithLayout activeMenu="offers"><Offers /></AppWithLayout>} />
         <Route path="/JobOfferDetail/:offerId" element={<AppWithLayout activeMenu="offers"><JobOfferDetail /></AppWithLayout>} />
@@ -153,6 +157,8 @@ function App() {
         <Route path="/legal" element={<AuthLayout activeMenu="info"><AvisoLegal /></AuthLayout>} />
         <Route path="/privacy" element={<AuthLayout activeMenu="info"><Privacidad /></AuthLayout>} />
         <Route path="/cookies" element={<AuthLayout activeMenu="info"><Cookies /></AuthLayout>} />
+        <Route path="/terminos" element={<AuthLayout activeMenu="info"><Terminos /></AuthLayout>} />
+        <Route path="/perfiles" element={<AuthLayout activeMenu="creatives"><PerfilesLanding /></AuthLayout>} />
         <Route path="/contact" element={<AuthLayout activeMenu="info"><Contacto /></AuthLayout>} />
         <Route path="/about" element={<AuthLayout activeMenu="info"><About /></AuthLayout>} />
         

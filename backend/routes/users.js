@@ -27,6 +27,26 @@ const documentFilter = (req, file, cb) => {
 const uploadImage = multer({ storage, fileFilter: imageFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 const uploadDocument = multer({ storage, fileFilter: documentFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 
+// Conteo de creativos por nivel — público, sin auth
+// GET /api/users/counts-by-level
+router.get('/counts-by-level', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const rows = await User.aggregate([
+      { $match: { accountType: 'creative', creativeLevelName: { $in: ['professional', 'emerging', 'newcomer', 'graduated'] } } },
+      { $group: { _id: '$creativeLevelName', count: { $sum: 1 } } },
+    ]);
+    const map = Object.fromEntries(rows.map((r) => [r._id, r.count]));
+    res.json({
+      professional: map.professional || 0,
+      emerging:     map.emerging     || 0,
+      students:     (map.newcomer || 0) + (map.graduated || 0),
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching counts' });
+  }
+});
+
 // Obtener perfil del usuario autenticado
 router.get('/profile', ensureAuthenticated, userController.getProfile);
 
@@ -115,6 +135,7 @@ router.get('/followers', ensureAuthenticated, userController.getFollowers);
 router.get('/check-follow/:userId', ensureAuthenticated, userController.checkFollow);
 router.get('/searchUsers', ensureAuthenticated, userController.searchUsers);
 router.get('/creatives', userController.getCreatives);
+router.get('/creatives/facets', userController.getCreativesFacets);
 
 // Ruta para verificar si un nombre de usuario existe
 router.get('/check-username/:username', ensureAuthenticated, userController.checkUsernameExists);

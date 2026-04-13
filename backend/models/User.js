@@ -48,7 +48,7 @@ const UserSchema = new mongoose.Schema({
         language: { type: String, trim: true, required: true },
         level: {
             type: String,
-            enum: ["", "basic", "intermediate", "advanced"],
+            enum: ["", "basic", "intermediate", "advanced", "native"],
             default: "",
         },
         },
@@ -72,7 +72,7 @@ const UserSchema = new mongoose.Schema({
     galleryStyle: { type: String, enum: ["gap", "nogap"], default: "gap" },
 
     // Layout del perfil público (plantilla de página completa)
-    profileLayout: { type: String, enum: ["default", "index-gallery"], default: "default" },
+    profileLayout: { type: String, enum: ["default", "index-gallery", "studio-gallery"], default: "default" },
 
 
     // Campos específicos para Creativos
@@ -148,7 +148,8 @@ const UserSchema = new mongoose.Schema({
             location: { type: String }, // Ciudad, País
             educationType: { type: String, default: "" }, // Grado, Máster, FP, etc.
             educationHours: { type: String, default: "" }, // Horas (Curso/Taller o Certificación)
-            educationOtherType: { type: String, default: "" } // Texto libre si educationType === "OTRO"
+            educationOtherType: { type: String, default: "" }, // Texto libre si educationType === "OTRO"
+            isDraft: { type: Boolean, default: false } // Oculto en perfil público hasta que se publique
         }
     ],
     skills: { type: [String], default: [] },
@@ -172,6 +173,8 @@ const UserSchema = new mongoose.Schema({
     },
     social: {
         emailContacto: { type: String, default: "" },
+        representationName: { type: String, default: "" },
+        representationWeb: { type: String, default: "" },
         sitioWeb: { type: String, default: "" },
         instagram: { type: String, default: "" },
         linkedin: { type: String, default: "" },
@@ -179,7 +182,8 @@ const UserSchema = new mongoose.Schema({
         tiktok: { type: String, default: "" },
         tumblr: { type: String, default: "" },
         youtube: { type: String, default: "" },
-        pinterest: { type: String, default: "" }
+        pinterest: { type: String, default: "" },
+        substack: { type: String, default: "" }
     },
 
     // Hitos profesionales para perfiles de empresa
@@ -214,10 +218,39 @@ const UserSchema = new mongoose.Schema({
         // Nuevos campos
         companyLogo: { type: String },          // URL del logo
         companyWebsite: { type: String, default: "" },
-        location: { type: String }              // Ciudad, País
+        location: { type: String },             // Ciudad, País
+        isDraft: { type: Boolean, default: false } // Oculto en perfil público hasta que se publique
     }
     ],
 
+
+    pressPublications: [
+        {
+            logoUrl: { type: String, default: "" },
+            title: { type: String },
+            publication: { type: String },
+            role: { type: String, default: "" }, // autor, colaborador, entrevistado, mencionado
+            url: { type: String, default: "" },
+            pubMonth: { type: Number, min: 1, max: 12 },
+            pubYear: { type: Number },
+            description: { type: String, default: "" },
+            isDraft: { type: Boolean, default: false },
+        }
+    ],
+
+    awards: [
+        {
+            name: { type: String },
+            type: { type: String, default: "" }, // Premio, Mención de honor, Beca, etc.
+            otherType: { type: String, default: "" }, // si type === "Otro"
+            issuer: { type: String },
+            awardMonth: { type: Number, min: 1, max: 12 },
+            awardYear: { type: Number },
+            description: { type: String, default: "" },
+            url: { type: String, default: "" },
+            isDraft: { type: Boolean, default: false },
+        }
+    ],
 
     profileCompleted: { type: Boolean, default: false },
     favorites: [
@@ -232,6 +265,7 @@ const UserSchema = new mongoose.Schema({
     randomKey: { type: Number, default: () => Math.random(), index: true },
 
     createdAt: { type: Date, default: Date.now },
+    lastProfileEditAt: { type: Date, default: null },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     isVerificatedProfesional: { type: Boolean, default: false },

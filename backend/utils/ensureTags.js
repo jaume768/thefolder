@@ -484,7 +484,86 @@ const ROLE_TAGS = [
   },
 
   // =====================
-  // 9. Comunicación & Editorial — NUEVO
+  // 9. Marketing & PR
+  // =====================
+  {
+    id: "g-brand-manager",
+    label: "Brand Manager",
+    type: "role",
+    status: "active",
+    group: "Marketing & PR",
+    order: 1,
+  },
+  {
+    id: "g-pr-comm",
+    label: "PR & Comunicación",
+    type: "role",
+    status: "active",
+    group: "Marketing & PR",
+    order: 2,
+  },
+  {
+    id: "g-copywriting",
+    label: "Copywriting de Moda",
+    type: "role",
+    status: "active",
+    group: "Marketing & PR",
+    order: 3,
+  },
+  {
+    id: "g-showroom",
+    label: "Showroom & Eventos",
+    type: "role",
+    status: "active",
+    group: "Marketing & PR",
+    order: 4,
+  },
+
+  // =====================
+  // 10. Digital & Social
+  // =====================
+  {
+    id: "g-social-media",
+    label: "Social Media Manager",
+    type: "role",
+    status: "active",
+    group: "Digital & Social",
+    order: 1,
+  },
+  {
+    id: "g-content-creator",
+    label: "Content Creator",
+    type: "role",
+    status: "active",
+    group: "Digital & Social",
+    order: 2,
+  },
+  {
+    id: "g-community",
+    label: "Community Manager",
+    type: "role",
+    status: "active",
+    group: "Digital & Social",
+    order: 3,
+  },
+  {
+    id: "g-influencer-mkt",
+    label: "Influencer Marketing",
+    type: "role",
+    status: "active",
+    group: "Digital & Social",
+    order: 4,
+  },
+  {
+    id: "g-ecommerce",
+    label: "E-commerce & SEO",
+    type: "role",
+    status: "active",
+    group: "Digital & Social",
+    order: 5,
+  },
+  // =====================
+  // 11. Comunicación & Editorial — NUEVO
   // =====================
   {
     id: "editor-moda",

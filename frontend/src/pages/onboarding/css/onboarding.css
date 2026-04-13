@@ -79,7 +79,7 @@ label.ob-field__label {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   width: 80%;
   margin-top: 8px;
 }
@@ -245,39 +245,151 @@ label.ob-field__label {
 }
 
 
-@media (max-width: 768px) { 
+/* ── Skip button ─────────────────────────────────────────────────────────── */
+
+.ob-skip {
+  margin-top: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  font-size: 13px;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+.ob-skip:hover {
+  text-decoration: underline;
+}
+
+/* ── SpecializationStep ──────────────────────────────────────────────────── */
+
+.ob-buttons--spec {
+  margin-top: 32px;
+}
+
+.ob-spec-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+
+.ob-spec-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.ob-spec-subtags {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.filters-country-cities .filters-tags {
+  border-radius: 12px;
+}
+
+.ob-custom-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
 
   .ob-type-options {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-      margin-top: 28px;
-      height: auto;
-      align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 92vw;
+    max-width: 400px;
+    margin-top: 20px;
+    height: auto;
+    align-items: stretch;
   }
 
   .ob-type-btn {
-    width: 80%;
+    width: 100%;
+    gap: 16px;
+    padding: 14px 16px;
   }
 
   .ob-field-row {
-  display: flex;
-  flex-direction: column;
-}
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-.ob-fields {
-  width: 90%;
-}
+  .ob-level-options {
+    width: 100%;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 
-.ob-level-btn {
-  min-height: 100px;
-}
+  .ob-level-btn {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 130px;
+    max-width: 200px;
+    min-height: 100px;
+  }
 
-.ob-level-options {
-  width: 100%;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+  .ob-fields {
+    width: 92vw;
+    max-width: 520px;
+  }
+
+  /* SpecializationStep */
+  .ob-spec-groups {
+    gap: 8px;
+  }
+
+  .ob-spec-groups .filter-country-tag {
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .ob-spec-groups .experience-tag-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ob-spec-subtags .filters-tags {
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .ob-spec-subtags .filter-tag {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .ob-custom-row {
+    flex-direction: column;
+  }
+
+  .ob-custom-row .ux-input {
+    width: 100%;
+  }
+
+  .ob-custom-row .filter-tag {
+    width: 100%;
+    padding: 10px 0;
+    text-align: center;
+  }
+
+  /* Buttons row */
+  .ob-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  /* Dots breathing room */
+  .ob-dots {
+    margin-top: 24px;
+  }
 
 }

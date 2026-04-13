@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaCheck, FaTimesCircle } from 'react-icons/fa';
 import '../controlPanel/css/MisOfertasSection.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const MisOfertasSection = ({ userRole, professionalType }) => {
     const navigate = useNavigate();
@@ -582,9 +583,9 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                     <div className="candidatos-left-column">
                                         <div className="candidatos-profile">
                                             <div className="candidatos-avatar">
-                                                <img 
-                                                    src={candidate.user.profile?.profilePicture || '/default-avatar.png'} 
-                                                    alt={candidate.user.fullName} 
+                                                <img
+                                                    src={clImg.avatar(candidate.user.profile?.profilePicture) || '/default-avatar.png'}
+                                                    alt={candidate.user.fullName}
                                                     className="candidatos-avatar-img"
                                                 />
                                             </div>
@@ -904,9 +905,9 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             >
                                 <div className="oferta-content">
                                     <div className="oferta-logo">
-                                        <img 
-                                            src={offer.companyLogo || '/multimedia/company-default.png'} 
-                                            alt={offer.companyName} 
+                                        <img
+                                            src={clImg.logo(offer.companyLogo) || '/multimedia/company-default.png'}
+                                            alt={offer.companyName}
                                         />
                                     </div>
                                     <div className="oferta-details">

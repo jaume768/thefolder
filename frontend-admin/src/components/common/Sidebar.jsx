@@ -12,7 +12,8 @@ import {
   FaBook,
   FaBuilding,
   FaUserCheck,
-  FaFlag
+  FaFlag,
+  FaChartLine
 } from 'react-icons/fa';
 
 const Sidebar = ({ isMobileOpen, toggleMobileSidebar }) => {
@@ -49,6 +50,11 @@ const Sidebar = ({ isMobileOpen, toggleMobileSidebar }) => {
           <NavLink to="/validacion" className="sidebar-link" onClick={closeSidebar}>
             <FaUserCheck className="sidebar-link-icon" />
             <span className="sidebar-link-text">Validación</span>
+          </NavLink>
+
+          <NavLink to="/actividad" className="sidebar-link" onClick={closeSidebar}>
+            <FaChartLine className="sidebar-link-icon" />
+            <span className="sidebar-link-text">Actividad</span>
           </NavLink>
 
           <NavLink to="/reportes" className="sidebar-link" onClick={closeSidebar}>

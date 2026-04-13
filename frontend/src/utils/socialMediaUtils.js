@@ -45,7 +45,7 @@ export const buildSocialMediaUrl = (platform, value) => {
             
         case 'pinterest':
             return `https://www.pinterest.com/${trimmedValue}/`;
-            
+
         case 'sitioweb':
         case 'website':
             // Para sitios web, añadir https:// si no lo tiene
@@ -115,7 +115,6 @@ export const extractUsernameFromUrl = (url, platform) => {
                 // Formato estándar: /username/
                 return pathname.replace(/^\/@?/, '').replace(/\/$/, '');
 
-                
             default:
                 return pathname.replace(/^\//, '').replace(/\/$/, '');
         }

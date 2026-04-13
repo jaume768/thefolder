@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaTimes } from "react-icons/fa";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import "./controlPanel/css/CreatePost.css";
+import { clImg } from "../utils/optimizeImage";
 
 const PROJECT_TYPES = [
   "Art Direction", "Backstage", "Beauty", "Brand Content",
@@ -45,6 +45,8 @@ const toTitleCase = (text) => {
 
 const EditPostModal = ({ post, onClose, onSaved }) => {
   const [images, setImages] = useState(post.images || []);
+  const [newFiles, setNewFiles] = useState([]); // { file, preview }
+  const [confirmDeletePost, setConfirmDeletePost] = useState(false);
 
   const [title, setTitle]               = useState(post.title || "");
   const [description, setDescription]   = useState(post.description || "");
@@ -88,6 +90,14 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
   const [activeTagIndex, setActiveTagIndex] = useState(null);
   const [loadingUsers,   setLoadingUsers]   = useState(false);
 
+  /* ── Cleanup object URLs on unmount ────────────────────────────────────── */
+  useEffect(() => {
+    return () => {
+      newFiles.forEach(({ preview }) => URL.revokeObjectURL(preview));
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ── Autocomplete search effect ─────────────────────────────────────────── */
   useEffect(() => {
     const search = async () => {
@@ -110,14 +120,63 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
     return () => clearTimeout(t);
   }, [searchTerm, activeTagIndex]);
 
-  /* ── Drag & drop ────────────────────────────────────────────────────────── */
-  const handleDragEnd = (result) => {
-    if (!result.destination || result.source.droppableId !== "editImageGrid") return;
-    const from = result.source.index;
-    const to   = result.destination.index;
-    if (from === to) return;
-    setImages((prev) => reorder(prev, from, to));
-    setImageCredits((prev) => reorder(prev, from, to));
+  /* ── Drag & drop (native HTML5, works correctly with CSS Grid) ──────────── */
+  const [dragSrcIdx,  setDragSrcIdx]  = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+
+  const handleDragStart = (e, idx) => {
+    setDragSrcIdx(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== dragOverIdx) setDragOverIdx(idx);
+  };
+
+  const handleDrop = (e, toIdx) => {
+    e.preventDefault();
+    const fromIdx = dragSrcIdx;
+    setDragSrcIdx(null);
+    setDragOverIdx(null);
+    if (fromIdx === null || fromIdx === toIdx) return;
+    setImages((prev) => reorder(prev, fromIdx, toIdx));
+    setImageCredits((prev) => reorder(prev, fromIdx, toIdx));
+  };
+
+  const handleDragEnd = () => {
+    setDragSrcIdx(null);
+    setDragOverIdx(null);
+  };
+
+  /* ── Image management ───────────────────────────────────────────────────── */
+  const totalImages = images.length + newFiles.length;
+
+  const handleRemoveExisting = (e, index) => {
+    e.stopPropagation();
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImageCredits((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveNew = (e, index) => {
+    e.stopPropagation();
+    setNewFiles((prev) => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleAddImages = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const remaining = 6 - totalImages;
+    const toAdd = files.slice(0, remaining).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setNewFiles((prev) => [...prev, ...toAdd]);
+    e.target.value = "";
   };
 
   /* ── PeopleTags helpers ─────────────────────────────────────────────────── */
@@ -182,6 +241,12 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
     setTitleTouched(true);
     if (!title.trim()) return;
 
+    // If all images removed, show confirmation instead of saving
+    if (images.length === 0 && newFiles.length === 0) {
+      setConfirmDeletePost(true);
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
@@ -214,6 +279,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       formData.append("imageTags",    JSON.stringify(imageTags));
       formData.append("images",       JSON.stringify(images));
       formData.append("projectTypes", JSON.stringify(projectTypes));
+      newFiles.forEach(({ file }) => formData.append("newImages", file));
 
       const res = await axios.put(`${backendUrl}/api/posts/${post._id}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -228,47 +294,119 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
     }
   };
 
+  const handleConfirmDeletePost = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const token      = localStorage.getItem("authToken");
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      await axios.delete(`${backendUrl}/api/posts/${post._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      onSaved(null); // signal post was deleted
+      onClose();
+    } catch (err) {
+      setError(err?.response?.data?.message || "Error al eliminar el post.");
+      setConfirmDeletePost(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   /* ── Render ─────────────────────────────────────────────────────────────── */
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
       <div className="cp-overlay" onClick={onClose}>
         <div className="cp-modal" onClick={(e) => e.stopPropagation()}>
 
           {/* ═══ IZQUIERDA — imágenes con drag & drop ═══════════════════ */}
           <div className="cp-left">
-            <Droppable droppableId="editImageGrid" direction="horizontal">
-              {(provided) => (
+            <div className="cp-grid">
+              {/* Existing images — draggable */}
+              {images.map((url, index) => (
                 <div
-                  className="cp-grid cp-grid--tooltip"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
+                  key={url}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={[
+                    "cp-grid__item",
+                    dragSrcIdx === index ? "is-dragging" : "",
+                    dragOverIdx === index && dragSrcIdx !== index ? "is-drop-target" : "",
+                  ].filter(Boolean).join(" ")}
                 >
-                  {images.map((url, index) => (
-                    <Draggable key={url} draggableId={url} index={index}>
-                      {(prov, snap) => (
-                        <div
-                          ref={prov.innerRef}
-                          {...prov.draggableProps}
-                          {...prov.dragHandleProps}
-                          className={`cp-grid__item${snap.isDragging ? " is-dragging" : ""}`}
-                        >
-                          <img
-                            src={url}
-                            alt={`Imagen ${index + 1}`}
-                            className="cp-grid__img"
-                            draggable={false}
-                          />
-                          <div className="cp-grid__num">{index + 1}</div>
-                          {index === 0 && <div className="cp-grid__cover">Portada</div>}
-                          {imageCredits[index]?.trim() && <div className="cp-grid__credit-dot" />}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+                  <img
+                    src={clImg.post(url)}
+                    alt={`Imagen ${index + 1}`}
+                    className="cp-grid__img"
+                    draggable={false}
+                  />
+                  <div className="cp-grid__num">{index + 1}</div>
+                  {index === 0 && <div className="cp-grid__cover">Portada</div>}
+                  {imageCredits[index]?.trim() && <div className="cp-grid__credit-dot" />}
+                  <button
+                    type="button"
+                    className="cp-grid__remove"
+                    onClick={(e) => handleRemoveExisting(e, index)}
+                    aria-label="Eliminar imagen"
+                  >
+                    <FaTimes />
+                  </button>
                 </div>
+              ))}
+
+              {/* New files (not yet uploaded) — no drag, always appended at end */}
+              {newFiles.map(({ preview }, index) => (
+                <div key={`new-${index}`} className="cp-grid__item">
+                  <img
+                    src={preview}
+                    alt={`Nueva imagen ${index + 1}`}
+                    className="cp-grid__img"
+                    draggable={false}
+                  />
+                  <div className="cp-grid__num">{images.length + index + 1}</div>
+                  <div className="cp-grid__new-badge">Nueva</div>
+                  <button
+                    type="button"
+                    className="cp-grid__remove"
+                    onClick={(e) => handleRemoveNew(e, index)}
+                    aria-label="Eliminar imagen"
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+              ))}
+
+              {/* Add slot */}
+              {totalImages < 6 && (
+                <label className="cp-grid__add" title="Añadir foto">
+                  +
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handleAddImages}
+                  />
+                </label>
               )}
-            </Droppable>
+            </div>
+
+            {/* Delete post confirmation */}
+            {confirmDeletePost && (
+              <div className="cp-delete-confirm">
+                <p>Sin imágenes, este post se eliminará. ¿Continuar?</p>
+                <div className="cp-delete-confirm__actions">
+                  <button type="button" className="cp-btn cp-btn--ghost" onClick={() => setConfirmDeletePost(false)}>
+                    Cancelar
+                  </button>
+                  <button type="button" className="cp-btn cp-btn--danger" onClick={handleConfirmDeletePost} disabled={isLoading}>
+                    {isLoading ? "Eliminando..." : "Eliminar post"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ═══ DERECHA — formulario ════════════════════════════════════ */}
@@ -357,7 +495,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                             <div className="person-inline">
                               <div className="tagged-person__avatar">
                                 {tag.avatar
-                                  ? <img src={tag.avatar} alt="" />
+                                  ? <img src={clImg.avatar(tag.avatar)} alt="" />
                                   : <span>{getInitials(rawName)}</span>
                                 }
                               </div>
@@ -365,7 +503,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                 <div className="autocomplete-wrapper">
                                   <input
                                     type="text"
-                                    placeholder="Nombre o busca @usuario"
+                                    placeholder="Nombre o busca @usuario dentro de THEFOLDER"
                                     name="name"
                                     value={tag.name}
                                     onChange={(e) => handlePeopleTagChange(index, e)}
@@ -407,7 +545,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                                 onClick={() => selectUser(user)}
                                               >
                                                 <img
-                                                  src={user.profile?.profilePicture || "/multimedia/usuarioDefault.jpg"}
+                                                  src={clImg.avatar(user.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"}
                                                   alt={user.username}
                                                   className="autocomplete-avatar"
                                                 />
@@ -462,10 +600,10 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                     <div className="cp-credits-list">
                       {images.map((url, i) => (
                         <div key={url} className="cp-credit-item">
-                          <img src={url} alt="" className="cp-credit-item__img" />
+                          <img src={clImg.post(url)} alt="" className="cp-credit-item__img" />
                           <input
                             className="cp-credit-item__input ux-input"
-                            placeholder="Escribe tus créditos (Falda, zapatos...)"
+                            placeholder="Escribe tus créditos (Falda de NouNou, zapatos de...)"
                             value={imageCredits[i] || ""}
                             onChange={(e) =>
                               setImageCredits((prev) => {
@@ -556,7 +694,6 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
 
         </div>
       </div>
-    </DragDropContext>
   );
 };
 

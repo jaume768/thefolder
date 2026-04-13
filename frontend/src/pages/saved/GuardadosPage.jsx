@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaTimes, FaCheck, FaFolder } from 'react-icons/fa';
 import '../../components/controlPanel/css/Guardados.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const Guardados = () => {
   const [savedPosts, setSavedPosts] = useState([]);
@@ -38,6 +39,7 @@ const Guardados = () => {
   // ✅ Crear carpeta rápida cuando no hay ninguna (inline picker + bulk modal)
   const [quickFolderName, setQuickFolderName] = useState('');
   const [isQuickCreating, setIsQuickCreating] = useState(false);
+  const [showCreateInModal, setShowCreateInModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -101,6 +103,26 @@ const Guardados = () => {
     setInlinePickerFor(prev => (prev === pid ? null : pid));
   };
 
+  const handleUnsaveImage = async (post, e) => {
+    e.stopPropagation();
+    const pid = getPostId(post);
+    const imageUrl = getImageUrl(post);
+    if (!pid) return;
+    const token = localStorage.getItem('authToken');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // Quitar optimísticamente de la lista
+    setIdeasSinOrganizar(prev => prev.filter(p => getKey(p) !== getKey(post)));
+    try {
+      await axios.delete(`${backendUrl}/api/users/favorites/${pid}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { imageUrl },
+      });
+    } catch {
+      // Si falla, restaurar
+      setIdeasSinOrganizar(prev => [post, ...prev]);
+    }
+  };
+
   const navigateToPost = (post) => {
     if (!post) return;
     const pid = getPostId(post);
@@ -148,7 +170,9 @@ const Guardados = () => {
 
     const backToOrganizeModal = () => {
     setShowSelectFolderModal(false);
-    setShowOrganizeModal(true); // 👈 vuelves al modal anterior con la selección intacta
+    setShowOrganizeModal(true);
+    setShowCreateInModal(false);
+    setQuickFolderName('');
     };
 
   // ✅ Derivar selectedImages desde selectedKeys + ideasSinOrganizar (siempre consistente)
@@ -313,6 +337,7 @@ const Guardados = () => {
 
           const unorganizedImages = filterOrganizedImages(processedImages, allFolders);
           setIdeasSinOrganizar(unorganizedImages);
+          setActiveTab(unorganizedImages.length > 0 ? 'imagenes' : 'carpetas');
         }
       } catch (error) {
         setNotification({ show: true, message: 'Error al cargar los datos. Recarga la página.', type: 'error' });
@@ -516,16 +541,16 @@ const Guardados = () => {
         <div className="guardados-tabs-wrapper">
           <div className="guardados-tabs">
             <div
-              className={`tab-save ${activeTab === 'carpetas' ? 'active' : ''}`}
-              onClick={() => setActiveTab('carpetas')}
-            >
-              Carpetas
-            </div>
-            <div
               className={`tab-save ${activeTab === 'imagenes' ? 'active' : ''}`}
               onClick={() => setActiveTab('imagenes')}
             >
               Ordena tus imágenes
+            </div>
+            <div
+              className={`tab-save ${activeTab === 'carpetas' ? 'active' : ''}`}
+              onClick={() => setActiveTab('carpetas')}
+            >
+              Carpetas
             </div>
           </div>
 
@@ -676,7 +701,7 @@ const Guardados = () => {
                         className="delete-tablero-button"
                         onClick={(e) => confirmDeleteFolder(folder._id, e)}
                       >
-                        <img src="/iconos/trash-delete.svg" alt="Eliminar" className="button-icon" />
+                        <img src="/iconos/bin.png" alt="Eliminar" className="button-icon" style={{width:"12px"}} />
                       </button>
                     </div>
                   </div>
@@ -735,12 +760,21 @@ const Guardados = () => {
                       {/* ✅ Botón editar -> abre selector inline (1 paso)
                           Si ya está movida/guardando, lo ocultamos */}
                       {!isOpen && !isMoved && !isSaving && (
-                        <button
-                          className="idea-edit-button"
-                          onClick={(e) => handleEditPost(post, e)}
-                        >
-                          <img src="/iconos/edit-card.svg" alt="Editar" className="button-icon invert" />
-                        </button>
+                        <>
+                          <button
+                            className="idea-edit-button"
+                            onClick={(e) => handleEditPost(post, e)}
+                          >
+                            <img src="/iconos/edit-card.svg" alt="Editar" className="button-icon invert" />
+                          </button>
+                          <button
+                            className="idea-trash-button"
+                            onClick={(e) => handleUnsaveImage(post, e)}
+                            title="Quitar de guardados"
+                          >
+                            <img src="/iconos/bin.png" alt="Quitar" className="button-icon invert" style={{ width: '14px' }} />
+                          </button>
+                        </>
                       )}
 
                       {/* ✅ Selector inline elegante (Pinterest-like) */}
@@ -932,7 +966,7 @@ const Guardados = () => {
                   const key = getKey(image);
                   return (
                     <div key={image._id || key} className="selected-image-preview">
-                      <img src={url} alt="Imagen seleccionada" loading="lazy" decoding="async" />
+                      <img src={clImg.post(url)} alt="Imagen seleccionada" loading="lazy" decoding="async" />
                     </div>
                   );
                 })}
@@ -974,34 +1008,73 @@ const Guardados = () => {
                   </div>
                 ) : (
                   <>
-                    <select className="folder-select" defaultValue="" ref={folderBulkSelectRef}>
-                      <option value="" disabled>Selecciona una carpeta</option>
-                      {folders.map(folder => (
-                        <option key={folder._id} value={folder._id}>
-                          {folder.name}
-                        </option>
-                      ))}
-                    </select>
+                    {!showCreateInModal ? (
+                      <>
+                        <select className="folder-select" defaultValue="" ref={folderBulkSelectRef}>
+                          <option value="" disabled>Selecciona una carpeta</option>
+                          {folders.map(folder => (
+                            <option key={folder._id} value={folder._id}>
+                              {folder.name}
+                            </option>
+                          ))}
+                        </select>
 
-                    <div className="folder-select-modal-actions">
-                      <button className="cancel-button" onClick={backToOrganizeModal}>
-                        Cancelar
-                      </button>
-                      <button
-                        className="confirm-button"
-                        onClick={() => {
-                          const folderId = folderBulkSelectRef.current?.value;
-                          if (folderId) {
-                            moveSelectedImagesToFolder(folderId);
-                          } else {
-                            setNotification({ show: true, message: 'Selecciona una carpeta', type: 'error' });
-                            setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-                          }
-                        }}
-                      >
-                        Guardar
-                      </button>
-                    </div>
+                        <button
+                          className="nueva-carpeta-toggle"
+                          onClick={() => setShowCreateInModal(true)}
+                        >
+                          + Nueva carpeta
+                        </button>
+
+                        <div className="folder-select-modal-actions">
+                          <button className="cancel-button" onClick={backToOrganizeModal}>
+                            Cancelar
+                          </button>
+                          <button
+                            className="confirm-button"
+                            onClick={() => {
+                              const folderId = folderBulkSelectRef.current?.value;
+                              if (folderId) {
+                                moveSelectedImagesToFolder(folderId);
+                              } else {
+                                setNotification({ show: true, message: 'Selecciona una carpeta', type: 'error' });
+                                setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
+                              }
+                            }}
+                          >
+                            Guardar
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <input
+                          className="tablero-name-input"
+                          value={quickFolderName}
+                          onChange={(e) => setQuickFolderName(e.target.value)}
+                          placeholder="Nombre de la carpeta"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              createFolderQuick((f) => moveSelectedImagesToFolder(f._id));
+                            }
+                          }}
+                        />
+                        <div className="folder-select-modal-actions">
+                          <button className="cancel-button" onClick={() => { setShowCreateInModal(false); setQuickFolderName(''); }}>
+                            Volver
+                          </button>
+                          <button
+                            className="confirm-button"
+                            disabled={!quickFolderName.trim() || isQuickCreating}
+                            onClick={() => createFolderQuick((f) => moveSelectedImagesToFolder(f._id))}
+                          >
+                            {isQuickCreating ? 'Creando...' : 'Crear y guardar'}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>

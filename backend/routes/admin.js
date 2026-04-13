@@ -54,6 +54,7 @@ router.post('/posts', upload.array('images', 10), adminController.createPost);
 router.put('/posts/:postId', upload.array('images', 10), adminController.updatePost);
 router.delete('/posts/:postId', adminController.deletePost);
 router.put('/posts/:postId/staff-pick', adminController.updatePostStaffPick);
+router.put('/posts/:postId/hidden-from-explorer', adminController.updatePostHiddenFromExplorer);
 
 // Gestión de posts de blog
 router.get('/blog', adminController.getAllBlogPosts);
@@ -78,6 +79,9 @@ router.delete('/schools/:schoolId', adminController.deleteSchool);
 
 // Dashboard
 router.get('/stats', adminController.getDashboardStats);
+
+// Actividad de usuarios
+router.get('/user-activity', adminController.getUserActivity);
 
 // Creación de administradores (sólo accesible por otros administradores)
 router.post('/create-admin', adminController.createAdmin);

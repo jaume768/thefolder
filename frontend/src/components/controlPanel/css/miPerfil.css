@@ -1270,7 +1270,11 @@ img.pdf-icon {
     }
 
     .ux-editprofile-section {
-        padding: 0 24px;
+        padding: 0px;
+    }
+
+    .ux-btn {
+        width: 100%;
     }
 
 
@@ -1444,7 +1448,7 @@ ul {
 }
 
 li strong {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 500;
 }
 

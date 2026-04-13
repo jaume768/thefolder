@@ -32,6 +32,7 @@ export default function LanguagesSection({
     <div id="sec-cv-idiomas" className="ux-anchor-target">
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="language-0">
+          <img src="/iconos/languages.png" className="ux-section-icon" alt="" />
           Idiomas
         </label>
 
@@ -106,7 +107,22 @@ export default function LanguagesSection({
                       checked={row.level === "advanced"}
                       onChange={() => setLanguageLevel(idx, "advanced")}
                     />
-                    <span>Avanzado / Nativo</span>
+                    <span>Avanzado</span>
+                  </label>
+
+                  <label
+                    className="ux-exp-check"
+                    htmlFor={`languageLevel-native-${idx}`}
+                    style={{ marginTop: 0 }}
+                  >
+                    <input
+                      id={`languageLevel-native-${idx}`}
+                      type="radio"
+                      name={`lang-level-${idx}`}
+                      checked={row.level === "native"}
+                      onChange={() => setLanguageLevel(idx, "native")}
+                    />
+                    <span>Nativo</span>
                   </label>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaUser, FaImage, FaBriefcase, FaGraduationCap, FaSpinner, FaArrowRight } from 'react-icons/fa';
 import '../controlPanel/css/searchResults.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const SearchResults = ({ results, onResultClick, isLoading, onViewAll }) => {
 const { users = [], posts = [], offers = [], educationalOffers = [] } = results || {};
@@ -46,7 +47,7 @@ const totalResults = users.length + posts.length;
                             >
                                 <div className="result-image-profile">
                                     {user.profile && user.profile.profilePicture ? (
-                                        <img src={user.profile.profilePicture} alt={user.fullName || user.companyName || 'Usuario'} />
+                                        <img src={clImg.avatar(user.profile.profilePicture)} alt={user.fullName || user.companyName || 'Usuario'} />
                                     ) : (
                                         <div className="placeholder-image"><FaUser /></div>
                                     )}
@@ -80,7 +81,7 @@ const totalResults = users.length + posts.length;
                             >
                                 <div className="result-image">
                                     {post.mainImage ? (
-                                        <img src={post.mainImage} alt={post.title} />
+                                        <img src={clImg.post(post.mainImage)} alt={post.title} />
                                     ) : (
                                         <div className="placeholder-image"><FaImage /></div>
                                     )}

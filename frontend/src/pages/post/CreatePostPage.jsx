@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FaTimes, FaExclamationCircle } from 'react-icons/fa';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PeopleTagsList from "../../components/PeopleTagsList";
 import '../../components/controlPanel/css/CreatePost.css';
+import { clImg } from '../../utils/optimizeImage';
 
 // ── Tipos de proyecto ────────────────────────────────────────────────────────
 const PROJECT_TYPES = [
@@ -330,9 +331,30 @@ const CreatePost = ({ onClose } = {}) => {
   const handleImageUpload = (e) => {
     setImageUploadErrors([]);
     const files = Array.from(e.target.files);
-    if (files.length) {
+    if (!files.length) { e.target.value = ""; return; }
+
+    const MAX_BYTES = 20 * 1024 * 1024;
+    const MAX_GIF_BYTES = 10 * 1024 * 1024;
+
+    const errors = [];
+    const valid = [];
+
+    for (const f of files) {
+      const isGif = f.type === 'image/gif';
+      if (isGif && f.size > MAX_GIF_BYTES) {
+        errors.push(`"${f.name}" es un GIF y supera los 10 MB permitidos. Intenta reducir su peso antes de subirlo.`);
+      } else if (!isGif && f.size > MAX_BYTES) {
+        errors.push(`"${f.name}" supera los 20 MB permitidos.`);
+      } else {
+        valid.push(f);
+      }
+    }
+
+    if (errors.length > 0) setImageUploadErrors(errors);
+
+    if (valid.length) {
       const slots = 6 - images.length;
-      setImages(prev => [...prev, ...files.slice(0, slots)]);
+      setImages(prev => [...prev, ...valid.slice(0, slots)]);
     }
     e.target.value = "";
   };
@@ -663,7 +685,7 @@ const CreatePost = ({ onClose } = {}) => {
                                 <div className="autocomplete-wrapper">
                                   <input
                                     type="text"
-                                    placeholder="Nombre o busca @usuario"
+                                    placeholder="Nombre o busca @usuario dentro de THEFOLDER"
                                     name="name"
                                     value={tag.name}
                                     onChange={e => handlePeopleTagChange(index, e)}
@@ -687,7 +709,7 @@ const CreatePost = ({ onClose } = {}) => {
                                         : suggestedUsers.length > 0
                                           ? suggestedUsers.map(user => (
                                             <div key={user._id} className="autocomplete-item" onMouseDown={e => e.preventDefault()} onClick={() => selectUser(user)}>
-                                              <img src={user.profile?.profilePicture || "/multimedia/usuarioDefault.jpg"} alt={user.username} className="autocomplete-avatar" />
+                                              <img src={clImg.avatar(user.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"} alt={user.username} className="autocomplete-avatar" />
                                               <div className="autocomplete-user-info">
                                                 <span className="username">@{user.username}</span>
                                                 <span className="registered-badge">Registrado ✅</span>
@@ -726,7 +748,7 @@ const CreatePost = ({ onClose } = {}) => {
                                 <img src={imagePreviews[i] || ""} alt="" className="cp-credit-item__img" />
                                 <input
                                   className="cp-credit-item__input ux-input"
-                                  placeholder="Escribe tus créditos (Falda, zapatos...)"
+                                  placeholder="Escribe tus créditos (Falda de NouNou, zapatos de...)"
                                   value={imageNotes[i] || ""}
                                   onChange={e => setImageNotes(prev => { const n = [...prev]; n[i] = e.target.value; return n; })}
                                 />

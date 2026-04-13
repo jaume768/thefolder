@@ -19,7 +19,8 @@ export default function CookieBanner() {
 
   return (
     <>
-      <div className="tf-cookie tf-only-desktop" role="dialog" aria-label="Cookies">
+      <div className="tf-cookie__overlay" aria-hidden="true" onClick={accept} />
+      <div className="tf-cookie" role="dialog" aria-label="Cookies">
         <button type="button" className="cp-close" onClick={accept} aria-label="Cerrar">
           <FaTimes />
         </button>
@@ -38,7 +39,7 @@ export default function CookieBanner() {
         </a>
       </div>
 
-      <div className="tf-cookieSheet tf-only-mobile" role="dialog" aria-label="Cookies">
+      <div className="tf-cookieSheet" role="dialog" aria-label="Cookies">
         <div className="tf-cookieSheet__overlay" aria-hidden="true" />
         <div className="tf-cookieSheet__panel">
           <button type="button" className="cp-close" onClick={accept} aria-label="Cerrar">

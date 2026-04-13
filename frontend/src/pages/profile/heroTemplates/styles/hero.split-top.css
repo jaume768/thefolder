@@ -71,7 +71,7 @@
 
 .hero--split-top .st__image {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 97px);
   object-fit: cover;
   display: block;
   object-position: center;

@@ -1,5 +1,6 @@
 import React from 'react';
 import '../css/professionalExperience.css';
+import { clImg } from '../../../utils/optimizeImage';
 
 const ProfessionalExperienceSection = ({ professionalFormation }) => {
     // No renderizar la sección si no hay experiencia profesional o está vacía
@@ -28,8 +29,8 @@ const ProfessionalExperienceSection = ({ professionalFormation }) => {
         }
         
         // Calcular diferencia en meses
-        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                       (endDate.getMonth() - startDate.getMonth());
+        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                       (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
             return `${months} ${months === 1 ? 'mes' : 'meses'}`;
@@ -65,7 +66,7 @@ const ProfessionalExperienceSection = ({ professionalFormation }) => {
                     <div key={index} className="experience-item">
                         <div className="experience-logo">
                             {exp.companyLogo ? (
-                                <img src={exp.companyLogo} alt={exp.institution || 'Empresa'} />
+                                <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || 'Empresa'} />
                             ) : (
                                 <div className="experience-logo-placeholder">
                                     {exp.institution ? exp.institution.charAt(0).toUpperCase() : 'E'}

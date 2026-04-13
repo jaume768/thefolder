@@ -14,9 +14,16 @@ export default function Footer() {
         </div>
 
         <nav className="tf-footer__nav" aria-label="Enlaces del pie">
-          <a className="tf-footer__link" href="/contacto">Contacto</a>
+          <span className="tf-footer__link tf-footer__contact">
+            Contacto
+            <span className="tf-footer__contact-tip">
+              <a href="mailto:thefolderworld@gmail.com">thefolderworld@gmail.com</a>
+            </span>
+          </span>
+          <a className="tf-footer__link" href="/legal">Aviso Legal</a>
           <a className="tf-footer__link" href="/terminos">Términos</a>
-          <a className="tf-footer__link" href="/privacidad">Privacidad</a>
+          <a className="tf-footer__link" href="/privacy">Privacidad</a>
+          <a className="tf-footer__link" href="/cookies">Cookies</a>
         </nav>
       </div>
     </footer>

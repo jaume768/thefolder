@@ -1,7 +1,8 @@
 // src/components/controlPanel/editProfile/tabs/DirectorioTab.jsx
 import React, { useRef, useState } from "react";
+import { clImg } from "../../../../utils/optimizeImage";
 import editCard from "../../../../../public/iconos/edit-card.svg";
-import trashDelete from "../../../../../public/iconos/trash-delete.svg";
+import trashDelete from "../../../../../public/iconos/bin.png";
 
 export default function DirectorioTab({
   coverImage,
@@ -49,7 +50,7 @@ export default function DirectorioTab({
         >
           {uploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
           {coverImage ? (
-            <img src={coverImage} alt="Imagen del directorio" />
+            <img src={clImg.thumb(coverImage)} alt="Imagen del directorio" />
           ) : (
             <div className="ux-iv-placeholder">
               <span className="ux-iv-camera">📷</span>
@@ -69,7 +70,7 @@ export default function DirectorioTab({
             type="button"
             onClick={onDelete}
           >
-            <img src={trashDelete} className="ux-icon" alt="Borrar" /> Borrar
+            <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} /> Borrar
           </button>
         </div>
 

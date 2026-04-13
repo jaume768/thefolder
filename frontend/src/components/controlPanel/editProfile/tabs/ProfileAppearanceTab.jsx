@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import MiniHeroPreview from "../templates/MiniHeroPreview";
 import GalleryPreview from "../templates/GalleryPreview";
 import editCard from "../../../../../public/iconos/edit-card.svg";
-import trashDelete from "../../../../../public/iconos/trash-delete.svg";
+import trashDelete from "../../../../../public/iconos/bin.png";
 
 const GALLERY_OPTIONS = [
   {
@@ -55,7 +55,9 @@ export default function ProfileAppearanceTab({
   const isClassic    = (profileLayout || "default") === "default";
   const isDesktop    = coverView === "desktop";
   const headerRef    = isDesktop ? headerDesktopFileRef : headerMobileFileRef;
-  const headerImage  = isDesktop ? draft?.featuredHeaderImageDesktop : draft?.featuredHeaderImageMobile;
+  const headerImage  = isDesktop
+    ? draft?.featuredHeaderImageDesktop
+    : (draft?.featuredHeaderImageMobile || draft?.featuredHeaderImageDesktop);
   const selectedTemplate = isDesktop ? selectedTemplateDesktop : selectedTemplateMobile;
 
   const closePortadaModal = () => setPortadaModalOpen(false);
@@ -115,7 +117,35 @@ export default function ProfileAppearanceTab({
             {isClassic && <div className="ux-template-check">✓</div>}
           </button>
 
-          {/* Opción 2 — Índice editorial */}
+          {/* Opción 2 — Studio Gallery (WIP: oculto hasta terminar desarrollo)
+          <button
+            type="button"
+            className={`ux-template-card ux-gallery-option ${profileLayout === "studio-gallery" ? "is-selected" : ""}`}
+            onClick={() => setProfileLayout("studio-gallery")}
+          >
+            <div className="ux-layout-preview ux-layout-preview--studio">
+              <div className="ulp-content ulp-content--full" style={{ flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, paddingTop: 8 }}>
+                  <div className="ulp-line" style={{ width: "60%" }} />
+                  <div className="ulp-line ulp-line--short" style={{ width: "40%" }} />
+                </div>
+                <div className="ulp-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)", gap: 2, width: "100%" }}>
+                  <div className="ulp-thumb" />
+                  <div className="ulp-thumb ulp-thumb--tall" />
+                  <div className="ulp-thumb" />
+                  <div className="ulp-thumb ulp-thumb--tall" />
+                  <div className="ulp-thumb" />
+                  <div className="ulp-thumb ulp-thumb--tall" />
+                </div>
+              </div>
+            </div>
+            <div className="ux-gallery-option-label">Studio Gallery (BETA)</div>
+            <div className="ux-gallery-option-desc">Cabecera centrada, grid uniforme de 3 columnas.</div>
+            {profileLayout === "studio-gallery" && <div className="ux-template-check">✓</div>}
+          </button>
+          */}
+
+          {/* Opción 3 — Índice editorial */}
           <button
             type="button"
             className={`ux-template-card ux-gallery-option ${profileLayout === "index-gallery" ? "is-selected" : ""}`}
@@ -172,7 +202,7 @@ export default function ProfileAppearanceTab({
                   className="new-tablero-button new-profile"
                   onClick={() => setPortadaModalOpen(true)}
                 >
-                  <img src="/iconos/more.svg" alt="Cambiar" className="button-icon invert" />
+                  <img src="/iconos/add.png" alt="Cambiar" className="button-icon invert" />
                   Cambiar foto de portada
                 </button>
 
@@ -356,7 +386,7 @@ export default function ProfileAppearanceTab({
                   type="button"
                   onClick={() => deleteHeaderVariant(isDesktop ? "desktop" : "mobile")}
                 >
-                  <img src={trashDelete} className="ux-icon" alt="Borrar" /> Borrar
+                  <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} /> Borrar
                 </button>
               </div>
 

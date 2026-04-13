@@ -4,18 +4,20 @@ import TypeStep from './steps/TypeStep';
 import UsernameStep from './steps/UsernameStep';
 import PersonalDataStep from './steps/PersonalDataStep';
 import CreativeLevelStep from './steps/CreativeLevelStep';
+import SpecializationStep from './steps/SpecializationStep';
 import PhotoStep from './steps/PhotoStep';
 import '../css/complete-registration.css';
 import './css/onboarding.css';
 
 const INITIAL_DATA = {
-  accountType: '',
+  accountType: 'creative', // TypeStep oculto temporalmente — valor fijo
   username: '',
   firstName: '',
   lastName: '',
   country: '',
   city: '',
   creativeLevel: null,
+  professionalTags: [],
   photo: null,
 };
 
@@ -46,7 +48,7 @@ const OnboardingWizard = () => {
   const location = useLocation();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2); // TypeStep oculto temporalmente — empieza en UsernameStep
   const [data, setData] = useState(INITIAL_DATA);
   const suggestedUsername = suggestUsername(getEmailFromToken());
   const [submitting, setSubmitting] = useState(false);
@@ -79,7 +81,10 @@ const OnboardingWizard = () => {
   // ── Paso 4: nivel creativo ───────────────────────────────────────────
   const handleCreativeLevelNext = () => setStep(5);
 
-  // ── Paso 5: foto → submit ─────────────────────────────────────────────
+  // ── Paso 5: especialización ──────────────────────────────────────────
+  const handleSpecializationNext = () => setStep(6);
+
+  // ── Paso 6: foto → submit ─────────────────────────────────────────────
   const handlePhotoNext = async () => {
     if (!data.photo) return;
     setError('');
@@ -118,6 +123,7 @@ const OnboardingWizard = () => {
           creativeLevel: data.creativeLevel,
           city: data.city,
           country: data.country,
+          professionalTags: data.professionalTags,
         }),
       });
 
@@ -157,7 +163,7 @@ const OnboardingWizard = () => {
           suggestedUsername={suggestedUsername}
           onChange={v => setField('username', v)}
           onNext={handleUsernameNext}
-          onBack={() => setStep(1)}
+          onBack={null}
         />
       )}
 
@@ -183,11 +189,21 @@ const OnboardingWizard = () => {
       )}
 
       {step === 5 && (
+        <SpecializationStep
+          professionalTags={data.professionalTags}
+          onChange={v => setField('professionalTags', v)}
+          onNext={handleSpecializationNext}
+          onBack={() => setStep(4)}
+        />
+      )}
+
+      {step === 6 && (
         <PhotoStep
           photo={data.photo}
-          onChange={v => setField('photo', v)}
+          onChange={v => { setField('photo', v); setError(''); }}
+          onClearError={() => setError('')}
           onNext={handlePhotoNext}
-          onBack={() => setStep(4)}
+          onBack={() => setStep(5)}
           submitting={submitting}
           error={error}
         />

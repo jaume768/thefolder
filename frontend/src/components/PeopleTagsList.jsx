@@ -91,28 +91,7 @@ export default function PeopleTagsList({
               className={`tagged-person ${clickableClass}`}
               onClick={handleClick}
             >
-              <span className="tagged-person__hovercard" aria-hidden="true">
-                <span className="tagged-person__hovercard-inner">
-                  {isRegistered ? (
-                    avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt=""
-                        className="tagged-person__hover-avatar"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className="tagged-person__hover-fallback">
-                        {safeInitials(displayUserText)}
-                      </span>
-                    )
-                  ) : isExternalClickable ? (
-                    <span className="tagged-person__hover-external">[link externo ↗]</span>
-                  ) : null}
-                </span>
-              </span>
-
-              <div className="tagged-person__meta">
+<div className="tagged-person__meta">
                 <div className="tagged-person__role">
                   {role || "Rol"} <span>/</span>
                 </div>

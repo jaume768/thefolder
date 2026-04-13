@@ -233,6 +233,7 @@ const CompleteRegistration = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === " ") e.preventDefault();
+              if (e.key === "Enter" && canContinue) handleNext();
             }}
             onPaste={(e) => {
               e.preventDefault();

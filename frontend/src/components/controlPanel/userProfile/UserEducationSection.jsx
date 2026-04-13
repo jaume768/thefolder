@@ -1,6 +1,7 @@
 // UserEducationSection.jsx
 import React from 'react';
 import '../css/professionalExperience.css';
+import { clImg } from '../../../utils/optimizeImage';
 
 const UserEducationSection = ({ education }) => {
   // No renderizar la sección si no hay educación o está vacía
@@ -9,7 +10,7 @@ const UserEducationSection = ({ education }) => {
   // Filtrar para asegurarse que al menos hay un elemento con datos relevantes
   const validEducation = education.filter(
     (edu) =>
-      edu.formationName?.trim() || edu.institution?.trim() || edu.otherInstitution?.trim()
+      !edu.isDraft && (edu.formationName?.trim() || edu.institution?.trim() || edu.otherInstitution?.trim())
   );
   if (validEducation.length === 0) return null;
 
@@ -28,10 +29,10 @@ const UserEducationSection = ({ education }) => {
       return '';
     }
 
-    // Calcular diferencia en meses
+    // Calcular diferencia en meses (+1: el mes de inicio ya cuenta como 1 mes)
     const months =
       (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-      (endDate.getMonth() - startDate.getMonth());
+      (endDate.getMonth() - startDate.getMonth()) + 1;
 
     if (months < 12) {
       return `${months} ${months === 1 ? 'mes' : 'meses'}`;
@@ -81,7 +82,7 @@ const UserEducationSection = ({ education }) => {
             <div className="experience-logo">
               {edu.institutionLogo ? (
                 <img
-                  src={edu.institutionLogo}
+                  src={clImg.logo(edu.institutionLogo)}
                   alt={edu.institution || edu.otherInstitution || 'Institución'}
                 />
               ) : (

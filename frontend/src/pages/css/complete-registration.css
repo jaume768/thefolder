@@ -32,7 +32,7 @@
   align-items: center;
   text-align: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100dvh;
 }
 
 button.button.header-left-link.ob-top-logo {
@@ -48,11 +48,10 @@ button.button.header-left-link.ob-top-logo {
   font-size: 24px;
   line-height: 26px;
   letter-spacing: 0.04em;
-  margin: 0 0 14px;
 }
 
 .ob-subtitle{
-  margin: 0 0 34px;
+  margin: 0 0 24px;
   font-size: 14px;
   line-height: 18px;
   color: #666;
@@ -176,6 +175,8 @@ button.button.header-left-link.ob-top-logo {
   letter-spacing: 0.06em;
   font-weight: 400;
   cursor: pointer;
+  gap: 24px;
+  margin-left: auto;
 }
 
 .ob-cta:disabled{
@@ -185,7 +186,7 @@ button.button.header-left-link.ob-top-logo {
 
 /* Dots */
 .ob-dots{
-  margin-top: 60px;
+  margin-top: 40px;
   display: flex;
   gap: 6px;
   align-items: center;
@@ -206,25 +207,38 @@ button.button.header-left-link.ob-top-logo {
 
 /* ✅ Responsive */
 @media (max-width: 768px){
-  .ob-center{ justify-content: center; }
-  .ob-title{ font-size: 28px; }
+  .ob-center{
+    padding-top: 80px;
+    padding-bottom: 48px;
+    gap: 16px;
+  }
+  .ob-title{ font-size: 24px; }
   .ob-subtitle{ font-size: 14px; margin-bottom: 4px; }
 
-  .ob-prefix{ font-size: 28px; }
-  .ob-input{ font-size: 28px; width: 320px; }
+  .ob-username{
+    width: 92vw;
+    padding-bottom: 14px;
+  }
+
+  .ob-prefix{ font-size: 22px; }
+  .ob-input{ font-size: 22px; width: auto; flex: 1; min-width: 0; }
   .ob-check{ top: 6px; }
   .ob-hint{ font-size: 14px; }
-  .ob-dots{ margin-top: 56px; }
+  .ob-dots{ margin-top: 24px; }
 
   .ob-status {
     top: 2px !important;
   }
+
+  /* Remove standalone top margin when inside buttons row */
+  .ob-buttons .ob-cta {
+    margin-top: 0;
+  }
 }
 
 @media (max-width: 420px){
-  .ob-title{ font-size: 24px; }
-  .ob-prefix{ font-size: 24px; }
-  .ob-input{ font-size: 24px; width: 320px; }
+  .ob-prefix{ font-size: 20px; }
+  .ob-input{ font-size: 20px; }
 }
 
 /* aparece al hacer focus o si hay texto */
@@ -357,8 +371,7 @@ button.button.header-left-link.ob-top-logo {
 
 /* Botón volver atrás */
 .ob-back{
-    height: 100%;
-  margin-top: 14px;
+  height: 100%;
   background: none;
   border: none;
   padding: 0;
@@ -380,6 +393,7 @@ button.button.header-left-link.ob-top-logo {
     justify-content: space-between;
     gap: 12px;
     width: min(520px, 92vw);
+    align-items: center;
 }
 
 /* ===== Foto de perfil (Paso 3) ===== */

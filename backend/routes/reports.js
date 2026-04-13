@@ -23,7 +23,7 @@ router.post('/', ensureAuthenticated, async (req, res, next) => {
 });
 
 // GET /api/reports — admin: listar reportes
-router.get('/', ensureAdmin, async (req, res, next) => {
+router.get('/', ensureAuthenticated, ensureAdmin, async (req, res, next) => {
   try {
     const status = req.query.status || '';
     const query = status ? { status } : {};
@@ -39,7 +39,7 @@ router.get('/', ensureAdmin, async (req, res, next) => {
 });
 
 // PATCH /api/reports/:id — admin: actualizar estado
-router.patch('/:id', ensureAdmin, async (req, res, next) => {
+router.patch('/:id', ensureAuthenticated, ensureAdmin, async (req, res, next) => {
   try {
     const { status } = req.body;
     if (!['pending', 'reviewed', 'resolved'].includes(status)) {

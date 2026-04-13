@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import ReactDOM from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FaTimes } from "react-icons/fa";
@@ -43,7 +44,7 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
   const [showResults, setShowResults] = useState(false);
   const [showFullScreenSearch, setShowFullScreenSearch] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [searchTimeout, setSearchTimeout] = useState(null);
+  const searchTimeoutRef = useRef(null);
 
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -236,30 +237,30 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    if (searchTimeout) clearTimeout(searchTimeout);
+    clearTimeout(searchTimeoutRef.current);
     if (!value || value.trim() === "") {
       setSearchResults(null);
       setShowResults(false);
       setShowFullScreenSearch(false);
       return;
     }
-    const timeout = setTimeout(async () => {
+    searchTimeoutRef.current = setTimeout(async () => {
       if (value.trim().length >= 2) {
         const results = await performSearch(value);
         if (results && value.trim().length >= 2) setShowResults(true);
       }
     }, 300);
-    setSearchTimeout(timeout);
   };
 
   const handleSearch = async (e) => {
     if (e.key !== "Enter") return;
     e.preventDefault();
+    clearTimeout(searchTimeoutRef.current);
     if (!searchQuery || searchQuery.trim().length < 2) return;
+    setShowResults(false);
     const results = await performSearch(searchQuery);
     if (results) {
       setShowFullScreenSearch(true);
-      setShowResults(false);
     }
   };
 
@@ -340,6 +341,7 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
   };
 
   return (
+    <>
     <header className={`ext-profile-header ${isHero ? (isDark ? "on-hero" : "on-hero-light") : "on-white"}`}>
 
       {/* COLUMNA IZQUIERDA */}
@@ -484,7 +486,9 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
         </div>
       </div>
 
-      {showFullScreenSearch && (
+    </header>
+
+      {showFullScreenSearch && ReactDOM.createPortal(
         <div ref={fullScreenRef} onMouseDown={e => e.stopPropagation()}>
           <SearchFullScreen
             results={searchResults || {}}
@@ -493,10 +497,10 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
             onClose={() => setShowFullScreenSearch(false)}
             onResultClick={handleResultClick}
           />
-        </div>
+        </div>,
+        document.body
       )}
-
-    </header>
+    </>
   );
 };
 

@@ -3,6 +3,8 @@ import React from "react";
 import BiographySection from "./cv/BiographySection";
 import ExperienceSection from "./cv/ExperienceSection";
 import EducationSection from "./cv/EducationSection";
+import PressPublicationsSection from "./cv/PressPublicationsSection";
+import AwardsSection from "./cv/AwardsSection";
 import SoftwareSection from "./cv/SoftwareSection";
 import SoftSkillsSection from "./cv/SoftSkillsSection";
 import LanguagesSection from "./cv/LanguagesSection";
@@ -28,6 +30,7 @@ export default function CvTab({
   openNewExperienceForm,
   cancelExperienceForm,
   saveExperience,
+  saveExperienceAsDraft,
   updateExperienceField,
   uploadExperienceLogo,
 
@@ -42,8 +45,39 @@ export default function CvTab({
   openNewEducationForm,
   cancelEducationForm,
   saveEducation,
+  saveEducationAsDraft,
   updateEducationField,
   uploadInstitutionLogo,
+
+  // PRESS PUBLICATIONS
+  pressPublications,
+  pressFormOpen,
+  pressEditingIndex,
+  pressDraft,
+  pressLogoFileRef,
+  MAX_PRESS_DESC,
+  openEditPressForm,
+  confirmDeletePress,
+  openNewPressForm,
+  cancelPressForm,
+  savePress,
+  savePressAsDraft,
+  updatePressField,
+  uploadPressLogo,
+
+  // AWARDS
+  awards,
+  awardFormOpen,
+  awardEditingIndex,
+  awardDraft,
+  MAX_AWARD_DESC,
+  openEditAwardForm,
+  confirmDeleteAward,
+  openNewAwardForm,
+  cancelAwardForm,
+  saveAward,
+  saveAwardAsDraft,
+  updateAwardField,
 
   // SOFTWARE
   softwareTags,
@@ -102,6 +136,7 @@ export default function CvTab({
             openNewExperienceForm={openNewExperienceForm}
             cancelExperienceForm={cancelExperienceForm}
             saveExperience={saveExperience}
+            saveExperienceAsDraft={saveExperienceAsDraft}
             updateExperienceField={updateExperienceField}
             uploadExperienceLogo={uploadExperienceLogo}
           />
@@ -120,11 +155,50 @@ export default function CvTab({
             openNewEducationForm={openNewEducationForm}
             cancelEducationForm={cancelEducationForm}
             saveEducation={saveEducation}
+            saveEducationAsDraft={saveEducationAsDraft}
             updateEducationField={updateEducationField}
             uploadInstitutionLogo={uploadInstitutionLogo}
           />
 
-          {/* 4) Hardskills / Software */}
+          {/* 4) Publicaciones en medios */}
+          <PressPublicationsSection
+            pressPublications={pressPublications}
+            pressFormOpen={pressFormOpen}
+            pressEditingIndex={pressEditingIndex}
+            pressDraft={pressDraft}
+            pressLogoFileRef={pressLogoFileRef}
+            MONTHS_ES={MONTHS_ES}
+            years={years}
+            MAX_PRESS_DESC={MAX_PRESS_DESC}
+            openEditPressForm={openEditPressForm}
+            confirmDeletePress={confirmDeletePress}
+            openNewPressForm={openNewPressForm}
+            cancelPressForm={cancelPressForm}
+            savePress={savePress}
+            savePressAsDraft={savePressAsDraft}
+            updatePressField={updatePressField}
+            uploadPressLogo={uploadPressLogo}
+          />
+
+          {/* 5) Reconocimientos y premios */}
+          <AwardsSection
+            awards={awards}
+            awardFormOpen={awardFormOpen}
+            awardEditingIndex={awardEditingIndex}
+            awardDraft={awardDraft}
+            MONTHS_ES={MONTHS_ES}
+            years={years}
+            MAX_AWARD_DESC={MAX_AWARD_DESC}
+            openEditAwardForm={openEditAwardForm}
+            confirmDeleteAward={confirmDeleteAward}
+            openNewAwardForm={openNewAwardForm}
+            cancelAwardForm={cancelAwardForm}
+            saveAward={saveAward}
+            saveAwardAsDraft={saveAwardAsDraft}
+            updateAwardField={updateAwardField}
+          />
+
+          {/* 7) Hardskills / Software */}
           <SoftwareSection
             softwareTags={softwareTags}
             softwareInput={softwareInput}

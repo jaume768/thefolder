@@ -2,6 +2,7 @@
 import React from "react";
 import { FaInstagram, FaLinkedinIn, FaBehance, FaTumblr, FaYoutube, FaPinterest } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
+import { SiSubstack } from "react-icons/si";
 
 export default function SocialTab({
   draft,
@@ -201,6 +202,30 @@ export default function SocialTab({
               />
             </div>
           </div>
+          {/* Substack */}
+          <div className="ux-social-row">
+            <label className="ux-social-label" htmlFor="social-substack">
+              Substack
+            </label>
+
+            <div className="ux-social-input">
+              <div className="ux-social-iconbox">
+                <SiSubstack />
+              </div>
+
+              <input
+                id="social-substack"
+                name="social.substack"
+                className="ux-social-field"
+                type="url"
+                autoComplete="off"
+                placeholder="https://tuusuario.substack.com"
+                value={draft?.social?.substack || ""}
+                onChange={(e) => handleSocialUsernameChange(e, "substack")}
+              />
+            </div>
+          </div>
+
         </div>
       </section>
     </div>

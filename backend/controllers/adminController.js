@@ -1895,6 +1895,32 @@ exports.updatePostStaffPick = async (req, res) => {
     }
 };
 
+exports.updatePostHiddenFromExplorer = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const { hiddenFromExplorer } = req.body;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Post no encontrado' });
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { hiddenFromExplorer },
+            { new: true }
+        ).populate('user', 'username fullName email profilePicture');
+
+        res.json({
+            success: true,
+            post: updatedPost,
+            message: `Post ${hiddenFromExplorer ? 'ocultado del explorador' : 'visible en el explorador'} correctamente`
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al actualizar la visibilidad del post en el explorador' });
+    }
+};
+
 /**
  * Crear una nueva escuela
  */
@@ -2654,3 +2680,29 @@ exports.validateProfessional = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error al validar el usuario.' });
   }
 };
+
+// ── Actividad de usuarios (retención de edición de perfil) ─────────────────
+exports.getUserActivity = async (req, res) => {
+  try {
+    const total = await User.countDocuments({ isAdmin: { $ne: true } });
+    const edited = await User.countDocuments({
+      isAdmin: { $ne: true },
+      lastProfileEditAt: { $ne: null },
+    });
+
+    const retentionPct = total > 0 ? Math.round((edited / total) * 100) : 0;
+
+    const users = await User.find(
+      { isAdmin: { $ne: true } },
+      'fullName email role createdAt lastProfileEditAt profileCompleted'
+    )
+      .sort({ lastProfileEditAt: -1, createdAt: -1 })
+      .limit(100)
+      .lean();
+
+    res.json({ total, edited, retentionPct, users });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener actividad de usuarios.' });
+  }
+};
+

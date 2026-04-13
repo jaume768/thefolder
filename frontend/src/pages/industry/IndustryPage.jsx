@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clImg } from "../../utils/optimizeImage";
 
 const Industry = () => {
   const navigate = useNavigate();
@@ -288,7 +289,7 @@ const Industry = () => {
                 >
                   {!!item.imageUrl && (
                     <img
-                      src={item.imageUrl}
+                      src={clImg.post(item.imageUrl)}
                       alt={item.name}
                       loading="lazy"
                       onError={(e) => {

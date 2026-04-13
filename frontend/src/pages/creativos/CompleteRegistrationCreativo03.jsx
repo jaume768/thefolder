@@ -101,7 +101,7 @@ const CompleteRegistrationCreativo03 = () => {
         <h1 className="ob-title">Añade tu foto de perfil</h1>
 
         <p className="ob-subtitle">
-          Esta imagen formará parte de tu identidad en la plataforma.
+          Formará parte de tu identidad en la plataforma y se mostrará de forma pública.
           <br  />
           Formato vertical.
         </p>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaUserPlus, FaUserCheck, FaBell, FaBellSlash, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { clImg } from '../../../utils/optimizeImage';
 
 const UserProfileHeader = ({ 
     profile, 
@@ -25,7 +26,7 @@ const UserProfileHeader = ({
             <div className="user-profile-header-container">
                 <header className="user-profile-header">
                     <img
-                        src={profile?.profile?.profilePicture || "/multimedia/usuarioDefault.jpg"}
+                        src={clImg.avatar(profile?.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"}
                         alt="Perfil"
                         className="user-profile-photo"
                     />

@@ -228,7 +228,7 @@ const CompleteRegistrationCreativo = () => {
             </div>
 
             <div className="ob-field">
-              <label className="ob-label">Apellido(s)</label>
+              <label className="ob-label">Apellido/s</label>
               <input
                 className="ob-input-box"
                 value={lastName}

@@ -11,6 +11,9 @@ import "../../components/controlPanel/css/MorePosts.css";
 import "../../components/controlPanel/css/explorer.css";
 import "../../components/controlPanel/css/MasonryGallery.css";
 import Masonry from "react-masonry-css";
+import { clImg } from "../../utils/optimizeImage";
+
+const GUEST_POST_LIMIT = 3;
 
 const UserPost = () => {
   const navigate = useNavigate();
@@ -18,6 +21,23 @@ const UserPost = () => {
   const location = useLocation();
   const clickedImageUrl = location.state?.clickedImageUrl;
   const origin = location.state?.origin;
+  const fromCreatives = !!location.state?.fromCreatives;
+
+  const isLoggedIn = !!localStorage.getItem("authToken");
+
+  // ── Gate para usuarios no registrados que vienen de /creatives ───────────
+  const [showGuestGate, setShowGuestGate] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn || !fromCreatives) return;
+    const views = parseInt(sessionStorage.getItem("guestPostViews") || "0", 10);
+    if (views >= GUEST_POST_LIMIT) {
+      setShowGuestGate(true);
+    } else {
+      sessionStorage.setItem("guestPostViews", String(views + 1));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "" });
@@ -315,11 +335,11 @@ const UserPost = () => {
     const fetchPost = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        if (!token) return;
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
         const response = await axios.get(`${backendUrl}/api/posts/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: authHeaders,
         });
 
         setPost(response.data.post);
@@ -332,6 +352,8 @@ const UserPost = () => {
             else setCurrentImageIndex(clickedIndex);
           }
         }
+
+        if (!token) { setLoading(false); return; }
 
         const favResponse = await axios.get(`${backendUrl}/api/users/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -431,6 +453,33 @@ const UserPost = () => {
 
     checkTaggedUsers();
   }, [post]);
+
+  if (showGuestGate) {
+    return (
+      <div className="guest-gate-overlay">
+        <div className="guest-gate-box">
+          <p className="guest-gate-title">Descubre más en THEFOLDER</p>
+          <p className="guest-gate-desc">
+          Crea tu cuenta gratis para seguir explorando el trabajo de la comunidad creativa.
+          </p>
+          <button
+            type="button"
+            className="tf-btn tf-btn--CTA tf-btn-CTA--wall"
+            onClick={() => navigate("/", { state: { showRegister: true } })}
+          >
+            Crear cuenta gratis ↗
+          </button>
+          <button
+            type="button"
+            className="guest-gate-login"
+            onClick={() => navigate("/", { state: { showLogin: true } })}
+          >
+            Ya tengo cuenta
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading)
     return (
@@ -856,7 +905,7 @@ const UserPost = () => {
                     className="post-column-item editorial-item"
                     >
                     <img
-                        src={img}
+                        src={clImg.post(img)}
                         alt={`Imagen ${realIndex + 1}`}
                         className="post-column-image editorial-image"
                         onClick={() => {
@@ -941,9 +990,7 @@ const UserPost = () => {
                             className="save-icon"
                             />
                         ) : (
-                            <span className="save-plus" aria-hidden="true">
-                            +
-                            </span>
+                            <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
                         )}
 
                         <span
@@ -986,22 +1033,6 @@ const UserPost = () => {
                             }}
                             style={{ cursor: "pointer" }}
                         >
-                            <span className="tagged-person__hovercard" aria-hidden="true">
-                                <span className="tagged-person__hovercard-inner">
-                                    {post.user?.profile?.profilePicture ? (
-                                        <img
-                                            src={post.user.profile.profilePicture}
-                                            alt=""
-                                            className="tagged-person__hover-avatar"
-                                            loading="lazy"
-                                        />
-                                    ) : (
-                                        <span className="tagged-person__hover-fallback">
-                                            {String(post.user?.fullName || post.user?.username || "?")[0].toUpperCase()}
-                                        </span>
-                                    )}
-                                </span>
-                            </span>
                             <div className="perfil__datos">
                               <div className="perfil__by-user">
                                   {post.authorRole && (
@@ -1084,7 +1115,7 @@ const UserPost = () => {
                                 setShowEditModal(true);
                               }}
                             >
-                              Editar publicación (solo texto)
+                              Editar publicación
                             </button>
                             <button
                               className="delete-post"
@@ -1113,9 +1144,30 @@ const UserPost = () => {
         })()}
 
         {/* VER MÁS */}
+        {!isLoggedIn ? (
+          <div className="post-guest-wall">
+            <div className="post-guest-wall__inner">
+              <p className="post-guest-wall__text">Regístrate para descubrir más proyectos de creativos de moda</p>
+              <button
+                type="button"
+                className="tf-btn tf-btn--CTA tf-btn-CTA--wall"
+                onClick={() => navigate("/", { state: { showRegister: true } })}
+              >
+                Crear cuenta gratis ↗
+              </button>
+              <button
+                type="button"
+                className="post-guest-wall__login"
+                onClick={() => navigate("/", { state: { showLogin: true } })}
+              >
+                Ya tengo cuenta
+              </button>
+            </div>
+          </div>
+        ) : (
         <section className="more-posts-section">
 
-        <h3 className="personas__titulo">EXPLORADOR /</h3>
+        <h3 className="personas__titulo post-explorer">EXPLORADOR /</h3>
         <div className="explorer-content explorer-user-post">
             <Masonry
             breakpointCols={{
@@ -1153,7 +1205,7 @@ const UserPost = () => {
                     }, 10);
                     }}
                 >
-                    <img src={imageUrl} alt={item.postTitle || "Imagen"} loading="lazy" />
+                    <img src={clImg.post(imageUrl)} alt={item.postTitle || "Imagen"} loading="lazy" />
 
                     {/* ✅ Texto SIEMPRE visible (como Explorer) */}
                     <div className="user-profile-hover">
@@ -1227,6 +1279,7 @@ const UserPost = () => {
             </button>
         </div>
         </section>
+        )}
 
 
         {/* MODAL EDITAR */}
@@ -1234,7 +1287,11 @@ const UserPost = () => {
           <EditPostModal
             post={post}
             onClose={() => setShowEditModal(false)}
-            onSaved={(updatedPost) => setPost(updatedPost)}
+            onSaved={(updatedPost) => {
+              if (updatedPost === null) { navigate(-1); return; }
+              setPost(updatedPost);
+              setCurrentImageIndex(0);
+            }}
           />
         )}
 
@@ -1315,13 +1372,12 @@ const UserPost = () => {
                 </button>
 
                 <img
-                src={mainImage}
+                src={clImg.cover(mainImage)}
                 alt="Vista previa a pantalla completa"
                 className="fullscreen-image"
-                onClick={(e) => e.stopPropagation()}
                 />
 
-                <div className="fullscreen-post-info" onClick={(e) => e.stopPropagation()}>
+                <div className="fullscreen-post-info">
                   {post?.title && (
                     <span className="fullscreen-post-author">{post.title}</span>
                   )}
@@ -1419,7 +1475,7 @@ const UserPost = () => {
                 <>
                   <h3 className="report-modal__title">Reportar publicación</h3>
                   <p className="report-modal__desc">
-                    Describe brevemente el motivo del reporte. El equipo de TheFolder revisará tu solicitud.
+                    Describe brevemente el motivo del reporte. El equipo de THEFOLDER revisará tu solicitud.
                   </p>
                   <textarea
                     className="report-modal__textarea"

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaTrash, FaEllipsisV } from 'react-icons/fa';
 import '../../components/controlPanel/css/FolderContent.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const FolderContent = () => {
     const { folderId } = useParams();
@@ -187,7 +188,7 @@ const FolderContent = () => {
                             onClick={() => openPost(item.postId, item.imageUrl)}
                         >
                             <img
-                                src={item.imageUrl}
+                                src={clImg.post(item.imageUrl)}
                                 alt="Imagen guardada"
                                 className="masonry-img"
                                 loading="lazy"
@@ -202,7 +203,7 @@ const FolderContent = () => {
                                     aria-label="Quitar de la carpeta"
                                     title="Quitar de la carpeta"
                                 >
-                                    <img src="/iconos/trash-delete.svg" alt="Eliminar" className="button-icon folder invert" />
+                                    <img src="/iconos/bin.png" alt="Eliminar" className="button-icon folder invert" />
                                 </button>
                             </div>
                         </div>

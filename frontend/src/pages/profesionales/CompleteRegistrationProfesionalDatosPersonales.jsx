@@ -91,10 +91,10 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
                     />
                 </div>
                 <div className="form-group-datos">
-                    <label>Apellidos</label>
+                    <label>Apellido/s</label>
                     <input
                         type="text"
-                        placeholder="Introduce tus apellidos"
+                        placeholder="Introduce tu/s apellido/s"
                         value={lastName}
                         onChange={(e) => {
                             setLastName(e.target.value);

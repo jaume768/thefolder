@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaSpinner, FaSearch } from 'react-icons/fa';
 import '../controlPanel/css/searchResults.css';
+import { clImg } from '../../utils/optimizeImage';
 
 // ✅ Ahora NO congelamos initialResults/initialQuery en state.
 // ✅ Usamos props reactivos que vienen del Header.
@@ -75,7 +76,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
           <div className="grid-img-container grid-img-user">
             {user.profile && user.profile.profilePicture ? (
               <img
-                src={user.profile.profilePicture}
+                src={clImg.avatar(user.profile.profilePicture)}
                 alt={user.fullName || user.companyName || 'Usuario'}
               />
             ) : (
@@ -109,7 +110,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
         >
           <div className="grid-img-container-post">
             {post.mainImage ? (
-              <img src={post.mainImage} alt={post.title} />
+              <img src={clImg.post(post.mainImage)} alt={post.title} />
             ) : (
               <div className="placeholder-image"></div>
             )}

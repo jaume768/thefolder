@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaTh, FaList } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { clImg } from '../../../utils/optimizeImage';
 
 const UserProjectsSection = ({ isGalleryView, toggleView, userPosts }) => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const UserProjectsSection = ({ isGalleryView, toggleView, userPosts }) => {
                     style={{ cursor: 'pointer' }}
                 >
                     <img
-                        src={post.mainImage}
+                        src={clImg.post(post.mainImage)}
                         alt={`Publicación ${index + 1}`}
                         className="user-profile-project-image"
                     />
@@ -38,7 +39,7 @@ const UserProjectsSection = ({ isGalleryView, toggleView, userPosts }) => {
                         style={{ cursor: 'pointer' }}
                     >
                         <img
-                            src={post.mainImage}
+                            src={clImg.post(post.mainImage)}
                             alt={`Publicación ${index + 1}`}
                             className="user-profile-project-image"
                         />

@@ -37,6 +37,7 @@
 .register-shell .login-card{
   border-radius: 0;              /* porque el shell ya redondea */
   box-shadow: none;              /* porque el shell ya tiene sombra */
+  cursor: default;
 }
 
 /* Términos */
@@ -64,7 +65,6 @@ input[type="checkbox"] {
   font-size: 14px;
   color: #666;
   margin-top: -8px;
-  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -72,7 +72,7 @@ input[type="checkbox"] {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin: 14px 0 10px;
+  margin: 10px 0 24px;
 }
 
 .code-cell{
@@ -93,7 +93,6 @@ input[type="checkbox"] {
   text-align: center;
   font-size: 14px;
   color: #666;
-  margin: 6px 0 12px;
 }
 
 .resend-btn{
@@ -125,7 +124,13 @@ input[type="checkbox"] {
 }
 
 p.success {
-  color: blue;
+  color: #27500A;
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  background: #EAF3DE;
+  padding: 4px;
+  border-radius: 6px;
 }
 
 p.error {

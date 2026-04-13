@@ -21,6 +21,7 @@ const AuthLayout = ({ children, activeMenu, contentClassName }) => {
   const navItems = useMemo(
     () => [
         { label: "CREATIVOS", to: "/creatives" },
+        { label: "PERFILES", to: "/perfiles" },
         // { label: "ESTUDIAR MODA", to: "/fashion" },
         // { label: "INDUSTRIA", to: "/industry" },
     ],

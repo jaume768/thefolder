@@ -96,7 +96,7 @@
     }
 
     .ux-edit-div {
-        width: 95%;
+        width: 100%;
         padding: 24px;
     }
 
@@ -770,6 +770,34 @@ img.button-icon.invert {
     opacity: 1;
 }
 
+.idea-trash-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #535353;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.idea-item:hover .idea-trash-button {
+    opacity: 1;
+}
+
+.idea-trash-button:hover {
+    background: #c0392b;
+}
+
 /* Modal de organización */
 .organize-modal-overlay {
     position: fixed;
@@ -993,6 +1021,21 @@ img.button-icon.invert {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+.nueva-carpeta-toggle {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+    text-align: left;
+    margin-top: 6px;
+}
+
+.nueva-carpeta-toggle:hover {
+    color: #000;
 }
 
 /* Modal de edición */
@@ -2083,8 +2126,15 @@ img.button-icon.invert {
 /* Touch devices: mostrar controles siempre (sin afectar desktop) */
 @media (hover: none) and (pointer: coarse) {
   .idea-edit-button { opacity: 1 !important; }
+  .idea-trash-button { opacity: 1 !important; }
 
   .idea-edit-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+
+  .idea-trash-button {
     width: 44px;
     height: 44px;
     border-radius: 10px;

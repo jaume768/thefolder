@@ -399,8 +399,6 @@
 
 .save-button-explorer{
   position: absolute;
-  top: 12px;
-  right: 12px;
 
   background: #000000ab;
   border: none;
@@ -422,13 +420,12 @@
   transition: opacity .2s ease, transform .2s ease, background .2s ease;
 }
 
-.save-plus{
-  font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 200;
-  color: #fff;
-  transform: translateY(-1px);
+.save-plus,
+.save-button-explorer img.save-plus {
+  width: 18px !important;
+  height: 18px !important;
+  display: block;
+  filter: invert(1);
 }
 
 /* Estado guardado: tick */
@@ -901,11 +898,15 @@ img.search-sparkles-icon {
   font-size: 12px;
   color: #666;
   cursor: pointer;
-  font-family: 'Inter Tight', system-ui, sans-serif;
-  letter-spacing: 0.04em;
+  font-family: Inter Tight, system-ui, sans-serif;
+  letter-spacing: .04em;
   text-transform: uppercase;
   text-decoration: underline;
-  padding: 4px 0;
+  padding: 4px;
+  gap: 6px;
+  display: flex;
+  align-items: center;
+  color: #b42318;
 }
 
 .filters-modal-clear:hover {
@@ -992,9 +993,10 @@ button.new-tablero-button.explorer-filtros-btn {
 }
 
 .filter-country-tag.is-active {
-  background: #111;
   border-color: #111;
-  color: #fff;
+  background: #111;
+  color: #fdfdfd;
+  font-weight: 500;
 }
 
 .filter-country-tag.is-active .experience-tag-icon {
@@ -1002,9 +1004,12 @@ button.new-tablero-button.explorer-filtros-btn {
 }
 
 .filter-country-tag.has-selection:not(.is-active) {
-  border-color: #111;
-  font-weight: 500;
-  border: solid 2px;
+  border: solid #111 1.2px;
+}
+
+/* Cuando hay un grupo con selección activa, el resto se dimea levemente */
+.filters-tags:has(.filter-country-tag.has-selection:not(.is-active)) .filter-country-tag:not(.has-selection):not(:hover) {
+  opacity: 0.5;
 }
 
 .country-flag-circle {
@@ -1035,9 +1040,13 @@ button.new-tablero-button.explorer-filtros-btn {
 .filters-country-cities {
   margin-top: 10px;
   padding: 12px 14px;
-  background: #f9f9f9;
+  background: #f2f2f2;
   border-radius: 8px;
   border: 1px solid #efefef;
+}
+
+.filters-country-cities .filters-tags {
+  border-radius: 12px;
 }
 
 /* ── Tags de proyecto con preview hover ─────────────────────────────────── */

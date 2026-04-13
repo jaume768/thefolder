@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaBuilding, FaMapMarkerAlt, FaCalendarAlt, FaBriefcase, FaLaptopHouse, FaClock, FaUserGraduate } from 'react-icons/fa';
 import '../../components/controlPanel/css/view-offer.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const ViewOffer = () => {
     const { offerId } = useParams();
@@ -122,10 +123,10 @@ const ViewOffer = () => {
             <div className="offer-header-view">
                 <div className="offer-header-left-view">
                     {offer.companyLogo ? (
-                        <img 
-                            src={offer.companyLogo} 
-                            alt={`Logo de ${offer.companyName}`} 
-                            className="company-logo-view" 
+                        <img
+                            src={clImg.logo(offer.companyLogo)}
+                            alt={`Logo de ${offer.companyName}`}
+                            className="company-logo-view"
                         />
                     ) : (
                         <div className="company-logo-placeholder-view">

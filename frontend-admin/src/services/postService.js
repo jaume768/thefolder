@@ -88,3 +88,9 @@ export const updatePostStaffPick = async (postId, staffPick) => {
   const response = await api.put(`/api/admin/posts/${postId}/staff-pick`, { staffPick });
   return response.data;
 };
+
+// Ocultar / mostrar un post en el explorador
+export const updatePostHiddenFromExplorer = async (postId, hiddenFromExplorer) => {
+  const response = await api.put(`/api/admin/posts/${postId}/hidden-from-explorer`, { hiddenFromExplorer });
+  return response.data;
+};

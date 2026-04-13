@@ -17,7 +17,7 @@
   padding: 60px;
   gap: 8px;
   background: #fdfdfd;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .hero--vertical-editorial .ve__name {

@@ -218,7 +218,9 @@
 }
 
 .profile-options-modal li.active {
-  border: solid 1.5px #333;
+  border: solid 1.5px #222;
+  font-weight: 600;
+  color: #222;
 }
 
 .profile-options-modal li:first-child .pom-icon {
@@ -753,7 +755,7 @@ button.header-left-link {
   border: 0;
   font-size: 11px;
   line-height: 17px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   color: inherit;
   cursor: pointer;
   padding: 0;

@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const LandingHeader = ({
   navItems = [
     { label: "CREATIVOS", to: "/creatives" },
+    { label: "PERFILES", to: "/perfiles" },
     // { label: "ESTUDIAR MODA", to: "/fashion" },
     // { label: "INDUSTRIA", to: "/industry" },
   ],

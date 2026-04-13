@@ -4,6 +4,7 @@ import axios from 'axios';
 import Masonry from 'react-masonry-css';
 import { AuthContext } from '../../contexts/AuthContext';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from '../../utils/locations';
+import { clImg } from '../../utils/optimizeImage';
 import '../../components/controlPanel/css/explorer.css';
 import '../../components/controlPanel/css/Creatives.css';
 
@@ -36,7 +37,10 @@ const GROUP_ICONS = {
   'Digital & 3D':        '/iconos/specialty/graphic-design.png',
   'Ilustración':         '/iconos/specialty/illustration.png',
   'Styling':             '/iconos/specialty/styling.png',
+  'Marketing & PR':           '/iconos/specialty/marketing.png',
+  'Digital & Social':         '/iconos/specialty/content-creator.png',
   'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
+  'Otro':                     '/iconos/specialty/clue.png',
 };
 const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
 
@@ -120,6 +124,7 @@ const Explorer = () => {
   const filtersInitRef = useRef(false);
 
   // ── Filtros ─────────────────────────────────────────────────────────────
+  const [facets, setFacets] = useState({ tags: {}, cities: {}, levels: {}, projectTypes: {} });
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
@@ -129,6 +134,7 @@ const Explorer = () => {
   // Tags de especialidad (mismo endpoint que /creatives)
   const [tagOptions, setTagOptions] = useState([]);
   const [rolesByGroup, setRolesByGroup] = useState({});
+  const [customTags, setCustomTags] = useState([]);
   const [activeRoleGroup, setActiveRoleGroup] = useState(null);
   const [cityCounts, setCityCounts] = useState({});
 
@@ -148,6 +154,9 @@ const Explorer = () => {
     axios.get(`${backendUrl}/api/tags/cities`)
       .then(res => setCityCounts(res.data.cities || {}))
       .catch(() => {});
+    axios.get(`${backendUrl}/api/tags/custom`)
+      .then(res => setCustomTags(res.data.tags || []))
+      .catch(() => {});
   }, [backendUrl]);
 
   const tagLabelById = useMemo(() => {
@@ -156,7 +165,18 @@ const Explorer = () => {
     return m;
   }, [tagOptions]);
 
-  const orderedGroups = useMemo(() => Object.keys(rolesByGroup), [rolesByGroup]);
+  const orderedGroups = useMemo(() => {
+    const groups = [...Object.keys(rolesByGroup), ...(customTags.length > 0 ? ['Otro'] : [])];
+    const GROUP_ORDER_EXPLORER = [
+      "Diseño", "Dirección Creativa", "Fotografía & Vídeo", "Styling",
+      "Beauty (MUAH)", "Digital & 3D", "Accesorios",
+      "Comunicación & Editorial", "Marketing & PR", "Digital & Social", "Ilustración", "Otro",
+    ];
+    const rank = Object.fromEntries(GROUP_ORDER_EXPLORER.filter(g => g !== 'Otro').map((g, i) => [g, i]));
+    const sorted = [...new Set(groups)].filter(g => g !== 'Otro').sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
+    if (customTags.length > 0) sorted.push('Otro');
+    return sorted;
+  }, [rolesByGroup, customTags]);
 
   const otherCities = useMemo(() => {
     const knownCities = new Set(Object.values(LOCATIONS).flat());
@@ -182,6 +202,28 @@ const Explorer = () => {
     return () => clearTimeout(t);
   }, [filters]);
 
+  // ── Faceted search: conteos dinámicos según filtros activos ─────────────
+  useEffect(() => {
+    const controller = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams();
+        (filters.city || []).forEach(v => params.append('city', v));
+        (filters.professionalProfile || []).forEach(v => params.append('professionalProfile', v));
+        (filters.creativeLevel || []).forEach(v => params.append('creativeLevel', v));
+        const token = localStorage.getItem('authToken');
+        const res = await axios.get(
+          `${backendUrl}/api/posts/explorer/facets?${params.toString()}`,
+          { signal: controller.signal, headers: token ? { Authorization: `Bearer ${token}` } : {} }
+        );
+        setFacets(res.data);
+      } catch {
+        // silencioso — los conteos estáticos siguen de fallback
+      }
+    }, 250);
+    return () => { clearTimeout(t); controller.abort(); };
+  }, [filters, backendUrl]);
+
   const toggleTag = useCallback((key, val) => {
     setFilters(prev => {
       const arr = prev[key] || [];
@@ -198,6 +240,7 @@ const Explorer = () => {
 
   const clearAll = useCallback(() => {
     setFilters(EMPTY_FILTERS);
+    setFacets({ tags: {}, cities: {}, levels: {}, projectTypes: {} });
     setShowFiltersModal(false);
     setActiveCountryPanel(null);
   }, []);
@@ -395,11 +438,15 @@ const Explorer = () => {
           <div className="filters-tags filters-tags--level">
             {CREATIVE_LEVELS.map(lvl => {
               const sel = (filters.creativeLevel || []).includes(lvl.value);
+              const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+              const facetCount = facets.levels[String(lvl.value)];
+              const dimmed = hasActiveFilter && !sel && facetCount === 0;
               return (
                 <button
                   key={lvl.value}
                   type="button"
                   className={`filter-tag experience-tag ${sel ? 'selected' : ''}`}
+                  style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                   onClick={() => toggleTag('creativeLevel', lvl.value)}
                 >
                   <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
@@ -417,46 +464,80 @@ const Explorer = () => {
           <div className="filters-tags filters-tags--level">
             {orderedGroups.map(group => {
               const isActive = activeRoleGroup === group;
-              const hasSelection = (rolesByGroup[group] || []).some(t => (filters.professionalProfile || []).includes(t.id));
+              const groupTags = group === 'Otro' ? customTags : (rolesByGroup[group] || []);
+              const selectedInGroup = groupTags.filter(t => (filters.professionalProfile || []).includes(t.id));
+              const hasSelection = selectedInGroup.length > 0;
               const icon = GROUP_ICONS[group];
+              const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+              const groupFacetTotal = groupTags.reduce((sum, t) => sum + (facets.tags[t.id] ?? 0), 0);
+              const dimmed = hasActiveFilter && !hasSelection && groupFacetTotal === 0;
               return (
                 <button
                   key={group}
                   type="button"
                   className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                  style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                   onClick={() => setActiveRoleGroup(prev => prev === group ? null : group)}
                 >
                   {icon && (
                     <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />
                   )}
-                  {group}
+                  {group}{hasSelection && !isActive ? ` (${selectedInGroup.length})` : ''}
                 </button>
               );
             })}
           </div>
-          {activeRoleGroup && (
+          {activeRoleGroup && activeRoleGroup !== 'Otro' && (
             <div className="filters-country-cities">
               <div className="filters-tags filters-tags--level">
                 {(rolesByGroup[activeRoleGroup] || [])
                   .filter(t => t.count > 0)
                   .map(t => {
                     const sel = (filters.professionalProfile || []).includes(t.id);
+                    const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                    const facetCount = facets.tags[t.id];
+                    const displayCount = facetCount !== undefined ? facetCount : t.count;
+                    const dimmed = hasActiveFilter && !sel && facetCount === 0;
                     return (
                       <button
                         key={t.id}
                         type="button"
                         className={`filter-tag ${sel ? 'selected' : ''}`}
+                        style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                         onClick={() => toggleTag('professionalProfile', t.id)}
                       >
-                        {t.label} ({t.count})
+                        {t.label} ({displayCount})
                       </button>
                     );
                   })}
               </div>
             </div>
           )}
+          {activeRoleGroup === 'Otro' && customTags.length > 0 && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                {customTags.map(t => {
+                  const sel = (filters.professionalProfile || []).includes(t.id);
+                  const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                  const facetCount = facets.tags[t.id];
+                  const displayCount = facetCount !== undefined ? facetCount : t.count;
+                  const dimmed = hasActiveFilter && !sel && facetCount === 0;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`filter-tag ${sel ? 'selected' : ''}`}
+                      style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
+                      onClick={() => toggleTag('professionalProfile', t.id)}
+                    >
+                      {t.label} ({displayCount})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
-
 
         {/* ── UBICACIÓN ─────────────────────────────────────── */}
         <div className="filters-modal-section">
@@ -467,12 +548,17 @@ const Explorer = () => {
               .map(country => {
                 const code = COUNTRY_CODES[country];
                 const isActive = activeCountryPanel === country;
-                const hasSelection = (LOCATIONS[country] || []).some(city => (filters.city || []).includes(city));
+                const selectedCities = (LOCATIONS[country] || []).filter(city => (filters.city || []).includes(city));
+                const hasSelection = selectedCities.length > 0;
+                const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                const countryFacetTotal = (LOCATIONS[country] || []).reduce((sum, city) => sum + (facets.cities[city] ?? 0), 0);
+                const dimmed = hasActiveFilter && !hasSelection && countryFacetTotal === 0;
                 return (
                   <button
                     key={country}
                     type="button"
                     className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                    style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                     onClick={() => setActiveCountryPanel(prev => prev === country ? null : country)}
                   >
                     <span className="country-flag-circle">
@@ -480,7 +566,7 @@ const Explorer = () => {
                         ? <img src={FLAG_IMAGES[code]} alt={country} />
                         : flagEmoji(code)}
                     </span>
-                    {country}
+                    {country}{hasSelection && !isActive ? ` (${selectedCities.length})` : ''}
                   </button>
                 );
               })}
@@ -508,14 +594,19 @@ const Explorer = () => {
                   <div className="filters-tags filters-tags--level">
                     {cities.map(city => {
                       const sel = (filters.city || []).includes(city);
+                      const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                      const facetCount = facets.cities[city];
+                      const displayCount = facetCount !== undefined ? facetCount : cityCounts[city];
+                      const dimmed = hasActiveFilter && !sel && facetCount === 0;
                       return (
                         <button
                           key={city}
                           type="button"
                           className={`filter-tag ${sel ? 'selected' : ''}`}
+                          style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                           onClick={() => toggleTag('city', city)}
                         >
-                          {city}{cityCounts[city] > 0 ? ` (${cityCounts[city]})` : ''}
+                          {city}{displayCount > 0 ? ` (${displayCount})` : ''}
                         </button>
                       );
                     })}
@@ -524,7 +615,7 @@ const Explorer = () => {
               </div>
             );
           })()}
-      </div>
+        </div>
 
         {/* ── TAGS DE PROYECTO ──────────────────────────────── */}
         {Object.keys(tagPreviews).length > 0 && (
@@ -533,12 +624,16 @@ const Explorer = () => {
             <div className="filters-tags filters-tags--level">
               {PROJECT_TYPES.filter(type => tagPreviews[type]).map(type => {
                 const sel = (filters.projectType || []).includes(type);
+                const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                const facetCount = facets.projectTypes?.[type];
+                const facetsLoaded = Object.keys(facets.projectTypes).length > 0;
+                const dimmed = hasActiveFilter && !sel && facetsLoaded && !facetCount;
                 return (
                   <button
                     key={type}
                     type="button"
                     className={`filter-tag filter-tag--preview ${sel ? 'selected' : ''}`}
-                    style={{ '--tag-preview-img': `url(${tagPreviews[type]})` }}
+                    style={{ '--tag-preview-img': `url(${tagPreviews[type]})`, ...(dimmed ? { opacity: 0.35, pointerEvents: 'none' } : {}) }}
                     onClick={() => toggleTag('projectType', type)}
                   >
                     <span>#{type.toLowerCase().replace(/\s+/g, '')}</span>
@@ -552,7 +647,8 @@ const Explorer = () => {
         <div className="filters-modal-footer">
           {hasActiveFilters ? (
             <button type="button" className="filters-modal-clear" onClick={clearAll}>
-              Limpiar filtros
+              <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
+              Borrar filtros
             </button>
           ) : <span />}
           <button type="button" className="filters-modal-apply" onClick={() => setShowFiltersModal(false)}>
@@ -600,10 +696,11 @@ const Explorer = () => {
                   <span className="chip-x">×</span>
                 </button>
               ))}
-              <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
-                Limpiar filtros
-              </button>
             </div>
+            <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
+              <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
+              Borrar filtros
+            </button>
           </div>
         )}
       </div>
@@ -637,7 +734,7 @@ const Explorer = () => {
                 className="masonry-item"
                 onClick={() => handlePostClick(item.postId, item.imageUrl)}
               >
-                <img src={item.imageUrl} alt={item.postTitle || 'Imagen'} loading="lazy" />
+                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || 'Imagen'} loading="lazy" />
 
                 <div className="user-profile-hover">
                   <div className="user-info-hover">
@@ -664,7 +761,7 @@ const Explorer = () => {
                   {isSaved ? (
                     <img src="/iconos/check-tick.svg" alt="" aria-hidden="true" className="save-icon" />
                   ) : (
-                    <span className="save-plus" aria-hidden="true">+</span>
+                    <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
                   )}
                   <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
                     {isSaved ? 'Guardada' : 'Guardar'}

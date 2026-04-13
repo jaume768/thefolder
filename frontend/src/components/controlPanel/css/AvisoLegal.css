@@ -1,10 +1,9 @@
 .avisolegal-container {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 900px;
+    margin: 10vh auto 0 auto;
     padding: 20px;
     font-family: 'Inter Tight', sans-serif;
     color: #2c2c2c;
-    background-color: #ffffff;
 }
 
 .avisolegal-header {
@@ -29,24 +28,23 @@
     text-decoration: underline;
 }
 
-.avisolegal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 30px;
-}
-
 .avisolegal-title {
-    font-weight: 600;
-    font-size: 1.8rem;
-    margin-top: 0;
+margin-top: 0;
     margin-bottom: 16px;
     text-align: center;
-    color: #333;
+
+    font-family: Inter Tight, sans-serif;
+    font-size: 10vw;
+    line-height: 10vw;
+    font-weight: 500;
+    color: #111;
+    text-transform: uppercase;
+    width: 100%;
 }
 
 .avisolegal-version {
     font-weight: 400;
-    font-size: 0.9rem;
+    font-size: 12px;
     text-align: center;
     color: #777;
     margin-bottom: 30px;
@@ -56,43 +54,43 @@
     margin: 0 0 20px;
     line-height: 1.6;
     text-align: justify;
+    font-size: 14px;
 }
 
 .avisolegal-subtitle {
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
     margin: 30px 0 15px;
-    color: #333;
-    border-bottom: 1px solid #eee;
     padding-bottom: 8px;
 }
 
 .avisolegal-subtitle-small {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
     margin: 25px 0 10px;
     color: #333;
 }
 
 .avisolegal-list {
-    padding-left: 20px;
-    margin-bottom: 20px;
+    padding-left: 12px;
+    margin-bottom: 12px;
 }
 
 .avisolegal-list li {
     list-style: none;
     margin-bottom: 10px;
     position: relative;
-    padding-left: 20px;
+    padding-left: 24px;
 }
 
 .avisolegal-list li::before {
-    content: "›";
+    content: "→";
     position: absolute;
     left: 0;
-    color: #4c85ff;
-    font-size: 1.2rem;
-    line-height: 1.2rem;
+    color: #444;
+    font-size: 12px;
+    line-height: 15px;
+    margin-right: 20px;
 }
 
 .avisolegal-sublist {

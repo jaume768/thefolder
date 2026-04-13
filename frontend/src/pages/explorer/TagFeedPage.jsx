@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Masonry from 'react-masonry-css';
 import '../../components/controlPanel/css/explorer.css';
+import { clImg } from '../../utils/optimizeImage';
 
 const TagFeedPage = () => {
   const { tag } = useParams();
@@ -147,7 +148,7 @@ const TagFeedPage = () => {
                 className="masonry-item"
                 onClick={() => handlePostClick(item.postId, item.imageUrl)}
               >
-                <img src={item.imageUrl} alt={item.postTitle || 'Imagen'} loading="lazy" />
+                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || 'Imagen'} loading="lazy" />
 
                 <div className="user-profile-hover">
                   <div className="user-info-hover">
@@ -174,7 +175,7 @@ const TagFeedPage = () => {
                   {isSaved ? (
                     <img src="/iconos/check-tick.svg" alt="" aria-hidden="true" className="save-icon" />
                   ) : (
-                    <span className="save-plus" aria-hidden="true">+</span>
+                    <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
                   )}
                   <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
                     {isSaved ? 'Guardada' : 'Guardar'}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import '../../components/controlPanel/css/AvisoLegal.css';
+import '../../components/controlPanel/css/Legal.css';
 
 const AvisoLegal = () => {
     const navigate = useNavigate();
@@ -11,138 +11,141 @@ const AvisoLegal = () => {
     };
 
     return (
-        <div className="avisolegal-container">
-            <div className="avisolegal-header">
-                <button className="avisolegal-back-button" onClick={goBack}>
-                    <FaArrowLeft /> Volver
-                </button>
-            </div>
+        <div className="legal-container">
+            <div className="legal-content">
+                <h1 className="legal-title">Aviso Legal</h1>
+                <p className="legal-version">Actualizado: Abril de 2026 · Versión: 2.0</p>
 
-            <div className="avisolegal-content">
-                <h1 className="avisolegal-title">Aviso Legal</h1>
-                <p className="avisolegal-version">Actualizado: 20 de Mayo de 2025 Versión: 1.0</p>
-
-                <p className="avisolegal-paragraph">
-                    El presente documento constituye el Aviso Legal y las Condiciones de Uso de TheFolderWorld, y regula la relación entre esta plataforma y las personas usuarias del servicio. TheFolderWorld pone a disposición de sus usuarios las presentes Condiciones de Uso, cumpliendo con lo establecido en la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), así como con las obligaciones previstas en el Reglamento (UE) 2016/679, Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD).
-                    Estas condiciones estarán vigentes y serán aplicables en tanto permanezcan accesibles desde la presente página web. La versión actual del Aviso Legal ha sido actualizada con fecha 20 de mayo de 2025. Las versiones anteriores, en su caso, pueden consultarse en el apartado correspondiente al final del documento.
+                <p className="legal-paragraph">
+                    El presente documento constituye el Aviso Legal de THEFOLDER y regula la relación entre la plataforma y las personas usuarias del servicio. THEFOLDER cumple con lo establecido en la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), el Reglamento (UE) 2016/679, Reglamento General de Protección de Datos (RGPD), y la Ley Orgánica 3/2018, de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).
                 </p>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Titularidad de thefolder.world y datos en cumplimiento de la Ley LSSI</h2>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld es un servicio web prestado por Miriam Reina Bolaños, con DNI 79042033A, cuya dirección fiscal y de contacto se encuentra en Pasaje Robledano, nº3, San Pedro de Alcántara (Marbella), Málaga.
-                        Puedes contactar con la titular del servicio a través del correo electrónico: thefolderworld@gmail.com
-                        TheFolderWorld es un proyecto personal y no representa a una entidad mercantil con personalidad jurídica propia. No se ofrece ningún servicio de pago ni se realizan transacciones económicas a través de la plataforma.
+                    <h2 className="legal-subtitle">1/ Titularidad del servicio</h2>
+                    <p className="legal-paragraph">
+                        THEFOLDER es un servicio web prestado por Miriam Reina Bolaños, con domicilio en Málaga, 29670, España.
+                    </p>
+                    <p className="legal-paragraph">
+                        Correo electrónico de contacto: <a href="mailto:thefolderworld@gmail.com">thefolderworld@gmail.com ↗</a><br />
+                        Sitio web: <a href="https://thefolder.es" target="_blank" rel="noopener noreferrer">https://thefolder.es ↗</a>
+                    </p>
+                    <p className="legal-paragraph">
+                        THEFOLDER es un proyecto personal y no representa a una entidad mercantil con personalidad jurídica propia. Actualmente no se ofrece ningún servicio de pago ni se realizan transacciones económicas a través de la plataforma.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Aceptación y modificación de las Condiciones de Uso</h2>
-                    <p className="avisolegal-paragraph">
-                        La condición de Usuario se adquiere mediante el mero acceso a cualquiera de los servicios disponibles en thefolder.world; la condición de Usuario Registrado se adquiere necesariamente mediante el proceso de registro. Ambas condiciones implican la aceptación expresa de este Aviso Legal. La aceptación del presente Aviso Legal implica que el Usuario ha leído, comprendido y aceptado su contenido en su totalidad. Las condiciones recogidas en este documento serán de aplicación desde el momento en que el Usuario acceda al sitio web o complete el proceso de registro, y su cumplimiento será exigible incluso después de que cese la condición de Usuario o Usuario Registrado, cuando así lo determine la normativa vigente o se establezca expresamente en el presente documento. TheFolderWorld se reserva el derecho a modificar este Aviso Legal en cualquier momento, por razones justificadas como la adaptación a cambios normativos, mejoras técnicas o modificaciones en el servicio ofrecido. Cualquier cambio relevante será comunicado a los Usuarios Registrados a la mayor brevedad posible. El Usuario puede solicitar en cualquier momento la cancelación de su cuenta y la baja como Usuario Registrado, enviando un correo electrónico a la dirección: thefolderworld@gmail.com. Actualmente no existe un sistema automatizado de baja directa desde la plataforma, aunque este podrá implementarse en futuras versiones del servicio. En caso de modificación del presente Aviso Legal, su nueva versión será publicada en la página web. Los Usuarios Registrados recibirán una notificación por correo electrónico y deberán aceptar las nuevas condiciones en su siguiente acceso. En caso de no aceptarlas, se procederá a la cancelación de su cuenta como Usuario Registrado.
+                    <h2 className="legal-subtitle">2/ Aceptación de las condiciones de uso</h2>
+                    <p className="legal-paragraph">
+                        El acceso a THEFOLDER implica la aceptación de este Aviso Legal. El registro como usuario registrado implica además la aceptación expresa de la Política de Privacidad y la Política de Cookies.
+                    </p>
+                    <p className="legal-paragraph">
+                        THEFOLDER se reserva el derecho a modificar este Aviso Legal en cualquier momento, por razones justificadas como la adaptación a cambios normativos, mejoras técnicas o modificaciones en el servicio. Los cambios relevantes serán comunicados a los usuarios registrados por correo electrónico. Si no aceptas las nuevas condiciones, puedes cancelar tu cuenta escribiéndonos a <a href="mailto:thefolderworld@gmail.com">thefolderworld@gmail.com ↗</a>.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Servicios</h2>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld es una plataforma digital que facilita la creación, publicación y descubrimiento de creativos y entusiastas del campo del diseño y la moda. A través de su sitio web, los Usuarios pueden compartir contenido, crear perfiles públicos, interactuar entre ellos y acceder a oportunidades relacionadas con empleo y formación, con el objetivo de fomentar la colaboración y la visibilidad profesional.
+                    <h2 className="legal-subtitle">3/ Descripción del servicio</h2>
+                    <p className="legal-paragraph">
+                        THEFOLDER es una plataforma digital de portfolios y directorio profesional para creativos del sector de la moda. A través de la plataforma, los usuarios pueden crear perfiles públicos, publicar proyectos, acceder a un directorio de profesionales y consultar ofertas de trabajo y formación.
                     </p>
 
-                    <h3 className="avisolegal-subtitle-small">Publicación de contenido</h3>
-                    <p className="avisolegal-paragraph">
-                        Los Usuarios Registrados pueden crear sus perfiles profesionales, añadir información relevante en su CV, publicar fotos en el apartado de portofolio, incluir enlaces, imágenes, materiales descargables u otro contenido útil, respetando siempre lo establecido en las Condiciones de Uso y en la Política de Privacidad.
-                        Cada información o material compartido por el usuario se realiza de forma pública y puede ser visualizada por otros Usuarios y por visitantes no registrados. TheFolderWorld proporciona herramientas para facilitar la difusión del contenido y su descubrimiento, sin intervenir en la autoría ni editar el contenido aportado por los usuarios, a menos de previo aviso.
-                        TheFolderWorld no se hace responsable de los contenidos publicados, pero se reserva el derecho a eliminar cualquier material que infrinja derechos de autor, sea inapropiado o contravenga las condiciones de uso de la plataforma.
+                    <h3 className="legal-subtitle-small">Publicación de contenido</h3>
+                    <p className="legal-paragraph">
+                        Los usuarios registrados pueden crear su perfil profesional, publicar proyectos con imágenes y descripciones, subir su CV y portfolio, e incluir enlaces a sus redes sociales y trabajos externos. Todo el contenido publicado es de carácter público y puede ser visualizado por cualquier persona, registrada o no.
+                    </p>
+                    <p className="legal-paragraph">
+                        THEFOLDER no interviene en la autoría ni edita el contenido publicado por los usuarios, pero se reserva el derecho a retirar cualquier material que infrinja derechos de terceros, sea ilegal o contravenga estas condiciones de uso.
                     </p>
 
-                    <h3 className="avisolegal-subtitle-small">Publicación de ofertas de empleo y formaciones</h3>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld permite a ciertos usuarios profesionales publicar en la plataforma oportunidades laborales, colaborativas o de formación, incluyendo talleres, cursos, convocatorias, eventos y similares.
-                        Estas publicaciones están hechas por los propios usuarios y son de su exclusiva responsabilidad. TheFolderWorld no obtiene ningún beneficio económico por su publicación ni actúa como intermediario, y por tanto no garantiza ni puede verificar la veracidad, licitud, calidad ni actualidad de dichas ofertas.
-                        Recomendamos a los usuarios interesados que realicen sus propias verificaciones antes de comprometerse con cualquier oferta publicada a través de la plataforma.
+                    <h3 className="legal-subtitle-small">Publicación de ofertas de empleo y formación</h3>
+                    <p className="legal-paragraph">
+                        Las cuentas de empresa pueden publicar ofertas de trabajo y oportunidades formativas. Estas publicaciones son responsabilidad exclusiva de quien las publica. THEFOLDER no verifica la veracidad, licitud ni actualidad de dichas ofertas y no actúa como intermediario laboral. Recomendamos a los usuarios interesados que realicen sus propias verificaciones antes de comprometerse con cualquier oferta.
                     </p>
 
-                    <h3 className="avisolegal-subtitle-small">Servicios gratuitos</h3>
-                    <p className="avisolegal-paragraph">
-                        Todos los servicios ofrecidos actualmente en TheFolderWorld son totalmente gratuitos para los Usuarios, tanto en su versión básica como en las funcionalidades actuales avanzadas. No existen, en el momento de redacción de este documento, suscripciones de pago ni servicios adicionales con coste económico.
-                        Cualquier futura incorporación de servicios de pago será debidamente comunicada a los usuarios, junto con sus condiciones específicas, y siempre requerirá aceptación expresa.
+                    <h3 className="legal-subtitle-small">Servicios gratuitos</h3>
+                    <p className="legal-paragraph">
+                        Todos los servicios disponibles actualmente en THEFOLDER son gratuitos. No existen suscripciones de pago ni servicios con coste económico. Cualquier futura incorporación de servicios de pago será comunicada con antelación y requerirá aceptación expresa.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Limitación de responsabilidad</h2>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld no se hace responsable del contenido que publican los usuarios en sus perfiles. En particular, no se garantiza la veracidad, legalidad, utilidad o adecuación de las ofertas de trabajo o formación, ni se asume ninguna obligación de verificar o moderar dicho contenido más allá de lo legalmente exigible.
-                        En caso de detectar un uso indebido o fraudulento, cualquier usuario puede informar al equipo de TheFolderWorld, que se reserva el derecho de eliminar el contenido o cancelar la cuenta implicada.
-                        TheFolderWorld no asume responsabilidad alguna sobre los contenidos generados o compartidos por los usuarios. Sin embargo, la plataforma podrá actuar si se detectan comportamientos ilegales, fraudulentos o inapropiados, conforme a la legislación vigente.
+                    <h2 className="legal-subtitle">4/ Requisitos para el registro</h2>
+                    <p className="legal-paragraph">
+                        Para registrarse en THEFOLDER es necesario:
                     </p>
-                </section>
-
-                <section>
-                    <h2 className="avisolegal-subtitle">Tipologías de Usuario admitidas</h2>
-                    <p className="avisolegal-paragraph">
-                        En TheFolder, sólo pueden registrarse personas físicas o jurídicas cuya actividad esté relacionada con el diseño, la moda, la creatividad, la producción o la gestión cultural, tanto a nivel profesional como formativo.
-                        Las tipologías de usuario admitidas incluyen, entre otras:
-                    </p>
-                    <ul className="avisolegal-list">
-                        <li>Estudiantes o graduados, así como futuros estudiantes menores de edad con previa autorización paternal.</li>
-                        <li>Diseñadores/as de moda, estilistas y creativos/as multidisciplinares relacionados con el ámbito de la moda.</li>
-                        <li>Marcas y estudios de diseño.</li>
-                        <li>Instituciones educativas vinculadas al diseño y la moda.</li>
-                        <li>Productoras y promotores culturales.</li>
-                        <li>Profesionales de la comunicación especializada.</li>
-                        <li>Tiendas, showrooms y plataformas de difusión cultural.</li>
-                        <li>Fotógrafos/as, estilistas, modelos y otros perfiles técnicos únicamente cuando su actividad esté vinculada a proyectos editoriales, de diseño o moda y guarde coherencia con la finalidad de la plataforma.</li>
+                    <ul className="legal-list">
+                        <li>Tener al menos 16 años. Si eres menor de 16, necesitas autorización de tus padres o tutores legales.</li>
+                        <li>Proporcionar información veraz y actualizada.</li>
+                        <li>Verificar tu dirección de correo electrónico mediante el código enviado al registrarte.</li>
+                        <li>Leer y aceptar este Aviso Legal, la Política de Privacidad y la Política de Cookies.</li>
+                        <li>Desarrollar una actividad vinculada al sector de la moda, el diseño, la fotografía, la dirección de arte, la comunicación de moda u otras disciplinas creativas afines.</li>
                     </ul>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld se reserva el derecho de revisar, aceptar o rechazar cualquier solicitud de registro si el perfil no se ajusta a los propósitos de la comunidad.
+                    <p className="legal-paragraph">
+                        THEFOLDER se reserva el derecho a rechazar solicitudes de registro que no se ajusten a los propósitos de la plataforma.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Condiciones comunes para los usuarios registrados</h2>
-                    <p className="avisolegal-paragraph">
-                        Para formar parte de TheFolderWorld como usuario registrado, es imprescindible cumplir con las siguientes condiciones:
+                    <h2 className="legal-subtitle">5/ Normas de uso y contenido prohibido</h2>
+                    <p className="legal-paragraph">
+                        Los usuarios se comprometen a hacer un uso lícito, ético y responsable de la plataforma. Queda estrictamente prohibido:
                     </p>
-                    <ul className="avisolegal-list">
-                        <li>Leer, comprender y aceptar el Aviso legal y la Política de privacidad, así como cumplir sus condiciones en todo momento.</li>
-                        <li>Pertenecer a una o varias de las tipologías de usuario admitidas.</li>
-                        <li>Actuar de forma ética, profesional y conforme a la ley, respetando las normas básicas de convivencia, diversidad y respeto propias del entorno cultural y creativo.</li>
-                        <li>Ser mayor de edad según la legislación del país de residencia (mínimo 18 años), o contar con autorización expresa y documentada por parte del tutor legal en caso contrario, siguiendo el procedimiento que TheFolderWorld indique.</li>
-                        <li>No estar vinculado a actividades que contradigan los fines de la plataforma, como por ejemplo:
-                            <ul className="avisolegal-sublist">
-                                <li>Producción o promoción de contenidos de carácter erótico, sexual o explícito.</li>
-                                <li>Servicios relacionados con la captación, representación o difusión de perfiles fuera del ámbito del diseño, la moda o la cultura.</li>
-                                <li>Actividades ilícitas, discriminatorias o contrarias a los derechos fundamentales de las personas.</li>
-                            </ul>
-                        </li>
+                    <ul className="legal-list">
+                        <li>Publicar contenido falso, engañoso o que suplante la identidad de otra persona.</li>
+                        <li>Infringir derechos de propiedad intelectual o industrial de terceros.</li>
+                        <li>Publicar material sexual explícito o pornográfico.</li>
+                        <li>Incitar al odio, la discriminación o la violencia por cualquier razón.</li>
+                        <li>Realizar spam o publicidad no solicitada.</li>
+                        <li>Publicar imágenes de terceras personas sin su consentimiento.</li>
+                        <li>Introducir malware, virus u otro código malicioso.</li>
                     </ul>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld podrá verificar la identidad o trayectoria profesional de los usuarios registrados, así como la veracidad de la información compartida, para garantizar la fiabilidad de la comunidad.
+                    <p className="legal-paragraph">
+                        El incumplimiento de estas normas podrá dar lugar a la retirada del contenido y a la cancelación de la cuenta sin previo aviso.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Legislación aplicable y jurisdicción</h2>
-                    <p className="avisolegal-paragraph">
-                        Las condiciones de uso de TheFolderWorld y cualquier relación que pudiera derivarse del acceso o uso de nuestros servicios están regidas por la legislación española.
-                        En caso de conflicto, desacuerdo o controversia entre un usuario y TheFolderWorld, ambas partes acuerdan someterse a los Juzgados y Tribunales de Barcelona capital, renunciando expresamente a cualquier otro fuero que pudiera corresponder.
+                    <h2 className="legal-subtitle">6/ Propiedad intelectual</h2>
+                    <p className="legal-paragraph">
+                        El usuario mantiene la titularidad de los derechos sobre el contenido que publica. Al publicarlo en THEFOLDER, concede a la plataforma una licencia no exclusiva y gratuita para mostrarlo y distribuirlo dentro del servicio con el único fin de su correcto funcionamiento. Esta licencia no autoriza ningún otro uso sin consentimiento expreso del autor.
+                    </p>
+                    <p className="legal-paragraph">
+                        El diseño, código, marca, logotipo y demás elementos de THEFOLDER son propiedad de Miriam Reina Bolaños y están protegidos por la legislación española e internacional sobre propiedad intelectual e industrial. Queda prohibida su reproducción o explotación sin autorización escrita previa.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="avisolegal-subtitle">Histórico de versiones, actualizaciones y modificaciones</h2>
-                    <p className="avisolegal-paragraph">
-                        TheFolderWorld se reserva el derecho de modificar el contenido del presente Aviso Legal en cualquier momento, con el fin de adaptarlo a cambios legislativos, mejoras en la plataforma o decisiones internas que afecten al funcionamiento de nuestros servicios.
-                        Las actualizaciones del texto se harán efectivas desde el momento de su publicación en esta misma página, y se informará de cualquier cambio significativo a través de los medios que se consideren adecuados.
-                        Recomendamos revisar este Aviso Legal de forma periódica para mantenerse al tanto de posibles modificaciones.
-                        A continuación, se recoge un histórico de versiones aplicadas:
+                    <h2 className="legal-subtitle">7/ Limitación de responsabilidad</h2>
+                    <p className="legal-paragraph">
+                        THEFOLDER actúa como prestador de servicios de alojamiento conforme al artículo 16 de la LSSI-CE y no tiene obligación general de supervisar el contenido publicado por los usuarios. Sin embargo, actuará con diligencia ante contenidos ilegales o que vulneren derechos de terceros cuando tenga conocimiento efectivo de ello.
                     </p>
-                    <ul className="avisolegal-list">
-                        <li><strong>Versión 1.0</strong> - Publicada el 20 de Mayo de 2025, versión original del Aviso Legal.</li>
+                    <p className="legal-paragraph">
+                        THEFOLDER no será responsable de los daños derivados del uso o imposibilidad de uso del servicio, del contenido publicado por usuarios, ni de las relaciones o acuerdos que se produzcan entre usuarios a través de la plataforma.
+                    </p>
+                    <p className="legal-paragraph">
+                        Si detectas un uso indebido o contenido inapropiado, puedes reportarlo a <a href="mailto:thefolderworld@gmail.com">thefolderworld@gmail.com ↗</a>.
+                    </p>
+                </section>
+
+                <section>
+                    <h2 className="legal-subtitle">8/ Legislación aplicable y jurisdicción</h2>
+                    <p className="legal-paragraph">
+                        Este Aviso Legal se rige por la legislación española. Para cualquier controversia derivada de su interpretación o cumplimiento, las partes se someten a los Juzgados y Tribunales de Málaga, con renuncia expresa a cualquier otro fuero que pudiera corresponderles.
+                    </p>
+                    <p className="legal-paragraph">
+                        Si eres consumidor residente en la Unión Europea, puedes acudir a la plataforma de resolución de litigios en línea de la Comisión Europea: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr ↗</a>
+                    </p>
+                </section>
+
+                <section>
+                    <h2 className="legal-subtitle">9/ Historial de versiones</h2>
+                    <ul className="legal-list">
+                        <li><strong>Versión 1.0</strong> — Publicada el 20 de mayo de 2025. Versión original.</li>
+                        <li><strong>Versión 2.0</strong> — Publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, corrección de jurisdicción, eliminación de datos personales innecesarios, unificación de edad mínima a 16 años, adecuación al dominio thefolder.es.</li>
                     </ul>
                 </section>
+
             </div>
         </div>
     );

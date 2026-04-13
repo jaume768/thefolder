@@ -206,9 +206,45 @@ function validateUsername(rawUsername) {
   return { ok: true, username };
 }
 
+/**
+ * Genera un username provisional limpio a partir del email.
+ * Intenta: base → base2 → base3 … base99 → base-xxxx (fallback random)
+ * Nunca produce sufijos de palabras aleatorias tipo "-sudo".
+ */
+async function generateProvisionalUsername(email, User) {
+  const localPart = (email || '').split('@')[0].toLowerCase();
+  let base = localPart
+    .replace(/[^a-z0-9]/g, '')   // quita puntos, +, etc.
+    .slice(0, 16);
+  if (!base) base = 'user';
+
+  // Intento directo
+  if (validateUsername(base).ok && !(await User.findOne({ username: base }))) {
+    return base;
+  }
+
+  // Incrementos numéricos: base2, base3 … base99
+  const trimmed = base.slice(0, 18);
+  for (let i = 2; i <= 99; i++) {
+    const candidate = `${trimmed}${i}`;
+    if (validateUsername(candidate).ok && !(await User.findOne({ username: candidate }))) {
+      return candidate;
+    }
+  }
+
+  // Fallback: sufijo numérico largo (extremadamente raro llegar aquí)
+  let username;
+  do {
+    const n = Math.floor(Math.random() * 9000) + 1000;
+    username = `${base.slice(0, 15)}${n}`;
+  } while (!validateUsername(username).ok || await User.findOne({ username }));
+  return username;
+}
+
 module.exports = {
   RESERVED_USERNAMES,
   normalizeUsername,
   isReservedUsername,
   validateUsername,
+  generateProvisionalUsername,
 };

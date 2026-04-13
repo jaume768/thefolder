@@ -114,7 +114,7 @@ const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNe
       {error && !localError && !isTaken && <p className="ob-error">{error}</p>}
 
       <div className="ob-buttons">
-        <button type="button" className="ob-back" onClick={onBack}>Volver atrás</button>
+        {onBack && <button type="button" className="ob-back" onClick={onBack}>Volver atrás</button>}
         <button className="ob-cta" disabled={!isOk} onClick={handleNext}>
           CONTINUAR
         </button>

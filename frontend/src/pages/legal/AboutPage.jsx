@@ -8,8 +8,8 @@ const About = () => {
             <div className="about-content">
                 <div className="about-section">
                     <div className="about-text">
-                        <h1>Sobre TheFolder</h1>
-                        TheFolder nace como respuesta a la <b>falta de visibilidad que enfrentan los creativos al terminar sus estudios.</b>
+                        <h1>Sobre THEFOLDER</h1>
+                        THEFOLDER nace como respuesta a la <b>falta de visibilidad que enfrentan los creativos al terminar sus estudios.</b>
                         <br />Cada año se generan proyectos con un enorme valor creativo que, por falta de difusión o conexiones, nunca llegan a ser descubiertos, impulsados o reconocidos por la industria. Muchos se quedan relegados a un perfil con pocos seguidores, a un proyecto final que no sale de las aulas o a un desfile con cobertura limitada a familiares.
                     </div>
                     <div className="about-image">
@@ -20,7 +20,7 @@ const About = () => {
                 <div className="about-section">
                     <div className="about-text">
                         Aquí, <b>tu perfil se convierte en tu carpeta profesional.</b> Una plataforma conectada directamente con la industria, donde subir una imagen significa presentarla ante el mundo profesional, sin intermediarios ni algoritmos que limiten tu alcance.<br /><br />
-                        En TheFolder, <b>el talento se celebra, se proyecta y se conecta con el sector profesional, en un entorno diseñado especialmente para la moda y el diseño emergente.</b>
+                        En THEFOLDER, <b>el talento se celebra, se proyecta y se conecta con el sector profesional, en un entorno diseñado especialmente para la moda y el diseño emergente.</b>
                     </div>
                     <div className="about-image">
                         <img src="/multimedia/about-polas-ManelAbella.png" alt="Diseño y moda" />

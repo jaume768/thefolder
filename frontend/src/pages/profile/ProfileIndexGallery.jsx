@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTimes, FaCopy } from "react-icons/fa";
 import LandingHeader from "../../components/landing/LandingHeader";
-import CookieBanner from "../../components/CookieBanner";
 
 import "./ProfileIndexGallery.css";
 import UserProfessionalExperienceSection from "../../components/controlPanel/userProfile/UserProfessionalExperienceSection";
@@ -11,32 +10,12 @@ import UserSoftwareSection from "../../components/controlPanel/userProfile/UserS
 import UserEducationSection from "../../components/controlPanel/userProfile/UserEducationSection";
 import UserLanguagesSection from "../../components/controlPanel/userProfile/UserLanguagesSection";
 import { buildSocialMediaUrl } from "../../utils/socialMediaUtils";
+import { clImg } from "../../utils/optimizeImage";
 
-// ── Grid editorial asimétrico ─────────────────────────────────────────────
-// Cada entrada: [colSpan (sobre 12 columnas), variante de altura]
-// Las filas suman 12 para mantener el ritmo de la maquetación.
-//   Fila 1: 5 + 4 + 3 = 12
-//   Fila 2: 6 + 6     = 12
-//   Fila 3: 3 + 5 + 4 = 12
-//   Fila 4: 4 + 5 + 3 = 12   …y así, cíclico.
-const GRID_PATTERN = [
-  [3, "tall"],
-  [3, "medium"],
-  [4, "tall"],
-  [6, "tall"],
-  [5, "square"],
-  [3, "tall"],
-  [4, "medium"],
-  [6, "square"],
-  [3, "medium"],
-  [5, "tall"],
-  [6, "medium"],
-  [4, "square"],
-  [3, "tall"],
-  [5, "medium"],
-  [6, "tall"],
-  [4, "medium"],
-];
+// ── Patrón de columnas cíclico (12 columnas) ─────────────────────────────
+// A → col 5/8  |  B → col 9/12
+// Ciclo de 10: a b a a b b a a a b
+const COL_PATTERN = ["a", "b", "c", "b", "c", "a", "b", "b", "c", "a", "a", "b", "c", "b", "c"];
 
 // ── Contador de imágenes de un post ──────────────────────────────────────
 const countImages = (post) => {
@@ -90,7 +69,7 @@ const ProfileIndexGallery = ({
   const location = [
     [profile?.city, profile?.country].filter(Boolean).join(", "),
     profile?.city2 ? [profile.city2, profile.country2].filter(Boolean).join(", ") : null
-  ].filter(Boolean).join(" | ");
+  ].filter(Boolean).join(" · ");
 
   const hasCvData = !!(
     profile?.professionalFormation?.length ||
@@ -110,7 +89,6 @@ const ProfileIndexGallery = ({
             onLoginClick={() => navigate("/", { state: { showLogin: true } })}
             onRegisterClick={() => navigate("/", { state: { showRegister: true } })}
           />
-          <CookieBanner />
           <div className="tf-guest-profile" role="dialog" aria-label="Invitación registro">
             <button
               type="button"
@@ -119,7 +97,7 @@ const ProfileIndexGallery = ({
             >
               Crea tu perfil 
               <br />
-              en THEFOLDER/
+              en THEFOLDER ↗
             </button>
           </div>
         </>
@@ -134,11 +112,11 @@ const ProfileIndexGallery = ({
           className="pig-back"
           onClick={() => navigate(-1)}
         >
-          (VOLVER)
+          <p className="pig-back-arrow">[🡠]</p>
         </button>
       )}
 
-      {/* ── Sidebar izquierda fija ───────────────────────────────────── */}
+      {/* ── Sidebar ──────────────────────────────────────────────────── */}
       <aside className="pig-sidebar">
 
         {/* Identidad: nombre, rol, ubicación */}
@@ -151,18 +129,17 @@ const ProfileIndexGallery = ({
                 {profile.profileHeadlines
                   .filter(Boolean)
                   .slice(0, 2)
-                  .join(" + ")}
+                  .join(" & ")}
               </p>
             )}
 
-          {location && <p className="pig-location">[{location}]</p>}
+          {location && <p className="pig-location">{location}</p>}
         </div>
 
         {(profile?.biography || profile?.bio) && (
           <p className="pig-bio">{profile.biography || profile.bio}</p>
         )}
 
-                {/* Web */}
         {profile?.social?.sitioWeb && (
           <a
             className="pig-website"
@@ -181,8 +158,17 @@ const ProfileIndexGallery = ({
           </a>
         )}
 
-        {/* Acciones contextuales */}
         <div className="pig-actions">
+          {isOwner && (
+            <button
+              type="button"
+              className="pig-action-btn"
+              onClick={() => navigate("/myprofile/edit")}
+            >
+              Editar perfil
+            </button>
+          )}
+
           {profile?.email && (
             <button
               type="button"
@@ -250,8 +236,7 @@ const ProfileIndexGallery = ({
             ) : (
               <div className="pig-grid">
                 {userPosts.map((post, idx) => {
-                  const [span, heightVariant] =
-                    GRID_PATTERN[idx % GRID_PATTERN.length];
+                  const colClass = `pig-card--col-${COL_PATTERN[idx % COL_PATTERN.length]}`;
                   const imgCount = countImages(post);
                   const coverImg =
                     post.mainImage ||
@@ -261,8 +246,7 @@ const ProfileIndexGallery = ({
                   return (
                     <article
                       key={post._id}
-                      className={`pig-card pig-card--${heightVariant}`}
-                      style={{ gridColumn: `span ${span}` }}
+                      className={`pig-card ${colClass}`}
                       onClick={() => navigate(`/post/${post._id}`)}
                       role="button"
                       tabIndex={0}
@@ -274,7 +258,7 @@ const ProfileIndexGallery = ({
                         {coverImg ? (
                           <img
                             className="pig-card__image"
-                            src={coverImg}
+                            src={clImg.post(coverImg)}
                             alt={post.title || "Proyecto"}
                             loading="lazy"
                           />
@@ -328,6 +312,7 @@ const ProfileIndexGallery = ({
         { key: "pinterest",  label: "Pinterest" },
         { key: "youtube",    label: "YouTube"   },
         { key: "tumblr",     label: "Tumblr"    },
+        { key: "substack",   label: "Substack"  },
       ];
       const active = SOCIALS.filter(s => profile.social[s.key]);
       if (!active.length) return null;

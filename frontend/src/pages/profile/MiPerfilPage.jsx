@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import "../../components/controlPanel/css/miPerfil.css";
+import { clImg } from "../../utils/optimizeImage";
 
 import { FaTimes, FaCopy } from "react-icons/fa";
 
@@ -14,6 +15,8 @@ import UserProfessionalExperienceSection from "../../components/controlPanel/use
 import UserSkillsSection from "../../components/controlPanel/userProfile/UserSkillsSection";
 import UserSoftwareSection from "../../components/controlPanel/userProfile/UserSoftwareSection";
 import UserEducationSection from "../../components/controlPanel/userProfile/UserEducationSection";
+import UserPressPublicationsSection from "../../components/controlPanel/userProfile/UserPressPublicationsSection";
+import UserAwardsSection from "../../components/controlPanel/userProfile/UserAwardsSection";
 import UserSocialSection from "../../components/controlPanel/userProfile/UserSocialSection";
 import UserDownloadableFilesSection from "../../components/controlPanel/userProfile/UserDownloadableFilesSection"; 
 import UserCompanyTagsSection from "../../components/controlPanel/userProfile/UserCompanyTagsSection";
@@ -47,6 +50,11 @@ const MiPerfil = () => {
   const [showEmailPopup, setShowEmailPopup] = useState(false);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [externalLinkModal, setExternalLinkModal] = useState({ open: false, url: "" });
+  const openExternalLink = (url) => {
+    const full = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+    setExternalLinkModal({ open: true, url: full });
+  };
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -54,11 +62,12 @@ const MiPerfil = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const headerImageToShow =
+  const headerImageToShow = clImg.cover(
     (isMobile ? profile?.featuredHeaderImageMobile : profile?.featuredHeaderImageDesktop) ||
     profile?.featuredHeaderImage ||
     fallbackHeaderImage ||
-    null;
+    null
+  );
 
 
   // ✅ ocultar dashboard header global (como el externo)
@@ -336,6 +345,24 @@ return (
               </div>
             )}
 
+            {profile?.social?.representationName && (
+              <div className="resume-website resume-representation miPerfil-website">
+                <span className="resume-representation__label">Represented by </span>
+                {profile.social.representationWeb ? (
+                  <button
+                    type="button"
+                    className="resume-website-btn"
+                    onClick={() => openExternalLink(profile.social.representationWeb)}
+                  >
+                    {profile.social.representationName}
+                  </button>
+                ) : (
+                  <span>{profile.social.representationName}</span>
+                )}
+                {profile.social.representationWeb && <span>↗</span>}
+              </div>
+            )}
+
             {/* Iconos sociales */}
             <UserSocialSection social={profile?.social} />
           </div>
@@ -403,6 +430,8 @@ return (
                     professionalFormation={profile?.professionalFormation}
                   />
                   <UserEducationSection education={profile?.education} />
+                  <UserPressPublicationsSection pressPublications={profile?.pressPublications} />
+                  <UserAwardsSection awards={profile?.awards} />
                   <UserSkillsSection skills={profile?.skills} />
                   <UserSoftwareSection software={profile?.software} />
                   <UserLanguagesSection
@@ -470,6 +499,34 @@ return (
     )}
 
     <ProfileStickyActions username={profile?.username} />
+
+    {externalLinkModal.open && (
+      <div
+        className="modal-overlay"
+        onClick={() => setExternalLinkModal({ open: false, url: "" })}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <p className="modal-content-title">Estás saliendo de la plataforma</p>
+          <p className="modal-content-subtitle">Verifica el enlace antes de continuar.</p>
+          <div className="modal-content-link">{externalLinkModal.url}</div>
+          <div className="modal-actions">
+            <button onClick={() => setExternalLinkModal({ open: false, url: "" })}>
+              Cancelar
+            </button>
+            <button
+              onClick={() => {
+                window.open(externalLinkModal.url, "_blank", "noopener,noreferrer");
+                setExternalLinkModal({ open: false, url: "" });
+              }}
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 );
 };

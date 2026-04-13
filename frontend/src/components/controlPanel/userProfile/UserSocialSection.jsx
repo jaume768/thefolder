@@ -9,6 +9,7 @@ import {
   FaPinterest,
 } from 'react-icons/fa';
 import { FaTiktok } from "react-icons/fa6";
+import { SiSubstack } from "react-icons/si";
 import { buildSocialMediaUrl } from '../../../utils/socialMediaUtils';
 
 const UserSocialSection = ({ social }) => {
@@ -101,7 +102,19 @@ const UserSocialSection = ({ social }) => {
             <FaPinterest size={24} />
           </a>
         )}
-        
+
+        {social?.substack && (
+          <a
+            href={buildSocialMediaUrl('substack', social.substack)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-icon substack"
+            aria-label="Substack"
+          >
+            <SiSubstack size={20} />
+          </a>
+        )}
+
       </div>
     </section>
   );

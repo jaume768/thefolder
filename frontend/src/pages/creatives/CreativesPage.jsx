@@ -40,7 +40,10 @@ const GROUP_ICONS = {
   'Digital & 3D':        '/iconos/specialty/graphic-design.png',
   'Ilustración':         '/iconos/specialty/illustration.png',
   'Styling':             '/iconos/specialty/styling.png',
+  'Marketing & PR':           '/iconos/specialty/marketing.png',
+  'Digital & Social':         '/iconos/specialty/content-creator.png',
   'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
+  'Otro':                     '/iconos/specialty/clue.png',
 };
 
 const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
@@ -67,9 +70,13 @@ const GROUP_ORDER = [
   "Fotografía & Vídeo",
   "Styling",
   "Beauty (MUAH)",
-  "Accesorios",
   "Digital & 3D",
+  "Accesorios",
+  "Comunicación & Editorial",
+  "Marketing & PR",
+  "Digital & Social",
   "Ilustración",
+  "Otro",
 ];
 
 const EMPTY_FILTERS = { search: "", city: [], professionalProfile: [], creativeLevel: [] };
@@ -122,11 +129,19 @@ const GUEST_ROLES_BY_GROUP = {
   ],
 };
 
+/**
+ * Aplica transformaciones de Cloudinary para optimizar imágenes de tarjetas de creativo.
+ * Convierte a WebP/AVIF automáticamente, recorta al aspect ratio de la tarjeta y
+ * comprime con calidad automática. Solo actúa sobre URLs de Cloudinary.
+ */
+const cloudinaryOptimize = (url) => url || '';
+
 const Creatives = () => {
   const [creatives, setCreatives] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tagOptions, setTagOptions] = useState([]);
   const [rolesByGroup, setRolesByGroup] = useState({});
+  const [customTags, setCustomTags] = useState([]);
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
   const [totalCreatives, setTotalCreatives] = useState(0);
   const [page, setPage] = useState(1);
@@ -135,6 +150,7 @@ const Creatives = () => {
   const [activeCountryPanel, setActiveCountryPanel] = useState(null);
   const [cityCounts, setCityCounts] = useState({});
 
+  const [facets, setFacets] = useState({ tags: {}, cities: {}, levels: {} });
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
@@ -143,6 +159,43 @@ const Creatives = () => {
 
   const navigate = useNavigate();
   const observer = useRef();
+
+  // ── Hover posts grid ─────────────────────────────────────────────────────
+  const postCache   = useRef(new Map()); // username → string[] | null (null = fetch failed)
+  const hoverTimer  = useRef(null);
+  const [hoverPosts, setHoverPosts] = useState({}); // username → string[]
+
+  const handleCardMouseEnter = useCallback((username) => {
+    clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(async () => {
+      if (postCache.current.has(username)) {
+        const cached = postCache.current.get(username);
+        if (cached && cached.length > 0) {
+          setHoverPosts(prev => ({ ...prev, [username]: cached }));
+        }
+        return;
+      }
+      postCache.current.set(username, []); // mark in-flight
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        const res = await axios.get(`${backendUrl}/api/posts/user/${username}?limit=4`);
+        const images = (res.data.posts || [])
+          .slice(0, 4)
+          .map(p => p.mainImage)
+          .filter(Boolean);
+        postCache.current.set(username, images);
+        if (images.length > 0) {
+          setHoverPosts(prev => ({ ...prev, [username]: images }));
+        }
+      } catch {
+        postCache.current.set(username, null);
+      }
+    }, 150);
+  }, []);
+
+  const handleCardMouseLeave = useCallback(() => {
+    clearTimeout(hoverTimer.current);
+  }, []);
 
   const { user } = useContext(AuthContext);
   const { openCreatePost } = useCreatePost() || {};
@@ -209,7 +262,22 @@ const Creatives = () => {
       })
       .catch(() => {});
     axios.get(`${backendUrl}/api/tags/cities${isLoggedIn ? "" : "?withPosts=false"}`)
-      .then(res => setCityCounts(res.data.cities || {}))
+      .then(res => {
+        const raw = res.data.cities || {};
+        // Normalizar nombres de ciudad contra la lista canónica (case-insensitive)
+        const canonicalMap = new Map(
+          Object.values(LOCATIONS).flat().map(c => [c.toLowerCase(), c])
+        );
+        const normalized = {};
+        for (const [city, count] of Object.entries(raw)) {
+          const canonical = canonicalMap.get(city.toLowerCase()) || city;
+          normalized[canonical] = (normalized[canonical] || 0) + count;
+        }
+        setCityCounts(normalized);
+      })
+      .catch(() => {});
+    axios.get(`${backendUrl}/api/tags/custom${isLoggedIn ? "" : "?withPosts=false"}`)
+      .then(res => setCustomTags(res.data.tags || []))
       .catch(() => {});
   }, [isLoggedIn]);
 
@@ -220,15 +288,19 @@ const Creatives = () => {
   }, [tagOptions]);
 
   const orderedGroups = useMemo(() => {
-    const groups = Object.keys(rolesByGroup);
-    const rank = Object.fromEntries(GROUP_ORDER.map((g, i) => [g, i]));
-    return groups.sort((a, b) => {
-      const ra = rank[a] ?? 9999;
-      const rb = rank[b] ?? 9999;
-      if (ra !== rb) return ra - rb;
-      return a.localeCompare(b, "es");
-    });
-  }, [rolesByGroup]);
+    const groups = [...Object.keys(rolesByGroup), ...(customTags.length > 0 ? ['Otro'] : [])];
+    const rank = Object.fromEntries(GROUP_ORDER.filter(g => g !== 'Otro').map((g, i) => [g, i]));
+    const sorted = [...new Set(groups)]
+      .filter(g => g !== 'Otro')
+      .sort((a, b) => {
+        const ra = rank[a] ?? 9999;
+        const rb = rank[b] ?? 9999;
+        if (ra !== rb) return ra - rb;
+        return a.localeCompare(b, "es");
+      });
+    if (customTags.length > 0) sorted.push('Otro');
+    return sorted;
+  }, [rolesByGroup, customTags]);
 
   const otherCities = useMemo(() => {
     const knownCities = new Set(Object.values(LOCATIONS).flat());
@@ -238,14 +310,41 @@ const Creatives = () => {
       .sort((a, b) => a.localeCompare(b, 'es'));
   }, [cityCounts]);
 
-  // ── Debounce 400ms ───────────────────────────────────────────────────────
+  // ── Debounce 400ms (solo usuarios registrados) ───────────────────────────
   useEffect(() => {
+    if (!isLoggedIn) return;
     const t = setTimeout(() => {
+      setRandomSeed(String(Date.now())); // nuevo seed por sesión de filtro → orden fresco, sin huecos
       setAppliedFilters(filters);
       setPage(1);
     }, 400);
     return () => clearTimeout(t);
-  }, [filters]);
+  }, [filters, isLoggedIn]);
+
+  // ── Faceted search: conteos dinámicos según filtros activos ──────────────
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const controller = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        const params = new URLSearchParams();
+        if (filters.search) params.append("search", filters.search);
+        (filters.city || []).forEach(v => params.append("city", v));
+        (filters.professionalProfile || []).forEach(v => params.append("professionalProfile", v));
+        (filters.creativeLevel || []).forEach(v => params.append("creativeLevel", v));
+        const token = localStorage.getItem("authToken");
+        const res = await axios.get(
+          `${backendUrl}/api/users/creatives/facets?${params.toString()}`,
+          { signal: controller.signal, headers: token ? { Authorization: `Bearer ${token}` } : {} }
+        );
+        setFacets(res.data);
+      } catch {
+        // silencioso — los conteos estáticos siguen disponibles como fallback
+      }
+    }, 250);
+    return () => { clearTimeout(t); controller.abort(); };
+  }, [filters, isLoggedIn]);
 
   // ── Cerrar modal con Escape ──────────────────────────────────────────────
   useEffect(() => {
@@ -339,13 +438,17 @@ const Creatives = () => {
           setTotalCreatives(newCreatives.length);
         }
 
-        setCreatives(prev => page === 1 ? newCreatives : [...prev, ...newCreatives]);
+        setCreatives(prev => {
+          if (page === 1) return newCreatives;
+          const existingIds = new Set(prev.map(c => c._id));
+          return [...prev, ...newCreatives.filter(c => !existingIds.has(c._id))];
+        });
         setHasMore(newCreatives.length > 0 && page < (response.data.totalPages || 1));
         if (page === 1) setHasFetchedOnce(true);
 
       } catch (error) {
         if (error.name === "CanceledError" || error.code === "ERR_CANCELED") return;
-        setError("No se pudieron cargar los creativos. Por favor, inténtalo de nuevo más tarde.");
+        setError("No se pudieron cargar los creativos. Por favor, recarga la página o inténtalo de nuevo más tarde.");
         if (page === 1) setHasFetchedOnce(true);
       } finally {
         setLoading(false);
@@ -358,11 +461,7 @@ const Creatives = () => {
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleUserClick = (username) => {
-    if (!isLoggedIn) {
-      setShowRegisterPopup(true);
-      return;
-    }
-    navigate(`/${username}`);
+    navigate(`/${username}`, { state: { fromCreatives: true } });
   };
 
   const toggleTag = useCallback((key, tag) => {
@@ -381,6 +480,7 @@ const Creatives = () => {
   const clearAll = useCallback(() => {
     setFilters(EMPTY_FILTERS);
     setAppliedFilters(EMPTY_FILTERS);
+    setFacets({ tags: {}, cities: {}, levels: {} });
     setCreatives([]);
     setHasMore(true);
     setPage(1);
@@ -406,11 +506,15 @@ const Creatives = () => {
           <div className="filters-tags filters-tags--level">
             {CREATIVE_LEVELS.map(lvl => {
               const sel = (filters.creativeLevel || []).includes(lvl.value);
+              const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+              const facetCount = facets.levels[String(lvl.value)];
+              const dimmed = hasActiveFilter && !sel && facetCount === 0;
               return (
                 <button
                   key={lvl.value}
                   type="button"
                   className={`filter-tag experience-tag ${sel ? 'selected' : ''}`}
+                  style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                   onClick={() => toggleTag('creativeLevel', lvl.value)}
                 >
                   <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
@@ -426,44 +530,77 @@ const Creatives = () => {
         <div className="filters-modal-section filters-modal-section--specialty">
           <p className="filters-col-title">Especialidad del creativo</p>
           <div className="filters-tags filters-tags--level">
-            {(isLoggedIn ? orderedGroups : GROUP_ORDER).map(group => {
+            {orderedGroups.map(group => {
               const isActive = activeRoleGroup === group;
-              const hasSelection = (GUEST_ROLES_BY_GROUP[group] || rolesByGroup[group] || []).some(t => (filters.professionalProfile || []).includes(t.id));
+              const groupTags = group === 'Otro' ? customTags : (rolesByGroup[group] || []);
+              const selectedInGroup = groupTags.filter(t => (filters.professionalProfile || []).includes(t.id));
+              const hasSelection = selectedInGroup.length > 0;
               const icon = GROUP_ICONS[group];
+              const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+              const groupFacetTotal = groupTags.reduce((sum, t) => sum + (facets.tags[t.id] ?? 0), 0);
+              const dimmed = hasActiveFilter && !hasSelection && groupFacetTotal === 0;
               return (
                 <button
                   key={group}
                   type="button"
                   className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                  style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                   onClick={() => setActiveRoleGroup(prev => prev === group ? null : group)}
                 >
                   {icon && (
                     <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />
                   )}
-                  {group}
+                  {group}{hasSelection && !isActive ? ` (${selectedInGroup.length})` : ''}
                 </button>
               );
             })}
           </div>
-          {activeRoleGroup && (
+          {activeRoleGroup && activeRoleGroup !== 'Otro' && (
             <div className="filters-country-cities">
               <div className="filters-tags filters-tags--level">
-                {(isLoggedIn
-                  ? (rolesByGroup[activeRoleGroup] || []).filter(t => t.count > 0)
-                  : (GUEST_ROLES_BY_GROUP[activeRoleGroup] || rolesByGroup[activeRoleGroup] || [])
-                ).map(t => {
+                {(rolesByGroup[activeRoleGroup] || []).filter(t => t.count > 0).map(t => {
                     const sel = (filters.professionalProfile || []).includes(t.id);
+                    const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+                    const facetCount = facets.tags[t.id];
+                    const displayCount = facetCount !== undefined ? facetCount : t.count;
+                    const dimmed = hasActiveFilter && !sel && facetCount === 0;
                     return (
                       <button
                         key={t.id}
                         type="button"
                         className={`filter-tag ${sel ? 'selected' : ''}`}
+                        style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                         onClick={() => toggleTag('professionalProfile', t.id)}
                       >
-                        {t.label}{isLoggedIn ? ` (${t.count})` : ''}
+                        {t.label}{isLoggedIn ? ` (${displayCount})` : ''}
                       </button>
                     );
                   })}
+              </div>
+            </div>
+          )}
+          {activeRoleGroup === 'Otro' && customTags.length > 0 && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                {customTags.map(t => {
+                  const sel = (filters.professionalProfile || []).includes(t.id);
+                  const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+                  const facetCount = facets.tags[t.id];
+                  const displayCount = facetCount !== undefined ? facetCount : t.count;
+                  const dimmed = hasActiveFilter && !sel && facetCount === 0;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`filter-tag ${sel ? 'selected' : ''}`}
+                      style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
+                      onClick={() => toggleTag('professionalProfile', t.id)}
+                    >
+                      {t.label}{isLoggedIn ? ` (${displayCount})` : ''}
+                    </button>
+                  );
+                })}
+
               </div>
             </div>
           )}
@@ -481,12 +618,19 @@ const Creatives = () => {
               .map(country => {
                 const code = COUNTRY_CODES[country];
                 const isActive = activeCountryPanel === country;
-                const hasSelection = (LOCATIONS[country] || []).some(city => (filters.city || []).includes(city));
+                const selectedCities = (LOCATIONS[country] || []).filter(city => (filters.city || []).includes(city));
+                const hasSelection = selectedCities.length > 0;
+                const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+                const countryFacetTotal = isLoggedIn
+                  ? (LOCATIONS[country] || []).reduce((sum, city) => sum + (facets.cities[city] ?? 0), 0)
+                  : null;
+                const dimmed = hasActiveFilter && !hasSelection && countryFacetTotal === 0;
                 return (
                   <button
                     key={country}
                     type="button"
                     className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                    style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                     onClick={() => setActiveCountryPanel(prev => prev === country ? null : country)}
                   >
                     <span className="country-flag-circle">
@@ -494,7 +638,7 @@ const Creatives = () => {
                         ? <img src={FLAG_IMAGES[code]} alt={country} />
                         : flagEmoji(code)}
                     </span>
-                    {country}
+                    {country}{hasSelection && !isActive ? ` (${selectedCities.length})` : ''}
                   </button>
                 );
               })}
@@ -524,14 +668,19 @@ const Creatives = () => {
                   <div className="filters-tags filters-tags--level">
                     {cities.map(city => {
                       const sel = (filters.city || []).includes(city);
+                      const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+                      const facetCount = facets.cities[city];
+                      const displayCount = facetCount !== undefined ? facetCount : cityCounts[city];
+                      const dimmed = hasActiveFilter && !sel && facetCount === 0;
                       return (
                         <button
                           key={city}
                           type="button"
                           className={`filter-tag ${sel ? 'selected' : ''}`}
+                          style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
                           onClick={() => toggleTag('city', city)}
                         >
-                          {city}{isLoggedIn && cityCounts[city] > 0 ? ` (${cityCounts[city]})` : ''}
+                          {city}{isLoggedIn && displayCount > 0 ? ` (${displayCount})` : ''}
                         </button>
                       );
                     })}
@@ -545,14 +694,17 @@ const Creatives = () => {
         <div className="filters-modal-footer">
           {hasActiveFilters ? (
             <button type="button" className="filters-modal-clear" onClick={clearAll}>
-              Limpiar filtros
+              <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
+              Borrar filtros
             </button>
           ) : <span />}
           <button type="button" className="filters-modal-apply" onClick={() => {
-            setShowFiltersModal(false);
             if (!isLoggedIn) {
+              setShowFiltersModal(false);
               setShowRegisterPopup(true);
+              return;
             }
+            setShowFiltersModal(false);
           }}>
             Filtrar
           </button>
@@ -582,9 +734,7 @@ const Creatives = () => {
         {creatives.map((creative, index) => {
           const isLastElement = index === creatives.length - 1;
           const coverImageRaw = creative.creativeCoverDesktop || creative.profile?.profilePicture || creative.lastPost?.mainImage;
-          const coverImage = coverImageRaw
-            ? `${coverImageRaw}${coverImageRaw.includes("?") ? "&" : "?"}t=${creative.updatedAt || Date.now()}`
-            : null;
+          const coverImage = coverImageRaw ? cloudinaryOptimize(coverImageRaw) : null;
 
           return (
             <div
@@ -592,6 +742,8 @@ const Creatives = () => {
               className="creative-card"
               ref={isLastElement ? lastCreativeElementRef : null}
               onClick={() => handleUserClick(creative.username)}
+              onMouseEnter={() => handleCardMouseEnter(creative.username)}
+              onMouseLeave={handleCardMouseLeave}
             >
               <div className="creative-card-media">
                 {coverImage ? (
@@ -601,7 +753,7 @@ const Creatives = () => {
                     className="creative-card-image"
                     loading="lazy"
                     onError={(e) => {
-                      const fallback = creative.lastPost?.mainImage;
+                      const fallback = cloudinaryOptimize(creative.lastPost?.mainImage);
                       if (fallback && e.currentTarget.src !== fallback) {
                         e.currentTarget.src = fallback;
                       } else {
@@ -616,6 +768,30 @@ const Creatives = () => {
                     aria-label="Portada del creativo"
                   />
                 )}
+
+                {/* Hover posts grid — desktop only via @media (hover: hover) */}
+                {hoverPosts[creative.username]?.length > 0 && (() => {
+                  const posts = hoverPosts[creative.username].slice(0, 4);
+                  const cols = posts.length === 1 ? '1fr' : '1fr 1fr';
+                  return (
+                    <div
+                      className="creative-card-posts-grid"
+                      style={{ gridTemplateColumns: cols }}
+                    >
+                      {posts.map((url, i) => (
+                        <div key={i} className="creative-card-posts-grid__cell">
+                          <img
+                            src={url}
+                            alt=""
+                            className="creative-card-posts-grid__img"
+                            draggable={false}
+                            onLoad={e => { e.currentTarget.style.opacity = '1'; }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="creative-card-meta">
@@ -635,13 +811,13 @@ const Creatives = () => {
 
                 {(creative.city || creative.city2) && (
                   <div className="creative-location">
-                    ({creative.city}
+                    {creative.city}
                     {creative.country && COUNTRY_CODES[creative.country]
                       ? `, ${COUNTRY_CODES[creative.country]}`
                       : creative.country
                         ? `, ${creative.country}`
                         : ""}
-                    {creative.city2 ? ` | ${creative.city2}${creative.country2 && COUNTRY_CODES[creative.country2] ? `, ${COUNTRY_CODES[creative.country2]}` : creative.country2 ? `, ${creative.country2}` : ""}` : ""})
+                    {creative.city2 ? ` | ${creative.city2}${creative.country2 && COUNTRY_CODES[creative.country2] ? `, ${COUNTRY_CODES[creative.country2]}` : creative.country2 ? `, ${creative.country2}` : ""}` : ""}
                   </div>
                 )}
               </div>
@@ -710,10 +886,11 @@ const Creatives = () => {
                     <span className="chip-x">×</span>
                   </button>
                 ))}
-                <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
-                  Limpiar filtros
-                </button>
               </div>
+              <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
+                <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
+                Borrar filtros
+              </button>
             </div>
           )}
         </div>
@@ -758,8 +935,8 @@ const Creatives = () => {
 
       {showRegisterPopup && (
         <RegisterModal
-          onClose={() => setShowRegisterPopup(false)}
-          onSwitchToLogin={() => setShowRegisterPopup(false)}
+          onClose={() => { setShowRegisterPopup(false); setFilters(EMPTY_FILTERS); }}
+          onSwitchToLogin={() => { setShowRegisterPopup(false); setFilters(EMPTY_FILTERS); }}
         />
       )}
     </div>

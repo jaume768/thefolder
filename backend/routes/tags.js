@@ -49,6 +49,38 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+// GET /api/tags/custom[?withPosts=false]
+// Devuelve los valores libres (custom) de professionalTags que no corresponden a ningún tag registrado
+router.get("/custom", async (req, res, next) => {
+  try {
+    const withPosts = req.query.withPosts !== "false";
+
+    // IDs de todos los tags registrados
+    const knownIds = new Set((await Tag.find({}, "id").lean()).map(t => t.id));
+
+    let userMatch = { professionalTags: { $exists: true, $ne: [] } };
+    if (withPosts) {
+      const usersWithPosts = await Post.distinct("user");
+      userMatch._id = { $in: usersWithPosts };
+    }
+
+    const counts = await User.aggregate([
+      { $match: userMatch },
+      { $unwind: "$professionalTags" },
+      { $group: { _id: "$professionalTags", count: { $sum: 1 } } },
+    ]);
+
+    const customTags = counts
+      .filter(c => c._id && !knownIds.has(c._id))
+      .map(c => ({ id: c._id, label: c._id, count: c.count }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "es"));
+
+    res.json({ tags: customTags });
+  } catch (e) {
+    next(e);
+  }
+});
+
 // GET /api/tags/cities[?withPosts=false]
 router.get("/cities", async (req, res, next) => {
   try {

@@ -21,11 +21,12 @@ export default function SoftwareSection({
     <div id="sec-cv-hard" className="ux-anchor-target">
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="softwareInput">
-          Hardskills / Software
+          <img src="/iconos/hardskills.png" className="ux-section-icon" alt="" />
+          Hardskills
         </label>
 
         <p className="ux-hardskills-subtitle">
-          Agrega etiquetas para identificar tus conocimientos de software.
+          Agrega etiquetas para identificar tus conocimientos de software o habilidades técnicas (patronaje, moulage, etc.)
         </p>
 
         {/* Input grande con tags dentro */}

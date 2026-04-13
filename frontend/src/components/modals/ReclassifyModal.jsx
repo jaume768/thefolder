@@ -67,7 +67,7 @@ const ReclassifyModal = ({ onClose }) => {
         {confirmProfessional ? (
           <div className="rcl-professional-warning">
             <p className="rcl-warning-text">
-              El nivel <strong>Professional</strong> requiere validación por parte del equipo de TheFolder.
+              El nivel <strong>Professional</strong> requiere validación por parte del equipo de THEFOLDER.
               Mientras tanto, tu perfil aparecerá como <strong>Emerging</strong> en el explorador.
               Te avisaremos cuando tu nivel sea confirmado.
             </p>

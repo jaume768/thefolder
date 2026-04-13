@@ -161,10 +161,32 @@ exports.updatePost = async (req, res) => {
         if (req.body.projectTypes !== undefined) {
             updateData.projectTypes = JSON.parse(req.body.projectTypes).filter(t => typeof t === 'string' && t.trim());
         }
-        if (req.body.images) {
-            const imgs = JSON.parse(req.body.images);
-            updateData.images = imgs;
-            updateData.mainImage = imgs[0] || '';
+
+        // Existing images kept by the user after possible deletions
+        let existingImages = req.body.images ? JSON.parse(req.body.images) : null;
+
+        // Upload any new image files sent as newImages[]
+        if (req.files && req.files.length > 0) {
+            const slots = 6 - (existingImages || []).length;
+            const filesToUpload = req.files.slice(0, Math.max(0, slots));
+            const newUrls = [];
+            for (const file of filesToUpload) {
+                const buf = await processImageIfNeeded(file.buffer);
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: 'posts', resource_type: 'image', overwrite: false },
+                        (error, result) => { if (result) resolve(result); else reject(error); }
+                    );
+                    streamifier.createReadStream(buf).pipe(stream);
+                });
+                newUrls.push(result.secure_url);
+            }
+            existingImages = (existingImages || []).concat(newUrls);
+        }
+
+        if (existingImages !== null) {
+            updateData.images = existingImages;
+            updateData.mainImage = existingImages[0] || '';
         }
 
         const post = await Post.findOneAndUpdate(
@@ -320,6 +342,7 @@ exports.searchPosts = async (req, res) => {
 exports.getPostsByUsername = async (req, res) => {
     try {
         const { username } = req.params;
+        const limit = parseInt(req.query.limit) || 0; // 0 = sin límite
 
         const User = require('../models/User');
         const user = await User.findOne({ username });
@@ -328,8 +351,9 @@ exports.getPostsByUsername = async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        // Luego, buscamos todos los posts de ese usuario
-        const posts = await Post.find({ user: user._id.toString() }).sort({ createdAt: -1 });
+        let query = Post.find({ user: user._id.toString() }).sort({ createdAt: -1 });
+        if (limit > 0) query = query.limit(limit);
+        const posts = await query;
         res.status(200).json({ posts });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -377,6 +401,7 @@ exports.getExplorerPosts = async (req, res) => {
 
         const matchStage = {
             images: { $exists: true, $ne: [] },
+            hiddenFromExplorer: { $ne: true },
             ...(viewedPostIds.length > 0   && { _id:          { $nin: viewedPostIds }    }),
             ...(userIdFilter !== null       && { user:         { $in: userIdFilter }      }),
             ...(projectTypeArr.length > 0  && { projectTypes: { $in: projectTypeArr }    }),
@@ -417,6 +442,7 @@ exports.getExplorerPosts = async (req, res) => {
 
         const totalPosts = await Post.countDocuments({
             images: { $exists: true, $ne: [] },
+            hiddenFromExplorer: { $ne: true },
             ...(viewedPostIds.length > 0  && { _id:          { $nin: viewedPostIds }    }),
             ...(userIdFilter !== null      && { user:         { $in: userIdFilter }      }),
             ...(projectTypeArr.length > 0  && { projectTypes: { $in: projectTypeArr }    }),
@@ -436,6 +462,97 @@ const EXPLORER_PROJECT_TYPES = [
     'Editorial', 'Fashion Film', 'Graphic', 'Lookbook', 'Portrait', 'Product',
     'Show/Runway', 'Social Media', 'Still Life', 'Street Style', 'Test Shoot',
 ];
+
+// ── GET /api/posts/explorer/facets ───────────────────────────────────────────
+// Faceted search para el Explorer: conteos por dimensión excluyendo la propia.
+// Dimensiones de usuario (city, professionalProfile, creativeLevel) + projectType de post.
+exports.getExplorerFacets = async (req, res) => {
+    try {
+        const toArr = (v) => {
+            if (!v) return [];
+            if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
+            return String(v).split(',').map(s => s.trim()).filter(Boolean);
+        };
+
+        const cityArr  = toArr(req.query.city);
+        const tagArr   = toArr(req.query.professionalProfile);
+        const levelArr = toArr(req.query.creativeLevel).map(Number).filter(n => [1,2,3,4].includes(n));
+
+        // IDs de usuarios que tienen al menos un post visible en el explorador
+        const usersWithVisiblePosts = await Post.distinct('user', {
+            images: { $exists: true, $ne: [] },
+            hiddenFromExplorer: { $ne: true },
+        });
+
+        const buildUserFilter = ({ skipCity = false, skipTags = false, skipLevel = false } = {}) => {
+            const f = { isActive: true, _id: { $in: usersWithVisiblePosts } };
+            const and = [];
+            if (!skipCity && cityArr.length) {
+                const rx = cityArr.map(v => new RegExp(escapeRegex(v), 'i'));
+                and.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }] });
+            }
+            if (!skipTags && tagArr.length) {
+                and.push({ professionalTags: { $in: tagArr } });
+            }
+            if (!skipLevel && levelArr.length) {
+                and.push({ creativeLevel: { $in: levelArr } });
+            }
+            if (and.length) f.$and = and;
+            return f;
+        };
+
+        // IDs de usuarios que cumplen TODOS los filtros de usuario (para projectType)
+        const fullMatchIds = await User.distinct('_id', buildUserFilter());
+
+        const [tagAgg, cityAgg1, cityAgg2, levelAgg, typeAgg] = await Promise.all([
+            // Tags: aplica ciudad + nivel, cuenta por tag
+            User.aggregate([
+                { $match: buildUserFilter({ skipTags: true }) },
+                { $unwind: { path: '$professionalTags', preserveNullAndEmptyArrays: false } },
+                { $group: { _id: '$professionalTags', count: { $sum: 1 } } },
+            ]),
+            // Ciudades (city): aplica tags + nivel
+            User.aggregate([
+                { $match: buildUserFilter({ skipCity: true }) },
+                { $match: { city: { $exists: true, $ne: '' } } },
+                { $group: { _id: '$city', count: { $sum: 1 } } },
+            ]),
+            // Ciudades (city2): aplica tags + nivel
+            User.aggregate([
+                { $match: buildUserFilter({ skipCity: true }) },
+                { $match: { city2: { $exists: true, $ne: '' } } },
+                { $group: { _id: '$city2', count: { $sum: 1 } } },
+            ]),
+            // Niveles: aplica ciudad + tags
+            User.aggregate([
+                { $match: buildUserFilter({ skipLevel: true }) },
+                { $match: { creativeLevel: { $in: [1,2,3,4] } } },
+                { $group: { _id: '$creativeLevel', count: { $sum: 1 } } },
+            ]),
+            // ProjectTypes: aplica todos los filtros de usuario, cuenta tipos de post
+            Post.aggregate([
+                { $match: { user: { $in: fullMatchIds }, images: { $exists: true, $ne: [] }, hiddenFromExplorer: { $ne: true } } },
+                { $unwind: { path: '$projectTypes', preserveNullAndEmptyArrays: false } },
+                { $group: { _id: '$projectTypes', count: { $sum: 1 } } },
+            ]),
+        ]);
+
+        const cityMap = {};
+        for (const c of cityAgg1) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
+        for (const c of cityAgg2) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
+
+        return res.json({
+            tags:         Object.fromEntries(tagAgg.map(c => [c._id, c.count])),
+            cities:       cityMap,
+            levels:       Object.fromEntries(levelAgg.map(c => [String(c._id), c.count])),
+            projectTypes: Object.fromEntries(typeAgg.map(c => [c._id, c.count])),
+        });
+    } catch (err) {
+        console.error('getExplorerFacets error:', err);
+        return res.status(500).json({ error: 'Error al calcular facetas del explorer' });
+    }
+};
+
 
 exports.getTagPreviews = async (req, res) => {
     try {

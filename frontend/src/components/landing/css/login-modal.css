@@ -104,11 +104,17 @@
     transition: border-color 0.3s ease;
 }
 
+.password-hint {
+    font-size: 9px;
+    color: #999;
+    margin: 4px 0 0;
+    line-height: 1.4;
+    text-align: right;
+}
+
 .toggle-password {
     position: absolute;
     right: 15px;
-    top: 70%;
-    transform: translateY(-50%);
     cursor: pointer;
     color: #999;
     background: transparent;
@@ -146,7 +152,7 @@
     background-color: #111;
     color: #fff;
     font-size: 14px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
     font-family: "Inter Tight", sans-serif;
     font-weight: 400;
 }
@@ -184,7 +190,6 @@
     align-items: center;
     gap: 0.5rem;
     color: #666;
-    margin-top: 12px;
 }
 
 .extra-links p {
@@ -193,6 +198,7 @@
     font-weight: 300;
     letter-spacing: 0.02em;
     color: #666;
+    margin: 6px 0px ;
 }
 
 .extra-links a {
@@ -320,4 +326,5 @@ font-family: 'Inter Tight', sans-serif;
   box-shadow: 0 0 0px 1000px #fdfdfd inset;
   transition: background-color 9999s ease-in-out 0s;
   caret-color: #111;
+  padding: 6px;
 }

@@ -6,7 +6,7 @@ const streamifier = require('streamifier');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
 const jwt = require('jsonwebtoken');
 
-const { validateUsername } = require('../utils/username');
+const { validateUsername, generateProvisionalUsername } = require('../utils/username');
 const { validatePassword } = require('../utils/passwordValidation');
 
 const SibApiV3Sdk = require('sib-api-v3-sdk');
@@ -22,7 +22,7 @@ const generateVerificationCode = () => {
 
 const sendResetEmail = (email, resetCode) => {
     const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
-    const sender = { email: process.env.SENDER_EMAIL || "noreply@thefolder.es", name: process.env.SENDER_NAME || "TheFolder" };
+    const sender = { email: process.env.SENDER_EMAIL || "noreply@thefolder.es", name: process.env.SENDER_NAME || "THEFOLDER" };
     const receivers = [{ email }];
     tranEmailApi.sendTransacEmail({
         sender,
@@ -106,7 +106,7 @@ exports.resetPassword = async (req, res) => {
 
 const sendVerificationEmail = (email, verificationCode) => {
     const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
-    const sender = { email: process.env.SENDER_EMAIL || "noreply@thefolder.es", name: process.env.SENDER_NAME || "TheFolder" };
+    const sender = { email: process.env.SENDER_EMAIL || "noreply@thefolder.es", name: process.env.SENDER_NAME || "THEFOLDER" };
     const receivers = [{ email }];
     tranEmailApi.sendTransacEmail({
         sender,
@@ -174,19 +174,8 @@ exports.verifyCodePreRegistration = async (req, res) => {
 
   const { email: regEmail, password } = pending.data;
 
-    // username provisional (único y válido)
-    const localPart = regEmail.split("@")[0].toLowerCase();
-
-    // base: solo a-z0-9 (sin guiones por simplicidad, luego añadimos uno nosotros)
-    let base = localPart.replace(/[^a-z0-9]/g, "").slice(0, 12);
-    if (!base) base = "user";
-
-    let username = `${base}-${Math.random().toString(36).slice(2, 6)}`;
-
-    // Aseguramos unicidad + validez + no reservado
-    while ((await User.findOne({ username })) || !validateUsername(username).ok) {
-    username = `${base}-${Math.random().toString(36).slice(2, 6)}`;
-    }
+    // username provisional limpio (sin sufijos aleatorios de palabras)
+    const username = await generateProvisionalUsername(regEmail, User);
 
   // También aseguramos que no exista el email
   const existingEmail = await User.findOne({ email: regEmail });
@@ -226,7 +215,7 @@ exports.resendCodePreRegistration = async (req, res) => {
     pendingRegistrations[email].code = newCode;
     pendingRegistrations[email].expires = Date.now() + 3600000;
     sendVerificationEmail(email, newCode);
-    return res.status(200).json({ message: "Código reenviado exitosamente." });
+    return res.status(200).json({ message: "Nuevo código enviado. Revise bandeja de correo." });
 };
 
 exports.register = async (req, res) => {
@@ -581,7 +570,7 @@ exports.changeEmail = async (req, res) => {
 const CREATIVE_LEVEL_NAMES = { 1: 'newcomer', 2: 'graduated', 3: 'emerging', 4: 'professional' };
 
 exports.completeRegistration = async (req, res) => {
-    const { accountType, username, fullName, creativeLevel, city, country, industryType, companyName, shortDescription, links } = req.body;
+    const { accountType, username, fullName, creativeLevel, city, country, professionalTags, industryType, companyName, shortDescription, links } = req.body;
 
     const validAccountTypes = ['creative', 'industry', 'guest'];
     if (!accountType || !validAccountTypes.includes(accountType)) {
@@ -618,7 +607,11 @@ exports.completeRegistration = async (req, res) => {
             }
             const savedLevel = level === 4 ? 3 : level;
             update.username = normalizedUsername;
+            update.role = 'Creativo';
             update.creativeLevel = savedLevel;
+            if (Array.isArray(professionalTags) && professionalTags.length > 0) {
+                update.professionalTags = professionalTags.slice(0, 3);
+            }
             update.creativeLevelName = CREATIVE_LEVEL_NAMES[savedLevel];
             if (level === 4) update.requestedCreativeLevel = 4;
             if (fullName) update.fullName = fullName.trim();
@@ -647,6 +640,7 @@ exports.completeRegistration = async (req, res) => {
                 return res.status(400).json({ error: 'Ese nombre de usuario ya está en uso.' });
             }
             update.username = normalizedUsername;
+            update.role = 'Profesional';
             update.industryType = industryType;
             update.companyName = companyName.trim();
             update.city = city.trim();

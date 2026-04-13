@@ -1,3 +1,95 @@
+/* ── Post guest wall (reemplaza more-posts-section para no registrados) ──── */
+.post-guest-wall {
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  width: 100%;
+}
+
+.post-guest-wall__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.post-guest-wall__text {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.post-guest-wall__login {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  color: #aaa;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.post-guest-wall__login:hover { color: #555; }
+
+/* ── Guest gate ──────────────────────────────────────────────────────────── */
+.guest-gate-overlay {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.guest-gate-box {
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.guest-gate-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #111;
+  margin: 0;
+}
+
+.guest-gate-desc {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.guest-gate-login {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  color: #aaa;
+  text-decoration: underline;
+  padding: 0;
+  margin-top: 4px;
+}
+
+.guest-gate-login:hover { color: #555; }
+
+/* ── Perfil ──────────────────────────────────────────────────────────────── */
 .perfil {
     width: 100%;
     margin: 0 auto;
@@ -494,7 +586,7 @@ margin-bottom: 1em;
 
 .modal-content p {
     font-family: 'Inter Tight', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 400;
     color: #222;
 }
@@ -654,7 +746,7 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
     font-family: 'Inter Tight', sans-serif;
     font-weight: 400;
     font-size: 11px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -869,6 +961,10 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
   cursor: default;
 }
 
+.tagged-person:not(.is-clickable) {
+  cursor: default;
+}
+
 .tagged-person.is-clickable {
   cursor: pointer;
 }
@@ -884,7 +980,7 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
     overflow: hidden;
     display: grid;
     place-items: center;
-    background: #ececec;
+    background: #f8f8f8;
     border: 1px solid rgba(0, 0, 0, .08);
     flex: 0 0 44px;
     font-family: 'Inter Tight', sans-serif;
@@ -933,8 +1029,11 @@ h3.personas__titulo, h3.image-tags__titulo {
     color: #888;
     font-size: 11px;
     margin-top: 32px;
-    margin-left: 8px;
     margin-bottom: 12px;
+}
+
+h3.personas__titulo .post-explorer {
+  margin-left: 8px;
 }
 
 /* ===== Toast global ===== */
@@ -1150,9 +1249,9 @@ h3.personas__titulo, h3.image-tags__titulo {
 /* Contenedor overlay acciones */
 .post-image-actions{
   position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
+  top: 24px;
+  left: 24px;
+  right: 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1161,8 +1260,6 @@ h3.personas__titulo, h3.image-tags__titulo {
 }
 
 .post-image-actions-left{
-  top: 12px;
-  left: 12px;
   position: relative;
   pointer-events: auto;
     pointer-events: auto;
@@ -1205,8 +1302,8 @@ h3.personas__titulo, h3.image-tags__titulo {
 /* contenedor overlay */
 .post-image-actions{
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 24px;
+  left: 24px;
   right: 24px;
   display: flex;
   justify-content: space-between;
@@ -1617,6 +1714,7 @@ h3.personas__titulo, h3.image-tags__titulo {
     color: #666;
     font-family: Inter Tight, sans-serif;
     text-transform: uppercase;
+    text-align: right;
 }
 
 .modal-content-title {
@@ -1627,7 +1725,7 @@ h3.personas__titulo, h3.image-tags__titulo {
 }
 
 .modal-content-subtitle {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   font-family: Inter Tight, sans-serif;
   font-size: 12px;
   font-weight: 400;

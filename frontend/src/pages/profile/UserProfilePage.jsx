@@ -1,12 +1,14 @@
 // UserProfile.jsx
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import ProfileIndexGallery from "./ProfileIndexGallery";
+import ProfileStudioGallery from "./ProfileStudioGallery";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useCreatePost } from "../../contexts/CreatePostContext";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import "../../components/controlPanel/css/UserProfile.css";
+import { clImg } from "../../utils/optimizeImage";
 import { FaCheckCircle, FaExclamationCircle, FaCopy, FaTimes } from "react-icons/fa";
 
 // Componentes
@@ -16,6 +18,8 @@ import UserProfessionalExperienceSection from  "../../components/controlPanel/us
 import UserSkillsSection from "../../components/controlPanel/userProfile/UserSkillsSection";
 import UserSoftwareSection from "../../components/controlPanel/userProfile/UserSoftwareSection";
 import UserEducationSection from "../../components/controlPanel/userProfile/UserEducationSection";
+import UserPressPublicationsSection from "../../components/controlPanel/userProfile/UserPressPublicationsSection";
+import UserAwardsSection from "../../components/controlPanel/userProfile/UserAwardsSection";
 import UserLanguagesSection from "../../components/controlPanel/userProfile/UserLanguagesSection";
 import UserSocialSection from "../../components/controlPanel/userProfile/UserSocialSection";
 import UserDownloadableFilesSection from "../../components/controlPanel/userProfile/UserDownloadableFilesSection"; 
@@ -26,7 +30,6 @@ import UserEducationalOffersSection from "../../components/controlPanel/userProf
 import UserGallery from "../../components/controlPanel/userProfile/UserGallery";
 import ExternalProfileHeader from "../../components/controlPanel/userProfile/ExternalProfileHeader";
 import LandingHeader from "../../components/landing/LandingHeader";
-import CookieBanner from "../../components/CookieBanner";
 
 
 const UserProfile = () => {
@@ -35,6 +38,8 @@ const UserProfile = () => {
 
   const { username } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromCreatives = !!location.state?.fromCreatives;
   const [searchParams] = useSearchParams();
   const layoutParam = searchParams.get("layout");
 
@@ -77,6 +82,13 @@ const UserProfile = () => {
   // email popup
   const [showEmailPopup, setShowEmailPopup] = useState(false);
 
+  // external link warning
+  const [externalLinkModal, setExternalLinkModal] = useState({ open: false, url: "" });
+  const openExternalLink = (url) => {
+    const full = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+    setExternalLinkModal({ open: true, url: full });
+  };
+
   // ✅ responsive
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -108,11 +120,13 @@ const UserProfile = () => {
     profile?.portfolioUrl
   );
 
-  const headerImageToShow =
+  const headerImageToShow = clImg.cover(
     (isMobile ? profile?.featuredHeaderImageMobile : profile?.featuredHeaderImageDesktop) ||
     profile?.featuredHeaderImage ||
     fallbackHeaderImage ||
-    null;
+    profile?.profile?.profilePicture ||
+    null
+  );
 
   const showNotification = (type, message) => {
     setNotification({ show: true, type, message });
@@ -135,6 +149,12 @@ const UserProfile = () => {
 
   // ✅ carga perfil + posts (sin hoisting issues)
   useEffect(() => {
+    // Reset al cambiar de usuario para evitar que datos del perfil anterior
+    // (especialmente fallbackHeaderImage) se muestren en el nuevo perfil.
+    setProfile(null);
+    setUserPosts([]);
+    setFallbackHeaderImage(null);
+
     const fetchUserProfileAndPosts = async () => {
       try {
         setLoading(true);
@@ -218,14 +238,26 @@ const UserProfile = () => {
 
   // ✅ fallback header image (si no hay featuredHeaderImage)
   useEffect(() => {
-    if (!profile) return;
-    if (profile.featuredHeaderImage) return;
-    if (!Array.isArray(userPosts) || userPosts.length === 0) return;
+    if (!profile) {
+      setFallbackHeaderImage(null);
+      return;
+    }
+    if (
+      profile.featuredHeaderImage ||
+      profile.featuredHeaderImageDesktop ||
+      profile.featuredHeaderImageMobile
+    ) {
+      setFallbackHeaderImage(null);
+      return;
+    }
 
-    const validPosts = userPosts.filter(
+    const validPosts = (Array.isArray(userPosts) ? userPosts : []).filter(
       (p) => p && typeof p.mainImage === "string" && p.mainImage.trim() !== ""
     );
-    if (validPosts.length === 0) return;
+    if (validPosts.length === 0) {
+      setFallbackHeaderImage(null);
+      return;
+    }
 
     const randomIndex = Math.floor(Math.random() * validPosts.length);
     setFallbackHeaderImage(validPosts[randomIndex].mainImage);
@@ -374,6 +406,27 @@ const UserProfile = () => {
     );
   }
 
+  // ── Layout alternativo: Studio Gallery
+  if (profile?.profileLayout === "studio-gallery" || layoutParam === "studio") {
+    return (
+      <ProfileStudioGallery
+        profile={profile}
+        userPosts={userPosts}
+        postsLoading={postsLoading}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOwner={isOwner}
+        isFollowing={isFollowing}
+        followLoading={followLoading}
+        handleFollow={handleFollow}
+        handleUnfollow={handleUnfollow}
+        isLoggedIn={isLoggedIn}
+        isCompany={isCompany}
+        isEducationalInstitution={isEducationalInstitution}
+      />
+    );
+  }
+
   // ── Layout alternativo: por profileLayout del usuario (o ?layout=index para preview)
   if (profile?.profileLayout === "index-gallery" || layoutParam === "index") {
     return (
@@ -427,7 +480,6 @@ const UserProfile = () => {
             onLoginClick={() => navigate("/", { state: { showLogin: true } })}
             onRegisterClick={() => navigate("/", { state: { showRegister: true } })}
           />
-          <CookieBanner />
           <div className="tf-guest-profile" role="dialog" aria-label="Invitación registro">
             <button
               type="button"
@@ -436,7 +488,7 @@ const UserProfile = () => {
             >
               Crea tu perfil
               <br />
-              en THEFOLDER/
+              en THEFOLDER ↗
             </button>
           </div>
         </>
@@ -565,6 +617,24 @@ const UserProfile = () => {
                 </div>
               )}
 
+              {profile?.social?.representationName && (
+                <div className="resume-website resume-representation">
+                  <span className="resume-representation__label">Represented by </span>
+                  {profile.social.representationWeb ? (
+                    <button
+                      type="button"
+                      className="resume-website-btn"
+                      onClick={() => openExternalLink(profile.social.representationWeb)}
+                    >
+                      {profile.social.representationName}
+                    </button>
+                  ) : (
+                    <span>{profile.social.representationName}</span>
+                  )}
+                  {profile.social.representationWeb && <span>↗</span>}
+                </div>
+              )}
+
               <UserSocialSection social={profile?.social} />
             </div>
           </div>
@@ -611,6 +681,7 @@ const UserProfile = () => {
                 </p>
               ) : undefined}
               galleryStyle={profile?.galleryStyle || "gap"}
+              onPostClick={fromCreatives ? (postId) => navigate(`/post/${postId}`, { state: { fromCreatives: true } }) : undefined}
             />
           )}
 
@@ -646,6 +717,8 @@ const UserProfile = () => {
                       professionalFormation={profile?.professionalFormation}
                     />
                     <UserEducationSection education={profile?.education} />
+                    <UserPressPublicationsSection pressPublications={profile?.pressPublications} />
+                    <UserAwardsSection awards={profile?.awards} />
                     <UserSkillsSection skills={profile?.skills} />
                     <UserSoftwareSection software={profile?.software} />
                     <UserLanguagesSection
@@ -707,6 +780,34 @@ const UserProfile = () => {
                   <FaCopy /> Copiar
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {externalLinkModal.open && (
+        <div
+          className="modal-overlay"
+          onClick={() => setExternalLinkModal({ open: false, url: "" })}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <p className="modal-content-title">Estás saliendo de la plataforma</p>
+            <p className="modal-content-subtitle">Verifica el enlace antes de continuar.</p>
+            <div className="modal-content-link">{externalLinkModal.url}</div>
+            <div className="modal-actions">
+              <button onClick={() => setExternalLinkModal({ open: false, url: "" })}>
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  window.open(externalLinkModal.url, "_blank", "noopener,noreferrer");
+                  setExternalLinkModal({ open: false, url: "" });
+                }}
+              >
+                Continuar
+              </button>
             </div>
           </div>
         </div>

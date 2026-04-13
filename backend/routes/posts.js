@@ -10,7 +10,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB por imagen (Sharp optimizará antes de subir)
+    fileSize: 20 * 1024 * 1024, // 20MB por imagen (Sharp optimizará antes de subir)
     files: 6,                   // máximo 6 imágenes
   },
 });
@@ -24,7 +24,7 @@ const uploadImagesWithErrors = (req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res
         .status(413)
-        .json({ message: 'Una o varias de tus imágenes supera el límite permitido (10MB).' });
+        .json({ message: 'Una o varias de tus imágenes supera el límite permitido (20MB).' });
     }
     if (err.code === 'LIMIT_FILE_COUNT') {
       return res
@@ -61,6 +61,9 @@ router.get('/explorer', postController.getExplorerPosts);
 // Tags de posts disponibles para filtrar en el explorador
 router.get('/explorer/post-tags', postController.getExplorerPostTags);
 
+// Faceted search para el explorador
+router.get('/explorer/facets', postController.getExplorerFacets);
+
 // Imagen de preview por projectType (para hover en filtros del explorador)
 router.get('/tag-previews', postController.getTagPreviews);
 
@@ -75,12 +78,12 @@ router.get('/staff-picks', postController.getStaffPicks);
 router.get('/search', ensureAuthenticated, postController.searchPosts);
 
 // Rutas que requieren un ID (estas se definen después para evitar conflictos)
-router.get('/:id', ensureAuthenticated, postController.getPostById);
+router.get('/:id', postController.getPostById); // público: permite acceso a guests
 
 // Nota: aquí tu update usa upload.single('image') y antes usabas memoryStorage.
 // Lo dejo EXACTAMENTE como estaba (sin tocar tu lógica), pero ojo: aquí no tiene
 // límites. Si quieres lo ajustamos luego.
-router.put('/:id', ensureAuthenticated, upload.single('image'), postController.updatePost);
+router.put('/:id', ensureAuthenticated, upload.array('newImages', 6), postController.updatePost);
 
 router.delete('/:id', ensureAuthenticated, postController.deletePost);
 

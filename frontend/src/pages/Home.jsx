@@ -24,12 +24,23 @@ const Home = () => {
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const isLoggedIn = !!localStorage.getItem('authToken');
+
   useEffect(() => {
     if (location.state?.showRegister) {
+      if (isLoggedIn) {
+        navigate('/explorer', { replace: true });
+        return;
+      }
       setShowRegister(true);
       navigate(location.pathname, { replace: true });
     }
-  }, [location, navigate]);
+  }, [location, navigate, isLoggedIn]);
+
+  const handleAuthClick = (openModal) => {
+    if (isLoggedIn) { navigate('/explorer'); return; }
+    openModal();
+  };
 
   const handleSwitchToRegister = () => {
     navigate('/');
@@ -47,8 +58,8 @@ const Home = () => {
     <LandingHeader
       menuOpen={menuOpen}
       setMenuOpen={setMenuOpen}
-      onLoginClick={() => setShowLogin(true)}
-      onRegisterClick={() => setShowRegister(true)}
+      onLoginClick={() => handleAuthClick(() => setShowLogin(true))}
+      onRegisterClick={() => handleAuthClick(() => setShowRegister(true))}
     />
 
     {/* Always render the landing page content */}
@@ -71,7 +82,7 @@ const Home = () => {
     {/* <LandingFiltersShowcase /> */}
 
     <LandingFinalCTA
-      onCtaClick={() => setShowRegister(true)}
+      onCtaClick={() => handleAuthClick(() => setShowRegister(true))}
     />
 
     <LandingFooter />

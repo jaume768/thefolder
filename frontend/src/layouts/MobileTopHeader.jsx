@@ -106,6 +106,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
     searchTimeoutRef.current = setTimeout(async () => {
       if (value.trim().length >= 2) {
         await performSearch(value);
+        setShowFullScreenSearch(true);
       }
     }, 350);
   };

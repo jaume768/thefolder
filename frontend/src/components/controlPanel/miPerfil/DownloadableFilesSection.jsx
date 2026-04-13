@@ -186,8 +186,8 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         }
         
         // Calcular diferencia en meses
-        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                      (endDate.getMonth() - startDate.getMonth());
+        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                      (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
             return `${months} ${months === 1 ? 'mes' : 'meses'}`;
@@ -218,8 +218,8 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         }
         
         // Calcular diferencia en meses
-        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                      (endDate.getMonth() - startDate.getMonth());
+        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                      (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
             return `${months} ${months === 1 ? 'mes' : 'meses'}`;

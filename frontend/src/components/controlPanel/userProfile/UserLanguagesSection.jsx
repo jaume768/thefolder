@@ -3,7 +3,8 @@ import React from "react";
 const levelLabel = (lvl) => {
   if (lvl === "basic") return "Básico";
   if (lvl === "intermediate") return "Intermedio";
-  if (lvl === "advanced") return "Avanzado / Nativo";
+  if (lvl === "advanced") return "Nativo";
+  if (lvl === "native") return "Nativo";
   return "";
 };
 

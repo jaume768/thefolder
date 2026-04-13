@@ -15,10 +15,13 @@ export default function SoftSkillsSection({
   return (
     <div id="sec-cv-soft" className="ux-anchor-target">
       <div className="ux-card">
-        <h3 className="ux-form-label separator">Softskills / Habilidades</h3>
+        <h3 className="ux-form-label separator">
+          <img src="/iconos/softskills.png" className="ux-section-icon" alt="" />
+          Softskills
+        </h3>
 
         <p className="ux-hardskills-subtitle">
-          Agrega etiquetas para identificar tus habilidades interpersonales.
+          Añade etiquetas que describan tu forma de trabajar y colaborar con otros. (Trabajo en equipo, atención al detalle, etc.)
         </p>
 
         {/* ✅ Caja visual con tags dentro */}

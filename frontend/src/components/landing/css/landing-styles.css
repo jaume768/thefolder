@@ -208,15 +208,27 @@
   padding: 8px 12px;
   font-size: 13px;
   line-height: 17px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.02em;
   text-align: left;
   font-family: "Inter Tight", sans-serif;
 }
 
+button.tf-btn.tf-btn--CTA.tf-btn-CTA--wall {
+  width: fit-content;
+  text-transform: uppercase;
+}
+
 /* =============================================
    COOKIE — Desktop
    ============================================= */
+
+.tf-cookie__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 2500;
+}
 
 .tf-cookie {
   position: fixed;
@@ -227,7 +239,7 @@
   border-radius: 12px;
   padding: 18px 18px 16px;
   box-shadow: var(--shadow);
-  z-index: 40;
+  z-index: 2501;
 }
 .tf-cookie__text {
   margin: 0 0 14px;
@@ -265,7 +277,7 @@
   position: fixed;
   inset: 0;
   z-index: 55;
-  display: flex;
+  display: none;          /* oculto por defecto; se activa en mobile */
   align-items: flex-end;
 }
 .tf-cookieSheet__overlay {
@@ -465,7 +477,7 @@ header.dashboard-header.landing-header { justify-content: space-between; }
 .landing-mobile-panel { display: none; width: 100%; margin-top: 10px; padding-top: 12px; }
 header.dashboard-header.landing-header.is-open .landing-mobile-panel {
   display: flex;
-  height: 85dvh;
+  height: 90dvh;
   flex-direction: column;
   justify-content: flex-end;
   gap: 100px;
@@ -586,8 +598,10 @@ header.dashboard-header.landing-header.is-open .landing-mobile-panel {
   .tf-nav__cta { display: none; }
   .tf-burger   { display: flex; }
 
-  /* Cookie desktop oculta en mobile */
-  .tf-cookie.tf-only-desktop { display: none; }
+  /* Cookie: en mobile/tablet → sheet, ocultar la de desktop */
+  .tf-cookie { display: none; }
+  .tf-cookie__overlay { display: none; }
+  .tf-cookieSheet { display: flex; }
 
   /* Dashboard header fixes */
   .dashboard-header { padding: 0 24px; }

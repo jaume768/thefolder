@@ -271,7 +271,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
         return;
       }
 
-      setResendMessage(data.message || 'Código reenviado exitosamente.');
+      setResendMessage(data.message || 'Nuevo código enviado. Revise bandeja de correo.');
     } catch (error) {
       setVerificationError('Error de red.');
     }
@@ -349,6 +349,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                   >
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
                   </button>
+                  <p className="password-hint">Mín. 6 caracteres, una letra y un número.</p>
                 </div>
 
                 <div className="input-group">
@@ -383,7 +384,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                   />
                   <span className='terms'>
                     Acepto los{' '}
-                    <a href="#" onClick={(e) => e.preventDefault()}>
+                    <a href="/terminos" target="_blank" rel="noopener noreferrer">
                       términos y condiciones
                     </a>
                   </span>
@@ -428,7 +429,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
               <h1>Código de verificación</h1>
 
               <p className="verify-sub">
-                Se ha enviado un código al correo <strong>{formData.email}</strong>
+                Se ha enviado un código al correo <strong style={{ fontWeight: 500, color: '#111', textDecoration: 'underline' }}>{formData.email}</strong>
               </p>
 
               {verificationError && <p className="resend-row error">{verificationError}</p>}
@@ -452,23 +453,23 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                   ))}
                 </div>
 
+                <button type="submit" className="btn login-btn">
+                  Verificar
+                </button>
+
                 <p className="resend-row">
-                  ¿No has recibido el código?{' '}
+                  ¿No te ha llegado?{' '}
                   <button className="resend-btn" onClick={handleResend} type="button">
-                    Reenviar
+                    Reenviar código
                   </button>
                 </p>
 
                 {resendMessage && <p className="success">{resendMessage}</p>}
-
-                <button type="submit" className="btn login-btn">
-                  Verificar
-                </button>
               </form>
 
               <div className="extra-links">
                 <p>
-                  ¿Quieres volver?{' '}
+                  ¿Tu email no es correcto?{' '}
                   <a
                     href="#"
                     onClick={(e) => {

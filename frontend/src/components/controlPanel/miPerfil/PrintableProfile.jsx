@@ -1,5 +1,6 @@
 import React from 'react';
 import '../css/printProfile.css';
+import { clImg } from '../../../utils/optimizeImage';
 
 // Componente especial que solo se muestra durante la impresión
 const PrintableProfile = ({ profile }) => {
@@ -10,9 +11,9 @@ const PrintableProfile = ({ profile }) => {
       {/* Perfil básico */}
       <div className="print-profile-header">
         <div className="print-profile-photo">
-          <img 
-            src={profile?.profile?.profilePicture || "/multimedia/usuarioDefault.jpg"} 
-            alt={profile?.fullName || "Usuario"} 
+          <img
+            src={clImg.avatar(profile?.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"}
+            alt={profile?.fullName || "Usuario"}
           />
         </div>
         <h1 className="print-profile-name">
@@ -47,7 +48,7 @@ const PrintableProfile = ({ profile }) => {
               <div key={index} className="print-experience-item">
                 <div className="print-experience-logo">
                   {exp.companyLogo ? (
-                    <img src={exp.companyLogo} alt={exp.institution || 'Empresa'} />
+                    <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || 'Empresa'} />
                   ) : (
                     <div className="print-logo-placeholder">
                       {exp.institution ? exp.institution.charAt(0).toUpperCase() : 'E'}
@@ -82,7 +83,7 @@ const PrintableProfile = ({ profile }) => {
               <div key={index} className="print-experience-item">
                 <div className="print-experience-logo">
                   {edu.institutionLogo ? (
-                    <img src={edu.institutionLogo} alt={edu.institution || edu.otherInstitution || 'Institución'} />
+                    <img src={clImg.logo(edu.institutionLogo)} alt={edu.institution || edu.otherInstitution || 'Institución'} />
                   ) : (
                     <div className="print-logo-placeholder">
                       {edu.institution ? edu.institution.charAt(0).toUpperCase() : 'I'}
@@ -173,8 +174,8 @@ const calculateDuration = (exp) => {
   }
   
   // Calcular diferencia en meses
-  const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                (endDate.getMonth() - startDate.getMonth());
+  const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                (endDate.getMonth() - startDate.getMonth()) + 1;
   
   if (months < 12) {
     return `${months} ${months === 1 ? 'mes' : 'meses'}`;
@@ -205,8 +206,8 @@ const calculateEducationDuration = (edu) => {
   }
   
   // Calcular diferencia en meses
-  const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                (endDate.getMonth() - startDate.getMonth());
+  const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                (endDate.getMonth() - startDate.getMonth()) + 1;
   
   if (months < 12) {
     return `${months} ${months === 1 ? 'mes' : 'meses'}`;

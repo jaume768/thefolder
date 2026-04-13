@@ -1,0 +1,98 @@
+.legal-container {
+    max-width: 900px;
+    margin: 10vh auto 0 auto;
+    padding: 20px;
+    font-family: 'Inter Tight', sans-serif;
+    color: #2c2c2c;
+}
+
+.legal-title {
+    margin-top: 0;
+    margin-bottom: 16px;
+    text-align: center;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10vw;
+    line-height: 10vw;
+    font-weight: 500;
+    color: #111;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.legal-version {
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.legal-paragraph {
+    margin: 0 0 20px;
+    line-height: 1.6;
+    text-align: justify;
+    font-size: 14px;
+}
+
+.legal-subtitle {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 30px 0 15px;
+}
+
+.legal-subtitle-small {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 25px 0 10px;
+    color: #333;
+}
+
+.legal-list {
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.legal-list li {
+    list-style: none;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.legal-list li strong,
+.legal-paragraph strong {
+    font-weight: 500;
+    color: #2d2d2d;
+}
+
+.legal-sublist {
+    margin-top: 8px;
+    padding-left: 15px;
+}
+
+.legal-sublist li {
+    margin-bottom: 6px;
+}
+
+.legal-sublist li::before {
+    content: "·";
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .legal-container {
+        padding: 15px;
+    }
+
+    .legal-title {
+        font-size: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .legal-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .legal-subtitle-small {
+        font-size: 1rem;
+    }
+}

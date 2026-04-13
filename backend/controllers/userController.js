@@ -109,7 +109,8 @@ exports.updateProfile = async (req, res) => {
       'sector', 'employeeRange', 'institutionName', 'institutionType', 'institutionOwnership',
       'agencyName', 'agencyServices', 'website', 'showNameCompany', 'showFoundingYearCompany',
       'education', 'skills', 'software', 'social', 'professionalMilestones', 'companyTags',
-      'offersPractices', 'professionalFormation', 'profileCompleted', 'jobSearchActive',
+      'offersPractices', 'professionalFormation', 'pressPublications', 'awards',
+      'profileCompleted', 'jobSearchActive',
       'contract', 'locationType', 'availability', 'city2', 'country2',
       'featuredHeaderImage', 'featuredHeaderImageDesktop', 'featuredHeaderImageMobile',
       'creativeCoverDesktop',
@@ -221,7 +222,7 @@ exports.updateProfile = async (req, res) => {
     // ---------- Layout del perfil público ----------
     if (updates.profileLayout !== undefined) {
       const v = String(updates.profileLayout || "").trim();
-      if (["default", "index-gallery"].includes(v)) updates.profileLayout = v;
+      if (["default", "index-gallery", "studio-gallery"].includes(v)) updates.profileLayout = v;
       else delete updates.profileLayout;
     }
 
@@ -255,6 +256,8 @@ exports.updateProfile = async (req, res) => {
         hibrido: Boolean(l.hibrido),
       };
     }
+
+    updates.lastProfileEditAt = new Date();
 
     // IMPORTANTE: usar $set + validators
     const user = await User.findByIdAndUpdate(
@@ -1173,20 +1176,9 @@ exports.getCreatives = async (req, res) => {
     const totalPages = Math.ceil(total / limitNumber);
     const skip = (pageNumber - 1) * limitNumber;
 
-    // 4) lógica de pin del usuario logueado (solo page 1)
-    const meId = req.user?.id ? new mongoose.Types.ObjectId(req.user.id) : null;
-    const includeMe = Boolean(meId) && pageNumber === 1;
-
-    // Si NO es page 1, excluimos me para que no salga repetido
-    if (meId && !includeMe) {
-      filter._id = {
-        $in: userIdsWithPosts.filter(id => id.toString() !== meId.toString())
-      };
-    }
-
-    // 5) RANDOM estable sin randomKey
-    const seedInt = Math.abs(parseInt(seed, 10)) || 0;
-    const seedNorm = (seedInt % 1000000) / 1000000; // 0..1
+    // 4) RANDOM estable: hash determinista de (ObjectId + seed)
+    // Usamos los últimos 8 hex del _id (32 bits) mezclados con el seed → mismo orden en todas las páginas
+    const seedInt = Math.abs(parseInt(seed, 10)) || 1;
 
     // new vs random
     const wantRandom = sort === "random";
@@ -1196,8 +1188,21 @@ exports.getCreatives = async (req, res) => {
 
       ...(wantRandom
         ? [
-            // _rand = (rand + seed) % 1  -> orden estable por seed (no perfecto pero funciona muy bien)
-            { $addFields: { _rand: { $mod: [{ $add: [{ $rand: {} }, seedNorm] }, 1] } } },
+            {
+              $addFields: {
+                _rand: {
+                  $mod: [
+                    {
+                      $multiply: [
+                        { $toLong: { $convert: { input: { $substr: [{ $toString: "$_id" }, 16, 8] }, to: "long", onError: 1, onNull: 1 } } },
+                        seedInt,
+                      ],
+                    },
+                    1000000007,
+                  ],
+                },
+              },
+            },
             { $sort: { _rand: 1, _id: 1 } },
           ]
         : [
@@ -1228,19 +1233,7 @@ exports.getCreatives = async (req, res) => {
 
     let users = await User.aggregate(pipeline);
 
-    // 6) Pin de mi perfil primero (si cumple filtros)
-    if (includeMe) {
-      const meDoc = await User.findOne({ ...filter, _id: meId })
-        .select("username fullName country professionalTitle profile.profilePicture skills professionalTags city city2 country2 creativeCoverDesktop updatedAt")
-        .lean();
-
-      if (meDoc) {
-        users = [meDoc, ...users.filter(u => String(u._id) !== String(meDoc._id))];
-        users = users.slice(0, limitNumber);
-      }
-    }
-
-    // 7) Añadir lastPost
+    // 5) Añadir lastPost
     const usersWithLastPost = users.map(user => {
       const info = usersWithPosts.find(p => p._id.toString() === user._id.toString());
       return {
@@ -1275,6 +1268,99 @@ exports.getCreatives = async (req, res) => {
       error: "Error al obtener creativos",
       message: error.message,
     });
+  }
+};
+
+
+// ── GET /api/users/creatives/facets ─────────────────────────────────────────
+// Faceted search: conteos por dimensión excluyendo la propia en cada cálculo.
+exports.getCreativesFacets = async (req, res) => {
+  try {
+    const toArray = (v) => {
+      if (v === undefined || v === null || v === "") return [];
+      if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
+      return String(v).split(",").map(s => s.trim()).filter(Boolean);
+    };
+
+    const citiesArr = toArray(req.query.city);
+    const profArr   = toArray(req.query.professionalProfile ?? req.query.professionalTags);
+    const levelArr  = toArray(req.query.creativeLevel).map(Number).filter(n => [1,2,3,4].includes(n));
+    const search    = req.query.search || "";
+
+    const usersWithPosts = await Post.distinct("user");
+
+    const BASE = {
+      _id: { $in: usersWithPosts },
+      isActive: true,
+      $or: [
+        { accountType: null, professionalType: { $nin: [1, 2, 3, 4] } },
+        { accountType: 'creative' },
+      ],
+    };
+
+    const buildFilter = ({ skipCity = false, skipTags = false, skipLevel = false } = {}) => {
+      const and = [];
+
+      if (search.trim().length >= 2) {
+        const rx = createNormalizedRegex(search.trim());
+        and.push({ $or: [
+          { username:          { $regex: rx } },
+          { fullName:          { $regex: rx } },
+          { professionalTitle: { $regex: rx } },
+          { biography:         { $regex: rx } },
+        ]});
+      }
+      if (!skipCity && citiesArr.length) {
+        const rx = citiesArr.map(v => createNormalizedRegex(v));
+        and.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }] });
+      }
+      if (!skipTags && profArr.length) {
+        and.push({ professionalTags: { $in: profArr } });
+      }
+      if (!skipLevel && levelArr.length) {
+        and.push({ creativeLevel: { $in: levelArr } });
+      }
+
+      const f = { ...BASE };
+      if (and.length) f.$and = and;
+      return f;
+    };
+
+    const [tagAgg, cityAgg1, cityAgg2, levelAgg] = await Promise.all([
+      User.aggregate([
+        { $match: buildFilter({ skipTags: true }) },
+        { $unwind: { path: "$professionalTags", preserveNullAndEmptyArrays: false } },
+        { $group: { _id: "$professionalTags", count: { $sum: 1 } } },
+      ]),
+      User.aggregate([
+        { $match: buildFilter({ skipCity: true }) },
+        { $match: { city: { $exists: true, $ne: "" } } },
+        { $group: { _id: "$city", count: { $sum: 1 } } },
+      ]),
+      User.aggregate([
+        { $match: buildFilter({ skipCity: true }) },
+        { $match: { city2: { $exists: true, $ne: "" } } },
+        { $group: { _id: "$city2", count: { $sum: 1 } } },
+      ]),
+      User.aggregate([
+        { $match: buildFilter({ skipLevel: true }) },
+        { $match: { creativeLevel: { $in: [1,2,3,4] } } },
+        { $group: { _id: "$creativeLevel", count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    const cityMap = {};
+    for (const c of cityAgg1) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
+    for (const c of cityAgg2) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
+
+    return res.json({
+      tags:   Object.fromEntries(tagAgg.map(c => [c._id, c.count])),
+      cities: cityMap,
+      levels: Object.fromEntries(levelAgg.map(c => [String(c._id), c.count])),
+    });
+  } catch (err) {
+    console.error("getCreativesFacets error:", err);
+    return res.status(500).json({ error: "Error al calcular facetas" });
   }
 };
 

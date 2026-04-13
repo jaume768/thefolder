@@ -1,0 +1,250 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   ParaQuien.css
+   Layout: dos columnas por sección (texto izq / imágenes der)
+   Mobile: columna única centrada
+   Tipografía: hereda la de THEFOLDER (sans-serif bold)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* PAGE WRAPPER */
+.paraquien-page {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* ─── SECCIÓN ─────────────────────────────────────────────────────────────── */
+
+.paraquien-seccion {
+  display: flex;
+  column-gap: 0;
+  row-gap: 0;
+  align-items: start;
+  padding: 40px 0px 120px;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 105dvh;
+}
+
+section.paraquien-seccion.paraquien-seccion--estudiantes {
+    padding-bottom: 0px;
+}
+
+/* ─── COLUMNA IZQUIERDA: TEXTO ────────────────────────────────────────────── */
+
+.paraquien-texto {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0px 40px;
+}
+
+.paraquien-subtitulo-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.paraquien-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.paraquien-titulo-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1;
+}
+
+.paraquien-titulo {
+  font-size: 62px;
+  font-weight: 500;
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin: 0;
+  color: #111;
+  text-transform: uppercase;
+  font-family: Inter Tight, sans-serif;
+}
+
+.paraquien-contador {
+  letter-spacing: 0;
+  white-space: nowrap;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 38px;
+  color: #999;
+  transform: translateY(-8px);
+  display: inline-block;
+}
+
+.paraquien-subtitulo {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  /* El subtitulo aparece alineado a la derecha en el diseño — 
+     en desktop lo posicionamos via grid absoluto */
+}
+
+.paraquien-descripcion {
+  font-size: 11px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 320px;
+}
+
+/* ─── SUBTITULO DERECHA (desktop) ────────────────────────────────────────── */
+/* En el diseño de Mimi el subtitulo está arriba a la derecha,
+   sobre las imágenes. Lo reposicionamos con un pseudo-grid trick:
+   el subtitulo está en el texto pero se mueve visualmente */
+
+.paraquien-seccion {
+  position: relative;
+}
+
+.paraquien-subtitulo {
+  max-width: 220px;
+  text-align: right;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ─── COLUMNA DERECHA: IMÁGENES ───────────────────────────────────────────── */
+
+.paraquien-imagenes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  width: 100%;
+  align-items: flex-end;
+}
+
+.paraquien-imagen-wrapper {
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.paraquien-imagen {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* ── profesionales: últimas 4 columnas (5–8) ── */
+.paraquien-imagenes--row-4 .paraquien-imagen-wrapper:first-child {
+  grid-column-start: 3;
+}
+.paraquien-imagenes--row-4 .paraquien-imagen-wrapper {
+  height: 280px;
+}
+
+/* ── emergente: últimas 3 columnas (6–8) ── */
+.paraquien-imagenes--row-3 .paraquien-imagen-wrapper:first-child {
+  grid-column-start: 4;
+}
+.paraquien-imagenes--row-3 .paraquien-imagen-wrapper {
+  height: 280px;
+}
+
+/* ── estudiantes / graduados: últimas 2 columnas (7–8) ── */
+.paraquien-imagenes--row-1 .paraquien-imagen-wrapper:first-child {
+  grid-column-start: 5;
+}
+.paraquien-imagenes--row-1 .paraquien-imagen-wrapper {
+  height: 280px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE — columna única centrada
+   Todo apilado: título → subtitulo → descripción → imágenes
+───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+
+  .paraquien-seccion {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding: 12px 12px 90px 12px;
+    min-height: unset;
+    height: 100dvh;
+  }
+
+  .paraquien-texto {
+    grid-column: 1;
+    padding-right: 0;
+    padding: 0px;
+    flex-direction: column;
+    padding-right: 24px;
+  }
+
+  /* En mobile el subtitulo vuelve al flujo normal */
+  .paraquien-subtitulo {
+    position: static;
+    text-align: left;
+    max-width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .paraquien-titulo {
+    font-size: clamp(38px, 10vw, 56px);
+  }
+
+  .paraquien-titulo-wrapper {
+    margin-bottom: 12px;
+  }
+
+  .paraquien-descripcion {
+    max-width: 100%;
+    margin-bottom: 24px;
+  }
+
+  /* Imágenes en mobile: scroll horizontal */
+  .paraquien-imagenes {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .paraquien-imagenes::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Cancelar grid-column-start en mobile */
+  .paraquien-imagenes .paraquien-imagen-wrapper:first-child {
+    grid-column-start: unset;
+  }
+
+  .paraquien-imagenes--row-4 .paraquien-imagen-wrapper,
+  .paraquien-imagenes--row-3 .paraquien-imagen-wrapper {
+      width: 20%;
+      flex-shrink: 0;
+      height: auto;
+  }
+
+  .paraquien-imagenes--row-1 .paraquien-imagen-wrapper {
+    width: 200px;
+    flex-shrink: 0;
+    height: 260px;
+  }
+
+  /* Mobile: solo la primera imagen */
+  .paraquien-imagenes .paraquien-imagen-wrapper:not(:first-child) {
+    display: none;
+  }
+
+  .paraquien-imagenes .paraquien-imagen-wrapper:first-child {
+    width: 60%;
+    height: auto;
+    flex-shrink: 0;
+  }
+}

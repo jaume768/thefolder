@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaFilter, FaEdit, FaEye, FaTrash, FaPlus, FaStar } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaEdit, FaEye, FaTrash, FaPlus, FaStar, FaEyeSlash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { getPosts, deletePost, updatePostStaffPick } from '../services/postService';
+import { getPosts, deletePost, updatePostStaffPick, updatePostHiddenFromExplorer } from '../services/postService';
 import '../styles/PostsPage.css';
 
 const PostsPage = () => {
@@ -130,6 +130,25 @@ const PostsPage = () => {
       toast.error('Error al eliminar el post');
     } finally {
       setDeleteConfirm(null);
+    }
+  };
+
+  const handleToggleHiddenFromExplorer = async (postId, currentValue) => {
+    try {
+      const newValue = !currentValue;
+      const response = await updatePostHiddenFromExplorer(postId, newValue);
+
+      if (response.success) {
+        setPosts(posts.map(post =>
+          post._id === postId ? { ...post, hiddenFromExplorer: newValue } : post
+        ));
+        toast.success(newValue ? 'Post oculto del explorador' : 'Post visible en el explorador');
+      } else {
+        toast.error('Error al actualizar la visibilidad del post');
+      }
+    } catch (error) {
+      console.error('Error al actualizar visibilidad:', error);
+      toast.error('Error al actualizar la visibilidad del post');
     }
   };
 
@@ -273,7 +292,7 @@ const PostsPage = () => {
             onClick={resetFilters}
             className="reset-filters-btn"
           >
-            Limpiar filtros
+            Borrar filtros
           </button>
         </div>
       )}
@@ -289,6 +308,7 @@ const PostsPage = () => {
                   <div className="no-image">Sin imagen</div>
                 )}
                 {post.staffPick && <div className="staff-pick-badge">Destacado</div>}
+                {post.hiddenFromExplorer && <div className="hidden-explorer-badge">Oculto del explorador</div>}
               </div>
               <div className="post-content">
                 <h3 className="post-title">{post.title}</h3>
@@ -325,12 +345,19 @@ const PostsPage = () => {
                   >
                     <FaTrash />
                   </button>
-                  <button 
+                  <button
                     className={`action-btn staff-pick-btn ${post.staffPick ? 'active' : ''}`}
                     title={post.staffPick ? "Quitar de destacados" : "Destacar publicación"}
                     onClick={() => handleToggleStaffPick(post._id, post.staffPick)}
                   >
                     <FaStar />
+                  </button>
+                  <button
+                    className={`action-btn hide-explorer-btn ${post.hiddenFromExplorer ? 'active' : ''}`}
+                    title={post.hiddenFromExplorer ? "Mostrar en el explorador" : "Ocultar del explorador"}
+                    onClick={() => handleToggleHiddenFromExplorer(post._id, post.hiddenFromExplorer)}
+                  >
+                    <FaEyeSlash />
                   </button>
                 </div>
               </div>
@@ -368,7 +395,7 @@ const PostsPage = () => {
               onClick={resetFilters} 
               className="btn btn-outline"
             >
-              Limpiar filtros
+              Borrar filtros
             </button>
           )}
         </div>

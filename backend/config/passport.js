@@ -3,18 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const { validateUsername } = require('../utils/username');
-
-async function generateProvisionalUsername(email) {
-    const localPart = email.split('@')[0].toLowerCase();
-    let base = localPart.replace(/[^a-z0-9]/g, '').slice(0, 12);
-    if (!base) base = 'user';
-    let username = `${base}-${Math.random().toString(36).slice(2, 6)}`;
-    while ((await User.findOne({ username })) || !validateUsername(username).ok) {
-        username = `${base}-${Math.random().toString(36).slice(2, 6)}`;
-    }
-    return username;
-}
+const { generateProvisionalUsername } = require('../utils/username');
 
 passport.use(new LocalStrategy(
     { usernameField: 'email', passReqToCallback: true },
@@ -53,7 +42,7 @@ passport.use(new GoogleStrategy({
                 user = new User({
                     googleId: profile.id,
                     email: profile.emails[0].value,
-                    username: await generateProvisionalUsername(profile.emails[0].value),
+                    username: await generateProvisionalUsername(profile.emails[0].value, User),
                     profile: {
                         profilePicture: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : ''
                     },

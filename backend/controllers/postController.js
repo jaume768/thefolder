@@ -1,7 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
-const cloudinary = require('../config/cloudinary');
-const streamifier = require('streamifier');
+const { uploadFile } = require('../utils/storageService');
 const mongoose = require('mongoose');
 const { escapeRegex } = require('../utils/textUtils');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
@@ -13,20 +12,8 @@ exports.createPost = async (req, res) => {
             // Procesamos cada imagen
             for (const file of req.files) {
                 const buf = await processImageIfNeeded(file.buffer);
-                const streamUpload = (buf) => {
-                    return new Promise((resolve, reject) => {
-                        const stream = cloudinary.uploader.upload_stream(
-                            { folder: 'posts', resource_type: 'image', overwrite: false },
-                            (error, result) => {
-                                if (result) resolve(result);
-                                else reject(error);
-                            }
-                        );
-                        streamifier.createReadStream(buf).pipe(stream);
-                    });
-                };
-                const result = await streamUpload(buf);
-                imageUrls.push(result.secure_url);
+                const { url: _imgUrl } = await uploadFile(buf, 'posts');
+                imageUrls.push(_imgUrl);
             }
         }
         // Procesar etiquetas y demás datos enviados (convertir de JSON)
@@ -172,14 +159,8 @@ exports.updatePost = async (req, res) => {
             const newUrls = [];
             for (const file of filesToUpload) {
                 const buf = await processImageIfNeeded(file.buffer);
-                const result = await new Promise((resolve, reject) => {
-                    const stream = cloudinary.uploader.upload_stream(
-                        { folder: 'posts', resource_type: 'image', overwrite: false },
-                        (error, result) => { if (result) resolve(result); else reject(error); }
-                    );
-                    streamifier.createReadStream(buf).pipe(stream);
-                });
-                newUrls.push(result.secure_url);
+                const { url: _imgUrl } = await uploadFile(buf, 'posts');
+                newUrls.push(_imgUrl);
             }
             existingImages = (existingImages || []).concat(newUrls);
         }

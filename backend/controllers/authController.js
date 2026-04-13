@@ -1,8 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const cloudinary = require('../config/cloudinary');
-const streamifier = require('streamifier');
+const { uploadFile } = require('../utils/storageService');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
 const jwt = require('jsonwebtoken');
 
@@ -261,14 +260,8 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'La foto de perfil es obligatoria.' });
         }
         const _bufAuth = await processImageIfNeeded(req.file.buffer);
-        const result = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-                { folder: 'profile_pictures' },
-                (error, result) => (result ? resolve(result) : reject(error))
-            );
-            streamifier.createReadStream(_bufAuth).pipe(stream);
-        });
-        profilePictureUrl = result.secure_url;
+        const { url: _urlAuth } = await uploadFile(_bufAuth, 'profile_pictures');
+        profilePictureUrl = _urlAuth;
 
         // ✅ Bloquear usernames reservados (por las URLs bonitas /:username)
         const checkUsername = validateUsername(username);

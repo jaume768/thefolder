@@ -7,8 +7,7 @@ const School = require('../models/School'); // Agregar modelo de escuela
 const Magazine = require('../models/Magazine'); // Agregar modelo de revista
 const Industry = require('../models/Industry'); // Agregar modelo de industria
 
-const cloudinary = require('../config/cloudinary');
-const streamifier = require('streamifier');
+const { uploadFile } = require('../utils/storageService');
 const { escapeRegex } = require('../utils/textUtils');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
 
@@ -1345,19 +1344,10 @@ exports.createBlogPost = async (req, res) => {
         let imageUrl = '';
         let additionalImages = [];
         
-        // Función para subir imágenes a Cloudinary
+        // Función para subir imágenes a S3
         const streamUpload = async (file) => {
             const buf = await processImageIfNeeded(file.buffer);
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'blog_posts' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
+            return uploadFile(buf, 'blog_posts');
         };
         
         // Procesar imagen principal
@@ -1365,7 +1355,7 @@ exports.createBlogPost = async (req, res) => {
             // Subir imagen principal
             try {
                 const mainImageResult = await streamUpload(req.files.image[0]);
-                imageUrl = mainImageResult.secure_url;
+                imageUrl = mainImageResult.url;
             } catch (uploadError) {
                 return res.status(400).json({ success: false, message: 'Error al procesar la imagen principal' });
             }
@@ -1376,7 +1366,7 @@ exports.createBlogPost = async (req, res) => {
             for (let i = 0; i < req.files.images.length; i++) {
                 try {
                     const additionalResult = await streamUpload(req.files.images[i]);
-                    additionalImages.push(additionalResult.secure_url);
+                    additionalImages.push(additionalResult.url);
                 } catch (uploadError) {
                 }
             }
@@ -1490,19 +1480,10 @@ exports.updateBlogPost = async (req, res) => {
         let imageUrl = blogPost.image; // Mantener la imagen actual por defecto
         let additionalImages = blogPost.additionalImages || []; // Mantener las imágenes adicionales actuales
         
-        // Función para subir imágenes a Cloudinary
+        // Función para subir imágenes a S3
         const streamUpload = async (file) => {
             const buf = await processImageIfNeeded(file.buffer);
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'blog_posts' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
+            return uploadFile(buf, 'blog_posts');
         };
         
         // Procesar imagen principal si se proporciona una nueva
@@ -1510,7 +1491,7 @@ exports.updateBlogPost = async (req, res) => {
             // Subir nueva imagen principal
             try {
                 const mainImageResult = await streamUpload(req.files.image[0]);
-                imageUrl = mainImageResult.secure_url;
+                imageUrl = mainImageResult.url;
             } catch (uploadError) {
             }
         }
@@ -1525,7 +1506,7 @@ exports.updateBlogPost = async (req, res) => {
             for (let i = 0; i < req.files.images.length; i++) {
                 try {
                     const additionalResult = await streamUpload(req.files.images[i]);
-                    additionalImages.push(additionalResult.secure_url);
+                    additionalImages.push(additionalResult.url);
                 } catch (uploadError) {
                 }
             }
@@ -1698,26 +1679,13 @@ exports.createPost = async (req, res) => {
             for (const file of req.files) {
                 try {
                     // Crear stream de datos para Cloudinary
-                    let streamUpload = async (file) => {
-                        const buf = await processImageIfNeeded(file.buffer);
-                        return new Promise((resolve, reject) => {
-                            let stream = cloudinary.uploader.upload_stream(
-                                { folder: "posts", resource_type: "image" },
-                                (error, result) => {
-                                    if (result) resolve(result);
-                                    else reject(error);
-                                }
-                            );
-                            streamifier.createReadStream(buf).pipe(stream);
-                        });
-                    };
-                    
-                    const result = await streamUpload(file);
-                    uploadedImages.push(result.secure_url);
+                    const buf = await processImageIfNeeded(file.buffer);
+                    const { url: _postImgUrl } = await uploadFile(buf, 'posts');
+                    uploadedImages.push(_postImgUrl);
                     
                     // Primera imagen subida será la principal si no hay una específica
                     if (!mainImage) {
-                        mainImage = result.secure_url;
+                        mainImage = _postImgUrl;
                     }
                 } catch (err) {
                 }
@@ -1782,23 +1750,9 @@ exports.updatePost = async (req, res) => {
             // Subir cada imagen a Cloudinary
             for (const file of req.files) {
                 try {
-                    // Crear stream de datos para Cloudinary
-                    let streamUpload = async (file) => {
-                        const buf = await processImageIfNeeded(file.buffer);
-                        return new Promise((resolve, reject) => {
-                            let stream = cloudinary.uploader.upload_stream(
-                                { folder: "posts", resource_type: "image" },
-                                (error, result) => {
-                                    if (result) resolve(result);
-                                    else reject(error);
-                                }
-                            );
-                            streamifier.createReadStream(buf).pipe(stream);
-                        });
-                    };
-                    
-                    const result = await streamUpload(file);
-                    uploadedImages.push(result.secure_url);
+                    const buf = await processImageIfNeeded(file.buffer);
+                    const { url: _postImgUrl } = await uploadFile(buf, 'posts');
+                    uploadedImages.push(_postImgUrl);
                 } catch (err) {
                 }
             }
@@ -2235,26 +2189,17 @@ exports.createMagazine = async (req, res) => {
     try {
         let imageUrl = '';
         
-        // Función para subir imagen a Cloudinary
+        // Función para subir imagen a S3
         const streamUpload = async (file) => {
             const buf = await processImageIfNeeded(file.buffer);
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'magazines' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
+            return uploadFile(buf, 'magazines');
         };
         
         // Procesar imagen
         if (req.file) {
             try {
                 const imageResult = await streamUpload(req.file);
-                imageUrl = imageResult.secure_url;
+                imageUrl = imageResult.url;
             } catch (uploadError) {
                 return res.status(400).json({ success: false, message: 'Error al procesar la imagen' });
             }
@@ -2318,26 +2263,17 @@ exports.updateMagazine = async (req, res) => {
         
         let imageUrl = magazine.image; // Mantener la imagen actual por defecto
         
-        // Función para subir imagen a Cloudinary
+        // Función para subir imagen a S3
         const streamUpload = async (file) => {
             const buf = await processImageIfNeeded(file.buffer);
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'magazines' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
+            return uploadFile(buf, 'magazines');
         };
         
         // Procesar nueva imagen si se proporciona
         if (req.file) {
             try {
                 const imageResult = await streamUpload(req.file);
-                imageUrl = imageResult.secure_url;
+                imageUrl = imageResult.url;
             } catch (uploadError) {
                 return res.status(400).json({ success: false, message: 'Error al procesar la imagen' });
             }
@@ -2475,19 +2411,10 @@ exports.createIndustry = async (req, res) => {
   try {
     let imageUrl = '';
 
-    // Función para subir imagen a Cloudinary
+    // Función para subir imagen a S3
     const streamUpload = async (file) => {
       const buf = await processImageIfNeeded(file.buffer);
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'industry' },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(buf).pipe(stream);
-      });
+      return uploadFile(buf, 'industry');
     };
 
     // Validación básica
@@ -2500,7 +2427,7 @@ exports.createIndustry = async (req, res) => {
     if (req.file) {
       try {
         const imageResult = await streamUpload(req.file);
-        imageUrl = imageResult.secure_url;
+        imageUrl = imageResult.url;
       } catch (uploadError) {
         return res.status(400).json({ success: false, message: 'Error al procesar la imagen' });
       }
@@ -2562,23 +2489,15 @@ exports.updateIndustry = async (req, res) => {
 
     let imageUrl = industry.image;
 
-    const streamUpload = (file) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'industry' },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(file.buffer).pipe(stream);
-      });
+    const streamUpload = async (file) => {
+      const buf = await processImageIfNeeded(file.buffer);
+      return uploadFile(buf, 'industry');
     };
 
     if (req.file) {
       try {
         const imageResult = await streamUpload(req.file);
-        imageUrl = imageResult.secure_url;
+        imageUrl = imageResult.url;
       } catch (uploadError) {
         return res.status(400).json({ success: false, message: 'Error al procesar la imagen' });
       }

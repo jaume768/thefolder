@@ -1,8 +1,7 @@
 const Offer = require('../models/Offer');
 const EducationalOffer = require('../models/EducationalOffer');
 const User = require('../models/User');
-const streamifier = require('streamifier');
-const cloudinary = require('../config/cloudinary');
+const { uploadFile } = require('../utils/storageService');
 const { escapeRegex } = require('../utils/textUtils');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
 
@@ -23,17 +22,8 @@ exports.createOffer = async (req, res) => {
         if (req.file) {
             try {
                 const _bufOL = await processImageIfNeeded(req.file.buffer);
-                const result = await new Promise((resolve, reject) => {
-                    const stream = cloudinary.uploader.upload_stream(
-                        { folder: 'company_logos' },
-                        (error, result) => {
-                            if (result) resolve(result);
-                            else reject(error);
-                        }
-                    );
-                    streamifier.createReadStream(_bufOL).pipe(stream);
-                });
-                companyLogo = result.secure_url;
+                const { url: _urlOL } = await uploadFile(_bufOL, 'company_logos');
+                companyLogo = _urlOL;
             } catch (uploadError) {
                 // upload failed silently, companyLogo stays null
             }
@@ -145,20 +135,11 @@ exports.createEducationalOffer = async (req, res) => {
                     });
                 }
 
-                // Subir imagen a Cloudinary
+                // Subir imagen a S3
                 const _bufEO = await processImageIfNeeded(file.buffer);
-                const result = await new Promise((resolve, reject) => {
-                    const stream = cloudinary.uploader.upload_stream(
-                        { folder: 'educational_offers' },
-                        (error, result) => {
-                            if (result) resolve(result);
-                            else reject(error);
-                        }
-                    );
-                    streamifier.createReadStream(_bufEO).pipe(stream);
-                });
+                const { url: _urlEO } = await uploadFile(_bufEO, 'educational_offers');
                 
-                headerImageUrl = result.secure_url;
+                headerImageUrl = _urlEO;
             } catch (uploadError) {
                 return res.status(500).json({
                     message: "Error al procesar la imagen. Inténtalo de nuevo más tarde."

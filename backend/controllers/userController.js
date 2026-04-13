@@ -2,8 +2,7 @@ const User = require('../models/User');
 const Post = require('../models/Post');
 const Offer = require('../models/Offer');
 const EducationalOffer = require('../models/EducationalOffer');
-const cloudinary = require('../config/cloudinary');
-const streamifier = require('streamifier');
+const { uploadFile } = require('../utils/storageService');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
 const bcrypt = require('bcryptjs');
 const { validatePassword } = require('../utils/passwordValidation');
@@ -280,24 +279,11 @@ exports.updateProfilePicture = async (req, res) => {
 
     try {
         const _bufPP = await processImageIfNeeded(req.file.buffer);
-        const streamUpload = (buf) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'profile_pictures' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(_bufPP);
+        const { url: _urlPP } = await uploadFile(_bufPP, 'profile_pictures');
 
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
-            { 'profile.profilePicture': result.secure_url },
+            { 'profile.profilePicture': _urlPP },
             { new: true }
         );
 
@@ -334,32 +320,19 @@ exports.updateFeaturedHeaderImage = async (req, res) => {
     try {
         // 2. subimos a Cloudinary usando el mismo patrón de stream que ya usas
         const _bufPH = await processImageIfNeeded(req.file.buffer);
-        const streamUpload = (buf) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'profile_headers' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(_bufPH);
+        const { url: _urlPH } = await uploadFile(_bufPH, 'profile_headers');
 
         // 3. guardamos la URL en el usuario logueado
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
-            { featuredHeaderImage: result.secure_url },
+            { featuredHeaderImage: _urlPH },
             { new: true }
         );
 
         // 4. devolvemos la URL nueva al front
         res.status(200).json({
             message: 'Imagen destacada actualizada',
-            featuredHeaderImage: result.secure_url,
+            featuredHeaderImage: _urlPH,
             user: updatedUser
         });
     } catch (error) {
@@ -378,24 +351,18 @@ exports.updateFeaturedHeaderImageVariant = async (req, res) => {
 
   try {
     const _bufPHV = await processImageIfNeeded(req.file.buffer);
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "profile_headers" },
-        (error, result) => (result ? resolve(result) : reject(error))
-      );
-      streamifier.createReadStream(_bufPHV).pipe(stream);
-    });
+    const { url: _urlPHV } = await uploadFile(_bufPHV, 'profile_headers');
 
     const field =
       variant === "desktop" ? "featuredHeaderImageDesktop" : "featuredHeaderImageMobile";
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
-      { [field]: result.secure_url },
+      { [field]: _urlPHV },
       { new: true }
     );
 
-    return res.status(200).json({ message: "OK", url: result.secure_url, user: updatedUser });
+    return res.status(200).json({ message: "OK", url: _urlPHV, user: updatedUser });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -431,21 +398,15 @@ exports.updateCreativeCover = async (req, res) => {
 
   try {
     const _bufCC = await processImageIfNeeded(req.file.buffer);
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "creative_covers" },
-        (error, result) => (result ? resolve(result) : reject(error))
-      );
-      streamifier.createReadStream(_bufCC).pipe(stream);
-    });
+    const { url: _urlCC } = await uploadFile(_bufCC, 'creative_covers');
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
-      { creativeCoverDesktop: result.secure_url },
+      { creativeCoverDesktop: _urlCC },
       { new: true }
     );
 
-    return res.status(200).json({ message: "OK", url: result.secure_url, user: updatedUser });
+    return res.status(200).json({ message: "OK", url: _urlCC, user: updatedUser });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -483,34 +444,17 @@ exports.uploadCV = async (req, res) => {
         // Extraer el nombre original del archivo
         const originalFileName = req.file.originalname;
 
-        const streamUpload = (req) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: 'cvs',
-                        resource_type: 'raw',
-                        format: 'pdf',
-                        public_id: originalFileName.replace(/\.pdf$/i, '') // Mantener nombre original sin extensión
-                    },
-                    (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
-                    }
-                );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(req);
+        const { url: _urlCV } = await uploadFile(req.file.buffer, 'cvs', {
+            contentType: 'application/pdf',
+            extension: 'pdf',
+            filename: originalFileName,
+        });
 
         // Guardar tanto la URL como el nombre original
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
             {
-                cvUrl: result.secure_url,
+                cvUrl: _urlCV,
                 cvFileName: originalFileName // Guardar el nombre original
             },
             { new: true }
@@ -518,7 +462,7 @@ exports.uploadCV = async (req, res) => {
 
         res.status(200).json({
             message: 'CV subido correctamente',
-            cvUrl: result.secure_url,
+            cvUrl: _urlCV,
             user: updatedUser
         });
     } catch (error) {
@@ -543,34 +487,17 @@ exports.uploadPortfolio = async (req, res) => {
         // Extraer el nombre original del archivo
         const originalFileName = req.file.originalname;
 
-        const streamUpload = (req) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: 'portfolios',
-                        resource_type: 'raw',
-                        format: 'pdf',
-                        public_id: originalFileName.replace(/\.pdf$/i, '') // Mantener nombre original sin extensión
-                    },
-                    (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
-                    }
-                );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(req);
+        const { url: _urlPortfolio } = await uploadFile(req.file.buffer, 'portfolios', {
+            contentType: 'application/pdf',
+            extension: 'pdf',
+            filename: originalFileName,
+        });
 
         // Guardar tanto la URL como el nombre original
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
             {
-                portfolioUrl: result.secure_url,
+                portfolioUrl: _urlPortfolio,
                 portfolioFileName: originalFileName // Guardar el nombre original
             },
             { new: true }
@@ -578,7 +505,7 @@ exports.uploadPortfolio = async (req, res) => {
 
         res.status(200).json({
             message: 'Portfolio subido correctamente',
-            portfolioUrl: result.secure_url,
+            portfolioUrl: _urlPortfolio,
             user: updatedUser
         });
     } catch (error) {
@@ -1376,32 +1303,11 @@ exports.uploadPdf = async (req, res) => {
     }
 
     try {
-        const streamUpload = (req) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: `user_documents/${type}`,
-                        resource_type: 'auto',
-                        format: 'pdf',
-                        public_id: `${req.user.id}_${type}_${Date.now()}`,
-                        transformation: { flags: "attachment" }
-                    },
-                    (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
-                    }
-                );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(req);
-
-        // Usar directamente la URL segura proporcionada por Cloudinary
-        const fileUrl = result.secure_url;
+        const { url: fileUrl } = await uploadFile(req.file.buffer, `user_documents/${type}`, {
+            contentType: 'application/pdf',
+            extension: 'pdf',
+            filename: `${req.user.id}_${type}_${Date.now()}.pdf`,
+        });
 
         // Actualizar el campo correspondiente en el usuario
         const updateField = type === 'cv' ? { cvUrl: fileUrl } : { portfolioUrl: fileUrl };
@@ -1677,24 +1583,11 @@ exports.uploadCompanyLogo = async (req, res) => {
 
     try {
         const _bufCL = await processImageIfNeeded(req.file.buffer);
-        const streamUpload = (buf) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'company_logos' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(_bufCL);
+        const { url: _urlCL } = await uploadFile(_bufCL, 'company_logos');
         
         res.status(200).json({ 
             message: 'Logo subido correctamente', 
-            logoUrl: result.secure_url 
+            logoUrl: _urlCL 
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -1743,24 +1636,11 @@ exports.uploadInstitutionLogo = async (req, res) => {
 
     try {
         const _bufIL = await processImageIfNeeded(req.file.buffer);
-        const streamUpload = (buf) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'institution_logos' },
-                    (error, result) => {
-                        if (result) resolve(result);
-                        else reject(error);
-                    }
-                );
-                streamifier.createReadStream(buf).pipe(stream);
-            });
-        };
-
-        const result = await streamUpload(_bufIL);
+        const { url: _urlIL } = await uploadFile(_bufIL, 'institution_logos');
         
         res.status(200).json({ 
             message: 'Logo de institución subido correctamente', 
-            logoUrl: result.secure_url 
+            logoUrl: _urlIL 
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

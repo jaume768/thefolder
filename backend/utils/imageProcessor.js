@@ -17,16 +17,11 @@ const processImageIfNeeded = async (buffer) => {
       return buffer;
     }
 
-    const sizeKB = buffer.length / 1024;
-    const width  = metadata.width || 0;
-
-    if (sizeKB < 200 && width <= 1200) {
-      return buffer; // ya está optimizada
-    }
+    const width = metadata.width || 0;
 
     return await sharp(buffer)
       .resize({ width: 1200, withoutEnlargement: true })
-      .webp({ quality: 75 })
+      .webp({ quality: width <= 1200 && buffer.length / 1024 < 200 ? 85 : 75 })
       .toBuffer();
   } catch {
     // Formato no soportado por Sharp (PDF, SVG, etc.) → devolver original sin tocar

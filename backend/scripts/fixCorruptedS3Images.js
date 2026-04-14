@@ -17,6 +17,7 @@ const {
   PutObjectCommand,
 } = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
+const heicConvert = require('heic-convert');
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const BUCKET  = process.env.S3_BUCKET_NAME;
@@ -79,7 +80,15 @@ async function main() {
         console.log(`  [FIX] ${key}  (era: ${metadata.format})`);
 
         if (!DRY_RUN) {
-          const converted = await sharp(buf)
+          let inputBuf = buf;
+
+          // HEIF/HEIC: convertir primero a JPEG con heic-convert
+          if (metadata.format === 'heif') {
+            const jpegOutput = await heicConvert({ buffer: buf, format: 'JPEG', quality: 0.92 });
+            inputBuf = Buffer.from(jpegOutput);
+          }
+
+          const converted = await sharp(inputBuf)
             .resize({ width: 1200, withoutEnlargement: true })
             .webp({ quality: 80 })
             .toBuffer();

@@ -1,30 +1,59 @@
 const sharp = require('sharp');
+const heicConvert = require('heic-convert');
+
+/**
+ * Convierte un buffer HEIF/HEIC a JPEG (para que Sharp pueda procesarlo).
+ */
+const heifToJpeg = async (buffer) => {
+  const output = await heicConvert({ buffer, format: 'JPEG', quality: 0.92 });
+  return Buffer.from(output);
+};
 
 /**
  * Procesa un buffer de imagen con Sharp si supera los umbrales.
- * - Si ya pesa menos de 200 KB Y tiene 1200 px de ancho o menos → devuelve el buffer original.
- * - En caso contrario → convierte a WebP calidad 80, redimensiona a máx 1200 px de ancho.
+ * - Convierte HEIF/HEIC a JPEG primero si Sharp no soporta HEIF.
+ * - Siempre convierte a WebP para consistencia con el ContentType de S3.
  *
  * @param {Buffer} buffer - Buffer de la imagen original
  * @returns {Promise<Buffer>} Buffer procesado (o el original si no necesita optimización)
  */
 const processImageIfNeeded = async (buffer) => {
   try {
-    const metadata = await sharp(buffer, { animated: true }).metadata();
+    let meta;
+    try {
+      meta = await sharp(buffer, { animated: true }).metadata();
+    } catch {
+      // Sharp no pudo leer → intentar como HEIF
+      try {
+        buffer = await heifToJpeg(buffer);
+        meta = await sharp(buffer).metadata();
+      } catch {
+        return buffer; // Formato desconocido, devolver tal cual
+      }
+    }
 
-    // GIF animado: pasar a Cloudinary tal cual para preservar la animación
-    if (metadata.format === 'gif' && metadata.pages > 1) {
+    // GIF animado: preservar la animación
+    if (meta.format === 'gif' && meta.pages > 1) {
       return buffer;
     }
 
-    const width = metadata.width || 0;
+    // Si Sharp detecta heif pero no puede convertir, usar heic-convert
+    if (meta.format === 'heif') {
+      try {
+        buffer = await heifToJpeg(buffer);
+      } catch {
+        return buffer;
+      }
+    }
+
+    const width = meta.width || 0;
 
     return await sharp(buffer)
       .resize({ width: 1200, withoutEnlargement: true })
       .webp({ quality: width <= 1200 && buffer.length / 1024 < 200 ? 85 : 75 })
       .toBuffer();
   } catch {
-    // Formato no soportado por Sharp (PDF, SVG, etc.) → devolver original sin tocar
+    // Formato no soportado (PDF, SVG, etc.) → devolver original sin tocar
     return buffer;
   }
 };

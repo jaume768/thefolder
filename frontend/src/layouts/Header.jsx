@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 import ProfileOptionsModal from '../components/modals/ProfileOptionsModal';
 import SearchResults from '../components/search/SearchResults';
 import SearchFullScreen from '../components/search/SearchFullScreen';
 import LoginModal from '../components/landing/LoginModal';
 import RegisterModal from '../components/landing/RegisterModal';
+import LanguageSwitcher from '../components/i18n/LanguageSwitcher';
 
 
 const getUsernameFromToken = () => {
@@ -23,6 +25,7 @@ try {
 };
 
 const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOpen }) => {
+  const { t } = useTranslation('common');
 
   const [showProfileOptions, setShowProfileOptions] = useState(false);
   const [showCreateOptions, setShowCreateOptions] = useState(false);
@@ -59,9 +62,9 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
 
   // ✅ Links del header (sin "Explorador"; ahora THEFOLDER va fuera como texto no clickable)
   const navItems = [
-    { label: 'Creativos', to: '/creatives' },
-    // { label: 'Estudiar moda', to: '/fashion' },
-    //{ label: 'Industria', to: '/industry' },
+    { label: t('nav.creatives'), to: '/creatives' },
+    // { label: t('nav.fashion'), to: '/fashion' },
+    // { label: t('nav.industry'), to: '/industry' },
   ];
 
   const activeNavItem = navItems.find(item => location.pathname.startsWith(item.to));
@@ -373,7 +376,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           className={`button header-left-link ${location.pathname.startsWith('/explorer') ? 'active' : ''}`}
           onClick={() => navigate('/explorer')}
         >
-          THEFOLDER
+          {t('brand')}
           {location.pathname.startsWith('/explorer') && (
             <span className="header-dot" />
           )}
@@ -416,7 +419,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           aria-haspopup="menu"
           aria-expanded={showNavMenu}
         >
-          Menú
+          {t('nav.menu')}
           {(showNavMenu || activeNavItem) && <span className="header-dot" />}
         </button>
 
@@ -456,7 +459,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             type="button"
             className="dashboard-search-trigger"
             onClick={openSearch}
-            aria-label="Abrir búsqueda"
+            aria-label={t('actions.openSearch')}
           >
             <img
               src="/iconos/search.svg"
@@ -478,7 +481,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
               ref={searchInputRef}
               type="text"
               className="modern-search-input"
-              placeholder="Busca creativos, proyectos…"
+              placeholder={t('search.placeholder')}
               value={searchQuery}
               onChange={handleSearchInputChange}
               onKeyDown={handleSearch}
@@ -493,7 +496,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
               type="button"
               className="search-clear-btn"
               onClick={clearSearch}
-              aria-label="Cerrar búsqueda"
+              aria-label={t('actions.closeSearch')}
             >
               <img src="/iconos/close.svg" alt="" aria-hidden="true" />
             </button>
@@ -526,26 +529,25 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             onCreatePost?.();
           }}
         >
-          PUBLICAR
+          {t('actions.publish').toUpperCase()}
           {isCreatePostOpen && <span className="header-dot" />}
         </button>
-
 
         <div className={`profile-wrapper ${showProfileOptions ? 'open' : ''}`} ref={profileRef}>
           <button
             type="button"
             className="button header-left-link"
             onClick={handleAvatarClick}
-            aria-label="Mi perfil"
+            aria-label={t('actions.myProfile')}
           >
-            MI PERFIL
+            {t('actions.myProfile').toUpperCase()}
           </button>
 
           <button
             type="button"
             className="button header-left-link --text-medium"
             onClick={handleChevronToggle}
-            aria-label="Opciones de perfil"
+            aria-label={t('actions.profileOptions')}
           >
             [ + ]
           </button>
@@ -560,6 +562,8 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             />
           )}
         </div>
+
+        <LanguageSwitcher className="header-lang-switcher" />
       </div>
 
       {showFullScreenSearch && (

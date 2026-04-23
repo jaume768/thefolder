@@ -1,0 +1,11 @@
+{
+  "title": "Industry",
+  "subtitle": "Fashion industry directory. Find companies and profiles by country, city and category. Want to appear here? Write to us at info@thefolder.es.",
+  "searchPlaceholder": "Search by name, city, country or category…",
+  "errorLoad": "Could not load industry profiles. Check the /api/industry endpoint.",
+  "filters": {
+    "country": "Country",
+    "city": "City",
+    "category": "Category"
+  }
+}

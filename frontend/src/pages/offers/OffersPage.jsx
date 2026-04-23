@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaSearch, FaChevronDown } from 'react-icons/fa';
 import { MdTune } from 'react-icons/md';
 import Draggable from 'react-draggable';
@@ -10,6 +11,7 @@ import '../../components/controlPanel/css/explorer.css';
 import { clImg } from '../../utils/optimizeImage';
 
 const Offers = () => {
+    const { t, i18n } = useTranslation('offers');
     const navigate = useNavigate();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ const Offers = () => {
                 setUniqueCountries([...new Set(sorted.map(o => o.country).filter(Boolean))]);
                 setUniqueCities([...new Set(sorted.map(o => o.city).filter(Boolean))]);
             } catch (e) {
-                setError('No se pudieron cargar las ofertas.');
+                setError(t('error'));
             } finally {
                 setLoading(false);
             }
@@ -159,15 +161,33 @@ const Offers = () => {
         }
     }, [filters.jobType]);
 
+    const getJobTypeLabel = (val) => {
+        switch (val) {
+            case 'Prácticas': return t('jobType.internship');
+            case 'Tiempo completo': return t('jobType.fullTime');
+            case 'Tiempo parcial': return t('jobType.partTime');
+            default: return val;
+        }
+    };
+
+    const getLocationTypeLabel = (val) => {
+        switch (val) {
+            case 'Presencial': return t('locationType.onsite');
+            case 'Remoto': return t('locationType.remote');
+            case 'Híbrido': return t('locationType.hybrid');
+            default: return val;
+        }
+    };
+
     const formatDate = dateString =>
-        new Date(dateString).toLocaleDateString('es-ES', {
+        new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'es-ES', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
         });
 
-    if (loading) return <div className="loading-indicator">Cargando ofertas...</div>;
-    if (error) return <div className="error">{error}</div>;
+    if (loading) return <div className="loading-indicator">{t('loading')}</div>;
+    if (error) return <div className="error">{t('error')}</div>;
 
     return (
         <div className="offers-page-container">
@@ -198,11 +218,11 @@ const Offers = () => {
             <div className={`offers-filters-panel ${showFilters ? 'show' : ''}`}>
                 <div className="offers-filters-container">
                     <div className="offers-filters-header">
-                        <h3>Filtros</h3>
+                        <h3>{t('filters.title')}</h3>
                         <button
                             className="offers-filters-close"
                             onClick={() => setShowFilters(false)}
-                            title="Cerrar filtros"
+                            title={t('filters.close')}
                         >
                             &times;
                         </button>
@@ -211,7 +231,7 @@ const Offers = () => {
                     <div className="filter-search">
                         <input
                             type="text"
-                            placeholder="Buscador"
+                            placeholder={t('filters.searchPlaceholder')}
                             value={filters.search}
                             onChange={e => handleFilterChange('search', e.target.value)}
                         />
@@ -220,7 +240,7 @@ const Offers = () => {
                     <div className="filter-input">
                         <input
                             list="countries"
-                            placeholder="País"
+                            placeholder={t('filters.countryPlaceholder')}
                             value={filters.country}
                             onChange={e => handleFilterChange('country', e.target.value)}
                         />
@@ -232,7 +252,7 @@ const Offers = () => {
                     <div className="filter-input">
                         <input
                             list="cities"
-                            placeholder="Ciudad"
+                            placeholder={t('filters.cityPlaceholder')}
                             value={filters.city}
                             onChange={e => handleFilterChange('city', e.target.value)}
                         />
@@ -243,7 +263,7 @@ const Offers = () => {
 
                     <div className="filter-input">
                         <input
-                            placeholder="Nombre de empresa"
+                            placeholder={t('filters.companyPlaceholder')}
                             value={filters.companyName}
                             onChange={e => handleFilterChange('companyName', e.target.value)}
                         />
@@ -254,10 +274,10 @@ const Offers = () => {
                             value={filters.jobType}
                             onChange={e => handleFilterChange('jobType', e.target.value)}
                         >
-                            <option value="all">Tipo de contrato</option>
-                            <option value="Prácticas">Prácticas</option>
-                            <option value="Tiempo completo">Tiempo completo</option>
-                            <option value="Tiempo parcial">Tiempo parcial</option>
+                            <option value="all">{t('filters.jobTypeLabel')}</option>
+                            <option value="Prácticas">{t('filters.jobTypeInternship')}</option>
+                            <option value="Tiempo completo">{t('filters.jobTypeFullTime')}</option>
+                            <option value="Tiempo parcial">{t('filters.jobTypePartTime')}</option>
                         </select>
                         <FaChevronDown className="chevron-icon" />
                     </div>
@@ -267,10 +287,10 @@ const Offers = () => {
                             value={filters.locationType}
                             onChange={e => handleFilterChange('locationType', e.target.value)}
                         >
-                            <option value="">Formato de trabajo</option>
-                            <option value="Presencial">Presencial</option>
-                            <option value="Remoto">Remoto</option>
-                            <option value="Híbrido">Híbrido</option>
+                            <option value="">{t('filters.locationTypeLabel')}</option>
+                            <option value="Presencial">{t('filters.locationOnsite')}</option>
+                            <option value="Remoto">{t('filters.locationRemote')}</option>
+                            <option value="Híbrido">{t('filters.locationHybrid')}</option>
                         </select>
                         <FaChevronDown className="chevron-icon" />
                     </div>
@@ -282,14 +302,14 @@ const Offers = () => {
                             checked={filters.onlyInternships}
                             onChange={e => handleFilterChange('onlyInternships', e.target.checked)}
                         />
-                        <label htmlFor="practicas">Prácticas</label>
+                        <label htmlFor="practicas">{t('filters.onlyInternships')}</label>
                     </div>
 
                     <button className="apply-filters-btn" onClick={applyFilters}>
-                        Aplicar filtros
+                        {t('filters.apply')}
                     </button>
                     <button className="clear-filters-btn" onClick={clearAllFilters}>
-                        Borrar filtros
+                        {t('filters.clear')}
                     </button>
                 </div>
             </div>
@@ -325,7 +345,7 @@ const Offers = () => {
                 >
                     <div className="explorer-mobile-filters-content">
                         <div className="explorer-mobile-filters-header">
-                            <h3>Filtros</h3>
+                            <h3>{t('filters.title')}</h3>
                             <button
                                 className="explorer-mobile-filters-close"
                                 onClick={() => setShowMobileFilters(false)}
@@ -338,7 +358,7 @@ const Offers = () => {
                                 <div className="explorer-filter-search">
                                     <input
                                         type="text"
-                                        placeholder="Buscador"
+                                        placeholder={t('filters.searchPlaceholder')}
                                         value={filters.search}
                                         onChange={e => handleFilterChange('search', e.target.value)}
                                     />
@@ -348,7 +368,7 @@ const Offers = () => {
                                         value={filters.country}
                                         onChange={e => handleFilterChange('country', e.target.value)}
                                     >
-                                        <option value="" disabled>País</option>
+                                        <option value="" disabled>{t('filters.countryPlaceholder')}</option>
                                         {uniqueCountries.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>
@@ -357,14 +377,14 @@ const Offers = () => {
                                         value={filters.city}
                                         onChange={e => handleFilterChange('city', e.target.value)}
                                     >
-                                        <option value="" disabled>Ciudad</option>
+                                        <option value="" disabled>{t('filters.cityPlaceholder')}</option>
                                         {uniqueCities.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>
                                 <div className="explorer-filter-search">
                                     <input
                                         type="text"
-                                        placeholder="Nombre de empresa"
+                                        placeholder={t('filters.companyPlaceholder')}
                                         value={filters.companyName}
                                         onChange={e => handleFilterChange('companyName', e.target.value)}
                                     />
@@ -374,10 +394,10 @@ const Offers = () => {
                                         value={filters.jobType}
                                         onChange={e => handleFilterChange('jobType', e.target.value)}
                                     >
-                                        <option value="all">Tipo de contrato</option>
-                                        <option value="Prácticas">Prácticas</option>
-                                        <option value="Tiempo completo">Tiempo completo</option>
-                                        <option value="Tiempo parcial">Tiempo parcial</option>
+                                        <option value="all">{t('filters.jobTypeLabel')}</option>
+                                        <option value="Prácticas">{t('filters.jobTypeInternship')}</option>
+                                        <option value="Tiempo completo">{t('filters.jobTypeFullTime')}</option>
+                                        <option value="Tiempo parcial">{t('filters.jobTypePartTime')}</option>
                                     </select>
                                 </div>
                                 <div className="explorer-filter-select">
@@ -385,10 +405,10 @@ const Offers = () => {
                                         value={filters.locationType}
                                         onChange={e => handleFilterChange('locationType', e.target.value)}
                                     >
-                                        <option value="">Formato de trabajo</option>
-                                        <option value="Presencial">Presencial</option>
-                                        <option value="Remoto">Remoto</option>
-                                        <option value="Híbrido">Híbrido</option>
+                                        <option value="">{t('filters.locationTypeLabel')}</option>
+                                        <option value="Presencial">{t('filters.locationOnsite')}</option>
+                                        <option value="Remoto">{t('filters.locationRemote')}</option>
+                                        <option value="Híbrido">{t('filters.locationHybrid')}</option>
                                     </select>
                                 </div>
                                 <div className="filter-checkbox">
@@ -398,20 +418,20 @@ const Offers = () => {
                                         checked={filters.onlyInternships}
                                         onChange={e => handleFilterChange('onlyInternships', e.target.checked)}
                                     />
-                                    <label htmlFor="practicas">Prácticas</label>
+                                    <label htmlFor="practicas">{t('filters.onlyInternships')}</label>
                                 </div>
                             </div>
                             <button
                                 className="explorer-apply-filters-btn"
                                 onClick={() => { applyFilters(); setShowMobileFilters(false); }}
                             >
-                                Aplicar filtros
+                                {t('filters.apply')}
                             </button>
                             <button
                                 className="explorer-clear-filters-btn"
                                 onClick={() => { clearAllFilters(); setShowMobileFilters(false); }}
                             >
-                                Borrar filtros
+                                {t('filters.clear')}
                             </button>
                         </div>
                     </div>
@@ -420,9 +440,9 @@ const Offers = () => {
 
             {/* ------------------ CONTENIDO PRINCIPAL ------------------ */}
             <div className="offers-main-content">
-                <h1 className="page-title">Ofertas de empleo</h1>
+                <h1 className="page-title">{t('page.title')}</h1>
                 <p className="page-description">
-                    Descubre los nuevos talentos de la industria de la moda. <br /> Usa los filtros para encontrar la oferta que más te interese.
+                    {t('page.description')}
                 </p>
 
                 <div className="explorer-tabs-container">
@@ -439,7 +459,7 @@ const Offers = () => {
                                 }
                             }}
                         >
-                            Todas las ofertas
+                            {t('filters.jobTypeAll')}
                         </button>
                         <button
                             className={`user-extern-tab ${activeTab === 'fulltime' ? 'active' : ''}`}
@@ -453,7 +473,7 @@ const Offers = () => {
                                 }
                             }}
                         >
-                            Tiempo completo
+                            {t('filters.jobTypeFullTime')}
                         </button>
                         <button
                             className={`user-extern-tab ${activeTab === 'parttime' ? 'active' : ''}`}
@@ -467,7 +487,7 @@ const Offers = () => {
                                 }
                             }}
                         >
-                            Tiempo parcial
+                            {t('filters.jobTypePartTime')}
                         </button>
                         <button
                             className={`user-extern-tab ${activeTab === 'internship' ? 'active' : ''}`}
@@ -481,7 +501,7 @@ const Offers = () => {
                                 }
                             }}
                         >
-                            Prácticas
+                            {t('filters.jobTypeInternship')}
                         </button>
                     </div>
                 </div>
@@ -489,7 +509,7 @@ const Offers = () => {
                 <div className="offers-grid">
                     {filteredOffers.length === 0 ? (
                         <div className="loading-indicator">
-                            No se encontraron ofertas con los filtros seleccionados
+                            {t('page.noResults')}
                         </div>
                     ) : (
                         filteredOffers.map(o => (
@@ -508,12 +528,12 @@ const Offers = () => {
                                     <div className="offer-card-user">{o.publisherName || o.companyName}</div>
                                     <h2 className="offer-card-title">{o.position}</h2>
                                     <div className="offer-card-meta">
-                                        {o.city} <span>│</span> {o.jobType} <span>│</span> {o.locationType}
+                                        {o.city} <span>│</span> {getJobTypeLabel(o.jobType)} <span>│</span> {getLocationTypeLabel(o.locationType)}
                                     </div>
                                     <div className="offer-card-date">{formatDate(o.publicationDate)}</div>
                                 </div>
                                 <div className={`offer-card-badge ${o.jobType === 'Prácticas' ? 'badge-internship' : o.jobType === 'Tiempo completo' ? 'badge-fulltime' : o.jobType === 'Tiempo parcial' ? 'badge-parttime' : 'badge-other'}`}>
-                                    {o.jobType}
+                                    {getJobTypeLabel(o.jobType)}
                                 </div>
                             </article>
                         ))

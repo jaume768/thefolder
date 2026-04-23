@@ -1,0 +1,43 @@
+{
+  "title": "Creativos",
+  "subtitle": "Encuentra o descubre talento. Diseñadores, estilistas, fotógraf@s y más. Filtra a tu medida.",
+  "loading": "Cargando...",
+  "loadingMore": "Cargando más creativos...",
+  "filtering": "Filtrando...",
+  "errorLoad": "No se pudieron cargar los creativos. Por favor, recarga la página o inténtalo de nuevo más tarde.",
+  "noResults": "No se encontraron creativos con los filtros aplicados.",
+  "noCreativesInCountry": "Sin creativos en este país",
+  "others": "Otros",
+  "filters": {
+    "title": "Filtros",
+    "experience": "Experiencia",
+    "specialty": "Especialidad del creativo",
+    "location": "Ubicación",
+    "clear": "Borrar filtros",
+    "apply": "Filtrar"
+  },
+  "levels": {
+    "1": "Estudiante",
+    "1_desc": "Buscando mi primera oportunidad",
+    "2": "Graduado",
+    "2_desc": "Listo para nuevos proyectos",
+    "3": "Freelance",
+    "3_desc": "Trabajando por cuenta propia",
+    "4": "Profesional",
+    "4_desc": "Con experiencia en la industria"
+  },
+  "cta": {
+    "title": "¿Quieres verte aquí?",
+    "body": "Publica tu primer proyecto y forma parte del directorio de creativos.",
+    "publish": "Publicar proyecto",
+    "dismiss": "Ahora no"
+  },
+  "guest": {
+    "text": "Únete para descubrir todos los creativos",
+    "register": "Crear cuenta gratis"
+  },
+  "card": {
+    "coverLabel": "Portada del creativo",
+    "roleFallback": "Creative"
+  }
+}

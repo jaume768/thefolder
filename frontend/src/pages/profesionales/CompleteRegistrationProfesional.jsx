@@ -1,24 +1,26 @@
 // CompleteRegistrationProfesional.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../css/complete-registration.css';
 
 const CompleteRegistrationProfesional = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('onboarding');
     const [professionalType, setProfessionalType] = useState(null);
     const [error, setError] = useState(""); // Estado para mensaje de error
 
     const options = [
-        "Una marca pequeña",
-        "Una empresa",
-        "Una agencia/scout",
-        "Una institución educativa",
-        "Otro"
+        t('profesional.roles.brand'),
+        t('profesional.roles.company'),
+        t('profesional.roles.agency'),
+        t('profesional.roles.institution'),
+        t('profesional.roles.other')
     ];
 
     const handleNext = async () => {
         if (!professionalType) {
-            setError("Por favor, selecciona tu rol.");
+            setError(t('profesional.errors.selectRole'));
             return;
         }
         setError("");
@@ -42,10 +44,10 @@ const CompleteRegistrationProfesional = () => {
                     navigate('/profesional/registro/datos-personales');
                 }
             } else {
-                setError(data.error || "Ha ocurrido un error.");
+                setError(data.error || t('profesional.errors.genericError'));
             }
         } catch (error) {
-            setError("Error en la conexión o en el servidor.");
+            setError(t('profesional.errors.connection'));
         }
     };
 
@@ -56,9 +58,9 @@ const CompleteRegistrationProfesional = () => {
     return (
         <div className="complete-registration-container">
             <div className="contenedor-registro-objetivo">
-                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>paso 1</p>
-                <p className="question">¿Cuál es tu rol?</p>
-                <h2 className="titulo">Soy el representante de...</h2>
+                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>{t('profesional.step', { n: 1 })}</p>
+                <p className="question">{t('profesional.roleQuestion')}</p>
+                <h2 className="titulo">{t('profesional.roleTitle')}</h2>
 
                 {/* Mensaje de error */}
                 {error && <p className="error-message">{error}</p>}
@@ -86,10 +88,10 @@ const CompleteRegistrationProfesional = () => {
                         onClick={handleBack}
                         style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer' }}
                     >
-                        &#8592; Volver atrás
+                        &#8592; {t('common.back')}
                     </button>
                     <button className="next-button" onClick={handleNext}>
-                        Siguiente
+                        {t('common.next')}
                     </button>
                 </div>
                 <div className="pagination-dots" style={{ marginTop: '1rem' }}>

@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/Legal.css';
 
 const Cookies = () => {
+    const { t } = useTranslation('legal');
     const navigate = useNavigate();
 
     const goBack = () => {
@@ -13,8 +15,8 @@ const Cookies = () => {
     return (
         <div className="legal-container">
             <div className="legal-content">
-                <h1 className="legal-title">Política de Cookies</h1>
-                <p className="legal-version">Actualizado: Abril de 2026 · Versión: 2.0</p>
+                <h1 className="legal-title">{t('cookies.title')}</h1>
+                <p className="legal-version">{t('cookies.version')}</p>
 
                 <p className="legal-paragraph">
                     En THEFOLDER utilizamos un número mínimo de elementos de almacenamiento local, todos ellos estrictamente necesarios para el funcionamiento de la plataforma. No utilizamos cookies de seguimiento, publicidad ni analíticas de terceros.

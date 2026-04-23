@@ -9,6 +9,7 @@ const { validateUsername, generateProvisionalUsername } = require('../utils/user
 const { validatePassword } = require('../utils/passwordValidation');
 
 const SibApiV3Sdk = require('sib-api-v3-sdk');
+const { getEmailTemplate, resolveLocaleFromReq } = require('../utils/emailTemplates');
 const defaultClient = SibApiV3Sdk.ApiClient.instance;
 defaultClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
@@ -19,15 +20,16 @@ const generateVerificationCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-const sendResetEmail = (email, resetCode) => {
+const sendResetEmail = (email, resetCode, locale = 'es') => {
     const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
     const sender = { email: process.env.SENDER_EMAIL || "noreply@thefolder.es", name: process.env.SENDER_NAME || "THEFOLDER" };
     const receivers = [{ email }];
+    const { subject, html } = getEmailTemplate('resetPassword', locale, { code: resetCode });
     tranEmailApi.sendTransacEmail({
         sender,
         to: receivers,
-        subject: "Restablece tu contraseña",
-        htmlContent: `<p>Tu código para restablecer la contraseña es: <strong>${resetCode}</strong></p>`,
+        subject,
+        htmlContent: html,
     })
         .then((data) => {
         })
@@ -50,7 +52,7 @@ exports.forgotPassword = async (req, res) => {
         expires: Date.now() + 3600000
     };
 
-    sendResetEmail(email, resetCode);
+    sendResetEmail(email, resetCode, resolveLocaleFromReq(req));
     return res.status(200).json({ message: "Email enviado con instrucciones para restablecer la contraseña." });
 };
 
@@ -103,15 +105,16 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-const sendVerificationEmail = (email, verificationCode) => {
+const sendVerificationEmail = (email, verificationCode, locale = 'es') => {
     const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
     const sender = { email: process.env.SENDER_EMAIL || "noreply@thefolder.es", name: process.env.SENDER_NAME || "THEFOLDER" };
     const receivers = [{ email }];
+    const { subject, html } = getEmailTemplate('verificationCode', locale, { code: verificationCode });
     tranEmailApi.sendTransacEmail({
         sender,
         to: receivers,
-        subject: "Tu código de verificación",
-        htmlContent: `<p>Tu código de verificación es: <strong>${verificationCode}</strong></p>`,
+        subject,
+        htmlContent: html,
     })
         .then((data) => {
         })
@@ -121,6 +124,7 @@ const sendVerificationEmail = (email, verificationCode) => {
 
 exports.sendVerificationCodePreRegistration = async (req, res) => {
   const { email, password, confirmPassword, acceptedTerms } = req.body;
+  const locale = resolveLocaleFromReq(req);
 
   if (!email || !password || !confirmPassword || !acceptedTerms) {
     return res.status(400).json({ error: "Completa todos los campos." });
@@ -150,7 +154,7 @@ exports.sendVerificationCodePreRegistration = async (req, res) => {
     expires: Date.now() + 3600000
   };
 
-  sendVerificationEmail(email, verificationCode);
+  sendVerificationEmail(email, verificationCode, locale);
 
   return res.status(200).json({ message: "Código de verificación enviado." });
 };
@@ -206,6 +210,7 @@ exports.verifyCodePreRegistration = async (req, res) => {
 
 exports.resendCodePreRegistration = async (req, res) => {
     const { email } = req.body;
+    const locale = resolveLocaleFromReq(req);
     const pending = pendingRegistrations[email];
     if (!pending) {
         return res.status(400).json({ error: "No hay registro pendiente para este email." });
@@ -213,7 +218,7 @@ exports.resendCodePreRegistration = async (req, res) => {
     const newCode = generateVerificationCode();
     pendingRegistrations[email].code = newCode;
     pendingRegistrations[email].expires = Date.now() + 3600000;
-    sendVerificationEmail(email, newCode);
+    sendVerificationEmail(email, newCode, locale);
     return res.status(200).json({ message: "Nuevo código enviado. Revise bandeja de correo." });
 };
 

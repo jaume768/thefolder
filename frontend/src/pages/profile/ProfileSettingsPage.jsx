@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import "../../components/controlPanel/css/UserProfileExtern.css";
 
@@ -8,6 +9,7 @@ const normalizeUsername = (value) =>
   String(value || '').replace(/\s+/g, '').toLowerCase();
 
 export default function ProfileSettingsPage() {
+  const { t } = useTranslation("profile");
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -26,12 +28,12 @@ export default function ProfileSettingsPage() {
   const usernameLocalError = useMemo(() => {
     const v = newUsername.trim();
     if (!v) return '';
-    if (v.length > 20) return 'Máximo 20 caracteres.';
-    if (!/^[a-z0-9-]+$/.test(v)) return 'Solo letras minúsculas, números y guiones.';
-    if (v.startsWith('-') || v.endsWith('-')) return 'No puede empezar ni acabar con guión.';
-    if (v.includes('--')) return 'No puede contener guión doble.';
+    if (v.length > 20) return t('settings.validation.max20Chars');
+    if (!/^[a-z0-9-]+$/.test(v)) return t('settings.validation.lowercaseNumbersHyphens');
+    if (v.startsWith('-') || v.endsWith('-')) return t('settings.validation.noStartEndHyphen');
+    if (v.includes('--')) return t('settings.validation.noDoubleHyphen');
     return '';
-  }, [newUsername]);
+  }, [newUsername, t]);
 
   // Contraseña
   const [currentPassword, setCurrentPassword] = useState("");
@@ -126,11 +128,11 @@ export default function ProfileSettingsPage() {
     setUsernameMsg({ type: "", text: "" });
     const v = newUsername.trim();
     if (!v || usernameLocalError) {
-      setUsernameMsg({ type: "error", text: usernameLocalError || "Introduce un nombre de usuario válido." });
+      setUsernameMsg({ type: "error", text: usernameLocalError || t("settings.validation.invalidUsername") });
       return;
     }
     if (usernameTaken) {
-      setUsernameMsg({ type: "error", text: "Ese nombre ya está en uso." });
+      setUsernameMsg({ type: "error", text: t("settings.validation.usernameTaken") });
       return;
     }
     try {
@@ -141,10 +143,10 @@ export default function ProfileSettingsPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUserData(prev => ({ ...prev, username: res.data.user?.username || v }));
-      setUsernameMsg({ type: "ok", text: "Nombre de usuario actualizado. Recarga para visitar tu perfil." });
+      setUsernameMsg({ type: "ok", text: t("settings.usernameUpdated") });
       setTimeout(() => cancelSection(), 1500);
     } catch (e) {
-      setUsernameMsg({ type: "error", text: e?.response?.data?.error || "Error al cambiar el nombre de usuario." });
+      setUsernameMsg({ type: "error", text: e?.response?.data?.error || t("settings.usernameError") });
     }
   };
 
@@ -159,11 +161,11 @@ export default function ProfileSettingsPage() {
     setPasswordMsg({ type: "", text: "" });
 
     if (!newPassword || newPassword.length < 6) {
-      setPasswordMsg({ type: "error", text: "La nueva contraseña debe tener al menos 6 caracteres." });
+      setPasswordMsg({ type: "error", text: t("settings.passwordMinLength") });
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordMsg({ type: "error", text: "Las contraseñas no coinciden." });
+      setPasswordMsg({ type: "error", text: t("settings.passwordsDontMatch") });
       return;
     }
 
@@ -175,10 +177,10 @@ export default function ProfileSettingsPage() {
         { currentPassword, newPassword, confirmPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setPasswordMsg({ type: "ok", text: "Contraseña actualizada correctamente." });
+      setPasswordMsg({ type: "ok", text: t("settings.passwordUpdated") });
       setTimeout(() => cancelSection(), 1500);
     } catch (e) {
-      setPasswordMsg({ type: "error", text: e?.response?.data?.error || "Error al cambiar la contraseña." });
+      setPasswordMsg({ type: "error", text: e?.response?.data?.error || t("settings.passwordError") });
     }
   };
 
@@ -187,11 +189,11 @@ export default function ProfileSettingsPage() {
     setEmailMsg({ type: "", text: "" });
 
     if (!newEmail || !newEmail.includes("@")) {
-      setEmailMsg({ type: "error", text: "Introduce un email válido." });
+      setEmailMsg({ type: "error", text: t("settings.emailInvalid") });
       return;
     }
     if (newEmail.toLowerCase() === (userData?.email || "").toLowerCase()) {
-      setEmailMsg({ type: "error", text: "El email nuevo debe ser diferente al actual." });
+      setEmailMsg({ type: "error", text: t("settings.emailMustDiffer") });
       return;
     }
 
@@ -204,10 +206,10 @@ export default function ProfileSettingsPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUserData(prev => ({ ...prev, email: res.data.email }));
-      setEmailMsg({ type: "ok", text: "Email actualizado correctamente." });
+      setEmailMsg({ type: "ok", text: t("settings.emailUpdated") });
       setTimeout(() => cancelSection(), 1500);
     } catch (e) {
-      setEmailMsg({ type: "error", text: e?.response?.data?.error || "Error al cambiar el email." });
+      setEmailMsg({ type: "error", text: e?.response?.data?.error || t("settings.emailError") });
     }
   };
 
@@ -225,25 +227,25 @@ export default function ProfileSettingsPage() {
       localStorage.removeItem("userRole");
       navigate("/");
     } catch (e) {
-      setDeleteError("Ha ocurrido un error al eliminar la cuenta.");
+      setDeleteError(t("settings.deleteError"));
       setIsDeleting(false);
     }
   };
 
   // ── Render ───────────────────────────────────────────────────────────────
-  if (loading) return <div className="loading-indicator">Cargando...</div>;
-  if (!userData) return <div className="edit-profile-wrapper">No hay sesión.</div>;
+  if (loading) return <div className="loading-indicator">{t("settings.loading")}</div>;
+  if (!userData) return <div className="edit-profile-wrapper">{t("settings.noSession")}</div>;
 
   return (
     <div className="edit-profile-wrapper">
 
       <p className="creatives-subtitle --show-mobile">
-        Gestiona tu cuenta, cambia tu contraseña, cierra sesión o elimina tu perfil.
+        {t("settings.subtitle")}
       </p>
 
       <div className="creatives-hero-inner miPerfil-hero">
         <div className="guardados-header miPerfil-header">
-          <h1 className="centerTitle guardados miPerfil-title">CONFIGURACIÓN</h1>
+          <h1 className="centerTitle guardados miPerfil-title">{t("settings.title")}</h1>
         </div>
       </div>
 
@@ -254,7 +256,7 @@ export default function ProfileSettingsPage() {
           <div className="ux-form-block">
             <div className="ux-settings-row">
               <div className="ux-settings-row-info">
-                <label className="ux-form-label">Nombre de usuario</label>
+                <label className="ux-form-label">{t("settings.username")}</label>
                 <p className="ux-settings-current-value">@{userData?.username || "—"}</p>
               </div>
 
@@ -264,7 +266,7 @@ export default function ProfileSettingsPage() {
                   className="ux-link-btn"
                   onClick={() => openSection("username")}
                 >
-                  Cambiar
+                  {t("settings.change")}
                 </button>
               )}
             </div>
@@ -272,7 +274,7 @@ export default function ProfileSettingsPage() {
             {editingSection === "username" && (
               <div className="ux-settings-edit-area">
                 <p className="ux-form-hint" style={{ marginBottom: 10 }}>
-                  Solo letras minúsculas, números y guiones. Máximo 20 caracteres.
+                  {t("settings.usernameHint")}
                 </p>
 
                 {/* Input estilo registro: thefolder.es/username */}
@@ -288,7 +290,7 @@ export default function ProfileSettingsPage() {
                     autoCorrect="off"
                     autoCapitalize="none"
                     spellCheck={false}
-                    placeholder={userData?.username || "mi-usuario"}
+                    placeholder={userData?.username || t("settings.usernamePlaceholder")}
                   />
                   <span
                     className={[
@@ -306,7 +308,7 @@ export default function ProfileSettingsPage() {
                   <p className="ux-msg-error">{usernameLocalError}</p>
                 )}
                 {usernameTaken && !usernameChecking && !usernameLocalError && (
-                  <p className="ux-msg-error">Ese nombre ya está en uso. Prueba con otro.</p>
+                  <p className="ux-msg-error">{t("settings.usernameTaken")}</p>
                 )}
                 {usernameMsg.text && (
                   <p className={usernameMsg.type === "ok" ? "ux-msg-ok" : "ux-msg-error"}>
@@ -321,10 +323,10 @@ export default function ProfileSettingsPage() {
                     onClick={handleChangeUsername}
                     disabled={!newUsername || !!usernameLocalError || usernameChecking || usernameTaken}
                   >
-                    Guardar nombre de usuario
+                    {t("settings.saveUsername")}
                   </button>
                   <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
-                    Cancelar
+                    {t("settings.cancel")}
                   </button>
                 </div>
               </div>
@@ -335,7 +337,7 @@ export default function ProfileSettingsPage() {
           <div className="ux-form-block">
             <div className="ux-settings-row">
               <div className="ux-settings-row-info">
-                <label className="ux-form-label">Email</label>
+                <label className="ux-form-label">{t("settings.email")}</label>
                 <p className="ux-settings-current-value">{userData?.email || "—"}</p>
               </div>
 
@@ -345,7 +347,7 @@ export default function ProfileSettingsPage() {
                   className="ux-link-btn"
                   onClick={() => openSection("email")}
                 >
-                  Cambiar
+                  {t("settings.change")}
                 </button>
               )}
             </div>
@@ -354,14 +356,14 @@ export default function ProfileSettingsPage() {
               <div className="ux-settings-edit-area">
                 <div className="ux-form-column" style={{ gridTemplateColumns: "1fr" }}>
                   <div className="ux-form-field">
-                    <label className="ux-form-label" htmlFor="newEmail">Nuevo email</label>
+                    <label className="ux-form-label" htmlFor="newEmail">{t("settings.newEmail")}</label>
                     <input
                       id="newEmail"
                       type="email"
                       className="ux-input"
                       value={newEmail}
                       onChange={e => setNewEmail(e.target.value)}
-                      placeholder="nuevo@email.com"
+                      placeholder={t("settings.emailPlaceholder")}
                       autoComplete="email"
                     />
                   </div>
@@ -369,7 +371,7 @@ export default function ProfileSettingsPage() {
                   {!isGoogleUser && (
                     <div className="ux-form-field">
                       <label className="ux-form-label" htmlFor="emailPassword">
-                        Confirma tu contraseña actual
+                        {t("settings.confirmCurrentPassword")}
                       </label>
                       <input
                         id="emailPassword"
@@ -377,7 +379,7 @@ export default function ProfileSettingsPage() {
                         className="ux-input"
                         value={emailPassword}
                         onChange={e => setEmailPassword(e.target.value)}
-                        placeholder="Contraseña actual"
+                        placeholder={t("settings.currentPasswordPlaceholder")}
                         autoComplete="current-password"
                       />
                     </div>
@@ -392,10 +394,10 @@ export default function ProfileSettingsPage() {
 
                 <div className="ux-settings-actions">
                   <button type="button" className="ux-btn-primary" onClick={handleChangeEmail}>
-                    Guardar email
+                    {t("settings.saveEmail")}
                   </button>
                   <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
-                    Cancelar
+                    {t("settings.cancel")}
                   </button>
                 </div>
               </div>
@@ -406,7 +408,7 @@ export default function ProfileSettingsPage() {
           <div className="ux-form-block">
             <div className="ux-settings-row">
               <div className="ux-settings-row-info">
-                <label className="ux-form-label">Contraseña</label>
+                <label className="ux-form-label">{t("settings.password")}</label>
                 <p className="ux-settings-current-value">••••••••</p>
               </div>
 
@@ -416,7 +418,7 @@ export default function ProfileSettingsPage() {
                   className="ux-link-btn"
                   onClick={() => openSection("password")}
                 >
-                  Cambiar
+                  {t("settings.change")}
                 </button>
               )}
             </div>
@@ -426,41 +428,41 @@ export default function ProfileSettingsPage() {
                 <div className="ux-form-column" style={{ gridTemplateColumns: "1fr" }}>
                   {!isGoogleUser && (
                     <div className="ux-form-field">
-                      <label className="ux-form-label" htmlFor="currentPwd">Contraseña actual</label>
+                      <label className="ux-form-label" htmlFor="currentPwd">{t("settings.currentPassword")}</label>
                       <input
                         id="currentPwd"
                         type="password"
                         className="ux-input"
                         value={currentPassword}
                         onChange={e => setCurrentPassword(e.target.value)}
-                        placeholder="Contraseña actual"
+                        placeholder={t("settings.currentPasswordPlaceholder")}
                         autoComplete="current-password"
                       />
                     </div>
                   )}
 
                   <div className="ux-form-field">
-                    <label className="ux-form-label" htmlFor="newPwd">Nueva contraseña</label>
+                    <label className="ux-form-label" htmlFor="newPwd">{t("settings.newPassword")}</label>
                     <input
                       id="newPwd"
                       type="password"
                       className="ux-input"
                       value={newPassword}
                       onChange={e => setNewPassword(e.target.value)}
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder={t("settings.newPasswordPlaceholder")}
                       autoComplete="new-password"
                     />
                   </div>
 
                   <div className="ux-form-field">
-                    <label className="ux-form-label" htmlFor="confirmPwd">Confirmar nueva contraseña</label>
+                    <label className="ux-form-label" htmlFor="confirmPwd">{t("settings.confirmNewPassword")}</label>
                     <input
                       id="confirmPwd"
                       type="password"
                       className="ux-input"
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
-                      placeholder="Repite la contraseña"
+                      placeholder={t("settings.confirmPasswordPlaceholder")}
                       autoComplete="new-password"
                     />
                   </div>
@@ -474,10 +476,10 @@ export default function ProfileSettingsPage() {
 
                 <div className="ux-settings-actions">
                   <button type="button" className="ux-btn-primary" onClick={handleChangePassword}>
-                    Guardar contraseña
+                    {t("settings.savePassword")}
                   </button>
                   <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
-                    Cancelar
+                    {t("settings.cancel")}
                   </button>
                 </div>
               </div>
@@ -488,11 +490,11 @@ export default function ProfileSettingsPage() {
           <div className="ux-form-block">
             <div className="ux-settings-row">
               <div className="ux-settings-row-info">
-                <label className="ux-form-label">Sesión</label>
-                <p className="ux-settings-current-value">Conectado como {userData?.email}</p>
+                <label className="ux-form-label">{t("settings.session")}</label>
+                <p className="ux-settings-current-value">{t("settings.connectedAs", { email: userData?.email })}</p>
               </div>
               <button type="button" className="ux-link-btn" onClick={handleLogout}>
-                Cerrar sesión
+                {t("settings.logout")}
               </button>
             </div>
           </div>
@@ -501,9 +503,9 @@ export default function ProfileSettingsPage() {
           <div className="ux-form-block">
             <div className="ux-settings-row">
               <div className="ux-settings-row-info">
-                <label className="ux-form-label">Eliminar cuenta</label>
+                <label className="ux-form-label">{t("settings.deleteAccount")}</label>
                 <p className="ux-settings-current-value">
-                  Esta acción es permanente y no se puede deshacer.
+                  {t("settings.deleteAccountWarning")}
                 </p>
               </div>
               <button
@@ -511,7 +513,7 @@ export default function ProfileSettingsPage() {
                 className="ux-link-btn danger"
                 onClick={() => { setIsDeleteModalOpen(true); setDeleteError(""); }}
               >
-                Eliminar
+                {t("settings.delete")}
               </button>
             </div>
           </div>
@@ -527,22 +529,22 @@ export default function ProfileSettingsPage() {
         >
           <div className="filters-modal-panel ux-delete-modal" onMouseDown={e => e.stopPropagation()}>
             <div className="filters-panel-header">
-              <div className="filters-panel-title">Eliminar cuenta</div>
+              <div className="filters-panel-title">{t("settings.deleteModalTitle")}</div>
               <button
                 type="button"
                 className="filters-panel-close"
                 onClick={() => setIsDeleteModalOpen(false)}
-                aria-label="Cerrar"
+                aria-label={t("settings.close")}
               >
-                <img src="/iconos/close.svg" alt="Cerrar" className="image-icon" />
+                <img src="/iconos/close.svg" alt={t("settings.close")} className="image-icon" />
               </button>
             </div>
 
             <div className="ux-delete-modal-body">
               <p>
-                Al eliminar tu cuenta, todos tus datos, publicaciones y actividad se eliminarán permanentemente.
+                {t("settings.deleteModalBody1")}
               </p>
-              <p><strong>¿Estás segura de que quieres continuar?</strong></p>
+              <p><strong>{t("settings.deleteModalBody2")}</strong></p>
 
               {deleteError && <p className="ux-msg-error">{deleteError}</p>}
 
@@ -553,7 +555,7 @@ export default function ProfileSettingsPage() {
                   onClick={handleDeleteAccount}
                   disabled={isDeleting}
                 >
-                  {isDeleting ? "Eliminando..." : "Sí, eliminar mi cuenta"}
+                  {isDeleting ? t("settings.deleting") : t("settings.deleteConfirm")}
                 </button>
                 <button
                   type="button"
@@ -561,7 +563,7 @@ export default function ProfileSettingsPage() {
                   onClick={() => setIsDeleteModalOpen(false)}
                   disabled={isDeleting}
                 >
-                  Cancelar
+                  {t("settings.deleteCancel")}
                 </button>
               </div>
             </div>

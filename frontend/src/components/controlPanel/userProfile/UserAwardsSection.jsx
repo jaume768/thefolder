@@ -1,9 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
 
-const MONTHS = ['Ene.','Feb.','Mar.','Abr.','May.','Jun.','Jul.','Ago.','Sep.','Oct.','Nov.','Dic.'];
-
 const UserAwardsSection = ({ awards }) => {
+  const { t } = useTranslation('profile');
   if (!awards || awards.length === 0) return null;
 
   const valid = awards.filter((a) => !a.isDraft && (a.name?.trim() || a.issuer?.trim()));
@@ -12,18 +12,23 @@ const UserAwardsSection = ({ awards }) => {
   const formatDate = (month, year) => {
     if (!month && !year) return '';
     if (!month) return String(year);
-    return `${MONTHS[(Number(month) || 1) - 1]} ${year}`;
+    const months = [
+      t('months.jan'), t('months.feb'), t('months.mar'), t('months.apr'),
+      t('months.may'), t('months.jun'), t('months.jul'), t('months.aug'),
+      t('months.sep'), t('months.oct'), t('months.nov'), t('months.dec'),
+    ];
+    return `${months[(Number(month) || 1) - 1]} ${year}`;
   };
 
   const getTypeLabel = (item) => {
     if (!item.type) return '';
-    if (item.type === 'Otro') return item.otherType || 'Otro';
+    if (item.type === 'Otro') return item.otherType || t('sections.noCategories');
     return item.type;
   };
 
   return (
     <section className="user-extern-section">
-      <h2>Reconocimientos y premios</h2>
+      <h2>{t('sections.awards')}</h2>
 
       <div className="experience-list">
         {valid.map((item, idx) => (
@@ -49,7 +54,7 @@ const UserAwardsSection = ({ awards }) => {
                   rel="noopener noreferrer"
                   className="ux-exp-link"
                 >
-                  Ver referencia ↗
+                  {t('sections.viewReference')}
                 </a>
               )}
             </div>

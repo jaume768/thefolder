@@ -1,20 +1,22 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const SpecificationsForm = ({ formData, handleInputChange }) => {
+    const { t } = useTranslation('offers');
     return (
         <div className="create-educational-form-section">
-            <h3>Especificaciones</h3>
+            <h3>{t('create.specifications.title')}</h3>
             
             <div className="create-educational-form-row">
                 <div className="create-educational-form-field">
-                    <label htmlFor="city">Ubicación</label>
+                    <label htmlFor="city">{t('create.specifications.locationLabel')}</label>
                     <input
                         type="text"
                         id="city"
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
-                        placeholder="Ciudad"
+                        placeholder={t('create.specifications.cityPlaceholder')}
                         required
                     />
                 </div>
@@ -26,14 +28,14 @@ const SpecificationsForm = ({ formData, handleInputChange }) => {
                         name="country"
                         value={formData.country}
                         onChange={handleInputChange}
-                        placeholder="País"
+                        placeholder={t('create.specifications.countryPlaceholder')}
                         required
                     />
                 </div>
             </div>
             
             <div className="create-educational-form-field">
-                <label htmlFor="educationType">Tipo de Educación</label>
+                <label htmlFor="educationType">{t('create.specifications.educationTypeLabel')}</label>
                 <select
                     id="educationType"
                     name="educationType"
@@ -41,14 +43,14 @@ const SpecificationsForm = ({ formData, handleInputChange }) => {
                     onChange={handleInputChange}
                     required
                 >
-                    <option value="">Seleccionar...</option>
-                    <option value="Grado">Grado</option>
-                    <option value="Máster">Máster</option>
-                    <option value="FP">FP</option>
-                    <option value="Curso">Curso</option>
-                    <option value="Taller">Taller</option>
-                    <option value="Certificación">Certificación</option>
-                    <option value="Otro">Otro</option>
+                    <option value="">{t('create.specifications.select')}</option>
+                    <option value="Grado">{t('create.specifications.grado')}</option>
+                    <option value="Máster">{t('create.specifications.master')}</option>
+                    <option value="FP">{t('create.specifications.fp')}</option>
+                    <option value="Curso">{t('create.specifications.curso')}</option>
+                    <option value="Taller">{t('create.specifications.taller')}</option>
+                    <option value="Certificación">{t('create.specifications.certificacion')}</option>
+                    <option value="Otro">{t('create.specifications.otro')}</option>
                 </select>
             </div>
         </div>

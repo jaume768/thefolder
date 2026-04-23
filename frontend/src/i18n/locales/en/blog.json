@@ -1,0 +1,26 @@
+{
+  "categories": {
+    "all": "All",
+    "designers": "Designers",
+    "industry": "Industry",
+    "education": "Education",
+    "events": "Events"
+  },
+  "loadingArticles": "Loading articles...",
+  "loadingArticle": "Loading article...",
+  "errorLoadArticles": "Could not load blog articles",
+  "errorLoadArticle": "Could not load article",
+  "errorRetry": "An error occurred while loading. Please try again later.",
+  "title": "Blog",
+  "description": "Explore the latest news, trends and interviews from the fashion world",
+  "noArticles": "No articles found in this category",
+  "categoryFallback": "Category",
+  "anonymous": "Anonymous",
+  "readMore": "Read more",
+  "backToBlog": "Back to blog",
+  "subtitleFallback": "Article subtitle",
+  "wordsBy": "Words by",
+  "close": "Close",
+  "fullscreenPreview": "Full screen preview",
+  "imageNumber": "image {{number}}"
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { optimizeImage } from '../../../utils/optimizeImage';
 
 const DEFAULT_AVATAR = '/multimedia/usuarioDefault.jpg';
@@ -7,6 +8,7 @@ const PhotoStep = ({ photo, onChange, onNext, onBack, submitting, error, onClear
   const fileInputRef = useRef(null);
   const [localError, setLocalError] = useState('');
   const [optimizing, setOptimizing] = useState(false);
+  const { t } = useTranslation('onboarding');
 
   // Liberar object URL al cambiar foto
   useEffect(() => {
@@ -54,9 +56,9 @@ const PhotoStep = ({ photo, onChange, onNext, onBack, submitting, error, onClear
 
   return (
     <div className="ob-center">
-      <h1 className="ob-title">Añade tu foto de perfil</h1>
+      <h1 className="ob-title">{t('photo.title')}</h1>
       <p className="ob-subtitle">
-        Formará parte de tu identidad en la plataforma y se mostrará de forma pública.
+        {t('photo.subtitle')}
       </p>
 
       <div className="ob-photo">
@@ -69,14 +71,14 @@ const PhotoStep = ({ photo, onChange, onNext, onBack, submitting, error, onClear
         >
           <img
             src={currentPreview}
-            alt="Foto de perfil"
+            alt={t('photo.alt')}
             className="ob-photo-img"
           />
         </div>
 
         <div className="ob-photo-actions">
           <button type="button" className="ob-photo-action" onClick={handlePickFile} disabled={optimizing}>
-            ✎ <span>{optimizing ? 'Procesando…' : 'Editar'}</span>
+            ✎ <span>{optimizing ? t('photo.processing') : t('photo.edit')}</span>
           </button>
           <span className="ob-photo-sep">|</span>
           <button
@@ -85,7 +87,7 @@ const PhotoStep = ({ photo, onChange, onNext, onBack, submitting, error, onClear
             onClick={handleRemove}
             disabled={!photo || optimizing}
           >
-            🗑 <span>Borrar</span>
+            🗑 <span>{t('photo.remove')}</span>
           </button>
         </div>
 
@@ -97,17 +99,17 @@ const PhotoStep = ({ photo, onChange, onNext, onBack, submitting, error, onClear
           onChange={handleFileChange}
         />
 
-        <p className="ob-mini-hint ob-mini-hint-center">Puedes cambiarla más adelante.</p>
+        <p className="ob-mini-hint ob-mini-hint-center">{t('photo.hint')}</p>
       </div>
 
       {displayError && <p className="ob-error">{displayError}</p>}
 
       <div className="ob-buttons">
         <button type="button" className="ob-back" onClick={onBack} disabled={submitting || optimizing}>
-          Volver atrás
+          {t('common.back')}
         </button>
         <button className="ob-cta" onClick={onNext} disabled={!photo || submitting || optimizing}>
-          {submitting ? 'GUARDANDO…' : 'FINALIZAR'}
+          {submitting ? t('common.saving') : t('common.finish')}
         </button>
       </div>
 

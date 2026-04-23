@@ -1,0 +1,32 @@
+{
+  "loading": "Cargando...",
+  "errorLoad": "No se pudieron cargar las instituciones. Por favor, recarga la página o inténtalo de nuevo más tarde.",
+  "noResults": "No se encontraron instituciones con los filtros seleccionados.",
+  "title": "Estudiar moda",
+  "subtitle": "Explora opciones para estudiar moda. Un directorio con toda la información necesaria para que descubras tu próxima formación educativa. Filtra por nivel, modalidad y ubicación para encontrar la formación que mejor se adapte a tu perfil creativo.",
+  "filters": {
+    "title": "Filtros",
+    "open": "Abrir filtros",
+    "searchPlaceholder": "Buscador",
+    "country": "País",
+    "city": "Ciudad",
+    "level": "Nivel",
+    "modality": "Modalidad",
+    "category": "Categoría",
+    "centerType": "Tipo de centro",
+    "all": "Todo",
+    "public": "Público",
+    "private": "Privado",
+    "formationType": "Tipo de formación",
+    "apply": "Aplicar filtros",
+    "clear": "Borrar filtros"
+  },
+  "institution": {
+    "inPerson": "Presencial",
+    "hybrid": "Híbrido",
+    "public": "Pública",
+    "private": "Privada",
+    "officialWebsite": "Web oficial",
+    "more": "más"
+  }
+}

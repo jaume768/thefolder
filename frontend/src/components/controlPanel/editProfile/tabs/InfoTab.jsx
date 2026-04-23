@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { LOCATIONS, ALL_COUNTRIES } from "../../../../utils/locations";
 
@@ -42,6 +43,7 @@ export default function InfoTab({
   setIsDirty,
   onLevelChange,
 }) {
+  const { t } = useTranslation("profile");
   // ✅ Hooks SIEMPRE dentro del componente
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [roleOptions, setRoleOptions] = React.useState([]);
@@ -155,10 +157,14 @@ export default function InfoTab({
   return (
     <div>
       <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">Tu información de perfil</h2>
+        <h2 className="ux-card-title-h2">{t("editProfile.infoTitle")}</h2>
         <p className="ux-card-subtitle">
-          Gestiona tu foto de perfil, ubicación y especialización.<br />
-          Estos son los datos básicos que aparecen en tu perfil público.
+          {t("editProfile.infoSubtitle").split("\\n").map((line, i) => (
+            <React.Fragment key={i}>
+              {line}
+              {i < t("editProfile.infoSubtitle").split("\\n").length - 1 && <br />}
+            </React.Fragment>
+          ))}
         </p>
       </div>
 
@@ -168,13 +174,13 @@ export default function InfoTab({
           <div id="sec-foto" className="ux-anchor-target">
             <div className="ux-form-block">
               <label className="ux-form-label" htmlFor="profileFile">
-                Foto de perfil
+                {t("default.profilePictureAlt")}
               </label>
 
               <div className="ux-photo-box">
                 {avatarUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
                 <div className="center ux-photo-preview">
-                  <img src={profileImage} alt="Foto de perfil" />
+                  <img src={profileImage} alt={t("default.profilePictureAlt")} />
                 </div>
 
                 <div className="ux-photo-actions">
@@ -200,8 +206,8 @@ export default function InfoTab({
                         }}
                       />
 
-                      <img src={editCard} className="ux-icon" alt="Editar" />
-                      Editar
+                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
+                      {t("editProfile.edit")}
                     </button>
 
                     <span className="ux-sep">|</span>
@@ -211,13 +217,13 @@ export default function InfoTab({
                       className="ux-link-btn danger"
                       onClick={() => deleteProfilePicture()}
                     >
-                      <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} />
-                      Borrar
+                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} />
+                      {t("editProfile.delete")}
                     </button>
                   </div>
 
                   <div className="ux-photo-hint">
-                    Este cambio puede tardar unos minutos en establecerse.
+                    {t("editProfile.changeMayTakeTime")}
                   </div>
                 </div>
               </div>
@@ -230,7 +236,7 @@ export default function InfoTab({
               <div className="ux-form-row">
                 <div className="ux-form-field" style={{ gridColumn: "1 / -1" }}>
                   <label className="ux-form-label" htmlFor="companyName">
-                    Nombre de la empresa
+                    {t("editProfile.companyNameLabel")}
                   </label>
                   <input
                     id="companyName"
@@ -246,7 +252,7 @@ export default function InfoTab({
 
                 <div className="ux-form-field" style={{ gridColumn: "1 / -1" }}>
                   <label className="ux-form-label" htmlFor="companyWebsite">
-                    Web de la empresa (opcional)
+                    {t("editProfile.companyWebsiteLabel")}
                   </label>
                   <input
                     id="companyWebsite"
@@ -258,14 +264,14 @@ export default function InfoTab({
                     onChange={(e) => setDraftField("social.sitioWeb", e.target.value)}
                     placeholder="empresa.com"
                   />
-                  <div className="ux-helper">Se mostrará como link en tu perfil.</div>
+                  <div className="ux-helper">{t("editProfile.websiteHelper")}</div>
                 </div>
               </div>
             ) : (
               <div className="ux-form-row">
                 <div className="ux-form-field">
                   <label className="ux-form-label" htmlFor="firstName">
-                    Nombre
+                    {t("editProfile.firstName")}
                   </label>
                   <input
                     id="firstName"
@@ -278,13 +284,13 @@ export default function InfoTab({
                       const { lastName } = splitName(draft?.fullName || "");
                       setDraftField("fullName", `${e.target.value} ${lastName}`.trim());
                     }}
-                    placeholder="María"
+                    placeholder={t("firstNamePlaceholder")}
                   />
                 </div>
 
                 <div className="ux-form-field">
                   <label className="ux-form-label" htmlFor="lastName">
-                    Apellido/s
+                    {t("editProfile.lastName")}
                   </label>
                   <input
                     id="lastName"
@@ -297,7 +303,7 @@ export default function InfoTab({
                       const { firstName } = splitName(draft?.fullName || "");
                       setDraftField("fullName", `${firstName} ${e.target.value}`.trim());
                     }}
-                    placeholder="García"
+                    placeholder={t("lastNamePlaceholder")}
                   />
                 </div>
               </div>
@@ -307,7 +313,7 @@ export default function InfoTab({
           {/* Ubicación */}
           <div id="sec-ubicacion" className="ux-anchor-target">
             <div className="ux-form-block">
-              <label className="ux-form-label">Ubicación</label>
+              <label className="ux-form-label">{t("editProfile.location")}</label>
               <div className="ux-form-row">
 
                 {/* País */}
@@ -325,13 +331,13 @@ export default function InfoTab({
                       setIsDirty(true);
                     }}
                   >
-                    <option value="">País</option>
-                    <option value="España">España</option>
+                    <option value="">{t("editProfile.country")}</option>
+                    <option value="España">{t("countrySpain")}</option>
                     <option disabled>──────────</option>
                     {ALL_COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
-                    <option value="__otro__">Otro país</option>
+                    <option value="__otro__">{t("editProfile.otherCountry")}</option>
                   </select>
                 </div>
 
@@ -349,7 +355,7 @@ export default function InfoTab({
                         setIsDirty(true);
                       }}
                     >
-                      <option value="">Ciudad</option>
+                      <option value="">{t("editProfile.city")}</option>
                       {(LOCATIONS[draft?.country] || []).map((city) => (
                         <option key={city} value={city}>{city}</option>
                       ))}
@@ -364,8 +370,8 @@ export default function InfoTab({
                       value={customCityInput}
                       placeholder={
                         draft?.country
-                          ? "¿En qué ciudad estás?"
-                          : "Primero elige un país"
+                          ? t("editProfile.cityPlaceholder")
+                          : t("editProfile.selectCountryFirst")
                       }
                       disabled={!draft?.country}
                       onChange={(e) => setCustomCityInput(e.target.value)}
@@ -387,7 +393,7 @@ export default function InfoTab({
                     <input
                       type="text"
                       className="ux-input"
-                      placeholder="¿En qué país estás?"
+                      placeholder={t("editProfile.countryPlaceholder")}
                       value={customCountryInput}
                       onChange={(e) => setCustomCountryInput(e.target.value)}
                       onBlur={(e) => {
@@ -410,7 +416,7 @@ export default function InfoTab({
                     className="ux-btn ux-exp-add-btn"
                     onClick={() => setShowCity2(true)}
                   >
-                    Añadir segunda ubicación
+                    {t("editProfile.addSecondLocation")}
                   </button>
                 </div>
               )}
@@ -433,13 +439,13 @@ export default function InfoTab({
                           setIsDirty(true);
                         }}
                       >
-                        <option value="">País</option>
-                        <option value="España">España</option>
+                        <option value="">{t("editProfile.country")}</option>
+                        <option value="España">{t("countrySpain")}</option>
                         <option disabled>──────────</option>
                         {ALL_COUNTRIES.map((c) => (
                           <option key={c} value={c}>{c}</option>
                         ))}
-                        <option value="__otro__">Otro país</option>
+                        <option value="__otro__">{t("editProfile.otherCountry")}</option>
                       </select>
                     </div>
 
@@ -456,7 +462,7 @@ export default function InfoTab({
                             setIsDirty(true);
                           }}
                         >
-                          <option value="">Ciudad</option>
+                          <option value="">{t("editProfile.city")}</option>
                           {(LOCATIONS[draft?.country2] || []).map((city) => (
                             <option key={city} value={city}>{city}</option>
                           ))}
@@ -470,8 +476,8 @@ export default function InfoTab({
                           value={customCityInput2}
                           placeholder={
                             draft?.country2
-                              ? "¿En qué ciudad estás?"
-                              : "Primero elige un país"
+                              ? t("editProfile.cityPlaceholder")
+                              : t("editProfile.selectCountryFirst")
                           }
                           disabled={!draft?.country2}
                           onChange={(e) => setCustomCityInput2(e.target.value)}
@@ -499,7 +505,7 @@ export default function InfoTab({
                         setIsDirty(true);
                       }}
                     >
-                      Eliminar segunda ubicación
+                      {t("editProfile.removeSecondLocation")}
                     </button>
                   </div>
                 </div>
@@ -511,9 +517,9 @@ export default function InfoTab({
           <div id="sec-especializacion" className="ux-anchor-target">
             <div className="ux-form-block">
               {/* ✅ 1) Especialización (perfil) - libre */}
-              <label className="ux-form-label">Especialización</label>
+              <label className="ux-form-label">{t("sections.specialization")}</label>
               <div className="ux-helper" style={{ marginBottom: 10 }}>
-                Escribe hasta 3 etiquetas que quieras mostrar en tu perfil.
+                {t("editProfile.headlinesHelper")}
               </div>
 
               <div className="ux-form-row" style={{ gridTemplateColumns: "1fr", gap: 10 }}>
@@ -522,7 +528,7 @@ export default function InfoTab({
                   className="ux-input"
                   value={headlines[0] || ""}
                   onChange={(e) => setHeadlineAt(0, e.target.value)}
-                  placeholder="Ej: Dirección creativa"
+                  placeholder={t("headlineExample1")}
                   autoComplete="off"
                   spellCheck={false}
                 />
@@ -531,7 +537,7 @@ export default function InfoTab({
                   className="ux-input"
                   value={headlines[1] || ""}
                   onChange={(e) => setHeadlineAt(1, e.target.value)}
-                  placeholder="Ej: Estilismo editorial"
+                  placeholder={t("headlineExample2")}
                   autoComplete="off"
                   spellCheck={false}
                 />
@@ -540,27 +546,30 @@ export default function InfoTab({
                   className="ux-input"
                   value={headlines[2] || ""}
                   onChange={(e) => setHeadlineAt(2, e.target.value)}
-                  placeholder="Ej: Producción moda"
+                  placeholder={t("headlineExample3")}
                   autoComplete="off"
                   spellCheck={false}
                 />
               </div>
 
               <div className="ux-helper" style={{ marginTop: 10 }}>
-                Se mostrarán en tu perfil.
+                {t("editProfile.headlinesShowHint")}
               </div>
 
               {/* Separador visual suave */}
               <div style={{ height: 68 }} />
 
               {/* ✅ 2) Cómo filtrar tu perfil - lista cerrada (professionalTags) */}
-              <label className="ux-form-label">Cómo filtrar tu perfil</label>
+              <label className="ux-form-label">{t("editProfile.filterProfile")}</label>
 
               <div className="ux-helper">
                 <p className="ob-subtitle">
-                  Selecciona un grupo y elige hasta <b>3 etiquetas en total.</b>
-                  <br />
-                  Se usan para aparecer en búsquedas.
+                  {t("editProfile.filterProfileHelper").split("\\n").map((line, i) => (
+                    <React.Fragment key={i}>
+                      {line}
+                      {i < t("editProfile.filterProfileHelper").split("\\n").length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </p>
               </div>
 
@@ -572,7 +581,7 @@ export default function InfoTab({
                       type="button"
                       className="filters-sticky-chip"
                       onClick={() => removeRole(id)}
-                      title="Quitar"
+                      title={t("editProfile.remove")}
                     >
                       <span>{roleLabelById[id] || id}</span>
                       <span className="chip-x">×</span>
@@ -607,19 +616,16 @@ export default function InfoTab({
               {activeGroup && activeGroup !== 'Otro' && (
                 <div className="filters-country-cities">
                   <div className="filters-tags filters-tags--level">
-                    {(rolesByGroup[activeGroup] || []).map((t) => {
-                      const sel = selectedRoleIds.includes(t.id);
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          className={`filter-tag${sel ? ' selected' : ''}`}
-                          onClick={() => toggleRole(t.id)}
-                        >
-                          {t.label}
-                        </button>
-                      );
-                    })}
+                    {(rolesByGroup[activeGroup] || []).map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className={`filter-tag${selectedRoleIds.includes(t.id) ? ' selected' : ''}`}
+                        onClick={() => toggleRole(t.id)}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -628,14 +634,14 @@ export default function InfoTab({
               {activeGroup === 'Otro' && (
                 <div className="filters-country-cities">
                   <p className="ux-helper" style={{ marginBottom: 8 }}>
-                    Escribe tu especialidad y pulsa Enter o "Añadir".
+                    {t("editProfile.customSpecialtyHint")}
                   </p>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <input
                       className="ux-input"
                       type="text"
                       value={customInput}
-                      placeholder="Especialidad personalizada"
+                      placeholder={t("editProfile.customSpecialtyPlaceholder")}
                       maxLength={40}
                       disabled={selectedRoleIds.length >= 3}
                       onChange={e => setCustomInput(e.target.value)}
@@ -647,7 +653,7 @@ export default function InfoTab({
                       onClick={confirmCustomTag}
                       disabled={!customInput.trim() || selectedRoleIds.length >= 3}
                     >
-                      Añadir
+                      {t("editProfile.add")}
                     </button>
                   </div>
                 </div>
@@ -659,7 +665,7 @@ export default function InfoTab({
           <div id="sec-bio" className="ux-anchor-target">
             <div className="ux-form-block">
               <label className="ux-form-label" htmlFor="bio">
-                Presentación corta
+                {t("editProfile.shortBioLabel")}
               </label>
 
               <textarea
@@ -673,11 +679,11 @@ export default function InfoTab({
                   const v = e.target.value.slice(0, 150);
                   setDraftField("bio", v);
                 }}
-                placeholder="Escribe una presentación breve..."
+                placeholder={t("editProfile.shortBioPlaceholder")}
               />
 
               <div className="ux-counter">
-                <span>Máximo 150 caracteres.</span>
+                <span>{t("editProfile.max150Chars")}</span>
                 <span>{(draft?.bio || "").length}/150</span>
               </div>
             </div>
@@ -687,7 +693,7 @@ export default function InfoTab({
           <div id="sec-email" className="ux-anchor-target">
             <div className="ux-form-block">
               <label className="ux-form-label" htmlFor="email">
-                Email de contacto
+                {t("editProfile.contactEmailLabel")}
               </label>
               <input
                 id="email"
@@ -698,19 +704,19 @@ export default function InfoTab({
                 value={draft?.email || ""}
                 readOnly
               />
-              <div className="ux-counter">El email se cambia desde Configuración.</div>
+              <div className="ux-counter">{t("editProfile.emailReadonly")}</div>
             </div>
           </div>
 
           {/* Representación */}
           <div id="sec-representation" className="ux-anchor-target">
             <div className="ux-form-block">
-              <label className="ux-form-label">Representación</label>
-              <p className="ux-form-hint">Si estás representado por una agencia, añádela aquí.</p>
+              <label className="ux-form-label">{t("sections.representation")}</label>
+              <p className="ux-form-hint">{t("editProfile.representationHint")}</p>
               <div className="ux-exp-form-row">
                 <div className="ux-form-block">
                   <label className="ux-form-label-sm" htmlFor="representationName">
-                    Nombre de la agencia
+                    {t("editProfile.agencyName")}
                   </label>
                   <input
                     id="representationName"
@@ -724,7 +730,7 @@ export default function InfoTab({
                 </div>
                 <div className="ux-form-block">
                   <label className="ux-form-label-sm" htmlFor="representationWeb">
-                    Enlace a tu agencia o tu perfil de representación
+                    {t("editProfile.agencyLink")}
                   </label>
                   <input
                     id="representationWeb"
@@ -744,7 +750,7 @@ export default function InfoTab({
           <div id="sec-web" className="ux-anchor-target">
             <div className="ux-form-block">
               <label className="ux-form-label" htmlFor="siteWeb">
-                Sitio web o Portfolio online
+                {t("editProfile.websiteLabel")}
               </label>
               <input
                 id="siteWeb"
@@ -762,20 +768,20 @@ export default function InfoTab({
           {/* Nivel de experiencia */}
           {!isCompany && !isEducationalInstitution && (
             <div className="ux-form-block">
-              <label className="ux-form-label">Nivel de experiencia</label>
+              <label className="ux-form-label">{t("editProfile.experienceLevel")}</label>
               {draft?.requestedCreativeLevel === 4 ? (
                 <p className="ux-form-hint ux-form-hint--pending">
-                  ⏳ Tu solicitud de nivel <strong>Professional</strong> está en revisión. El equipo la validará en <strong>1-2 días hábiles</strong>.
+                  ⏳ {t("editProfile.professionalPending")}
                 </p>
               ) : (
-                <p className="ux-form-hint">¿En qué punto de tu carrera estás?</p>
+                <p className="ux-form-hint">{t("editProfile.experienceLevelHint")}</p>
               )}
               <div className="ux-level-options">
                 {[
-                  { value: 1, name: 'Newcomer',     icon: 'newcomer.png',     desc: 'Estudiantes o recién graduados.' },
-                  { value: 2, name: 'Graduated',    icon: 'graduated.png',    desc: 'Formación académica completada.' },
-                  { value: 3, name: 'Emerging',     icon: 'emerging.png',     desc: '1-3 años de experiencia.' },
-                  { value: 4, name: 'Professional', icon: 'professional.png', desc: 'Trayectoria sólida — requiere validación.' },
+                  { value: 1, name: 'Newcomer',     icon: 'newcomer.png',     desc: t("editProfile.levelNewcomerDesc") },
+                  { value: 2, name: 'Graduated',    icon: 'graduated.png',    desc: t("editProfile.levelGraduatedDesc") },
+                  { value: 3, name: 'Emerging',     icon: 'emerging.png',     desc: t("editProfile.levelEmergingDesc") },
+                  { value: 4, name: 'Professional', icon: 'professional.png', desc: t("editProfile.levelProfessionalDesc") },
                 ].map(lvl => {
                   const isPending = lvl.value === 4 && draft?.requestedCreativeLevel === 4;
                   const selected  = draft?.creativeLevel === lvl.value || isPending;
@@ -788,7 +794,7 @@ export default function InfoTab({
                     >
                       <img className="ux-level-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
                       <span className="ux-level-name">
-                        {lvl.name}{isPending && <span className="ux-level-pending"> (Pendiente · 1-2 días)</span>}
+                        {lvl.name}{isPending && <span className="ux-level-pending"> ({t("editProfile.pendingDays")})</span>}
                       </span>
                       <span className="ux-level-desc">{lvl.desc}</span>
                     </button>

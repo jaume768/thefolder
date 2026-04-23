@@ -2,20 +2,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
-
-const getCreativeTypeText = (type) => {
-  switch (type) {
-    case 1: return "Estudiante";
-    case 2: return "Graduado";
-    case 3: return "Estilista";
-    case 4: return "Diseñador de marca";
-    case 5: return "Otro";
-    default: return "";
-  }
-};
+import { useTranslation } from "react-i18next";
 
 export default function ProfileRoot() {
+  const { t } = useTranslation("profile");
   const [userData, setUserData] = useState(null);
+
+  const getCreativeTypeText = (type) => {
+    switch (type) {
+      case 1: return t("creativeTypes.student");
+      case 2: return t("creativeTypes.graduate");
+      case 3: return t("creativeTypes.stylist");
+      case 4: return t("creativeTypes.brandDesigner");
+      case 5: return t("creativeTypes.other");
+      default: return "";
+    }
+  };
   const [loading, setLoading] = useState(true);
 
   // Sidebar: edición de foto perfil
@@ -111,8 +113,8 @@ export default function ProfileRoot() {
     }
   };
 
-  if (loading) return <div className="loading-indicator">Cargando...</div>;
-  if (!userData) return <div className="edit-profile-wrapper">No hay sesión.</div>;
+  if (loading) return <div className="loading-indicator">{t("settings.loading")}</div>;
+  if (!userData) return <div className="edit-profile-wrapper">{t("settings.noSession")}</div>;
 
   return (
     <Outlet context={{ userData, setUserData }} />

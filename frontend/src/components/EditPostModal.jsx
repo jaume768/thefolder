@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { FaTimes } from "react-icons/fa";
 import "./controlPanel/css/CreatePost.css";
 import { clImg } from "../utils/optimizeImage";
@@ -44,6 +45,7 @@ const toTitleCase = (text) => {
 };
 
 const EditPostModal = ({ post, onClose, onSaved }) => {
+  const { t } = useTranslation('post');
   const [images, setImages] = useState(post.images || []);
   const [newFiles, setNewFiles] = useState([]); // { file, preview }
   const [confirmDeletePost, setConfirmDeletePost] = useState(false);
@@ -228,7 +230,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
         { name: "", role: "", username: "", socialUrl: "", isRegistered: false, avatar: "" },
       ]);
     } else {
-      alert("Completa la tarjeta actual antes de añadir una nueva");
+      alert(t('create.errors.fillRequired'));
     }
   };
 
@@ -288,7 +290,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       onSaved(res.data.post);
       onClose();
     } catch (err) {
-      setError(err?.response?.data?.message || "Error al guardar los cambios.");
+      setError(err?.response?.data?.message || t('edit.errorSave'));
     } finally {
       setIsLoading(false);
     }
@@ -306,7 +308,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       onSaved(null); // signal post was deleted
       onClose();
     } catch (err) {
-      setError(err?.response?.data?.message || "Error al eliminar el post.");
+      setError(err?.response?.data?.message || t('edit.errorDelete'));
       setConfirmDeletePost(false);
     } finally {
       setIsLoading(false);
@@ -338,18 +340,18 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 >
                   <img
                     src={clImg.post(url)}
-                    alt={`Imagen ${index + 1}`}
+                    alt={`${t('create.cover')} ${index + 1}`}
                     className="cp-grid__img"
                     draggable={false}
                   />
                   <div className="cp-grid__num">{index + 1}</div>
-                  {index === 0 && <div className="cp-grid__cover">Portada</div>}
+                  {index === 0 && <div className="cp-grid__cover">{t('create.cover')}</div>}
                   {imageCredits[index]?.trim() && <div className="cp-grid__credit-dot" />}
                   <button
                     type="button"
                     className="cp-grid__remove"
                     onClick={(e) => handleRemoveExisting(e, index)}
-                    aria-label="Eliminar imagen"
+                    aria-label={t('create.removeImage')}
                   >
                     <FaTimes />
                   </button>
@@ -361,17 +363,17 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 <div key={`new-${index}`} className="cp-grid__item">
                   <img
                     src={preview}
-                    alt={`Nueva imagen ${index + 1}`}
+                    alt={`${t('edit.newBadge')} ${index + 1}`}
                     className="cp-grid__img"
                     draggable={false}
                   />
                   <div className="cp-grid__num">{images.length + index + 1}</div>
-                  <div className="cp-grid__new-badge">Nueva</div>
+                  <div className="cp-grid__new-badge">{t('edit.newBadge')}</div>
                   <button
                     type="button"
                     className="cp-grid__remove"
                     onClick={(e) => handleRemoveNew(e, index)}
-                    aria-label="Eliminar imagen"
+                    aria-label={t('create.removeImage')}
                   >
                     <FaTimes />
                   </button>
@@ -380,7 +382,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
 
               {/* Add slot */}
               {totalImages < 6 && (
-                <label className="cp-grid__add" title="Añadir foto">
+                <label className="cp-grid__add" title={t('create.addImage')}>
                   +
                   <input
                     type="file"
@@ -396,13 +398,13 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
             {/* Delete post confirmation */}
             {confirmDeletePost && (
               <div className="cp-delete-confirm">
-                <p>Sin imágenes, este post se eliminará. ¿Continuar?</p>
+                <p>{t('edit.deleteConfirm')}</p>
                 <div className="cp-delete-confirm__actions">
                   <button type="button" className="cp-btn cp-btn--ghost" onClick={() => setConfirmDeletePost(false)}>
-                    Cancelar
+                    {t('edit.cancel')}
                   </button>
                   <button type="button" className="cp-btn cp-btn--danger" onClick={handleConfirmDeletePost} disabled={isLoading}>
-                    {isLoading ? "Eliminando..." : "Eliminar post"}
+                    {isLoading ? t('edit.deleting') : t('edit.deleteAction')}
                   </button>
                 </div>
               </div>
@@ -412,7 +414,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
           {/* ═══ DERECHA — formulario ════════════════════════════════════ */}
           <div className="cp-right-div">
             <div className="cp-right">
-              <button type="button" className="cp-close" onClick={onClose} aria-label="Cerrar">
+              <button type="button" className="cp-close" onClick={onClose} aria-label={t('edit.cancel')}>
                 <FaTimes />
               </button>
 
@@ -421,7 +423,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 {/* Título */}
                 <div className="cp-field-group">
                   <textarea
-                    placeholder="TÍTULO (*)"
+                    placeholder={t('edit.titlePlaceholder')}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onInput={(e) => { e.target.style.height = "auto"; e.target.style.height = e.target.scrollHeight + "px"; }}
@@ -431,14 +433,14 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                     spellCheck={false}
                   />
                   {titleTouched && !title.trim() && (
-                    <span className="cp-field-error">El título es obligatorio.</span>
+                    <span className="cp-field-error">{t('edit.titleRequired')}</span>
                   )}
                 </div>
 
                 {/* Descripción */}
                 <div className="cp-field-group">
                   <textarea
-                    placeholder="Descripción del proyecto (opcional)"
+                    placeholder={t('edit.descPlaceholder')}
                     value={description}
                     onChange={(e) => {
                       setDescription(e.target.value);
@@ -454,7 +456,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 {/* Tu rol */}
                 <div className="cp-field-group">
                   <textarea
-                    placeholder="Tu rol en el proyecto (Fotógrafo, Estilista…)"
+                    placeholder={t('edit.rolePlaceholder')}
                     value={authorRole}
                     onChange={(e) => {
                       setAuthorRole(e.target.value);
@@ -471,7 +473,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 {/* Panel equipo */}
                 {showTeam && (
                   <div className="cp-panel">
-                    <p className="cp-panel__desc">Equipo /</p>
+                    <p className="cp-panel__desc">{t('edit.team.label')}</p>
                     <div className="people-cards">
                       {peopleTags.map((tag, index) => {
                         const rawName        = String(tag.name || "").trim();
@@ -487,7 +489,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                 type="button"
                                 className="person-remove-btn"
                                 onClick={() => removePeopleTagCard(index)}
-                                aria-label="Eliminar"
+                                aria-label={t('create.removeImage')}
                               >
                                 <FaTimes />
                               </button>
@@ -503,7 +505,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                 <div className="autocomplete-wrapper">
                                   <input
                                     type="text"
-                                    placeholder="Nombre o busca @usuario dentro de THEFOLDER"
+                                    placeholder={t('edit.team.namePlaceholder')}
                                     name="name"
                                     value={tag.name}
                                     onChange={(e) => handlePeopleTagChange(index, e)}
@@ -529,13 +531,13 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                           }}
                                         >
                                           <div className="autocomplete-user-info">
-                                            <span className="username">No registrado</span>
+                                            <span className="username">{t('edit.team.unregistered')}</span>
                                             <span className="registered-badge">{String(tag.name || "").trim()}</span>
                                           </div>
                                         </div>
                                       )}
                                       {loadingUsers
-                                        ? <div className="loading-users">Buscando...</div>
+                                        ? <div className="loading-users">{t('edit.team.searching')}</div>
                                         : suggestedUsers.length > 0
                                           ? suggestedUsers.map((user) => (
                                               <div
@@ -551,12 +553,12 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                                 />
                                                 <div className="autocomplete-user-info">
                                                   <span className="username">@{user.username}</span>
-                                                  <span className="registered-badge">Registrado ✅</span>
+                                                  <span className="registered-badge">{t('edit.team.registered')}</span>
                                                 </div>
                                               </div>
                                             ))
                                           : query.length >= 2 && (
-                                              <div className="loading-users">Sin coincidencias — añádelo como externo 👆</div>
+                                              <div className="loading-users">{t('edit.team.noMatches')}</div>
                                             )
                                       }
                                     </div>
@@ -564,7 +566,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                 </div>
                                 <input
                                   type="text"
-                                  placeholder="Rol (Fotógrafo, Estilista…)"
+                                  placeholder={t('edit.team.rolePlaceholder')}
                                   name="role"
                                   value={tag.role}
                                   onChange={(e) => handlePeopleTagChange(index, e)}
@@ -573,7 +575,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                                 {!tag.isRegistered && hasName && (
                                   <input
                                     type="url"
-                                    placeholder="Link (opcional)"
+                                    placeholder={t('edit.team.linkPlaceholder')}
                                     name="socialUrl"
                                     value={tag.socialUrl || ""}
                                     onChange={(e) => handlePeopleTagChange(index, e)}
@@ -588,7 +590,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                       })}
                     </div>
                     <button type="button" onClick={addPeopleTagCard} className="add-card-btn">
-                      Añadir colaborador
+                      {t('edit.team.addCollaborator')}
                     </button>
                   </div>
                 )}
@@ -596,14 +598,14 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 {/* Panel créditos */}
                 {showCredits && (
                   <div className="cp-panel">
-                    <p className="cp-panel__desc">Créditos de estilismo /</p>
+                    <p className="cp-panel__desc">{t('edit.credits.label')}</p>
                     <div className="cp-credits-list">
                       {images.map((url, i) => (
                         <div key={url} className="cp-credit-item">
                           <img src={clImg.post(url)} alt="" className="cp-credit-item__img" />
                           <input
                             className="cp-credit-item__input ux-input"
-                            placeholder="Escribe tus créditos (Falda de NouNou, zapatos de...)"
+                            placeholder={t('edit.credits.placeholder')}
                             value={imageCredits[i] || ""}
                             onChange={(e) =>
                               setImageCredits((prev) => {
@@ -622,7 +624,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 {/* Panel tags de proyecto */}
                 {showTypes && (
                   <div className="cp-panel">
-                    <p className="cp-panel__desc">Tags de proyecto / <span style={{ fontWeight: 400, opacity: 0.55 }}>máx. 3</span></p>
+                    <p className="cp-panel__desc">{t('edit.projectTags.label')} <span style={{ fontWeight: 400, opacity: 0.55 }}>{t('edit.projectTags.max')}</span></p>
                     <div className="cp-type-dropdown--modal">
                       {PROJECT_TYPES.map((type) => {
                         const selected = projectTypes.includes(type);
@@ -651,21 +653,21 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                     className={`cp-optional-btn${showTeam ? " is-active" : ""}`}
                     onClick={() => setShowTeam((v) => !v)}
                   >
-                    Etiquetar Equipo
+                    {t('edit.optional.team')}
                   </button>
                   <button
                     type="button"
                     className={`cp-optional-btn${showCredits ? " is-active" : ""}`}
                     onClick={() => setShowCredits((v) => !v)}
                   >
-                    Créditos de Estilismo
+                    {t('edit.optional.credits')}
                   </button>
                   <button
                     type="button"
                     className={`cp-optional-btn${showTypes ? " is-active" : ""}`}
                     onClick={() => setShowTypes((v) => !v)}
                   >
-                    Tags de Proyecto{projectTypes.length > 0 ? ` (${projectTypes.length})` : ""}
+                    {t('edit.optional.tags')}{projectTypes.length > 0 ? ` (${projectTypes.length})` : ""}
                   </button>
                 </div>
 
@@ -675,7 +677,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                 <div className="cp-footer">
                   <div className="cp-footer__actions">
                     <button type="button" className="cp-btn cp-btn--ghost" onClick={onClose}>
-                      CANCELAR
+                      {t('edit.cancel')}
                     </button>
                     <button
                       type="button"
@@ -683,7 +685,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                       onClick={handleSave}
                       disabled={isLoading}
                     >
-                      {isLoading ? "GUARDANDO..." : "GUARDAR"}
+                      {isLoading ? t('edit.saving') : t('edit.save')}
                     </button>
                   </div>
                 </div>

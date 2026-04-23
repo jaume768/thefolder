@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Masonry from "react-masonry-css";
 import { clImg } from "../../../utils/optimizeImage";
 
@@ -11,6 +12,7 @@ const BREAKPOINT_COLS = {
 };
 
 const UserGallery = ({ posts = [], loading = false, emptyMessage, emptyContent, galleryStyle = "gap", onPostClick }) => {
+  const { t } = useTranslation("profile");
   const navigate = useNavigate();
   const handlePostClick = (postId) => {
     if (typeof onPostClick === "function") onPostClick(postId);
@@ -43,7 +45,7 @@ const UserGallery = ({ posts = [], loading = false, emptyMessage, emptyContent, 
   if (loading) {
     return (
       <div className="loading-indicator">
-        Cargando publicaciones...
+        {t("loadingPosts")}
       </div>
     );
   }
@@ -91,12 +93,12 @@ const UserGallery = ({ posts = [], loading = false, emptyMessage, emptyContent, 
             <div className="user-extern-project-media">
               <img
                 src={clImg.post(post.mainImage)}
-                alt={post.title || `Publicación ${index + 1}`}
+                alt={post.title || t("publicationAlt", { number: index + 1 })}
                 className="user-extern-project-image"
               />
               <div className="user-extern-project-overlay">
                 <p className="user-extern-project-overlay-title">
-                  {post.title || "Proyecto sin título"}
+                  {post.title || t("untitledProject")}
                 </p>
                 {imageCount > 1 && (
                   <p className="user-extern-project-overlay-count">

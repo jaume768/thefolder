@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const DescriptionForm = ({ 
     formData, 
@@ -8,30 +9,31 @@ const DescriptionForm = ({
     addRequirement, 
     removeRequirement 
 }) => {
+    const { t } = useTranslation('offers');
     return (
         <div className="create-educational-form-section">
-            <h3>Descripción</h3>
+            <h3>{t('create.description.title')}</h3>
             <div className="create-educational-form-field">
                 <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
                     rows="4"
-                    placeholder="Describe brevemente esta oferta educativa"
+                    placeholder={t('create.description.placeholder')}
                 />
             </div>
             
             {/* Requisitos */}
             <div className="create-educational-form-field">
-                <h4>Requisitos (opcional)</h4>
+                <h4>{t('create.description.requirementsLabel')}</h4>
                 <div className="create-educational-requirements-input">
                     <input
                         type="text"
                         value={newRequirement}
                         onChange={(e) => setNewRequirement(e.target.value)}
-                        placeholder="Añadir requisito"
+                        placeholder={t('create.description.requirementPlaceholder')}
                     />
-                    <button type="button" onClick={addRequirement}>Añadir</button>
+                    <button type="button" onClick={addRequirement}>{t('create.description.addButton')}</button>
                 </div>
                 
                 {formData.requirements.length > 0 && (

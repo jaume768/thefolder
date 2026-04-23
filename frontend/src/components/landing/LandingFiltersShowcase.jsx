@@ -1,28 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./css/landing-filters-showcase.css";
 
 const FILTERS = [
-  {
-    id: "f1",
-    text: "Fotografía + Copenhage + #backstage",
-    img: "/multimedia/polaroid1.jpg",
-    imgPos: "bottom", // imagen abajo derecha
-  },
-  {
-    id: "f2",
-    text: "Makeup + Valencia + #testshoot",
-    img: "/multimedia/polaroid2.jpg",
-    imgPos: "top", // imagen arriba derecha
-  },
-  {
-    id: "f3",
-    text: "Diseño moda + Barcelona + #fitting",
-    img: "/multimedia/polaroid3.jpg",
-    imgPos: "center", // imagen centro derecha
-  },
+  { id: "f1", img: "/multimedia/polaroid1.jpg", imgPos: "bottom" },
+  { id: "f2", img: "/multimedia/polaroid2.jpg", imgPos: "top" },
+  { id: "f3", img: "/multimedia/polaroid3.jpg", imgPos: "center" },
 ];
 
 export default function LandingFilterShowcase() {
+  const { t } = useTranslation("landing");
   const sectionRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -60,18 +47,18 @@ export default function LandingFilterShowcase() {
               key={f.id}
               className={`tf-filter__line ${i === activeIndex ? "is-active" : ""}`}
             >
-              {f.text}
+              {t(`filtersShowcase.${f.id}`)}
             </p>
           ))}
 
           {/* Filtra a tu gusto — centro */}
-          <p className="tf-filter__sub">Filtra a tu gusto</p>
+          <p className="tf-filter__sub">{t("filtersShowcase.subtitle")}</p>
 
           {/* Ubicación / Especialidad / Experiencia */}
           <div className="tf-filter__tags">
-            <span>Ubicación</span>
-            <span>Especialidad</span>
-            <span>Experiencia</span>
+            <span>{t("filtersShowcase.location")}</span>
+            <span>{t("filtersShowcase.specialty")}</span>
+            <span>{t("filtersShowcase.experience")}</span>
           </div>
         </div>
 

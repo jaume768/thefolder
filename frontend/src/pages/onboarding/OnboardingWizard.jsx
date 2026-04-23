@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TypeStep from './steps/TypeStep';
 import UsernameStep from './steps/UsernameStep';
 import PersonalDataStep from './steps/PersonalDataStep';
@@ -47,6 +48,7 @@ const OnboardingWizard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { t } = useTranslation('onboarding');
 
   const [step, setStep] = useState(2); // TypeStep oculto temporalmente — empieza en UsernameStep
   const [data, setData] = useState(INITIAL_DATA);
@@ -103,7 +105,7 @@ const OnboardingWizard = () => {
       });
       if (!photoRes.ok) {
         const photoData = await photoRes.json().catch(() => ({}));
-        setError(photoData.error || 'Error al subir la foto. Inténtalo de nuevo.');
+        setError(photoData.error || t('common.uploadError'));
         setSubmitting(false);
         return;
       }
@@ -129,14 +131,14 @@ const OnboardingWizard = () => {
 
       const resData = await res.json();
       if (!res.ok) {
-        setError(resData.error || 'Ha ocurrido un error. Inténtalo de nuevo.');
+        setError(resData.error || t('common.genericError'));
         setSubmitting(false);
         return;
       }
 
       navigate('/explorer', { replace: true });
     } catch {
-      setError('Error de red. Inténtalo de nuevo.');
+      setError(t('common.networkError'));
       setSubmitting(false);
     }
   };

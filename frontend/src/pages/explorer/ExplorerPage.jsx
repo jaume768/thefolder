@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import Masonry from 'react-masonry-css';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -66,6 +67,7 @@ const EMPTY_FILTERS = { city: [], professionalProfile: [], creativeLevel: [], pr
 
 const Explorer = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('explorer');
   const { user } = useContext(AuthContext);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -428,13 +430,13 @@ const Explorer = () => {
       <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
 
         <div className="filters-modal-header">
-          <span className="filters-modal-title">Filtros</span>
+          <span className="filters-modal-title">{t('filters.modalTitle')}</span>
           <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
         </div>
 
         {/* ── EXPERIENCIA ───────────────────────────────────── */}
         <div className="filters-modal-section">
-          <p className="filters-col-title">Experiencia</p>
+          <p className="filters-col-title">{t('filters.experience')}</p>
           <div className="filters-tags filters-tags--level">
             {CREATIVE_LEVELS.map(lvl => {
               const sel = (filters.creativeLevel || []).includes(lvl.value);
@@ -450,8 +452,8 @@ const Explorer = () => {
                   onClick={() => toggleTag('creativeLevel', lvl.value)}
                 >
                   <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
-                  <span className="experience-tag-label">{lvl.label}</span>
-                  <span className="experience-tag-desc">{lvl.description}</span>
+                  <span className="experience-tag-label">{t(`levels.${lvl.label.toLowerCase().replace(/\s+/g, '')}`)}</span>
+                  <span className="experience-tag-desc">{t(`levels.${lvl.label.toLowerCase().replace(/\s+/g, '')}Desc`)}</span>
                 </button>
               );
             })}
@@ -460,7 +462,7 @@ const Explorer = () => {
 
         {/* ── ESPECIALIDAD ──────────────────────────────────── */}
         <div className="filters-modal-section filters-modal-section--specialty">
-          <p className="filters-col-title">Especialidad del creativo</p>
+          <p className="filters-col-title">{t('filters.specialty')}</p>
           <div className="filters-tags filters-tags--level">
             {orderedGroups.map(group => {
               const isActive = activeRoleGroup === group;
@@ -541,7 +543,7 @@ const Explorer = () => {
 
         {/* ── UBICACIÓN ─────────────────────────────────────── */}
         <div className="filters-modal-section">
-          <p className="filters-col-title">Ubicación</p>
+          <p className="filters-col-title">{t('filters.location')}</p>
           <div className="filters-tags filters-tags--level">
             {ALL_COUNTRIES
               .filter(country => (LOCATIONS[country] || []).some(city => cityCounts[city] > 0))
@@ -576,8 +578,8 @@ const Explorer = () => {
                 className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
                 onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
               >
-                <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="Otros" /></span>
-                Otros
+                <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt={t('filters.otherCities')} /></span>
+                {t('filters.otherCities')}
               </button>
             )}
           </div>
@@ -589,7 +591,7 @@ const Explorer = () => {
             return (
               <div className="filters-country-cities">
                 {cities.length === 0 ? (
-                  <p className="filters-empty">Sin creativos en este país</p>
+                  <p className="filters-empty">{t('filters.noCreativesInCountry')}</p>
                 ) : (
                   <div className="filters-tags filters-tags--level">
                     {cities.map(city => {
@@ -620,7 +622,7 @@ const Explorer = () => {
         {/* ── TAGS DE PROYECTO ──────────────────────────────── */}
         {Object.keys(tagPreviews).length > 0 && (
           <div className="filters-modal-section">
-            <p className="filters-col-title">Tags de proyecto</p>
+            <p className="filters-col-title">{t('filters.projectTags')}</p>
             <div className="filters-tags filters-tags--level">
               {PROJECT_TYPES.filter(type => tagPreviews[type]).map(type => {
                 const sel = (filters.projectType || []).includes(type);
@@ -648,11 +650,11 @@ const Explorer = () => {
           {hasActiveFilters ? (
             <button type="button" className="filters-modal-clear" onClick={clearAll}>
               <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
-              Borrar filtros
+              {t('filters.clear')}
             </button>
           ) : <span />}
           <button type="button" className="filters-modal-apply" onClick={() => setShowFiltersModal(false)}>
-            Filtrar
+            {t('filters.apply')}
           </button>
         </div>
 
@@ -664,7 +666,7 @@ const Explorer = () => {
   return (
     <div className="explorer-container">
       <p className="creatives-subtitle --show-mobile">
-        Explora el trabajo de la comunidad creativa. Navega entre proyectos y descubre nuevos talentos. Filtra según tus necesidades.
+        {t('subtitle')}
       </p>
 
             {/* ── Barra de filtros ─────────────────────────────────────────────── */}
@@ -676,7 +678,7 @@ const Explorer = () => {
             onClick={() => { setActiveCountryPanel(null); setActiveRoleGroup(null); setShowFiltersModal(true); }}
           >
             <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
-            Filtros
+            {t('filters.button')}
             {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
           </button>
         </div>
@@ -699,7 +701,7 @@ const Explorer = () => {
             </div>
             <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
               <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
-              Borrar filtros
+              {t('filters.clear')}
             </button>
           </div>
         )}
@@ -710,7 +712,7 @@ const Explorer = () => {
 
 
       <div className="explorer-header">
-        <h1 className="centerTitle">Explorador</h1>
+        <h1 className="centerTitle">{t('title')}</h1>
       </div>
 
       {/* ── Grid de imágenes ─────────────────────────────────────────────── */}
@@ -725,7 +727,7 @@ const Explorer = () => {
             const extraImages = Math.max(0, totalImagesInPost - 1);
             const userLabel = item.user?.username
               ? (item.user.fullName || item.user.name || item.user.username)
-              : 'Usuario';
+              : t('user.defaultLabel');
             const isSaved = savedPosts.has(`${item.postId}-${item.imageUrl}`);
 
             return (
@@ -734,7 +736,7 @@ const Explorer = () => {
                 className="masonry-item"
                 onClick={() => handlePostClick(item.postId, item.imageUrl)}
               >
-                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || 'Imagen'} loading="lazy" />
+                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || t('user.defaultLabel')} loading="lazy" />
 
                 <div className="user-profile-hover">
                   <div className="user-info-hover">
@@ -755,7 +757,7 @@ const Explorer = () => {
                 <button
                   className={`save-button-explorer ${isSaved ? 'saved' : ''}`}
                   onClick={(e) => handleSavePost(e, item.postId, item.imageUrl)}
-                  aria-label={isSaved ? 'Guardada' : 'Guardar'}
+                  aria-label={isSaved ? t('save.saved') : t('save.action')}
                   type="button"
                 >
                   {isSaved ? (
@@ -764,7 +766,7 @@ const Explorer = () => {
                     <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
                   )}
                   <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
-                    {isSaved ? 'Guardada' : 'Guardar'}
+                    {isSaved ? t('save.tooltipSaved') : t('save.tooltipDefault')}
                   </span>
                 </button>
 
@@ -780,7 +782,7 @@ const Explorer = () => {
 
         {!loading && postImages.length === 0 && hasActiveFilters && (
           <div className="explorer-no-results">
-            <p>Sin resultados para los filtros aplicados.</p>
+            <p>{t('filters.noResults')}</p>
           </div>
         )}
 

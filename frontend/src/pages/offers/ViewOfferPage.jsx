@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { FaBuilding, FaMapMarkerAlt, FaCalendarAlt, FaBriefcase, FaLaptopHouse, FaClock, FaUserGraduate } from 'react-icons/fa';
 import '../../components/controlPanel/css/view-offer.css';
 import { clImg } from '../../utils/optimizeImage';
 
 const ViewOffer = () => {
+    const { t, i18n } = useTranslation('offers');
     const { offerId } = useParams();
     const navigate = useNavigate();
     const [offer, setOffer] = useState(null);
@@ -21,7 +23,7 @@ const ViewOffer = () => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 
                 if (!offerId) {
-                    setError('ID de oferta no proporcionado');
+                    setError(t('view.noId'));
                     setLoading(false);
                     return;
                 }
@@ -30,7 +32,7 @@ const ViewOffer = () => {
                 const response = await axios.get(`${backendUrl}/api/offers/${offerId}`);
                 
                 if (!response.data) {
-                    setError('No se recibieron datos de la oferta');
+                    setError(t('view.noData'));
                     setLoading(false);
                     return;
                 }
@@ -57,7 +59,7 @@ const ViewOffer = () => {
                     }
                 }
             } catch (err) {
-                setError('No se pudo cargar la información de la oferta. Por favor, inténtalo de nuevo más tarde.');
+                setError(t('view.loadError'));
             } finally {
                 setLoading(false);
             }
@@ -67,10 +69,10 @@ const ViewOffer = () => {
     }, [offerId]);
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'Fecha no disponible';
+        if (!dateString) return t('view.noDate');
         try {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('es-ES', options);
+            return new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'es-ES', options);
         } catch (error) {
             return dateString;
         }
@@ -93,7 +95,7 @@ const ViewOffer = () => {
         return (
             <div className="view-offer-loading-view">
                 <div className="loader-view"></div>
-                <p className="loading-indicator">Cargando detalles de la oferta...</p>
+                <p className="loading-indicator">{t('view.loading')}</p>
             </div>
         );
     }
@@ -101,9 +103,9 @@ const ViewOffer = () => {
     if (error) {
         return (
             <div className="view-offer-error-view">
-                <h2>Error</h2>
+                <h2>{t('view.notFoundTitle')}</h2>
                 <p>{error}</p>
-                <button onClick={() => navigate(-1)}>Volver</button>
+                <button onClick={() => navigate(-1)}>{t('view.back')}</button>
             </div>
         );
     }
@@ -111,9 +113,9 @@ const ViewOffer = () => {
     if (!offer) {
         return (
             <div className="view-offer-not-found-view">
-                <h2>Oferta no encontrada</h2>
-                <p>La oferta que buscas no existe o ha sido eliminada.</p>
-                <button onClick={() => navigate(-1)}>Volver</button>
+                <h2>{t('view.notFoundTitle')}</h2>
+                <p>{t('view.notFoundDesc')}</p>
+                <button onClick={() => navigate(-1)}>{t('view.back')}</button>
             </div>
         );
     }
@@ -125,7 +127,7 @@ const ViewOffer = () => {
                     {offer.companyLogo ? (
                         <img
                             src={clImg.logo(offer.companyLogo)}
-                            alt={`Logo de ${offer.companyName}`}
+                            alt={t('create.sidebar.headerImage')}
                             className="company-logo-view"
                         />
                     ) : (
@@ -135,12 +137,12 @@ const ViewOffer = () => {
                     )}
                     
                     <div className="offer-header-info-view">
-                        <h1 className="offer-title-view">{offer.position || 'Sin título'}</h1>
+                        <h1 className="offer-title-view">{offer.position || t('view.untitled')}</h1>
                         <div className="company-info-view">
-                            <span className="company-name-view">{offer.companyName || 'Empresa no especificada'}</span>
+                            <span className="company-name-view">{offer.companyName || t('view.noCompany')}</span>
                             <div className="offer-location-view">
                                 <FaMapMarkerAlt className="info-icon-view" />
-                                <span>{offer.city || 'Ubicación no especificada'}</span>
+                                <span>{offer.city || t('view.noLocation')}</span>
                             </div>
                         </div>
                     </div>
@@ -149,11 +151,11 @@ const ViewOffer = () => {
                 <div className="offer-header-right-view">
                     <div className="offer-date-view">
                         <FaCalendarAlt className="info-icon-view" />
-                        <span>Publicada el {formatDate(offer.publicationDate)}</span>
+                        <span>{t('view.publishedOn', { date: formatDate(offer.publicationDate) })}</span>
                     </div>
                     
                     <div className={`offer-status-view ${offer.status !== 'active' && offer.status !== 'accepted' ? 'closed-view' : ''}`}>
-                        {offer.status === 'active' || offer.status === 'accepted' ? 'Activa' : 'Cerrada'}
+                        {offer.status === 'active' || offer.status === 'accepted' ? t('view.statusActive') : t('view.statusClosed')}
                     </div>
                 </div>
             </div>
@@ -161,13 +163,13 @@ const ViewOffer = () => {
             <div className="offer-content-view">
                 <div className="offer-main-content-view">
                     <section className="offer-section-view">
-                        <h2 className="section-title-view">Detalles del puesto</h2>
+                        <h2 className="section-title-view">{t('view.detailsTitle')}</h2>
                         <div className="offer-details-grid-view">
                             {offer.jobType && (
                                 <div className="detail-item-view">
                                     <FaBriefcase className="detail-icon-view" />
                                     <div className="detail-info-view">
-                                        <h3>Tipo de contrato</h3>
+                                        <h3>{t('view.contractType')}</h3>
                                         <p>{offer.jobType}</p>
                                     </div>
                                 </div>
@@ -177,7 +179,7 @@ const ViewOffer = () => {
                                 <div className="detail-item-view">
                                     <FaLaptopHouse className="detail-icon-view" />
                                     <div className="detail-info-view">
-                                        <h3>Modalidad</h3>
+                                        <h3>{t('view.mode')}</h3>
                                         <p>{offer.locationType}</p>
                                     </div>
                                 </div>
@@ -187,7 +189,7 @@ const ViewOffer = () => {
                                 <div className="detail-item-view">
                                     <FaClock className="detail-icon-view" />
                                     <div className="detail-info-view">
-                                        <h3>Duración</h3>
+                                        <h3>{t('view.duration')}</h3>
                                         <p>{offer.duration}</p>
                                     </div>
                                 </div>
@@ -197,7 +199,7 @@ const ViewOffer = () => {
                                 <div className="detail-item-view">
                                     <FaUserGraduate className="detail-icon-view" />
                                     <div className="detail-info-view">
-                                        <h3>Experiencia</h3>
+                                        <h3>{t('view.experience')}</h3>
                                         <p>{offer.experienceYears}</p>
                                     </div>
                                 </div>
@@ -207,7 +209,7 @@ const ViewOffer = () => {
                     
                     {offer.description && (
                         <section className="offer-section-view">
-                            <h2 className="section-title-view">Descripción</h2>
+                            <h2 className="section-title-view">{t('view.description')}</h2>
                             <div className="offer-description-view">
                                 {typeof offer.description === 'string' ? 
                                     offer.description.split('\n').map((paragraph, index) => (
@@ -220,7 +222,7 @@ const ViewOffer = () => {
                     
                     {offer.functions && (
                         <section className="offer-section-view">
-                            <h2 className="section-title-view">Funciones</h2>
+                            <h2 className="section-title-view">{t('view.functions')}</h2>
                             <div className="offer-functions-view">
                                 {typeof offer.functions === 'string' ? 
                                     offer.functions.split('\n').map((paragraph, index) => (
@@ -233,7 +235,7 @@ const ViewOffer = () => {
                     
                     {offer.requiredProfile && (
                         <section className="offer-section-view">
-                            <h2 className="section-title-view">Perfil requerido</h2>
+                            <h2 className="section-title-view">{t('view.requiredProfile')}</h2>
                             <div className="offer-profile-view">
                                 {typeof offer.requiredProfile === 'string' ? 
                                     offer.requiredProfile.split('\n').map((paragraph, index) => (
@@ -246,7 +248,7 @@ const ViewOffer = () => {
                     
                     {(offer.tags && Array.isArray(offer.tags) && offer.tags.length > 0) && (
                         <section className="offer-section-view">
-                            <h2 className="section-title-view">Habilidades y conocimientos</h2>
+                            <h2 className="section-title-view">{t('view.skills')}</h2>
                             <div className="offer-tags-view">
                                 {offer.tags.map((tag, index) => (
                                     <span key={index} className="tag-view">{tag}</span>
@@ -258,13 +260,13 @@ const ViewOffer = () => {
                 
                 <div className="offer-sidebar-view">
                     <div className="action-panel-view">
-                        <h3 className="action-title-view">¿Te interesa esta oferta?</h3>
+                        <h3 className="action-title-view">{t('view.interested')}</h3>
                         
                         <button 
                             className="apply-button-view"
                             onClick={handleApply}
                         >
-                            {offer.isExternal ? 'Aplicar en la web externa' : 'Aplicar a esta oferta'}
+                            {offer.isExternal ? t('view.applyExternal') : t('view.apply')}
                         </button>
                         
                         {isOwner && (
@@ -273,23 +275,23 @@ const ViewOffer = () => {
                                     className="edit-button-view"
                                     onClick={handleEdit}
                                 >
-                                    Editar oferta
+                                    {t('view.editOffer')}
                                 </button>
                             </div>
                         )}
                     </div>
                     
                     <div className="company-panel-view">
-                        <h3 className="panel-title-view">Sobre la empresa</h3>
+                        <h3 className="panel-title-view">{t('view.aboutCompany')}</h3>
                         <div className="company-panel-info-view">
-                            <h4>{offer.companyName || 'Sin nombre de empresa'}</h4>
+                            <h4>{offer.companyName || t('view.noCompany')}</h4>
                             {offer.publisher && (
                                 typeof offer.publisher === 'object' && offer.publisher.username ? (
                                     <a href={`/profile/${offer.publisher.username}`} className="view-profile-link-view">
-                                        Ver perfil de la empresa
+                                        {t('view.viewProfile')}
                                     </a>
                                 ) : (
-                                    <p className="company-info-text-view">Empresa registrada en la plataforma</p>
+                                    <p className="company-info-text-view">{t('view.registeredCompany')}</p>
                                 )
                             )}
                         </div>

@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import '../../components/controlPanel/css/blog.css';
 import { FaSearch, FaSpinner, FaExclamationTriangle, FaCalendarAlt, FaUser, FaArrowRight } from 'react-icons/fa';
 
 const Blog = () => {
+    const { t, i18n } = useTranslation('blog');
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeCategory, setActiveCategory] = useState('all');
 
-    const categories = [
-        { id: 'all', name: 'Todos' },
-        { id: 'designers', name: 'Diseñadores' },
-        { id: 'industry', name: 'Industria' },
-        { id: 'education', name: 'Educación' },
-        { id: 'events', name: 'Eventos' }
-    ];
+    const getCategoryName = (id) => {
+        const keyMap = {
+            'all': t('categories.all'),
+            'designers': t('categories.designers'),
+            'industry': t('categories.industry'),
+            'education': t('categories.education'),
+            'events': t('categories.events')
+        };
+        return keyMap[id] || id;
+    };
 
     useEffect(() => {
         const fetchArticles = async () => {
@@ -36,10 +41,10 @@ const Blog = () => {
                     setArticles(response.data.data);
                     setError(null);
                 } else {
-                    setError('No se pudieron cargar los artículos del blog');
+                    setError(t('errorLoadArticles'));
                 }
             } catch (error) {
-                setError('Ocurrió un error al cargar los artículos. Por favor, inténtalo de nuevo más tarde.');
+                setError(t('errorRetry'));
             } finally {
                 setLoading(false);
             }
@@ -55,7 +60,7 @@ const Blog = () => {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         // Obtener la fecha formateada
-        let formattedDate = new Date(dateString).toLocaleDateString('es-ES', options);
+        let formattedDate = new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'es-ES', options);
         
         // Eliminar el punto al inicio si existe
         if (formattedDate.startsWith('.')) {
@@ -75,7 +80,7 @@ const Blog = () => {
             <div className="blog-container">
                 <div className="blog-loading">
                     <FaSpinner className="fa-spin" />
-                    <span className="loading-indicator">Cargando artículos...</span>
+                    <span className="loading-indicator">{t('loadingArticles')}</span>
                 </div>
             </div>
         );
@@ -95,9 +100,9 @@ const Blog = () => {
     return (
         <div className="blog-container">
             <div className="blog-header">
-                <h1>Blog</h1>
+                <h1>{t('title')}</h1>
                 <p className="blog-description">
-                    Explora las últimas noticias, tendencias y entrevistas del mundo de la moda
+                    {t('description')}
                 </p>
                 
                 <div className="blog-categories">
@@ -107,7 +112,7 @@ const Blog = () => {
                             className={`blog-category-button ${activeCategory === category.id ? 'active' : ''}`}
                             onClick={() => setActiveCategory(category.id)}
                         >
-                            {category.name}
+                            {getCategoryName(category.id)}
                         </button>
                     ))}
                 </div>
@@ -116,7 +121,7 @@ const Blog = () => {
             {articles.length === 0 ? (
                 <div className="blog-empty-state">
                     <FaSearch />
-                    <p className="loading-indicator">No se encontraron artículos en esta categoría</p>
+                    <p className="loading-indicator">{t('noArticles')}</p>
                 </div>
             ) : (
                 <>
@@ -142,7 +147,7 @@ const Blog = () => {
                                     <div>
                                         <div className="blog-card-meta-info">
                                             <div className="blog-card-category-label">
-                                                {categories.find(cat => cat.id === article.category)?.name || 'Categoría'}
+                                                {getCategoryName(article.category) || t('categoryFallback')}
                                             </div>
                                             <span className="blog-card-date">{formatDate(article.publishedDate)}</span>
                                         </div>
@@ -151,10 +156,10 @@ const Blog = () => {
                                     </div>
                                     <div className="blog-card-footer">
                                         <span className="blog-card-author">
-                                            {article.author || 'Anónimo'}
+                                            {article.author || t('anonymous')}
                                         </span>
                                         <span className="blog-card-link">
-                                            Leer más
+                                            {t('readMore')}
                                         </span>
                                     </div>
                                 </div>
@@ -184,7 +189,7 @@ const Blog = () => {
                                     <div>
                                         <div className="blog-card-meta-info">
                                             <div className="blog-card-category-label">
-                                                {categories.find(cat => cat.id === article.category)?.name || 'Categoría'}
+                                                {getCategoryName(article.category) || t('categoryFallback')}
                                             </div>
                                             <span className="blog-card-date">{formatDate(article.publishedDate)}</span>
                                         </div>
@@ -193,10 +198,10 @@ const Blog = () => {
                                     </div>
                                     <div className="blog-card-footer">
                                         <span className="blog-card-author">
-                                            {article.author || 'Anónimo'}
+                                            {article.author || t('anonymous')}
                                         </span>
                                         <span className="blog-card-link">
-                                            Leer más
+                                            {t('readMore')}
                                         </span>
                                     </div>
                                 </div>

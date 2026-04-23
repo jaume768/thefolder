@@ -1,5 +1,6 @@
 // src/components/controlPanel/editProfile/tabs/DirectorioTab.jsx
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { clImg } from "../../../../utils/optimizeImage";
 import editCard from "../../../../../public/iconos/edit-card.svg";
 import trashDelete from "../../../../../public/iconos/bin.png";
@@ -9,15 +10,16 @@ export default function DirectorioTab({
   onUpload,
   onDelete,
 }) {
+  const { t } = useTranslation("profile");
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
 
   return (
     <section className="ux-card">
       <div className="ux-iv-head">
-        <div className="ux-iv-title">Directorio de creativos</div>
+        <div className="ux-iv-title">{t("editProfile.directoryTitle")}</div>
         <div className="ux-iv-subtitle">
-          Elige la imagen que representa tu perfil en el directorio de creativos.
+          {t("editProfile.directorySubtitle")}
         </div>
       </div>
 
@@ -46,11 +48,11 @@ export default function DirectorioTab({
             if (e.key === "Enter" || e.key === " ") fileRef.current?.click();
           }}
           style={{ cursor: "pointer" }}
-          title="Haz clic para subir o cambiar imagen"
+          title={t("editProfile.clickToUpload")}
         >
           {uploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
           {coverImage ? (
-            <img src={clImg.thumb(coverImage)} alt="Imagen del directorio" />
+            <img src={clImg.thumb(coverImage)} alt={t("editProfile.directoryCaption")} />
           ) : (
             <div className="ux-iv-placeholder">
               <span className="ux-iv-camera">📷</span>
@@ -58,11 +60,11 @@ export default function DirectorioTab({
           )}
         </div>
 
-        <div className="ux-iv-caption">Imagen en el directorio de creativos</div>
+        <div className="ux-iv-caption">{t("editProfile.directoryCaption")}</div>
 
         <div className="ux-iv-actions">
           <button className="ux-link-btn" type="button" onClick={() => fileRef.current?.click()}>
-            <img src={editCard} className="ux-icon" alt="Editar" /> Editar
+            <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} /> {t("editProfile.edit")}
           </button>
           <span className="ux-iv-sep">|</span>
           <button
@@ -70,13 +72,13 @@ export default function DirectorioTab({
             type="button"
             onClick={onDelete}
           >
-            <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} /> Borrar
+            <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} /> {t("editProfile.delete")}
           </button>
         </div>
 
         <div className="ux-iv-hints" style={{ marginTop: 12 }}>
-          <div>Cualquier formato (JPG, PNG, HEIC…). Se optimiza automáticamente.</div>
-          <div className="ux-iv-note">El cambio puede tardar unos minutos en reflejarse.</div>
+          <div>{t("editProfile.directoryHints")}</div>
+          <div className="ux-iv-note">{t("editProfile.directoryNote")}</div>
         </div>
 
       </div>

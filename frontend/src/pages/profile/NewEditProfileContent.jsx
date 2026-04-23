@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import { FaTimes, FaCopy } from "react-icons/fa";
@@ -42,19 +43,19 @@ const splitName = (fullName = "") => {
   };
 };
 
-const MONTHS_ES = [
-  { value: 1, label: "Ene" },
-  { value: 2, label: "Feb" },
-  { value: 3, label: "Mar" },
-  { value: 4, label: "Abr" },
-  { value: 5, label: "May" },
-  { value: 6, label: "Jun" },
-  { value: 7, label: "Jul" },
-  { value: 8, label: "Ago" },
-  { value: 9, label: "Sep" },
-  { value: 10, label: "Oct" },
-  { value: 11, label: "Nov" },
-  { value: 12, label: "Dic" },
+const getMonths = (t) => [
+  { value: 1, label: t("months.jan").replace(".", "") },
+  { value: 2, label: t("months.feb").replace(".", "") },
+  { value: 3, label: t("months.mar").replace(".", "") },
+  { value: 4, label: t("months.apr").replace(".", "") },
+  { value: 5, label: t("months.may").replace(".", "") },
+  { value: 6, label: t("months.jun").replace(".", "") },
+  { value: 7, label: t("months.jul").replace(".", "") },
+  { value: 8, label: t("months.aug").replace(".", "") },
+  { value: 9, label: t("months.sep").replace(".", "") },
+  { value: 10, label: t("months.oct").replace(".", "") },
+  { value: 11, label: t("months.nov").replace(".", "") },
+  { value: 12, label: t("months.dec").replace(".", "") },
 ];
 
 const clampYearOptions = (span = 60) => {
@@ -111,8 +112,11 @@ const sortEducationByDateDesc = (arr = []) => {
 
 
 const NewEditProfileContent = () => {
+  const { t } = useTranslation("profile");
   const MAX_BIO = 450;
   const navigate = useNavigate();
+
+  const MONTHS_ES = useMemo(() => getMonths(t), [t]);
 
   const [profile, setProfile] = useState(null);
   const [draft, setDraft] = useState(null);
@@ -664,16 +668,16 @@ const saveEducation = (isDraft = false) => {
   const nameOk = (eduDraft.formationName || "").trim().length > 0;
 
   if (!isDraft && (!instOk || !nameOk)) {
-    alert("Completa al menos Institución y Nombre de la formación.");
+    alert(t("editProfile.alerts.eduRequired"));
     return;
   }
   if (isDraft && !instOk && !nameOk) {
-    alert("Añade al menos Institución o Nombre de la formación para guardar el borrador.");
+    alert(t("editProfile.alerts.eduDraftRequired"));
     return;
   }
 
   if (!isDraft && eduDraft.educationType === "OTRO" && !(eduDraft.educationOtherType || "").trim()) {
-    alert("Especifica el tipo de formación.");
+    alert(t("editProfile.alerts.eduTypeRequired"));
     return;
   }
 
@@ -709,7 +713,7 @@ const saveEducation = (isDraft = false) => {
     else base.push(clean);
   } else {
     if (base.length >= MAX_EDU) {
-      alert("Máximo 3 formaciones.");
+      alert(t("editProfile.alerts.eduMax"));
       return;
     }
     base.push(clean);
@@ -794,11 +798,11 @@ const saveExperience = (isDraft = false) => {
   const instOk = (expDraft.institution || "").trim().length > 0;
 
   if (!isDraft && (!titleOk || !instOk)) {
-    alert("Completa al menos Cargo y Empresa.");
+    alert(t("editProfile.alerts.expRequired"));
     return;
   }
   if (isDraft && !titleOk && !instOk) {
-    alert("Añade al menos Cargo o Empresa para guardar el borrador.");
+    alert(t("editProfile.alerts.expDraftRequired"));
     return;
   }
 
@@ -944,11 +948,11 @@ const savePress = (isDraft = false) => {
   const pubOk = (pressDraft.publication || "").trim().length > 0;
 
   if (!isDraft && (!titleOk || !pubOk)) {
-    alert("Completa al menos Título y Medio o publicación.");
+    alert(t("editProfile.alerts.pressRequired"));
     return;
   }
   if (isDraft && !titleOk && !pubOk) {
-    alert("Añade al menos el Título o el Medio para guardar como borrador.");
+    alert(t("editProfile.alerts.pressDraftRequired"));
     return;
   }
 
@@ -1080,16 +1084,16 @@ const saveAward = (isDraft = false) => {
   const issuerOk = (awardDraft.issuer || "").trim().length > 0;
 
   if (!isDraft && (!nameOk || !issuerOk)) {
-    alert("Completa al menos Nombre del reconocimiento y Emisor o institución.");
+    alert(t("editProfile.alerts.awardRequired"));
     return;
   }
   if (isDraft && !nameOk && !issuerOk) {
-    alert("Añade al menos el Nombre o el Emisor para guardar como borrador.");
+    alert(t("editProfile.alerts.awardDraftRequired"));
     return;
   }
 
   if (!isDraft && awardDraft.type === "Otro" && !(awardDraft.otherType || "").trim()) {
-    alert("Especifica el tipo de reconocimiento.");
+    alert(t("editProfile.alerts.awardTypeRequired"));
     return;
   }
 
@@ -1373,7 +1377,7 @@ const handleSocialUsernameChange = (e, network) => {
 
         setLoading(false);
       } catch (e) {
-        setError("No se pudo cargar tu perfil.");
+        setError(t("error"));
         setLoading(false);
         setPostsLoading(false);
       }
@@ -1667,35 +1671,35 @@ const setScrollTop = (root, top) => {
   const indexMap = useMemo(() => {
     if (topTab === "info") {
       return [
-        { id: "sec-foto", label: "Foto de perfil" },
+        { id: "sec-foto", label: t("editProfile.index.profilePhoto") },
         {
           id: "sec-nombre",
-          label: isCompany || isEducationalInstitution ? "Nombre de la empresa" : "Nombre y Apellido",
+          label: isCompany || isEducationalInstitution ? t("editProfile.index.companyName") : t("editProfile.index.fullName"),
         },
-        { id: "sec-ubicacion", label: "Ubicación" },
-        { id: "sec-especializacion", label: "Especialización" },
-        { id: "sec-bio", label: "Presentación corta" },
-        { id: "sec-email", label: "Email contacto" },
-        { id: "sec-web", label: "Sitio web" },
+        { id: "sec-ubicacion", label: t("editProfile.index.location") },
+        { id: "sec-especializacion", label: t("editProfile.index.specialization") },
+        { id: "sec-bio", label: t("editProfile.index.shortBio") },
+        { id: "sec-email", label: t("editProfile.index.contactEmail") },
+        { id: "sec-web", label: t("editProfile.index.website") },
       ];
     }
 
     if (topTab === "identidad") {
       return [
-        { id: "sec-iv-foto", label: "Foto de perfil" },
-        { id: "sec-iv-destacada", label: "Imagen destacada" },
+        { id: "sec-iv-foto", label: t("editProfile.index.profilePhoto") },
+        { id: "sec-iv-destacada", label: t("editProfile.index.featuredImage") },
       ];
     }
 
     if (topTab === "cv") {
       return [
-        { id: "sec-cv-biografia-personal", label: "Biografía personal" },
-        { id: "sec-cv-experiencia", label: "Experiencia laboral" },
-        { id: "sec-cv-formacion", label: "Formación educativa" },
-        { id: "sec-cv-hard", label: "HardSkills" },
-        { id: "sec-cv-soft", label: "SoftSkills" },
-        { id: "sec-cv-idiomas", label: "Idiomas" },
-        { id: "sec-cv-disponibilidad", label: "Disponibilidad laboral" },
+        { id: "sec-cv-biografia-personal", label: t("editProfile.index.personalBio") },
+        { id: "sec-cv-experiencia", label: t("editProfile.index.experience") },
+        { id: "sec-cv-formacion", label: t("editProfile.index.education") },
+        { id: "sec-cv-hard", label: t("editProfile.index.hardSkills") },
+        { id: "sec-cv-soft", label: t("editProfile.index.softSkills") },
+        { id: "sec-cv-idiomas", label: t("editProfile.index.languages") },
+        { id: "sec-cv-disponibilidad", label: t("editProfile.index.jobAvailability") },
       ];
     }
 
@@ -1789,50 +1793,50 @@ useEffect(() => {
   const MOCK_TEMPLATES = [
     {
       id: "fullscreen",
-      title: "Pantalla completa",
-      subtitle: "Tamaño recomendado: Horizontal 16:9",
+      title: t("editProfile.templates.fullscreen"),
+      subtitle: t("editProfile.templates.fullscreenSubtitle"),
       supportedViews: ["desktop", "mobile"],
     },
     {
       id: "fullscreen-alt",
-      title: "Pantalla completa · Texto alternativo",
-      subtitle: "Misma portada, texto en otra posición",
+      title: t("editProfile.templates.fullscreenAlt"),
+      subtitle: t("editProfile.templates.fullscreenAltSubtitle"),
       supportedViews: ["desktop", "mobile"],
     },
     {
       id: "centered",
-      title: "Imagen centrada",
-      subtitle: "Tamaño recomendado: Horizontal 16:9",
+      title: t("editProfile.templates.centered"),
+      subtitle: t("editProfile.templates.centeredSubtitle"),
       supportedViews: ["desktop"],
     },
     {
       id: "vertical-editorial",
-      title: "Vertical editorial",
-      subtitle: "Limpia y directa. Da todo el protagonismo a tu trabajo.",
+      title: t("editProfile.templates.verticalEditorial"),
+      subtitle: t("editProfile.templates.verticalEditorialSubtitle"),
       supportedViews: ["desktop"],
     },
     {
       id: "vertical-centered",
-      title: "Vertical centrada",
-      subtitle: "Tamaño recomendado: Vertical 4:5",
+      title: t("editProfile.templates.verticalCentered"),
+      subtitle: t("editProfile.templates.verticalCenteredSubtitle"),
       supportedViews: ["desktop"],
     },
     {
       id: "split-top",
-      title: "Split superior",
-      subtitle: "Texto arriba a la derecha, imagen ocupando la parte inferior.",
+      title: t("editProfile.templates.splitTop"),
+      subtitle: t("editProfile.templates.splitTopSubtitle"),
       supportedViews: ["desktop"],
     },
     {
       id: "split-image",
-      title: "Imagen superior",
-      subtitle: "Imagen arriba, nombre y tags en franja inferior.",
+      title: t("editProfile.templates.splitImage"),
+      subtitle: t("editProfile.templates.splitImageSubtitle"),
       supportedViews: ["mobile"],
     },
     {
       id: "vertical-card",
-      title: "Tarjeta vertical",
-      subtitle: "Imagen vertical centrada con texto debajo.",
+      title: t("editProfile.templates.verticalCard"),
+      subtitle: t("editProfile.templates.verticalCardSubtitle"),
       supportedViews: ["mobile"],
     },
   ];
@@ -1847,7 +1851,7 @@ useEffect(() => {
   if (loading) {
     return (
       <div className="user-extern-loading miPerfil-loading">
-        <p className="loading-indicator">Cargando perfil...</p>
+        <p className="loading-indicator">{t("loading")}</p>
       </div>
     );
   }
@@ -1855,9 +1859,9 @@ useEffect(() => {
   if (error) {
     return (
       <div className="user-extern-error miPerfil-error">
-        <h2>Error</h2>
+        <h2>{t("common.error")}</h2>
         <p>{error}</p>
-        <button onClick={() => navigate("/explorer")}>Volver al explorador</button>
+        <button onClick={() => navigate("/explorer")}>{t("backToExplorer")}</button>
       </div>
     );
   }
@@ -1885,13 +1889,13 @@ const coverPreviewImage =
 
       {/* Texto superior (como Guardados) */}
 <p className="creatives-subtitle --show-mobile">
-  Personaliza tu perfil, actualiza tu CV, conecta tus redes y define tu identidad visual.
+  {t("editProfile.subtitle")}
 </p>
 
 <div className="creatives-hero-inner miPerfil-hero">
 
   <div className="guardados-header miPerfil-header">
-    <h1 className="centerTitle guardados miPerfil-title">EDITA TU PERFIL</h1>
+    <h1 className="centerTitle guardados miPerfil-title">{t("editProfile.title")}</h1>
   </div>
 
     {/* Tabs principales (reemplazan sidebar) */}
@@ -1901,42 +1905,42 @@ const coverPreviewImage =
         className={`tab-save tab-save--small ${topTab === "info" ? "active" : ""}`}
         onClick={() => setTopTab("info")}
       >
-        Info de perfil
+        {t("editProfile.tabs.info")}
       </div>
 
       <div
         className={`tab-save tab-save--small ${topTab === "cv" ? "active" : ""}`}
         onClick={() => setTopTab("cv")}
       >
-        CV / Resumé
+        {t("editProfile.tabs.cv")}
       </div>
 
       <div
         className={`tab-save tab-save--small ${topTab === "redes" ? "active" : ""}`}
         onClick={() => setTopTab("redes")}
       >
-        Redes sociales
+        {t("editProfile.tabs.social")}
       </div>
 
       <div
         className={`tab-save tab-save--small ${topTab === "apariencia" ? "active" : ""}`}
         onClick={() => setTopTab("apariencia")}
       >
-        Apariencia
+        {t("editProfile.tabs.appearance")}
       </div>
 
       <div
         className={`tab-save tab-save--small ${topTab === "directorio" ? "active" : ""}`}
         onClick={() => setTopTab("directorio")}
       >
-        Directorio
+        {t("editProfile.tabs.directory")}
       </div>
 
       <div
         className={`tab-save tab-save--small ${topTab === "pdf" ? "active" : ""}`}
         onClick={() => setTopTab("pdf")}
       >
-        Archivos PDF
+        {t("editProfile.tabs.pdf")}
       </div>
     </div>
     </div>
@@ -1947,7 +1951,7 @@ const coverPreviewImage =
         <aside className="ux-left-sidebar">
           <div className="ux-left-profile">
             <div className="ux-left-avatar">
-              <img src={profileImage} alt="Foto de perfil" />
+              <img src={profileImage} alt={t("default.profilePictureAlt")} />
             </div>
 
             <h2 className="ux-left-name">
@@ -2177,7 +2181,7 @@ const coverPreviewImage =
       {/* MODALES */}
       <Modal
       open={confirmAvatarDeleteOpen}
-      title="Eliminar foto de perfil"
+      title={t("editProfile.modals.deleteAvatarTitle")}
       onClose={() => setConfirmAvatarDeleteOpen(false)}
       footer={
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
@@ -2186,7 +2190,7 @@ const coverPreviewImage =
       type="button"
       onClick={() => setConfirmAvatarDeleteOpen(false)}
       >
-      Cancelar
+      {t("editProfile.modals.cancel")}
       </button>
 
       <button
@@ -2197,19 +2201,19 @@ const coverPreviewImage =
       setConfirmAvatarDeleteOpen(false);
       }}
       >
-      Sí, eliminar
+      {t("editProfile.modals.confirmDelete")}
       </button>
       </div>
       }
       >
       <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
-      ¿Seguro que quieres eliminar tu foto de perfil? Se reemplazará por la imagen por defecto.
+      {t("editProfile.modals.deleteAvatarConfirm")}
       </p>
       </Modal>
 
       <Modal
         open={confirmExpDeleteOpen}
-        title="Eliminar experiencia"
+        title={t("editProfile.modals.deleteExpTitle")}
         onClose={() => {
           setConfirmExpDeleteOpen(false);
           setExpToDeleteIndex(null);
@@ -2224,23 +2228,23 @@ const coverPreviewImage =
                 setExpToDeleteIndex(null);
               }}
             >
-              Cancelar
+              {t("editProfile.modals.cancel")}
             </button>
 
             <button className="ux-btn primary ux-btn-danger" type="button" onClick={doDeleteExperience}>
-              Sí, eliminar
+              {t("editProfile.modals.confirmDelete")}
             </button>
           </div>
         }
       >
         <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
-          ¿Seguro que quieres eliminar esta experiencia? Esta acción no se puede deshacer.
+          {t("editProfile.modals.deleteExpConfirm")}
         </p>
       </Modal>
 
       <Modal
         open={confirmEduDeleteOpen}
-        title="Eliminar formación"
+        title={t("editProfile.modals.deleteEduTitle")}
         onClose={() => {
           setConfirmEduDeleteOpen(false);
           setEduToDeleteIndex(null);
@@ -2255,23 +2259,23 @@ const coverPreviewImage =
                 setEduToDeleteIndex(null);
               }}
             >
-              Cancelar
+              {t("editProfile.modals.cancel")}
             </button>
 
             <button className="ux-btn primary ux-btn-danger" type="button" onClick={doDeleteEducation}>
-              Sí, eliminar
+              {t("editProfile.modals.confirmDelete")}
             </button>
           </div>
         }
       >
         <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
-          ¿Seguro que quieres eliminar esta formación? Esta acción no se puede deshacer.
+          {t("editProfile.modals.deleteEduConfirm")}
         </p>
       </Modal>
 
       <Modal
         open={confirmPressDeleteOpen}
-        title="Eliminar publicación"
+        title={t("editProfile.modals.deletePressTitle")}
         onClose={() => {
           setConfirmPressDeleteOpen(false);
           setPressToDeleteIndex(null);
@@ -2286,22 +2290,22 @@ const coverPreviewImage =
                 setPressToDeleteIndex(null);
               }}
             >
-              Cancelar
+              {t("editProfile.modals.cancel")}
             </button>
             <button className="ux-btn primary ux-btn-danger" type="button" onClick={doDeletePress}>
-              Sí, eliminar
+              {t("editProfile.modals.confirmDelete")}
             </button>
           </div>
         }
       >
         <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
-          ¿Seguro que quieres eliminar esta publicación? Esta acción no se puede deshacer.
+          {t("editProfile.modals.deletePressConfirm")}
         </p>
       </Modal>
 
       <Modal
         open={confirmAwardDeleteOpen}
-        title="Eliminar reconocimiento"
+        title={t("editProfile.modals.deleteAwardTitle")}
         onClose={() => {
           setConfirmAwardDeleteOpen(false);
           setAwardToDeleteIndex(null);
@@ -2316,16 +2320,16 @@ const coverPreviewImage =
                 setAwardToDeleteIndex(null);
               }}
             >
-              Cancelar
+              {t("editProfile.modals.cancel")}
             </button>
             <button className="ux-btn primary ux-btn-danger" type="button" onClick={doDeleteAward}>
-              Sí, eliminar
+              {t("editProfile.modals.confirmDelete")}
             </button>
           </div>
         }
       >
         <p style={{ margin: 0, color: "#444", lineHeight: "1.5" }}>
-          ¿Seguro que quieres eliminar este reconocimiento? Esta acción no se puede deshacer.
+          {t("editProfile.modals.deleteAwardConfirm")}
         </p>
       </Modal>
 
@@ -2334,11 +2338,11 @@ const coverPreviewImage =
         <div className="success-popup-overlay" onClick={() => setShowEmailPopup(false)}>
           <div className="success-popup" onClick={(e) => e.stopPropagation()}>
             <div className="success-popup-header">
-              <h3>Información de contacto</h3>
+              <h3>{t("contact.popupTitle")}</h3>
               <button
                 className="email-popup-close"
                 onClick={() => setShowEmailPopup(false)}
-                title="Cerrar"
+                title={t("contact.closeTitle")}
               >
                 <FaTimes />
               </button>
@@ -2352,9 +2356,9 @@ const coverPreviewImage =
                     navigator.clipboard.writeText(draft?.email);
                     setShowEmailPopup(false);
                   }}
-                  title="Copiar email"
+                  title={t("contact.copy") + " email"}
                 >
-                  <FaCopy /> Copiar
+                  <FaCopy /> {t("contact.copy")}
                 </button>
               </div>
             </div>

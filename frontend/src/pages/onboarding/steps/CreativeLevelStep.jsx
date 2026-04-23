@@ -1,48 +1,22 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const LEVELS = [
-  {
-    value: 1,
-    name: 'Newcomer',
-    icon: 'newcomer.png',
-    desc: {
-      main: 'Estudiando actualmente.',
-    },
-  },
-  {
-    value: 2,
-    name: 'Graduated',
-    icon: 'graduated.png',
-    desc: {
-      main: 'Formación académica completada.',
-    },
-  },
-  {
-    value: 3,
-    name: 'Emerging',
-    icon: 'emerging.png',
-    desc: {
-      main: 'Freelance / proyectos propios.',
-    },
-  },
-  {
-    value: 4,
-    name: 'Professional',
-    icon: 'professional.png',
-    desc: {
-      main: 'Profesional en activo.',
-      sub: '— Sujeto a validación.',
-    },
-  },
+const BASE_LEVELS = [
+  { value: 1, key: 'newcomer', icon: 'newcomer.png' },
+  { value: 2, key: 'graduated', icon: 'graduated.png' },
+  { value: 3, key: 'emerging', icon: 'emerging.png' },
+  { value: 4, key: 'professional', icon: 'professional.png', hasSub: true },
 ];
 
-const CreativeLevelStep = ({ creativeLevel, onChange, onNext, onBack }) => (
+const CreativeLevelStep = ({ creativeLevel, onChange, onNext, onBack }) => {
+  const { t } = useTranslation('onboarding');
+  return (
   <div className="ob-center">
-    <h1 className="ob-title">¿En qué punto de tu carrera te encuentras?</h1>
-    <p className="ob-subtitle">Completa tu perfil profesional.</p>
+    <h1 className="ob-title">{t('creativeLevel.title')}</h1>
+    <p className="ob-subtitle">{t('creativeLevel.subtitle')}</p>
 
     <div className="ob-level-options">
-      {LEVELS.map(lvl => (
+      {BASE_LEVELS.map(lvl => (
         <button
           key={lvl.value}
           type="button"
@@ -50,19 +24,19 @@ const CreativeLevelStep = ({ creativeLevel, onChange, onNext, onBack }) => (
           onClick={() => onChange(lvl.value)}
         >
           <img className="ob-level-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
-          <span className="ob-level-btn__name">{lvl.name}</span>
+          <span className="ob-level-btn__name">{t(`creativeLevel.levels.${lvl.key}.name`)}</span>
           <span className="ob-level-btn__desc">
-            {lvl.desc.main}
-            {lvl.desc.sub && <>{' '}{lvl.desc.sub}</>}
+            {t(`creativeLevel.levels.${lvl.key}.main`)}
+            {lvl.hasSub && <>{' '}{t(`creativeLevel.levels.${lvl.key}.sub`)}</>}
           </span>
         </button>
       ))}
     </div>
 
     <div className="ob-buttons">
-      <button type="button" className="ob-back" onClick={onBack}>Volver atrás</button>
+      <button type="button" className="ob-back" onClick={onBack}>{t('common.back')}</button>
       <button className="ob-cta" disabled={!creativeLevel} onClick={onNext}>
-        CONTINUAR
+        {t('common.continue')}
       </button>
     </div>
 
@@ -74,6 +48,7 @@ const CreativeLevelStep = ({ creativeLevel, onChange, onNext, onBack }) => (
       <span className="dot" />
     </div>
   </div>
-);
+  );
+};
 
 export default CreativeLevelStep;

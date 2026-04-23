@@ -1,0 +1,40 @@
+{
+  "about": {
+    "title": "About THEFOLDER",
+    "section1": "THEFOLDER was born as a response to the <b>lack of visibility faced by creatives when they finish their studies.</b><br />Every year, projects with enormous creative value are generated that, due to lack of dissemination or connections, never get discovered, promoted, or recognized by the industry. Many are relegated to a profile with few followers, a final project that never leaves the classroom, or a fashion show with limited coverage.",
+    "section2": "Here, <b>your profile becomes your professional folder.</b> A platform connected directly with the industry, where uploading an image means presenting it to the professional world, without intermediaries or algorithms limiting your reach.<br /><br />At THEFOLDER, <b>talent is celebrated, projected, and connected with the professional sector, in an environment designed especially for fashion and emerging design.</b>",
+    "howTitle": "How?",
+    "howText": "A unique space that <b>brings together portfolios, CVs, job and educational offers, with advanced tools to filter talent and opportunities.</b>",
+    "whyTitle": "Why?",
+    "whyText": "Because emerging talent in fashion and design deserves a <b>real opportunity to project themselves towards the industry,</b> without depending on algorithms, contacts, or location.",
+    "contactTitle": "Contact",
+    "photoCredit": "Photographs by <a href='https://instagram.com/manel.png' target='_blank' rel='noopener noreferrer'>@manel.png</a>"
+  },
+  "avisoLegal": {
+    "title": "Legal Notice",
+    "version": "Updated: April 2026 · Version: 2.0"
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "version": "Updated: April 2026 · Version: 2.0"
+  },
+  "privacidad": {
+    "title": "Privacy Policy",
+    "version": "Updated: April 2026 · Version: 2.0"
+  },
+  "terminos": {
+    "title": "Terms and Conditions of Use",
+    "version": "Updated: April 2026 · Version: 1.0"
+  },
+  "contact": {
+    "back": "Back",
+    "title": "Contact",
+    "emailTitle": "Email",
+    "emailDescription": "For general inquiries, technical support, and collaborations.",
+    "addressTitle": "Address",
+    "socialTitle": "Follow us on social media",
+    "aboutTitle": "About TheFolderWorld",
+    "aboutText1": "TheFolderWorld is a digital platform designed to connect creatives with other creatives, industry professionals, and educational institutions within the fashion field. Our goal is to create a space where emerging talents can showcase their work, connect with professional and educational opportunities, and be part of a vibrant community of creatives.",
+    "aboutText2": "Founded in 2025 by Miriam Reina Bolaños, TheFolderWorld was born from the need to create a specialized meeting point for the fashion and design sector, with a focus on the visibility of new talents and the connection between different actors in the industry."
+  }
+}

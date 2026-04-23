@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import '../../components/controlPanel/css/jobOfferDetail.css';
 import ApplyOfferModal from '../../components/modals/ApplyOfferModal';
@@ -7,6 +8,7 @@ import { clImg } from '../../utils/optimizeImage';
 import { FaBookmark, FaRegBookmark, FaTimes } from 'react-icons/fa';
 
 const JobOfferDetail = () => {
+    const { t, i18n } = useTranslation('offers');
     const { offerId } = useParams();
     const navigate = useNavigate();
     const [offer, setOffer] = useState(null);
@@ -26,7 +28,7 @@ const JobOfferDetail = () => {
                 const response = await axios.get(`${backendUrl}/api/offers/${offerId}`);
                 setOffer(response.data.offer);
             } catch (error) {
-                setError('No se pudo cargar la información de la oferta');
+                setError(t('view.loadError'));
             } finally {
                 setLoading(false);
             }
@@ -94,7 +96,7 @@ const JobOfferDetail = () => {
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('es-ES', options);
+        return new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'es-ES', options);
     };
 
     const handleBack = () => {
@@ -151,7 +153,7 @@ const JobOfferDetail = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 setIsSaved(false);
-                setSaveFeedback({ show: true, text: "Oferta eliminada de guardados" });
+                setSaveFeedback({ show: true, text: t('view.removedFromSaved') });
             } else {
                 // Añadir a guardados
                 await axios.post(
@@ -160,7 +162,7 @@ const JobOfferDetail = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 setIsSaved(true);
-                setSaveFeedback({ show: true, text: "¡Oferta guardada!" });
+                setSaveFeedback({ show: true, text: t('view.savedFeedback') });
             }
             
             // Ocultar el feedback después de 2 segundos
@@ -177,13 +179,13 @@ const JobOfferDetail = () => {
         return (
             <div className="job-offer-loading-jobdetail">
                 <i className="fas fa-spinner fa-spin"></i>
-                <span className="loading-indicator">Cargando detalles de la oferta...</span>
+                <span className="loading-indicator">{t('view.loading')}</span>
             </div>
         );
     }
 
     if (error || !offer) {
-        return <div className="job-offer-error-jobdetail">{error || 'No se encontró la oferta'}</div>;
+        return <div className="job-offer-error-jobdetail">{error || t('view.notFoundTitle')}</div>;
     }
 
     return (
@@ -217,7 +219,7 @@ const JobOfferDetail = () => {
                     <div className="job-offer-title-row-jobdetail">
                         <h1 className="job-offer-position-jobdetail">{offer.position}</h1>
                         {offer.isUrgent && (
-                            <span className="urgent-label-jobdetail">Urgente</span>
+                            <span className="urgent-label-jobdetail">{t('view.urgent')}</span>
                         )}
                     </div>
                 </div>
@@ -247,16 +249,16 @@ const JobOfferDetail = () => {
                     </div>
                     <div className="job-offer-info-right-jobdetail">
                     <div className="job-offer-publication-date-jobdetail">
-                        Publicado: {formatDate(offer.publicationDate)}
+                        {t('view.publishedOn', { date: formatDate(offer.publicationDate) })}
                     </div>
                     <div className="job-offer-actions-jobdetail">
                         {userApplied ? (
                             <button className="apply-button-jobdetail applied-button" disabled>
-                                Ya inscrito
+                                {t('view.applied')}
                             </button>
                         ) : (
                             <button className="apply-button-jobdetail" onClick={handleOpenApplyModal}>
-                                Inscribirme a esta oferta
+                                {t('view.apply')}
                             </button>
                         )}
                         <button 
@@ -265,7 +267,7 @@ const JobOfferDetail = () => {
                             disabled={savingOffer}
                         >
                             {isSaved ? <FaBookmark /> : <FaRegBookmark />}
-                            <span>{isSaved ? "Guardada" : "Guardar"}</span>
+                            <span>{isSaved ? t('view.saved') : t('view.save')}</span>
                         </button>
                         {saveFeedback.show && (
                             <div className={`save-feedback ${saveFeedback.show ? 'show' : ''}`}>
@@ -279,34 +281,34 @@ const JobOfferDetail = () => {
                 {/* Contenido principal de la oferta */}
                 <div className="job-offer-content-jobdetail">
                 <section className="job-section-jobdetail">
-                    <h3 className="section-title-jobdetail">Descripción de la compañía</h3>
+                    <h3 className="section-title-jobdetail">{t('view.companyDescription')}</h3>
                     <div className="rich-text-jobdetail">
-                        {offer.companyDescription || `${offer.companyName} es una empresa en el sector de la moda.`}
+                        {offer.companyDescription || `${offer.companyName} ${t('view.companyDescriptionFallback')}`}
                     </div>
                 </section>
 
                 <section className="job-section-jobdetail">
-                    <h3 className="section-title-jobdetail">Descripción del puesto</h3>
+                    <h3 className="section-title-jobdetail">{t('view.jobDescription')}</h3>
                     <div className="rich-text-jobdetail">{offer.description}</div>
                 </section>
 
                 {offer.requiredProfile && (
                     <section className="job-section-jobdetail">
-                        <h3 className="section-title-jobdetail">Perfil requerido</h3>
+                        <h3 className="section-title-jobdetail">{t('view.requiredProfile')}</h3>
                         <div className="rich-text-jobdetail">{offer.requiredProfile}</div>
                     </section>
                 )}
 
                 {offer.functions && (
                     <section className="job-section-jobdetail">
-                        <h3 className="section-title-jobdetail">Funciones</h3>
+                        <h3 className="section-title-jobdetail">{t('view.functions')}</h3>
                         <div className="rich-text-jobdetail">{offer.functions}</div>
                     </section>
                 )}
 
                 {offer.tags && offer.tags.length > 0 && (
                     <section className="job-section-jobdetail">
-                        <h3 className="section-title-jobdetail">Hard Skills / Habilidades técnicas</h3>
+                        <h3 className="section-title-jobdetail">{t('view.hardSkills')}</h3>
                         <div className="tags-container-jobdetail">
                             {offer.tags.slice(0, 5).map((tag, index) => (
                                 <span key={index} className="skill-tag-jobdetail hard-skill-jobdetail">
@@ -315,7 +317,7 @@ const JobOfferDetail = () => {
                             ))}
                         </div>
                         
-                        <h3 className="section-title-jobdetail">Soft Skills / Habilidades personales</h3>
+                        <h3 className="section-title-jobdetail">{t('view.softSkills')}</h3>
                         <div className="tags-container-jobdetail">
                             {offer.tags.slice(5).map((tag, index) => (
                                 <span key={index} className="skill-tag-jobdetail soft-skill-jobdetail">
@@ -328,15 +330,15 @@ const JobOfferDetail = () => {
 
                 {offer.isExternal && (
                     <section className="job-section-jobdetail">
-                        <h3 className="section-title-jobdetail">Oferta externa</h3>
-                        <p>Esta oferta proviene de un sitio externo. Para aplicar, visita el sitio web de la empresa.</p>
+                        <h3 className="section-title-jobdetail">{t('view.externalTitle')}</h3>
+                        <p>{t('view.externalDesc')}</p>
                         <a
                             href={offer.externalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="external-link-button-jobdetail"
                         >
-                            Ir a la oferta externa <i className="fas fa-external-link-alt"></i>
+                            {t('view.externalLink')} <i className="fas fa-external-link-alt"></i>
                         </a>
                     </section>
                 )}

@@ -1,10 +1,12 @@
 // CompleteRegistrationCreativo.jsx
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/thefolder-logotipo.png";
 import "../css/complete-registration.css";
 
 const CompleteRegistrationCreativo = () => {
+  const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
   const location = useLocation();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -158,11 +160,11 @@ const CompleteRegistrationCreativo = () => {
   // =========================
   const handleNext = async () => {
     if (!isValid) {
-      setError("Por favor, completa todos los campos requeridos.");
+      setError(t("errors.allFieldsRequired"));
       return;
     }
     if (!isAgeValid()) {
-      setError("La fecha de nacimiento es incorrecta.");
+      setError(t("errors.invalidDate"));
       return;
     }
 
@@ -193,10 +195,10 @@ const CompleteRegistrationCreativo = () => {
         localStorage.removeItem(DRAFT_KEY); // limpio borrador
         navigate("/photo/registro/03");
       } else {
-        setError(data?.error || "No se pudieron guardar los datos.");
+        setError(data.error || t("errors.saveFailed"));
       }
     } catch {
-      setError("Error de red. Inténtalo de nuevo.");
+      setError(t("errors.connection"));
     }
   };
 
@@ -207,89 +209,90 @@ const CompleteRegistrationCreativo = () => {
       </div>
 
       <div className="ob-center">
-        <h1 className="ob-title">Cuéntanos sobre ti</h1>
-
-        <p className="ob-subtitle">
-          Esta información nos ayuda a personalizar tu experiencia
-          <br />
-          y a mostrar tu perfil correctamente a otros usuarios.
+        <h1 className="complete-registration__title">{t("personal.title")}</h1>
+        <p className="complete-registration__subtitle">
+          {t("personal.subtitle")}
         </p>
 
         <div className="ob-form">
           <div className="ob-grid-2">
             <div className="ob-field">
-              <label className="ob-label">Nombre</label>
+              <label className="complete-registration__label">{t("personal.firstName")}</label>
               <input
-                className="ob-input-box"
+                className="complete-registration__input"
+                type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="María"
+                placeholder={t("personal.firstNamePlaceholder")}
               />
             </div>
 
             <div className="ob-field">
-              <label className="ob-label">Apellido/s</label>
+              <label className="complete-registration__label">{t("personal.lastName")}</label>
               <input
-                className="ob-input-box"
+                className="complete-registration__input"
+                type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                placeholder="García"
+                placeholder={t("personal.lastNamePlaceholder")}
               />
             </div>
           </div>
 
-          <div className="ob-label-row">Ubicación</div>
+          <div className="ob-label-row">{t("personal.location")}</div>
 
           <div className="ob-grid-2">
             <div className="ob-field">
               <input
-                className="ob-input-box"
+                className="complete-registration__input"
+                type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Ciudad"
+                placeholder={t("personal.cityPlaceholder")}
               />
             </div>
 
             <div className="ob-field">
               <input
-                className="ob-input-box"
+                className="complete-registration__input"
+                type="text"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                placeholder="País"
+                placeholder={t("personal.countryPlaceholder")}
               />
             </div>
           </div>
 
           <div className="ob-mini-hint">
-            Se mostrará en tu perfil (puedes cambiarlo más adelante).
+            {t("personal.publicHint")}
           </div>
 
           <div className="ob-field">
-            <label className="ob-label">Fecha de nacimiento</label>
+            <label className="complete-registration__label">{t("personal.dateOfBirth")}</label>
             <input
-              className="ob-input-box"
+              className="complete-registration__input"
               type="date"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
               max={new Date().toISOString().split("T")[0]}
             />
-            <div className="ob-mini-hint">No se muestra públicamente.</div>
+            <div className="ob-mini-hint">{t("personal.privateHint")}</div>
           </div>
         </div>
 
         {error && <p className="ob-error">{error}</p>}
 
         <div className="ob-buttons">
-          <button type="button" className="ob-back" onClick={handleBack}>
-            Volver atrás
+          <button className="complete-registration__button --back" onClick={handleBack}>
+            ← {t("common.back")}
           </button>
 
           <button
-            className="ob-cta"
-            disabled={!userLoaded || !isValid}
+            className="complete-registration__button --submit"
             onClick={handleNext}
+            disabled={!userLoaded || !isValid}
           >
-            {userLoaded ? "CONTINUAR" : "CARGANDO..."}
+            {userLoaded ? t("common.continue") : t("common.loading")}
           </button>
         </div>
 

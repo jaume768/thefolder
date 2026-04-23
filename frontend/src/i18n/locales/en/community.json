@@ -1,0 +1,36 @@
+{
+  "title": "My community",
+  "subtitle": "Discover the profiles you follow and your followers. Explore your network, find relevant connections and filter by city or specialty.",
+  "tabs": {
+    "following": "Following",
+    "followers": "Followers"
+  },
+  "loading": "Loading profiles...",
+  "errorFollowing": "Could not load following.",
+  "errorFollowers": "Could not load followers.",
+  "emptyFollowing": "You don't follow any profile. Explore the platform to find interesting profiles.",
+  "emptyFollowers": "You have no followers. Share your profile so other users can discover you.",
+  "noResultsFilters": "No results found with the applied filters.",
+  "levels": {
+    "newcomer": "Students or recent graduates.",
+    "graduated": "Completed training.",
+    "emerging": "1-3 years of experience.",
+    "professional": "Solid career and portfolio."
+  },
+  "filters": {
+    "title": "Filters",
+    "experience": "Experience",
+    "location": "Location",
+    "others": "Others",
+    "specialty": "Specialty",
+    "noProfilesInCountry": "No profiles in this country",
+    "clear": "Clear filters",
+    "apply": "Filter",
+    "remove": "Remove {{label}}"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{totalPages}}"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "loading": "Loading...",
+  "errorLoad": "Could not load institutions. Please reload the page or try again later.",
+  "noResults": "No institutions found with the selected filters.",
+  "title": "Study Fashion",
+  "subtitle": "Explore options to study fashion. A directory with all the information you need to discover your next educational training. Filter by level, modality, and location to find the training that best suits your creative profile.",
+  "filters": {
+    "title": "Filters",
+    "open": "Open filters",
+    "searchPlaceholder": "Search",
+    "country": "Country",
+    "city": "City",
+    "level": "Level",
+    "modality": "Modality",
+    "category": "Category",
+    "centerType": "Center type",
+    "all": "All",
+    "public": "Public",
+    "private": "Private",
+    "formationType": "Formation type",
+    "apply": "Apply filters",
+    "clear": "Clear filters"
+  },
+  "institution": {
+    "inPerson": "In-person",
+    "hybrid": "Hybrid",
+    "public": "Public",
+    "private": "Private",
+    "officialWebsite": "Official website",
+    "more": "more"
+  }
+}

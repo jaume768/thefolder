@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FaTimes, FaCopy } from "react-icons/fa";
 import LandingHeader from "../../components/landing/LandingHeader";
 
@@ -44,6 +45,7 @@ const ProfileStudioGallery = ({
   isCompany,
   isEducationalInstitution,
 }) => {
+  const { t } = useTranslation("profile");
   const navigate = useNavigate();
   const [showEmailPopup, setShowEmailPopup] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
@@ -91,13 +93,13 @@ const ProfileStudioGallery = ({
             onLoginClick={() => navigate("/", { state: { showLogin: true } })}
             onRegisterClick={() => navigate("/", { state: { showRegister: true } })}
           />
-          <div className="tf-guest-profile" role="dialog" aria-label="Invitación registro">
+          <div className="tf-guest-profile" role="dialog" aria-label={t("guestAriaLabel")}>
             <button
               type="button"
               className="tf-btn tf-btn--CTA"
               onClick={() => navigate("/", { state: { showRegister: true } })}
             >
-              Crea tu perfil
+              {t("guestCta")}
               <br />
               en THEFOLDER ↗
             </button>
@@ -136,7 +138,7 @@ const ProfileStudioGallery = ({
                 className="psg-action-btn"
                 onClick={() => setShowEmailPopup(true)}
               >
-                Contactar
+                {t("contact.button")}
               </button>
             )}
           </nav>
@@ -160,12 +162,12 @@ const ProfileStudioGallery = ({
           {activeTab === "publicaciones" && (
             <>
               {postsLoading ? (
-                <p className="psg-status">Cargando proyectos…</p>
+                <p className="psg-status">{t("loadingProjects")}</p>
               ) : userPosts.length === 0 ? (
                 <p className="psg-status">
                   {isOwner
-                    ? "Aún no has publicado ningún proyecto."
-                    : "Este perfil todavía no tiene publicaciones."}
+                    ? t("emptyPosts")
+                    : t("emptyPostsExternal")}
                 </p>
               ) : (
                 <div className="psg-grid">
@@ -189,7 +191,7 @@ const ProfileStudioGallery = ({
                           <img
                             className="psg-card__image"
                             src={clImg.post(coverImg)}
-                            alt={post.title || "Proyecto"}
+                            alt={post.title || t("project")}
                             loading="lazy"
                           />
                         ) : (
@@ -247,7 +249,7 @@ const ProfileStudioGallery = ({
                       className="psg-action-btn"
                       onClick={() => navigate("/myprofile/edit")}
                     >
-                      Editar perfil
+                      {t("editProfileBtn")}
                     </button>
                   )}
 
@@ -259,7 +261,7 @@ const ProfileStudioGallery = ({
                         className="psg-action-btn"
                         onClick={() => setShowEmailPopup(true)}
                       >
-                        Contactar
+                        {t("contact.button")}
                       </button>
                     </>
                   )}
@@ -273,7 +275,7 @@ const ProfileStudioGallery = ({
                         onClick={isFollowing ? handleUnfollow : handleFollow}
                         disabled={followLoading}
                       >
-                        {followLoading ? "…" : isFollowing ? "Siguiendo" : "Seguir +"}
+                        {followLoading ? "…" : isFollowing ? t("follow.following") : t("follow.follow")}
                       </button>
                     </>
                   )}
@@ -317,11 +319,11 @@ const ProfileStudioGallery = ({
         <div className="success-popup-overlay" onClick={() => setShowEmailPopup(false)}>
           <div className="success-popup" onClick={(e) => e.stopPropagation()}>
             <div className="success-popup-header">
-              <h3>Información de contacto</h3>
+              <h3>{t("contact.popupTitle")}</h3>
               <button
                 className="email-popup-close"
                 onClick={() => setShowEmailPopup(false)}
-                title="Cerrar"
+                title={t("contact.closeTitle")}
               >
                 <FaTimes />
               </button>
@@ -339,9 +341,9 @@ const ProfileStudioGallery = ({
                       setShowEmailPopup(false);
                     }, 1200);
                   }}
-                  title="Copiar email"
+                  title={t("contact.copy")}
                 >
-                  <FaCopy /> {emailCopied ? "Copiado" : "Copiar"}
+                  <FaCopy /> {emailCopied ? t("copied") : t("contact.copy")}
                 </button>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import HeaderSection from './HeaderSection';
@@ -10,6 +11,7 @@ import { formatDate, formatPrice, formatDuration } from './utils';
 import '../css/jobOfferDetail.css';
 
 const EducationalOfferDetail = () => {
+    const { t } = useTranslation('offers');
     const { offerId } = useParams();
     const navigate = useNavigate();
     const [offer, setOffer] = useState(null);
@@ -24,7 +26,7 @@ const EducationalOfferDetail = () => {
                 const response = await axios.get(`${backendUrl}/api/offers/educational/${offerId}`);
                 setOffer(response.data.offer);
             } catch (error) {
-                setError('No se pudo cargar la información de la oferta educativa');
+                setError(t('view.loadErrorEducational'));
             } finally {
                 setLoading(false);
             }
@@ -39,13 +41,13 @@ const EducationalOfferDetail = () => {
         return (
             <div className="job-offer-loading-jobdetail">
                 <i className="fas fa-spinner fa-spin"></i>
-                <span className="loading-indicator">Cargando detalles de la oferta educativa...</span>
+                <span className="loading-indicator">{t('view.loadingEducational')}</span>
             </div>
         );
     }
 
     if (error || !offer) {
-        return <div className="job-offer-error-jobdetail">{error || 'No se encontró la oferta educativa'}</div>;
+        return <div className="job-offer-error-jobdetail">{error || t('view.notFoundEducational')}</div>;
     }
 
     const handleBack = () => {
@@ -67,7 +69,7 @@ const EducationalOfferDetail = () => {
     return (
         <div className="job-offer-detail-container-jobdetail">
             <button onClick={handleBack} className="back-button-jobdetail">
-                <i className="fas fa-arrow-left"></i> Volver
+                <i className="fas fa-arrow-left"></i> {t('view.back')}
             </button>
             
             <HeaderSection 
@@ -87,14 +89,14 @@ const EducationalOfferDetail = () => {
 
                 {offer.requirements && (
                     <DescriptionSection 
-                        title="Requisitos" 
+                        title={t('view.requirements')} 
                         content={offer.requirements} 
                     />
                 )}
 
                 {offer.syllabus && (
                     <DescriptionSection 
-                        title="Plan de estudios" 
+                        title={t('view.syllabus')} 
                         content={offer.syllabus} 
                     />
                 )}

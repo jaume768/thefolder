@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { FaArrowLeft, FaTrash, FaEllipsisV } from 'react-icons/fa';
 import '../../components/controlPanel/css/FolderContent.css';
 import { clImg } from '../../utils/optimizeImage';
 
 const FolderContent = () => {
+    const { t } = useTranslation('saved');
     const { folderId } = useParams();
     const navigate = useNavigate();
     const [folder, setFolder] = useState(null);
@@ -131,7 +133,7 @@ const FolderContent = () => {
             // Mostrar notificación
             setNotification({
                 show: true,
-                message: 'Imagen devuelta a guardados',
+                message: t('folder.returned'),
                 type: 'success'
             });
             
@@ -146,7 +148,7 @@ const FolderContent = () => {
         } catch (error) {
             setNotification({
                 show: true,
-                message: 'Error al eliminar la imagen',
+                message: t('folder.removeError'),
                 type: 'error'
             });
             
@@ -159,7 +161,7 @@ const FolderContent = () => {
     if (loading) {
         return (
             <div className="folder-content-container">
-                <div className="loading-indicator">Cargando contenido...</div>
+                <div className="loading-indicator">{t('folder.loadingContent')}</div>
             </div>
         );
     }
@@ -169,13 +171,13 @@ const FolderContent = () => {
             <div className="folder-content-header">
                 <div className="breadcrumbs-div">
                     <button className="breadcrumbs back" onClick={goBack}>
-                       🡠 Guardados/
+                       {t('folder.back')}
                     </button>
-                    <p className="breadcrumbs active">{folder ? folder.name : 'Carpeta'}</p>
+                    <p className="breadcrumbs active">{folder ? folder.name : t('folder.folder')}</p>
                 </div>
-                <h1 className="centerTitle guardados">{folder ? folder.name : 'Carpeta'}</h1>
+                <h1 className="centerTitle guardados">{folder ? folder.name : t('folder.folder')}</h1>
                 <div className="folder-stats">
-                    {folderItems.length} {folderItems.length === 1 ? 'imagen' : 'imágenes'}
+                    {folderItems.length} {folderItems.length === 1 ? t('folder.image') : t('folder.images')}
                 </div>
             </div>
 
@@ -189,7 +191,7 @@ const FolderContent = () => {
                         >
                             <img
                                 src={clImg.post(item.imageUrl)}
-                                alt="Imagen guardada"
+                                alt={t('folder.savedImage')}
                                 className="masonry-img"
                                 loading="lazy"
                                 decoding="async"
@@ -200,10 +202,10 @@ const FolderContent = () => {
                                 <button
                                     className="item-menu-button"
                                     onClick={(e) => confirmDeleteItem(item, e)}
-                                    aria-label="Quitar de la carpeta"
-                                    title="Quitar de la carpeta"
+                                    aria-label={t('folder.removeFromFolder')}
+                                    title={t('folder.removeFromFolder')}
                                 >
-                                    <img src="/iconos/bin.png" alt="Eliminar" className="button-icon folder invert" />
+                                    <img src="/iconos/bin.png" alt="" className="button-icon folder invert" />
                                 </button>
                             </div>
                         </div>
@@ -211,8 +213,8 @@ const FolderContent = () => {
                 </div>
             ) : (
                 <div className="empty-folder-message">
-                    <p>Esta carpeta está vacía.</p>
-                    <p>Guarda imágenes desde la sección "Ordena tus imágenes"</p>
+                    <p>{t('folder.emptyFolder')}</p>
+                    <p>{t('folder.emptyHint')}</p>
                 </div>
             )}
 
@@ -220,11 +222,11 @@ const FolderContent = () => {
             {showDeleteConfirm && (
                 <div className="delete-confirm-overlay">
                     <div className="delete-confirm-dialog">
-                        <h3>¿Quitar de la carpeta?</h3>
-                        <p>Esta imagen se devolverá a tus guardados.</p>
+                        <h3>{t('folder.removeTitle')}</h3>
+                        <p>{t('folder.removeDesc')}</p>
                         <div className="delete-confirm-buttons">
-                            <button className="cancel-button" onClick={cancelDelete}>Cancelar</button>
-                            <button className="confirm-button" onClick={removeItemFromFolder}>Confirmar</button>
+                            <button className="cancel-button" onClick={cancelDelete}>{t('cancel')}</button>
+                            <button className="confirm-button" onClick={removeItemFromFolder}>{t('folder.confirm')}</button>
                         </div>
                     </div>
                 </div>

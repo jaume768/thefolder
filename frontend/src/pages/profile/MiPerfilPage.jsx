@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import "../../components/controlPanel/css/miPerfil.css";
 import { clImg } from "../../utils/optimizeImage";
@@ -31,6 +32,7 @@ import chevronDown from "../../../public/iconos/chevrondown.svg";
 
 const MiPerfil = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("profile");
 
   const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState("publicaciones");
@@ -113,7 +115,7 @@ const MiPerfil = () => {
 
         setLoading(false);
       } catch (e) {
-        setError("No se pudo cargar tu perfil.");
+        setError(t("error"));
         setLoading(false);
         setPostsLoading(false);
       }
@@ -174,7 +176,7 @@ const MiPerfil = () => {
   if (loading) {
     return (
       <div className="user-extern-loading miPerfil-loading">
-        <p className="loading-indicator">Cargando perfil...</p>
+        <p className="loading-indicator">{t("loading")}</p>
       </div>
     );
   }
@@ -182,9 +184,9 @@ const MiPerfil = () => {
   if (error) {
     return (
       <div className="user-extern-error miPerfil-error">
-        <h2>Error</h2>
+        <h2>{t("common.error")}</h2>
         <p>{error}</p>
-        <button onClick={() => navigate("/explorer")}>Volver al explorador</button>
+        <button onClick={() => navigate("/explorer")}>{t("backToExplorer")}</button>
       </div>
     );
   }
@@ -194,8 +196,8 @@ const MiPerfil = () => {
 
   const heroName =
     isCompany || isEducationalInstitution
-      ? profile?.companyName || "Mi empresa"
-      : profile?.fullName || "Mi nombre";
+      ? profile?.companyName || t("default.companyName")
+      : profile?.fullName || t("default.fullName");
 
 
 
@@ -235,7 +237,7 @@ const MiPerfil = () => {
 
 return (
   <div className="user-extern-container miPerfil-container">
-    {/* ✅ mismo header externo */}
+    {/* mismo header externo */}
     <ExternalProfileHeader
       activeTab={activeTab}
       setActiveTab={setActiveTab}
@@ -267,7 +269,7 @@ return (
             <div className="resume-avatar-wrapper miPerfil-avatar-wrapper">
               <img
                 src={profileImage}
-                alt={profile?.username || "Foto de perfil"}
+                alt={profile?.username || t("default.profilePictureAlt")}
                 className="resume-avatar miPerfil-avatar"
               />
             </div>
@@ -276,8 +278,8 @@ return (
           <div className="title-user-extern-container miPerfil-title-container">
             <h1 className="user-extern-fullname miPerfil-fullname">
               {isCompany || isEducationalInstitution
-                ? profile?.companyName || "Mi empresa"
-                : profile?.fullName || "Mi nombre"}
+                ? profile?.companyName || t("default.companyName")
+                : profile?.fullName || t("default.fullName")}
             </h1>
 
             {Array.isArray(profile?.professionalTags) && profile.professionalTags.length > 0 && (
@@ -313,7 +315,7 @@ return (
             </div>
           )}
 
-          {/* ✅ mismos botones/espaciados, pero versión “mi perfil” */}
+          {/* mismos botones/espaciados, pero versión “mi perfil” */}
           <div className="user-extern-action-buttons miPerfil-action-buttons">
             <div className="button-group miPerfil-button-group">
               {profile?.email && (
@@ -321,7 +323,7 @@ return (
                   className="resume-contact-btn miPerfil-email-btn"
                   onClick={() => setShowEmailPopup(true)}
                 >
-                  Contactar
+                  {t("contact.button")}
                 </button>
               )}
             </div>
@@ -347,7 +349,7 @@ return (
 
             {profile?.social?.representationName && (
               <div className="resume-website resume-representation miPerfil-website">
-                <span className="resume-representation__label">Represented by </span>
+                <span className="resume-representation__label">{t("representation.label")}</span>
                 {profile.social.representationWeb ? (
                   <button
                     type="button"
@@ -376,7 +378,7 @@ return (
           className={`tab portfolio ${activeTab === "publicaciones" ? "active" : ""}`}
           onClick={() => setActiveTab("publicaciones")}
         >
-          Portfolio
+          {t("tabs.portfolio")}
         </button>
 
         <button
@@ -384,7 +386,7 @@ return (
           className={`tab portfolio ${activeTab === "perfil" ? "active" : ""}`}
           onClick={() => setActiveTab("perfil")}
         >
-          CV / Resumé
+          {t("tabs.cv")}
         </button>
       </nav>
 
@@ -394,7 +396,7 @@ return (
           <UserGallery
             posts={userPosts}
             loading={postsLoading}
-            emptyMessage="Todavía no tienes publicaciones."
+            emptyMessage={t("emptyPosts")}
           />
         )}
 
@@ -468,13 +470,13 @@ return (
     {/* POPUP EMAIL */}
     {showEmailPopup && (
       <div className="success-popup-overlay" onClick={() => setShowEmailPopup(false)}>
-        <div className="success-popup" onClick={(e) => e.stopPropagation()}>
+          <div className="success-popup" onClick={(e) => e.stopPropagation()}>
           <div className="success-popup-header">
-            <h3>Información de contacto</h3>
+            <h3>{t("contact.popupTitle")}</h3>
             <button
               className="email-popup-close"
               onClick={() => setShowEmailPopup(false)}
-              title="Cerrar"
+                title={t("contact.closeTitle")}
             >
               <FaTimes />
             </button>
@@ -488,9 +490,9 @@ return (
                   navigator.clipboard.writeText(profile?.email);
                   setShowEmailPopup(false);
                 }}
-                title="Copiar email"
+                title={t("contact.copy")}
               >
-                <FaCopy /> Copiar
+                <FaCopy /> {t("contact.copy")}
               </button>
             </div>
           </div>
@@ -508,12 +510,12 @@ return (
         aria-modal="true"
       >
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <p className="modal-content-title">Estás saliendo de la plataforma</p>
-          <p className="modal-content-subtitle">Verifica el enlace antes de continuar.</p>
+          <p className="modal-content-title">{t("externalLink.title")}</p>
+          <p className="modal-content-subtitle">{t("externalLink.subtitle")}</p>
           <div className="modal-content-link">{externalLinkModal.url}</div>
           <div className="modal-actions">
             <button onClick={() => setExternalLinkModal({ open: false, url: "" })}>
-              Cancelar
+              {t("externalLink.cancel")}
             </button>
             <button
               onClick={() => {
@@ -521,7 +523,7 @@ return (
                 setExternalLinkModal({ open: false, url: "" });
               }}
             >
-              Continuar
+              {t("externalLink.continue")}
             </button>
           </div>
         </div>

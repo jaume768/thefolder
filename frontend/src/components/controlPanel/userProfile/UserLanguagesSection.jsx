@@ -1,14 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
-const levelLabel = (lvl) => {
-  if (lvl === "basic") return "Básico";
-  if (lvl === "intermediate") return "Intermedio";
-  if (lvl === "advanced") return "Nativo";
-  if (lvl === "native") return "Nativo";
+const levelLabel = (t, lvl) => {
+  if (lvl === "basic") return t("languageLevels.basic");
+  if (lvl === "intermediate") return t("languageLevels.intermediate");
+  if (lvl === "advanced") return t("languageLevels.advanced");
+  if (lvl === "native") return t("languageLevels.native");
   return "";
 };
 
 const UserLanguagesSection = ({ languages = [] }) => {
+  const { t } = useTranslation("profile");
   const arr = Array.isArray(languages) ? languages : [];
 
   const normalized = arr
@@ -28,12 +30,12 @@ const UserLanguagesSection = ({ languages = [] }) => {
 
   return (
     <section className="user-extern-section">
-      <h2>Idiomas</h2>
+      <h2>{t("sections.languages")}</h2>
       <div className="user-extern-languages">
         {normalized.map((l, index) => (
           <div key={`${l.language}-${index}`} className="user-languae-text">
             <p className="user-languae-text">{l.language}</p>
-            <p className="user-languae-text">{l.level ? `[ ${levelLabel(l.level)} ]` : ""}</p>
+            <p className="user-languae-text">{l.level ? `[ ${levelLabel(t, l.level)} ]` : ""}</p>
           </div>
         ))}
       </div>

@@ -1,41 +1,22 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const OPTIONS = [
-  {
-    value: 'creative',
-    title: 'Creativo',
-    tag: '[ 🪐 ]',
-    desc: {
-      main: 'Publicar portfolio. Conectar con la industria.',
-      sub: '(fotógraf@s, diseñadores, estilistas…)',
-    },
-    available: true,
-  },
-  {
-    value: 'industry',
-    title: 'Industria',
-    tag: '[ 🚀 ] - Drop 02 (31.04.26)',
-    desc: {
-      main: 'Publica tu perfil en el directorio de Industria. Descubre talento.',
-      sub: '(marcas, agencias, showrooms, revistas…)',
-    },
-    available: false,
-  },
-  {
-    value: 'guest',
-    title: 'Explorador/ Scout',
-    tag: '[ 🔭 ] - Drop 02 (31.04.26)',
-    desc: {
-      main: 'Navega libremente.',
-      sub: 'Explora proyectos y creativos sin crear un perfil público.',
-    },
-    available: false,
-  },
+const BASE_OPTIONS = [
+  { value: 'creative', key: 'creative', tag: '[ 🪐 ]', available: true },
+  { value: 'industry', key: 'industry', tag: '[ 🚀 ] - Drop 02 (31.04.26)', available: false },
+  { value: 'guest', key: 'guest', tag: '[ 🔭 ] - Drop 02 (31.04.26)', available: false },
 ];
 
-const TypeStep = ({ selected, onSelect, onNext }) => (
+const TypeStep = ({ selected, onSelect, onNext }) => {
+  const { t } = useTranslation('onboarding');
+  const OPTIONS = BASE_OPTIONS.map(o => ({
+    ...o,
+    title: t(`type.${o.key}.title`),
+    desc: { main: t(`type.${o.key}.main`), sub: t(`type.${o.key}.sub`) },
+  }));
+  return (
   <div className="ob-center">
-    <h1 className="ob-title">¿Cómo quieres usar THEFOLDER?</h1>
+    <h1 className="ob-title">{t('type.title')}</h1>
     <div className="ob-type-options">
       {OPTIONS.map(opt => (
         <button
@@ -67,7 +48,7 @@ const TypeStep = ({ selected, onSelect, onNext }) => (
       onClick={onNext}
       style={{ marginTop: 16 }}
     >
-      CONTINUAR
+      {t('common.continue')}
     </button>
 
     <div className="ob-dots" aria-hidden="true">
@@ -78,6 +59,7 @@ const TypeStep = ({ selected, onSelect, onNext }) => (
       <span className="dot" />
     </div>
   </div>
-);
+  );
+};
 
 export default TypeStep;

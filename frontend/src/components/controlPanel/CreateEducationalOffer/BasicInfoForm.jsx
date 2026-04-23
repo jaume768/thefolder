@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const BasicInfoForm = ({ formData, handleInputChange, errors }) => {
+    const { t } = useTranslation('offers');
     return (
         <div className="create-educational-form-field">
-            <label htmlFor="programName" className="create-educational-form-title">Título de la formación</label>
+            <label htmlFor="programName" className="create-educational-form-title">{t('create.basicInfo.title')}</label>
             <input
                 type="text"
                 id="programName"
@@ -11,11 +13,11 @@ const BasicInfoForm = ({ formData, handleInputChange, errors }) => {
                 value={formData.programName}
                 onChange={handleInputChange}
                 required
-                placeholder="Nombre de la formación. Ejemplo: Artesanía Contemporánea"
+                placeholder={t('create.basicInfo.placeholder')}
                 className="create-educational-large-input"
             />
             {errors.programName && <span className="create-educational-error-message">{errors.programName}</span>}
-            <small>Introduce el nombre de la formación sin incluir palabras como "Grado Superior" o "Máster"</small>
+            <small>{t('create.basicInfo.hint')}</small>
         </div>
     );
 };

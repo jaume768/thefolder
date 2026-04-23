@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { useTranslation, Trans } from 'react-i18next';
 
 const GROUP_ICONS = {
   'Accesorios':               '/iconos/specialty/accesories.png',
@@ -24,6 +25,7 @@ const GROUP_ORDER = [
 
 const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { t } = useTranslation('onboarding');
   const [roleOptions, setRoleOptions] = useState([]);
   const [activeGroup, setActiveGroup] = useState(null);
   const [customInput, setCustomInput] = useState('');
@@ -83,11 +85,13 @@ const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
 
   return (
     <div className="ob-center">
-      <h1 className="ob-title">Añade tu especialización</h1>
+      <h1 className="ob-title">{t('specialization.title')}</h1>
       <p className="ob-subtitle">
-        Selecciona un grupo y elige hasta <b>3 etiquetas en total.</b>
-        <br />
-        Ayuda a que otros te encuentren con facilidad.
+        <Trans
+          i18nKey="specialization.subtitle"
+          ns="onboarding"
+          components={{ 1: <b />, br: <br /> }}
+        />
       </p>
 
       {selected.length > 0 && (
@@ -98,7 +102,7 @@ const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
               type="button"
               className="filters-sticky-chip"
               onClick={() => toggleTag(id)}
-              title="Quitar"
+              title={t('specialization.removeTitle')}
             >
               <span>{roleLabelById[id] || id}</span>
               <span className="chip-x">×</span>
@@ -155,14 +159,14 @@ const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
       {activeGroup === 'Otro' && (
         <div className="ob-spec-subtags filters-country-cities" style={{ width: '100%', maxWidth: 400 }}>
           <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 8 }}>
-            Escribe tu especialidad y pulsa Enter para añadirla.
+            {t('specialization.otherHint')}
           </p>
           <div className="ob-custom-row">
             <input
               className="ux-input"
               type="text"
               value={customInput}
-              placeholder="Especialidad personalizada"
+              placeholder={t('specialization.otherPlaceholder')}
               onChange={e => setCustomInput(e.target.value)}
               onKeyDown={handleCustomKeyDown}
               style={{ flex: 1 }}
@@ -176,16 +180,16 @@ const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
               disabled={!customInput.trim() || selected.length >= 3}
               style={{ whiteSpace: 'nowrap' }}
             >
-              Añadir
+              {t('specialization.add')}
             </button>
           </div>
         </div>
       )}
 
       <div className="ob-buttons ob-buttons--spec">
-        <button type="button" className="ob-back" onClick={onBack}>Volver atrás</button>
+        <button type="button" className="ob-back" onClick={onBack}>{t('common.back')}</button>
         <button className="ob-cta" onClick={onNext} disabled={selected.length === 0}>
-          CONTINUAR
+          {t('common.continue')}
         </button>
       </div>
 

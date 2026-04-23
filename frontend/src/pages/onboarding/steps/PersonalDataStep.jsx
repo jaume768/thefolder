@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LOCATIONS, ALL_COUNTRIES } from '../../../utils/locations';
 
 const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext, onBack }) => {
+  const { t } = useTranslation('onboarding');
   // Si el country actual no está en ALL_COUNTRIES, es un valor personalizado
   const isCustomCountry = country && !ALL_COUNTRIES.includes(country);
   const [selectCountry, setSelectCountry] = useState(isCustomCountry ? '__otro__' : country);
@@ -26,13 +28,13 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
 
   return (
     <div className="ob-center">
-      <h1 className="ob-title">Cuéntanos sobre ti</h1>
-      <p className="ob-subtitle">Esta información se mostrará en tu perfil público.</p>
+      <h1 className="ob-title">{t('personal.title')}</h1>
+      <p className="ob-subtitle">{t('personal.subtitle')}</p>
 
       <div className="ob-fields">
         <div className="ob-field-row">
           <div className="ob-field">
-            <label className="ob-field__label">Nombre</label>
+            <label className="ob-field__label">{t('personal.firstName')}</label>
             <div className="ob-input-box">
               <input
                 className="ob-field__input ux-input"
@@ -40,13 +42,13 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
                 value={firstName}
                 onChange={e => onChange('firstName', e.target.value)}
                 autoComplete="given-name"
-                placeholder="Tu nombre"
+                placeholder={t('personal.firstNamePlaceholder')}
               />
             </div>
           </div>
 
           <div className="ob-field">
-            <label className="ob-field__label">Apellido/s</label>
+            <label className="ob-field__label">{t('personal.lastName')}</label>
             <div className="ob-input-box">
               <input
                 className="ob-field__input ux-input"
@@ -54,7 +56,7 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
                 value={lastName}
                 onChange={e => onChange('lastName', e.target.value)}
                 autoComplete="family-name"
-                placeholder="Tu/s apellido/s"
+                placeholder={t('personal.lastNamePlaceholder')}
               />
             </div>
           </div>
@@ -63,27 +65,27 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
         <div className="ob-field-row">
           {/* País */}
           <div className="ob-field">
-            <label className="ob-field__label">País</label>
+            <label className="ob-field__label">{t('personal.country')}</label>
             <div className="ob-input-box">
               <select
                 className="ob-field__input ux-input"
                 value={selectCountry}
                 onChange={handleCountryChange}
               >
-                <option value="">País</option>
+                <option value="">{t('personal.countryPlaceholder')}</option>
                 <option value="España">España</option>
-                <option disabled>──────────</option>
+                <option disabled>──────</option>
                 {ALL_COUNTRIES.map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
-                <option value="__otro__">Otro país</option>
+                <option value="__otro__">{t('personal.otherCountry')}</option>
               </select>
             </div>
           </div>
 
           {/* Ciudad */}
           <div className="ob-field">
-            <label className="ob-field__label">Ciudad</label>
+            <label className="ob-field__label">{t('personal.city')}</label>
             <div className="ob-input-box">
               {selectCountry && selectCountry !== '__otro__' && LOCATIONS[selectCountry] ? (
                 <select
@@ -91,7 +93,7 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
                   value={city}
                   onChange={e => onChange('city', e.target.value)}
                 >
-                  <option value="">Ciudad</option>
+                  <option value="">{t('personal.cityPlaceholder')}</option>
                   {LOCATIONS[selectCountry].map(c => (
                     <option key={c} value={c}>{c}</option>
                   ))}
@@ -101,7 +103,7 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
                   className="ob-field__input ux-input"
                   type="text"
                   value={customCity}
-                  placeholder={selectCountry ? '¿En qué ciudad estás?' : 'Primero elige un país'}
+                  placeholder={selectCountry ? t('personal.cityQuestion') : t('personal.cityDisabledPlaceholder')}
                   disabled={!selectCountry}
                   onChange={e => { setCustomCity(e.target.value); onChange('city', e.target.value); }}
                   autoComplete="off"
@@ -115,13 +117,13 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
         {selectCountry === '__otro__' && (
           <div className="ob-field-row">
             <div className="ob-field" style={{ gridColumn: '1 / -1' }}>
-              <label className="ob-field__label">¿En qué país estás?</label>
+              <label className="ob-field__label">{t('personal.countryQuestion')}</label>
               <div className="ob-input-box">
                 <input
                   className="ob-field__input ux-input"
                   type="text"
                   value={customCountry}
-                  placeholder="Escribe tu país"
+                  placeholder={t('personal.countryCustomPlaceholder')}
                   onChange={e => {
                     setCustomCountry(e.target.value);
                     onChange('country', e.target.value);
@@ -135,13 +137,13 @@ const PersonalDataStep = ({ firstName, lastName, country, city, onChange, onNext
       </div>
 
       <div className="ob-buttons">
-        <button type="button" className="ob-back" onClick={onBack}>Volver atrás</button>
+        <button type="button" className="ob-back" onClick={onBack}>{t('common.back')}</button>
         <button
           className="ob-cta"
           disabled={!firstName.trim() || !lastName.trim() || !effectiveCountry || !city.trim()}
           onClick={onNext}
         >
-          CONTINUAR
+          {t('common.continue')}
         </button>
       </div>
 

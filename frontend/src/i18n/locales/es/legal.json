@@ -1,0 +1,40 @@
+{
+  "about": {
+    "title": "Sobre THEFOLDER",
+    "section1": "THEFOLDER nace como respuesta a la <b>falta de visibilidad que enfrentan los creativos al terminar sus estudios.</b><br />Cada año se generan proyectos con un enorme valor creativo que, por falta de difusión o conexiones, nunca llegan a ser descubiertos, impulsados o reconocidos por la industria. Muchos se quedan relegados a un perfil con pocos seguidores, a un proyecto final que no sale de las aulas o a un desfile con cobertura limitada a familiares.",
+    "section2": "Aquí, <b>tu perfil se convierte en tu carpeta profesional.</b> Una plataforma conectada directamente con la industria, donde subir una imagen significa presentarla ante el mundo profesional, sin intermediarios ni algoritmos que limiten tu alcance.<br /><br />En THEFOLDER, <b>el talento se celebra, se proyecta y se conecta con el sector profesional, en un entorno diseñado especialmente para la moda y el diseño emergente.</b>",
+    "howTitle": "¿Cómo?",
+    "howText": "Un espacio único que <b>reúne portfolios, CVs, ofertas laborales y educativas, con herramientas avanzadas para filtrar talento y oportunidades.</b>",
+    "whyTitle": "¿Por qué?",
+    "whyText": "Porque el talento emergente en moda y diseño merece una <b>oportunidad real para proyectarse hacia la industria,</b> sin depender de algoritmos, contactos o ubicación.",
+    "contactTitle": "Contacto",
+    "photoCredit": "Fotografías de <a href='https://instagram.com/manel.png' target='_blank' rel='noopener noreferrer'>@manel.png</a>"
+  },
+  "avisoLegal": {
+    "title": "Aviso Legal",
+    "version": "Actualizado: Abril de 2026 · Versión: 2.0"
+  },
+  "cookies": {
+    "title": "Política de Cookies",
+    "version": "Actualizado: Abril de 2026 · Versión: 2.0"
+  },
+  "privacidad": {
+    "title": "Política de Privacidad",
+    "version": "Actualizado: Abril de 2026 · Versión: 2.0"
+  },
+  "terminos": {
+    "title": "Términos y Condiciones de Uso",
+    "version": "Actualizado: Abril de 2026 · Versión: 1.0"
+  },
+  "contact": {
+    "back": "Volver",
+    "title": "Contacto",
+    "emailTitle": "Correo Electrónico",
+    "emailDescription": "Para consultas generales, soporte técnico y colaboraciones.",
+    "addressTitle": "Dirección",
+    "socialTitle": "Síguenos en redes sociales",
+    "aboutTitle": "Sobre TheFolderWorld",
+    "aboutText1": "TheFolderWorld es una plataforma digital diseñada para conectar creativos con otros creativos, profesionales de la industria e instituciones educativas dentro del campo de la moda. Nuestro objetivo es crear un espacio donde los talentos emergentes puedan mostrar su trabajo, conectar con oportunidades profesionales y educativas, y formar parte de una comunidad vibrante de creativos.",
+    "aboutText2": "Fundada en 2025 por Miriam Reina Bolaños, TheFolderWorld nace de la necesidad de crear un punto de encuentro especializado para el sector de la moda y el diseño, con un enfoque en la visibilidad de nuevos talentos y la conexión entre diferentes actores del sector."
+  }
+}

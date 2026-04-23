@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import "./css/complete-registration.css";
 
 const CompleteRegistration = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { t } = useTranslation("onboarding");
 
   const [userLoaded, setUserLoaded] = useState(false);
   const [error, setError] = useState("");
@@ -74,11 +76,11 @@ const CompleteRegistration = () => {
   // =========================
   const localValidationError = useMemo(() => {
     const v = username.trim();
-    if (!v) return "Escribe un nombre de usuario.";
-    if (v.length > 20) return "Máximo 20 caracteres.";
-    if (!/^[a-z0-9._-]+$/.test(v)) return "Usa solo letras, números y . _ -";
+    if (!v) return t("completeRegistration.errors.required");
+    if (v.length > 20) return t("completeRegistration.errors.tooLong");
+    if (!/^[a-z0-9._-]+$/.test(v)) return t("completeRegistration.errors.invalidChars");
     return "";
-  }, [username]);
+  }, [username, t]);
 
   // =========================
   // Check disponibilidad (con debounce) -> AUTOMÁTICO AL ESCRIBIR
@@ -86,61 +88,60 @@ const CompleteRegistration = () => {
   // GET  /api/users/check-username?username=...
   // Devuelve: { available: true/false }
   // =========================
-    useEffect(() => {
+  useEffect(() => {
     const v = username.trim();
 
     setError("");
 
     if (!v || localValidationError) {
-        setIsTaken(false);
-        setChecking(false);
-        return;
+      setIsTaken(false);
+      setChecking(false);
+      return;
     }
 
     const token = localStorage.getItem("authToken");
     if (!token) {
-        setIsTaken(false);
-        setChecking(false);
-        return;
+      setIsTaken(false);
+      setChecking(false);
+      return;
     }
 
     const controller = new AbortController();
 
     const timeout = setTimeout(async () => {
-        setChecking(true);
+      setChecking(true);
 
-        try {
+      try {
         const res = await fetch(
-            `${backendUrl}/api/users/check-username?username=${encodeURIComponent(v)}`,
-            {
+          `${backendUrl}/api/users/check-username?username=${encodeURIComponent(v)}`,
+          {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,
-            }
+          }
         );
 
         if (!res.ok) {
-            setIsTaken(false);
-            setChecking(false);
-            return;
+          setIsTaken(false);
+          setChecking(false);
+          return;
         }
 
         const data = await res.json();
         setIsTaken(data?.available === false);
         setChecking(false);
-        } catch (e) {
+      } catch (e) {
         if (e.name !== "AbortError") {
-            setIsTaken(false);
-            setChecking(false);
+          setIsTaken(false);
+          setChecking(false);
         }
-        }
+      }
     }, 350);
 
     return () => {
-        clearTimeout(timeout);
-        controller.abort();
+      clearTimeout(timeout);
+      controller.abort();
     };
-    }, [username, backendUrl, localValidationError]);
-
+  }, [username, backendUrl, localValidationError]);
 
   const isOk = !!username && !localValidationError && !checking && !isTaken;
   const canContinue = userLoaded && isOk;
@@ -154,11 +155,11 @@ const CompleteRegistration = () => {
       return;
     }
     if (isTaken) {
-      setError("Ese nombre de usuario ya está en uso.");
+      setError(t("completeRegistration.errors.taken"));
       return;
     }
     if (!userLoaded) {
-      setError("Aún estamos preparando tu cuenta, por favor espera un momento...");
+      setError(t("completeRegistration.errors.stillPreparing"));
       return;
     }
 
@@ -196,10 +197,10 @@ const CompleteRegistration = () => {
         ) {
           setIsTaken(true);
         }
-        setError(data?.error || "No se pudo guardar tu perfil.");
+        setError(data?.error || t("completeRegistration.errors.saveFailed"));
       }
     } catch (err) {
-      setError("Error de red. Inténtalo de nuevo.");
+      setError(t("completeRegistration.errors.network"));
     }
   };
 
@@ -210,18 +211,17 @@ const CompleteRegistration = () => {
       </div>
 
       <div className="ob-center">
-        <h1 className="ob-title">Elige tu nombre de usuario</h1>
+        <h1 className="ob-title">{t("completeRegistration.title")}</h1>
 
         <p className="ob-subtitle">
-          Este será tu nombre público.<br />
-          Podrás compartir tu enlace con empresas y profesionales del sector.
+          <Trans i18nKey="completeRegistration.subtitle" ns="onboarding" components={{ br: <br /> }} />
         </p>
 
         <div
           className={`ob-username ${username ? "has-value" : ""}`}
           onClick={() => inputRef.current?.focus()}
         >
-          <span className="ob-prefix">thefolder.es/</span>
+          <span className="ob-prefix">{t("completeRegistration.prefix")}</span>
 
           <input
             ref={inputRef}
@@ -244,7 +244,7 @@ const CompleteRegistration = () => {
             autoCorrect="off"
             autoCapitalize="none"
             spellCheck={false}
-            aria-label="Nombre de usuario"
+            aria-label={t("completeRegistration.inputAria")}
           />
 
           {/* Icono estado (solo aparece si hay input válido o está checking) */}
@@ -264,9 +264,11 @@ const CompleteRegistration = () => {
         </div>
 
         <div className="ob-hint">
-          Usa un nombre profesional, sin espacios y fácil de recordar.
-          <br />
-          Por el momento este nombre <strong>NO se podrá modificar</strong>.
+          <Trans
+            i18nKey="completeRegistration.hint"
+            ns="onboarding"
+            components={{ br: <br />, 1: <strong /> }}
+          />
         </div>
 
         {localValidationError && username && (
@@ -274,13 +276,13 @@ const CompleteRegistration = () => {
         )}
 
         {isTaken && !checking && !localValidationError && (
-          <p className="ob-error">Ese nombre ya está en uso. Prueba con otro.</p>
+          <p className="ob-error">{t("completeRegistration.errors.takenLong")}</p>
         )}
 
         {error && <p className="ob-error">{error}</p>}
 
         <button className="ob-cta" disabled={!canContinue} onClick={handleNext}>
-          {userLoaded ? "EMPEZAR" : "CARGANDO..."}
+          {userLoaded ? t("completeRegistration.start") : t("completeRegistration.loading")}
         </button>
 
         <div className="ob-dots" aria-hidden="true">

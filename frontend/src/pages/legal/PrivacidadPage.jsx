@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/Legal.css';
 
 const Privacidad = () => {
+    const { t } = useTranslation('legal');
     const navigate = useNavigate();
 
     const goBack = () => {
@@ -13,8 +15,8 @@ const Privacidad = () => {
     return (
         <div className="legal-container">
             <div className="legal-content">
-                <h1 className="legal-title">Política de Privacidad</h1>
-                <p className="legal-version">Actualizado: Abril de 2026 · Versión: 2.0</p>
+                <h1 className="legal-title">{t('privacidad.title')}</h1>
+                <p className="legal-version">{t('privacidad.version')}</p>
 
                 <p className="legal-paragraph">
                     En THEFOLDER nos tomamos tu privacidad en serio. Esta política explica qué datos personales recogemos, para qué los usamos, con quién los compartimos y cuáles son tus derechos. Está redactada conforme al Reglamento (UE) 2016/679, Reglamento General de Protección de Datos (RGPD), y la Ley Orgánica 3/2018, de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).

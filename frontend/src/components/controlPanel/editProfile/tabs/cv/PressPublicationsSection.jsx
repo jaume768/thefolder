@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { clImg } from "../../../../../utils/optimizeImage";
 
 const editCard = "/iconos/edit-card.svg";
@@ -28,6 +29,7 @@ export default function PressPublicationsSection({
   updatePressField,
   uploadPressLogo,
 }) {
+  const { t } = useTranslation("profile");
   const list = Array.isArray(pressPublications) ? pressPublications : [];
   const [logoUploading, setLogoUploading] = useState(false);
 
@@ -35,14 +37,14 @@ export default function PressPublicationsSection({
     <div className="ux-exp-form-wrap">
       <div className="ux-exp-form-title">
         {pressEditingIndex !== null
-          ? `Editando publicación nº ${pressEditingIndex + 1}`
-          : `Publicación nº ${list.length + 1}`}
+          ? `${t("editProfile.edit")} ${t("editProfile.pressSectionLabel")} #${pressEditingIndex + 1}`
+          : `${t("editProfile.pressSectionLabel")} #${list.length + 1}`}
       </div>
 
       <div className="ux-exp-form-layout">
         {/* LOGO */}
         <div className="ux-exp-logo-col">
-          <div className="ux-form-label ux-form-label-sm">Logo del medio</div>
+          <div className="ux-form-label ux-form-label-sm">{t("editProfile.logoLabel")}</div>
 
           <button
             type="button"
@@ -68,14 +70,14 @@ export default function PressPublicationsSection({
               </div>
             )}
             {pressDraft.logoUrl ? (
-              <img src={clImg.logo(pressDraft.logoUrl)} alt="Logo" />
+              <img src={clImg.logo(pressDraft.logoUrl)} alt={t("editProfile.logoLabel")} />
             ) : (
               <span className="ux-exp-logo-icon">📷</span>
             )}
           </button>
 
           <div className="ux-helper ux-exp-helper">
-            Logo de la revista, web o editorial.
+            {t("editProfile.pressLogoHint")}
           </div>
         </div>
 
@@ -85,7 +87,7 @@ export default function PressPublicationsSection({
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="press-title">
-                Título del artículo o pieza *
+                {t("editProfile.pressTitleLabel")}
               </label>
               <input
                 id="press-title"
@@ -93,13 +95,13 @@ export default function PressPublicationsSection({
                 className="ux-input"
                 value={pressDraft.title}
                 onChange={(e) => updatePressField("title", e.target.value)}
-                placeholder="Nombre del artículo, reportaje o pieza"
+                placeholder={t("editProfile.articleTitlePlaceholder")}
               />
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="press-publication">
-                Medio o publicación *
+                {t("editProfile.pressPublicationLabel")}
               </label>
               <input
                 id="press-publication"
@@ -113,7 +115,7 @@ export default function PressPublicationsSection({
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="press-role">
-                Tu rol
+                {t("editProfile.pressRoleLabel")}
               </label>
               <select
                 id="press-role"
@@ -121,7 +123,7 @@ export default function PressPublicationsSection({
                 value={pressDraft.role}
                 onChange={(e) => updatePressField("role", e.target.value)}
               >
-                <option value="">Sin especificar</option>
+                <option value="">{t("editProfile.pressRolePlaceholder")}</option>
                 {ROLES.map((r) => (
                   <option key={r} value={r}>{r}</option>
                 ))}
@@ -130,7 +132,7 @@ export default function PressPublicationsSection({
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="press-url">
-                URL de la publicación (opcional)
+                {t("editProfile.pressUrlLabel")}
               </label>
               <input
                 id="press-url"
@@ -146,7 +148,7 @@ export default function PressPublicationsSection({
             <div className="ux-exp-dates">
               <div className="ux-exp-date-block">
                 <label className="ux-form-label ux-form-label-sm">
-                  Fecha de publicación
+                  {t("editProfile.pressDateLabel")}
                 </label>
                 <div className="ux-exp-two">
                   <select
@@ -154,7 +156,7 @@ export default function PressPublicationsSection({
                     value={pressDraft.pubMonth}
                     onChange={(e) => updatePressField("pubMonth", e.target.value)}
                   >
-                    <option value="">Mes</option>
+                    <option value="">{t("editProfile.month")}</option>
                     {MONTHS_ES.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
@@ -164,7 +166,7 @@ export default function PressPublicationsSection({
                     value={pressDraft.pubYear}
                     onChange={(e) => updatePressField("pubYear", e.target.value)}
                   >
-                    <option value="">Año</option>
+                    <option value="">{t("editProfile.year")}</option>
                     {years.map((y) => (
                       <option key={y} value={y}>{y}</option>
                     ))}
@@ -176,7 +178,7 @@ export default function PressPublicationsSection({
             {/* DESCRIPCIÓN */}
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="press-description">
-                Descripción (opcional)
+                {t("editProfile.descriptionOptional")}
               </label>
               <textarea
                 id="press-description"
@@ -186,10 +188,10 @@ export default function PressPublicationsSection({
                 onChange={(e) =>
                   updatePressField("description", e.target.value.slice(0, MAX_PRESS_DESC))
                 }
-                placeholder="Contexto breve sobre la publicación."
+                placeholder={t("editProfile.contextPlaceholder")}
               />
               <div className="ux-counter">
-                <span>Máximo {MAX_PRESS_DESC} caracteres.</span>
+                <span>{t("editProfile.maxChars", { count: MAX_PRESS_DESC })}</span>
                 <span>{(pressDraft.description || "").length} / {MAX_PRESS_DESC}</span>
               </div>
             </div>
@@ -199,14 +201,14 @@ export default function PressPublicationsSection({
           <div className="ux-exp-form-actions">
             {list.length > 0 && (
               <button className="ux-btn" type="button" onClick={cancelPressForm}>
-                Cancelar
+                {t("editProfile.modals.cancel")}
               </button>
             )}
             <button className="ux-btn" type="button" onClick={() => savePressAsDraft()}>
-              Guardar como borrador
+              {t("editProfile.saveAsDraft")}
             </button>
             <button className="ux-btn primary" type="button" onClick={() => savePress()}>
-              Guardar
+              {t("editProfile.save")}
             </button>
           </div>
         </div>
@@ -219,11 +221,11 @@ export default function PressPublicationsSection({
       <div className="ux-card">
         <label className="ux-form-label separator">
           <img src="/iconos/press-recognition.png" className="ux-section-icon" alt="" />
-          Publicaciones en medios
+          {t("editProfile.pressSectionLabel")}
         </label>
 
         <div className="ux-helper ux-exp-helper">
-          Artículos, reportajes o piezas donde hayas aparecido.
+          {t("editProfile.pressSubtitle")}
         </div>
 
         {list.length > 0 && (
@@ -233,10 +235,10 @@ export default function PressPublicationsSection({
                 <div className="ux-exp-card" style={{ position: "relative", ...(item?.isDraft ? { background: "#f0f0f0" } : {}) }}>
                   <div className="ux-exp-logo">
                     {item?.logoUrl ? (
-                      <img src={clImg.logo(item.logoUrl)} alt={item?.publication || "Medio"} />
+                      <img src={clImg.logo(item.logoUrl)} alt={item?.publication || t("editProfile.pressPublicationLabel")} />
                     ) : (
                       <div className="ux-exp-logo-placeholder">
-                        {(item?.publication || "M").trim().charAt(0).toUpperCase()}
+                        {(item?.publication || t("editProfile.pressPublicationLabel")).trim().charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -262,14 +264,14 @@ export default function PressPublicationsSection({
                       className="ux-link-btn"
                       onClick={() => openEditPressForm(idx)}
                     >
-                      <img src={editCard} className="ux-icon" alt="Editar" />
+                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
                     </button>
                     <button
                       type="button"
                       className="ux-link-btn danger"
                       onClick={() => confirmDeletePress(idx)}
                     >
-                      <img src={trashDelete} className="ux-icon" alt="Borrar" style={{ width: "12px" }} />
+                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{ width: "12px"}} />
                     </button>
                   </div>
                   {item?.isDraft && (
@@ -277,7 +279,7 @@ export default function PressPublicationsSection({
                       position: "absolute", bottom: 8, right: 12,
                       fontSize: "11px", fontStyle: "italic", color: "#999",
                     }}>
-                      Borrador
+                      {t("editProfile.draft")}
                     </span>
                   )}
                 </div>
@@ -295,7 +297,7 @@ export default function PressPublicationsSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewPressForm}
             >
-              Añadir publicación en medios
+              {t("editProfile.addPress")}
             </button>
           </div>
         )}

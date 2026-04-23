@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaUserPlus, FaUserCheck, FaBell, FaBellSlash, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { clImg } from '../../../utils/optimizeImage';
@@ -13,6 +14,7 @@ const UserProfileHeader = ({
     isNotificationActive,
     toggleNotification
 }) => {
+    const { t } = useTranslation('profile');
     const navigate = useNavigate();
 
     return (
@@ -20,35 +22,35 @@ const UserProfileHeader = ({
             <header className="user-profile-navigation">
                 <button className="user-profile-back-btn" onClick={() => navigate(-1)}>
                     <FaArrowLeft size={20} />
-                    <span>Volver</span>
+                    <span>{t('header.back')}</span>
                 </button>
             </header>
             <div className="user-profile-header-container">
                 <header className="user-profile-header">
                     <img
                         src={clImg.avatar(profile?.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"}
-                        alt="Perfil"
+                        alt={t('default.profilePictureAlt')}
                         className="user-profile-photo"
                     />
                     <div className="user-profile-personal-info">
                         <h1 className="user-profile-name">
-                            {profile?.fullName || "Nombre Apellido"}
+                            {profile?.fullName || t('sections.defaultFullName')}
                         </h1>
                         <p className="user-profile-occupations">
-                            {profile?.professionalTitle || "Título profesional no especificado"}
+                            {profile?.professionalTitle || t('sections.defaultTitle')}
                         </p>
                         <p className="user-profile-location">
                             {profile?.city && profile?.country
                                 ? `${profile.city}, ${profile.country}`
-                                : profile?.city || "Ubicación no especificada"}
+                                : profile?.city || t('header.locationNotSpecified')}
                             {profile?.city2 ? ` · ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
                         </p>
                         <div className="user-profile-stats">
                             <span className="user-profile-stat">
-                                <strong>{profile?.followers?.length || 0}</strong> seguidores
+                                <strong>{profile?.followers?.length || 0}</strong> {t('header.followers')}
                             </span>
                             <span className="user-profile-stat">
-                                <strong>{profile?.following?.length || 0}</strong> seguidos
+                                <strong>{profile?.following?.length || 0}</strong> {t('header.following')}
                             </span>
                         </div>
                         <div className="user-profile-actions">
@@ -58,7 +60,7 @@ const UserProfileHeader = ({
                                         className="follow-button following"
                                         onClick={handleUnfollow}
                                     >
-                                        <FaUserCheck /> Dejar de seguir
+                                        <FaUserCheck /> {t('header.unfollow')}
                                     </button>
                                     <button
                                         className="notification-button"
@@ -71,7 +73,7 @@ const UserProfileHeader = ({
                                     className="follow-button"
                                     onClick={handleFollow}
                                 >
-                                    <FaUserPlus /> Seguir
+                                    <FaUserPlus /> {t('header.follow')}
                                 </button>
                             )}
                         </div>
@@ -82,13 +84,13 @@ const UserProfileHeader = ({
                         className={activeTab === 'perfil' ? 'active' : ''}
                         onClick={() => setActiveTab('perfil')}
                     >
-                        Perfil
+                        {t('header.profile')}
                     </button>
                     <button
                         className={activeTab === 'publicaciones' ? 'active' : ''}
                         onClick={() => setActiveTab('publicaciones')}
                     >
-                        Publicaciones
+                        {t('header.publications')}
                     </button>
                 </div>
             </div>

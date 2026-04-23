@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FaTimes, FaExclamationCircle } from 'react-icons/fa';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PeopleTagsList from "../../components/PeopleTagsList";
@@ -123,6 +124,7 @@ const reorder = (list, from, to) => {
 // ════════════════════════════════════════════════════════════════════════════
 const CreatePost = ({ onClose } = {}) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('post');
 
   const [images, setImages]                       = useState([]);
   const [imagePreviews, setImagePreviews]         = useState([]);
@@ -342,9 +344,9 @@ const CreatePost = ({ onClose } = {}) => {
     for (const f of files) {
       const isGif = f.type === 'image/gif';
       if (isGif && f.size > MAX_GIF_BYTES) {
-        errors.push(`"${f.name}" es un GIF y supera los 10 MB permitidos. Intenta reducir su peso antes de subirlo.`);
+        errors.push(t('create.errors.gifSize', { name: f.name }));
       } else if (!isGif && f.size > MAX_BYTES) {
-        errors.push(`"${f.name}" supera los 20 MB permitidos.`);
+        errors.push(t('create.errors.imageSize', { name: f.name }));
       } else {
         valid.push(f);
       }
@@ -407,7 +409,7 @@ const CreatePost = ({ onClose } = {}) => {
     if (String(last?.name || "").trim()) {
       setPeopleTags(prev => [...prev, { name: "", username: "", role: "", socialUrl: "", avatar: null, isRegistered: false }]);
     } else {
-      alert("Completa la tarjeta actual antes de añadir una nueva");
+      alert(t('create.errors.fillRequired'));
     }
   };
 
@@ -478,7 +480,7 @@ const CreatePost = ({ onClose } = {}) => {
       }
 
     } catch (err) {
-      setToast({ message: err?.response?.data?.message || "Error al publicar el post" });
+      setToast({ message: err?.response?.data?.message || t('create.errors.genericPublish') });
       setPublishStep('form');
     } finally {
       setIsLoading(false);
@@ -499,15 +501,15 @@ const CreatePost = ({ onClose } = {}) => {
           <div className="cp-toast" role="alert">
             <FaExclamationCircle className="cp-toast__icon" />
             <span>{toast.message}</span>
-            <button type="button" onClick={() => setToast(null)} aria-label="Cerrar"><FaTimes /></button>
+            <button type="button" onClick={() => setToast(null)} aria-label={t('create.team.closeTitle') || 'Close'}><FaTimes /></button>
           </div>
         )}
 
         {draftModalOpen && (
           <div className="cp-draft-overlay" role="dialog" aria-modal="true">
             <div className="cp-draft-card" onClick={e => e.stopPropagation()}>
-              <h3 className="cp-draft-title">¿Retomar el borrador?</h3>
-              <p className="cp-draft-text">Puedes continuar donde lo dejaste o empezar desde cero.</p>
+              <h3 className="cp-draft-title">{t('create.draft.resumeTitle')}</h3>
+              <p className="cp-draft-text">{t('create.draft.resumeText')}</p>
               {draftThumbUrls.length > 0 && (
                 <div className="cp-draft-thumbs">
                   {draftThumbUrls.map((src, i) => (
@@ -519,8 +521,8 @@ const CreatePost = ({ onClose } = {}) => {
                 </div>
               )}
               <div className="cp-draft-actions">
-                <button type="button" className="cp-btn cp-btn--ghost" onClick={handleStartNew}>Empezar de cero</button>
-                <button type="button" className="cp-btn cp-btn--primary" onClick={handleContinueDraft}>Continuar</button>
+                <button type="button" className="cp-btn cp-btn--ghost" onClick={handleStartNew}>{t('create.draft.startNew')}</button>
+                <button type="button" className="cp-btn cp-btn--primary" onClick={handleContinueDraft}>{t('create.draft.continue')}</button>
               </div>
             </div>
           </div>
@@ -542,8 +544,8 @@ const CreatePost = ({ onClose } = {}) => {
             {!hasImages ? (
               <label htmlFor="cp-image-upload" className="cp-empty-drop">
                 <span className="cp-empty-drop__plus">+</span>
-                <span className="cp-empty-drop__label">Publica un proyecto</span>
-                <span className="cp-empty-drop__sub">Hasta 6 imágenes por proyecto</span>
+                <span className="cp-empty-drop__label">{t('create.emptyDropLabel')}</span>
+                <span className="cp-empty-drop__sub">{t('create.emptyDropSub')}</span>
               </label>
             ) : (
               <Droppable droppableId="imageGrid" direction="horizontal">
@@ -562,7 +564,7 @@ const CreatePost = ({ onClose } = {}) => {
                             >
                               <img src={imagePreviews[index] || ""} alt={`Imagen ${index + 1}`} className="cp-grid__img" draggable={false} />
                               <div className="cp-grid__num">{index + 1}</div>
-                              {index === 0 && <div className="cp-grid__cover">Portada</div>}
+                              {index === 0 && <div className="cp-grid__cover">{t('create.cover')}</div>}
                               {(imageNotes[index] || "").trim() && <div className="cp-grid__credit-dot" />}
                               <button
                                 type="button"
@@ -570,7 +572,7 @@ const CreatePost = ({ onClose } = {}) => {
                                 onClick={e => { e.stopPropagation(); removeImage(index); }}
                                 onMouseDown={e => e.stopPropagation()}
                                 onPointerDown={e => e.stopPropagation()}
-                                aria-label="Eliminar imagen"
+                                aria-label={t('create.removeImage')}
                               >
                                 <FaTimes />
                               </button>
@@ -581,7 +583,7 @@ const CreatePost = ({ onClose } = {}) => {
                     })}
                     {provided.placeholder}
                     {images.length < 6 && (
-                      <label htmlFor="cp-image-upload" className="cp-grid__add" aria-label="Añadir imagen">
+                      <label htmlFor="cp-image-upload" className="cp-grid__add" aria-label={t('create.addImage')}>
                         <span>+</span>
                       </label>
                     )}
@@ -596,17 +598,17 @@ const CreatePost = ({ onClose } = {}) => {
                   <div key={i} className="cp-upload-error">
                     <FaExclamationCircle />
                     <span>{err}</span>
-                    <button type="button" onClick={() => setImageUploadErrors([])} aria-label="Cerrar"><FaTimes /></button>
+                    <button type="button" onClick={() => setImageUploadErrors([])} aria-label={t('post:view.report.close')}><FaTimes /></button>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-{/* ═══ DERECHA ═════════════════════════════════════════════════ */}
+          {/* ═══ DERECHA ═════════════════════════════════════════════════ */}
           <div className={`cp-right-div${!hasImages ? " is-hidden" : ""}`}>
             <div className="cp-right">
-              <button type="button" className="cp-close" onClick={handleClose} aria-label="Cerrar">
+              <button type="button" className="cp-close" onClick={handleClose} aria-label={t('create.team.closeTitle') || 'Close'}>
                 <FaTimes />
               </button>
 
@@ -615,7 +617,7 @@ const CreatePost = ({ onClose } = {}) => {
                 {/* Título */}
                 <div className="cp-field-group">
                   <textarea
-                    placeholder="TÍTULO (*)"
+                    placeholder={t('create.titlePlaceholder')}
                     value={postTitle}
                     onChange={e => setPostTitle(e.target.value)}
                     onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
@@ -624,13 +626,13 @@ const CreatePost = ({ onClose } = {}) => {
                     rows={2}
                     spellCheck={false}
                   />
-                  {titleTouched && !postTitle.trim() && <span className="cp-field-error">El título es obligatorio.</span>}
+                  {titleTouched && !postTitle.trim() && <span className="cp-field-error">{t('create.titleRequired')}</span>}
                 </div>
 
                 {/* Descripción */}
                 <div className="cp-field-group">
                   <textarea
-                    placeholder="Descripción del proyecto (opcional)"
+                    placeholder={t('create.descPlaceholder')}
                     value={postDescription}
                     onChange={e => {
                       setPostDescription(e.target.value);
@@ -646,7 +648,7 @@ const CreatePost = ({ onClose } = {}) => {
                 {/* Tu rol */}
                 <div className="cp-field-group">
                   <textarea
-                    placeholder="Tu rol en el proyecto (Fotógrafo, Estilista…)"
+                    placeholder={t('create.rolePlaceholder')}
                     value={authorRole}
                     onChange={e => {
                       setAuthorRole(e.target.value);
@@ -663,7 +665,7 @@ const CreatePost = ({ onClose } = {}) => {
                 {/* Panel equipo */}
                 {showTeam && (
                   <div className="cp-panel">
-                    <p className="cp-panel__desc">Equipo /</p>
+                    <p className="cp-panel__desc">{t('create.team.label')}</p>
                     <div className="people-cards">
                       {peopleTags.map((tag, index) => {
                         const rawName = String(tag.name || "").trim();
@@ -675,7 +677,7 @@ const CreatePost = ({ onClose } = {}) => {
                         return (
                           <div key={index} className="person-card">
                             {peopleTags.length > 1 && (
-                              <button type="button" className="person-remove-btn" onClick={() => removePeopleTagCard(index)} aria-label="Eliminar"><FaTimes /></button>
+                              <button type="button" className="person-remove-btn" onClick={() => removePeopleTagCard(index)} aria-label={t('create.removeImage')}><FaTimes /></button>
                             )}
                             <div className="person-inline">
                               <div className="tagged-person__avatar">
@@ -685,7 +687,7 @@ const CreatePost = ({ onClose } = {}) => {
                                 <div className="autocomplete-wrapper">
                                   <input
                                     type="text"
-                                    placeholder="Nombre o busca @usuario dentro de THEFOLDER"
+                                    placeholder={t('create.team.namePlaceholder')}
                                     name="name"
                                     value={tag.name}
                                     onChange={e => handlePeopleTagChange(index, e)}
@@ -699,31 +701,31 @@ const CreatePost = ({ onClose } = {}) => {
                                         <div className="autocomplete-item" onMouseDown={e => e.preventDefault()}
                                           onClick={() => { setPeopleTags(prev => prev.map((it, i) => i === index ? { ...it, name: toTitleCase(String(tag.name || "").trim()), avatar: null, isRegistered: false } : it)); setSuggestedUsers([]); setActiveTagIndex(null); setSearchTerm(""); }}>
                                           <div className="autocomplete-user-info">
-                                            <span className="username">No registrado</span>
+                                            <span className="username">{t('create.team.unregistered')}</span>
                                             <span className="registered-badge">{String(tag.name || "").trim()}</span>
                                           </div>
                                         </div>
                                       )}
                                       {loadingUsers
-                                        ? <div className="loading-users">Buscando...</div>
+                                        ? <div className="loading-users">{t('create.team.searching')}</div>
                                         : suggestedUsers.length > 0
                                           ? suggestedUsers.map(user => (
                                             <div key={user._id} className="autocomplete-item" onMouseDown={e => e.preventDefault()} onClick={() => selectUser(user)}>
                                               <img src={clImg.avatar(user.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"} alt={user.username} className="autocomplete-avatar" />
                                               <div className="autocomplete-user-info">
                                                 <span className="username">@{user.username}</span>
-                                                <span className="registered-badge">Registrado ✅</span>
+                                                <span className="registered-badge">{t('create.team.registered')}</span>
                                               </div>
                                             </div>
                                           ))
-                                          : query.length >= 2 && <div className="loading-users">Sin coincidencias — añádelo como externo 👆</div>
+                                          : query.length >= 2 && <div className="loading-users">{t('create.team.noMatches')}</div>
                                       }
                                     </div>
                                   )}
                                 </div>
-                                <input type="text" placeholder="Rol (Fotógrafo, Estilista…)" name="role" value={tag.role} onChange={e => handlePeopleTagChange(index, e)} className="people-input people-input--role ux-input" />
+                                <input type="text" placeholder={t('create.team.rolePlaceholder')} name="role" value={tag.role} onChange={e => handlePeopleTagChange(index, e)} className="people-input people-input--role ux-input" />
                                 {!tag.isRegistered && hasName && (
-                                  <input type="url" placeholder="Link (opcional)" name="socialUrl" value={tag.socialUrl || ""} onChange={e => handlePeopleTagChange(index, e)} onBlur={() => handleSocialUrlBlur(index)} className="people-input people-input--url ux-input" />
+                                  <input type="url" placeholder={t('create.team.linkPlaceholder')} name="socialUrl" value={tag.socialUrl || ""} onChange={e => handlePeopleTagChange(index, e)} onBlur={() => handleSocialUrlBlur(index)} className="people-input people-input--url ux-input" />
                                 )}
                               </div>
                             </div>
@@ -731,7 +733,7 @@ const CreatePost = ({ onClose } = {}) => {
                         );
                       })}
                     </div>
-                    <button type="button" onClick={addPeopleTagCard} className="add-card-btn">Añadir colaborador</button>
+                    <button type="button" onClick={addPeopleTagCard} className="add-card-btn">{t('create.team.addCollaborator')}</button>
                   </div>
                 )}
 
@@ -739,16 +741,16 @@ const CreatePost = ({ onClose } = {}) => {
                 {showCredits && (
                   <div className="cp-panel">
                     {!hasImages
-                      ? <p className="cp-panel__desc">Sube imágenes primero para añadir créditos.</p>
+                      ? <p className="cp-panel__desc">{t('create.credits.noImagesFirst')}</p>
                       : <>
-                          <p className="cp-panel__desc">Créditos de estilismo /</p>
+                          <p className="cp-panel__desc">{t('create.credits.label')}</p>
                           <div className="cp-credits-list">
                             {images.map((_, i) => (
                               <div key={i} className="cp-credit-item">
                                 <img src={imagePreviews[i] || ""} alt="" className="cp-credit-item__img" />
                                 <input
                                   className="cp-credit-item__input ux-input"
-                                  placeholder="Escribe tus créditos (Falda de NouNou, zapatos de...)"
+                                  placeholder={t('create.credits.placeholder')}
                                   value={imageNotes[i] || ""}
                                   onChange={e => setImageNotes(prev => { const n = [...prev]; n[i] = e.target.value; return n; })}
                                 />
@@ -767,14 +769,14 @@ const CreatePost = ({ onClose } = {}) => {
                     className={`cp-optional-btn${showTeam ? " is-active" : ""}`}
                     onClick={() => setShowTeam(v => !v)}
                   >
-                    Etiquetar Equipo
+                    {t('create.team.addTeamBtn')}
                   </button>
                   <button
                     type="button"
                     className={`cp-optional-btn${showCredits ? " is-active" : ""}`}
                     onClick={() => setShowCredits(v => !v)}
                   >
-                    Créditos de Estilismo
+                    {t('create.credits.addCreditsBtn')}
                   </button>
                 </div>
 
@@ -782,7 +784,7 @@ const CreatePost = ({ onClose } = {}) => {
                 <div className="cp-footer">
                   <div className="cp-footer__actions">
                     <button type="button" className="cp-btn cp-btn--ghost" onClick={handleClose}>
-                      GUARDAR BORRADOR
+                      {t('create.saveDraft')}
                     </button>
                     <button
                       type="button"
@@ -790,7 +792,7 @@ const CreatePost = ({ onClose } = {}) => {
                       onClick={handlePublish}
                       disabled={isLoading}
                     >
-                      {isLoading ? "PUBLICANDO..." : "PUBLICAR"}
+                      {isLoading ? t('create.publishing') : t('create.publish')}
                     </button>
                   </div>
                 </div>
@@ -804,8 +806,8 @@ const CreatePost = ({ onClose } = {}) => {
           <div className="cp-loading-overlay">
             <div className="cp-loading-card">
               <div className="cp-loading-spinner" aria-hidden="true" />
-              <p className="cp-loading-title">Subiendo tu proyecto…</p>
-              <p className="cp-loading-sub">Esto puede tardar unos segundos</p>
+              <p className="cp-loading-title">{t('create.loadingTitle')}</p>
+              <p className="cp-loading-sub">{t('create.loadingSub')}</p>
             </div>
           </div>
         )}
@@ -814,8 +816,8 @@ const CreatePost = ({ onClose } = {}) => {
         {publishStep === 'type' && (
         <div className="cp-draft-overlay" role="dialog" aria-modal="true">
           <div className="cp-draft-card" onClick={e => e.stopPropagation()}>
-            <h3 className="cp-draft-title">Tags de proyecto</h3>
-            <p className="cp-draft-text">Ayuda a que tu trabajo se filtre correctamente (máx. 3)</p>
+            <h3 className="cp-draft-title">{t('create.projectTags.title')}</h3>
+            <p className="cp-draft-text">{t('create.projectTags.subtitle')}</p>
             <div className="cp-type-dropdown--modal">
               {PROJECT_TYPES.map(type => {
                 const selected = projectTypes.includes(type);
@@ -840,12 +842,12 @@ const CreatePost = ({ onClose } = {}) => {
                     checked={hasImageRights}
                     onChange={e => { setHasImageRights(e.target.checked); if (e.target.checked) setRightsError(""); }}
                   />
-                  <span>Confirmo que tengo los derechos necesarios sobre estas imágenes y autorizo a THEFOLDER a mostrarlas en la plataforma. El contenido no infringe derechos de autor, privacidad ni propiedad intelectual de terceros.</span>
+                  <span>{t('create.projectTags.rightsLabel')}</span>
                 </label>
-                {rightsError && <span className="cp-field-error">{rightsError}</span>}
+                {rightsError && <span className="cp-field-error">{t('create.projectTags.rightsError')}</span>}
             <div className="cp-draft-actions">
               <button type="button" className="cp-btn cp-btn--ghost" onClick={() => setPublishStep('form')}>
-                Volver
+                {t('create.draft.startNew')}
               </button>
               <button
                 type="button"
@@ -853,7 +855,7 @@ const CreatePost = ({ onClose } = {}) => {
                 disabled={projectTypes.length === 0 || !hasImageRights}
                 onClick={handlePublish}
               >
-                Publicar
+                {t('create.publish')}
               </button>
             </div>
           </div>
@@ -864,10 +866,10 @@ const CreatePost = ({ onClose } = {}) => {
         {uploadSuccess && (
           <div className="cp-success-overlay">
             <div className="cp-success-card">
-              <button className="cp-close" onClick={() => { setUploadSuccess(false); onClose?.(); }} type="button" aria-label="Cerrar"><FaTimes /></button>
-              <h3>¡Proyecto publicado!</h3>
-              <p>Tu publicación ya está disponible para toda la comunidad.</p>
-              <button className="cp-btn cp-btn--primary" onClick={handleViewPost} type="button">Ver publicación</button>
+              <button className="cp-close" onClick={() => { setUploadSuccess(false); onClose?.(); }} type="button" aria-label={t('create.team.closeTitle') || 'Close'}><FaTimes /></button>
+              <h3>{t('create.success.title')}</h3>
+              <p>{t('create.success.subtitle')}</p>
+              <button className="cp-btn cp-btn--primary" onClick={handleViewPost} type="button">{t('create.success.viewPost')}</button>
             </div>
           </div>
         )}

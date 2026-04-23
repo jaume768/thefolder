@@ -7,6 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import "../components/controlPanel/css/MobileTopHeader.css";
 import LoginModal from "../components/landing/LoginModal";
@@ -15,8 +16,8 @@ import SearchFullScreen from "../components/search/SearchFullScreen";
 
 // Mantén tus rutas
 const topMenuItems = [
-  { label: "Explorador", to: "/explorer", auth: false },
-  { label: "Creativos", to: "/creatives", auth: false },
+  { labelKey: "nav.explorer", to: "/explorer", auth: false },
+  { labelKey: "nav.creatives", to: "/creatives", auth: false },
   // { label: "Estudiar moda", to: "/fashion", auth: false },
   // { label: "Industria", to: "/industry", auth: false },
 ];
@@ -29,6 +30,7 @@ const resolveImg = (backendUrl, maybeUrl) => {
 };
 
 const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false }) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -339,7 +341,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
           type="button"
           className="mobile-top-leftlink"
           onClick={() => navigate("/explorer")}
-          aria-label="Ir al explorador"
+          aria-label={t('nav.explorer')}
         >
           THEFOLDER
         </button>
@@ -349,7 +351,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
           type="button"
           className={`mobile-top-menubtn ${open || activeMenuItem ? "active" : ""}`}
           onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          aria-label={open ? t('actions.closeMenu') : t('actions.openMenu')}
           aria-expanded={open}
           aria-haspopup="dialog"
         >
@@ -363,7 +365,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
           className="tf-menu mth-tf-menu"
           role="dialog"
           aria-modal="true"
-          aria-label="Menú"
+          aria-label={t('nav.menu')}
           ref={menuDialogRef}
         >
           {/* Top: se queda igual */}
@@ -380,7 +382,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
               type="button"
               className="mobile-top-leftlink close"
               onClick={() => setOpen(false)}
-              aria-label="Cerrar"
+              aria-label={t('actions.close')}
             >
               [  x  ]
             </button>
@@ -395,13 +397,13 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
               <button
                 type="button"
                 className="mth-search-icon-btn"
-                aria-label="Buscar"
+                aria-label={t('actions.search')}
                 onClick={() => {
                   setShowMobileSearch(true);
                   setTimeout(() => mobileSearchInputRef.current?.focus(), 50);
                 }}
               >
-                <img src="/iconos/search.svg" alt="Buscar" className="mth-search-icon" />
+                <img src="/iconos/search.svg" alt={t('actions.search')} className="mth-search-icon" />
               </button>
             </div>
 
@@ -417,7 +419,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                     role="menuitem"
                     onClick={() => go(item.to, item.auth)}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                     {isActive && " /"}
                   </button>
                 );
@@ -428,14 +430,14 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
 
             {/* ✅ NUEVO: bloque acciones (como preview) */}
             {token ? (
-              <div className="mth-actions" aria-label="Acciones de perfil">
+              <div className="mth-actions" aria-label={t('actions.profileOptions')}>
                 <button
                   type="button"
                   className="mth-action mth-action--primary"
                   onClick={() => go("/createPost", true)}
                 >
                   <img src="/iconos/upload-picture.png" alt="" className="mth-action-icon mth-action-icon--invert" aria-hidden="true" />
-                  PUBLICAR
+                  {t('actions.publish').toUpperCase()}
                 </button>
 
                 <div className="mth-flex">
@@ -445,7 +447,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                     onClick={goMyPublicProfile}
                   >
                     <img src="/iconos/my-profile.png" alt="" className="mth-action-icon" aria-hidden="true" />
-                    MI PERFIL
+                    {t('actions.myProfile').toUpperCase()}
                   </button>
 
                   <button
@@ -454,7 +456,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                     onClick={() => go("/myprofile/edit", true)}
                   >
                     <img src="/iconos/edit-my-profile.png" alt="" className="mth-action-icon" aria-hidden="true" />
-                    EDITAR PERFIL
+                    {t('actions.editProfile').toUpperCase()}
                   </button>
 
                   <button
@@ -463,7 +465,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                     onClick={() => go("/community", true)}
                   >
                     <img src="/iconos/community.png" alt="" className="mth-action-icon icon-community" aria-hidden="true" />
-                    MI COMUNIDAD
+                    {t('actions.myCommunity').toUpperCase()}
                   </button>
 
                   <button
@@ -472,7 +474,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                     onClick={() => go("/guardados", true)}
                   >
                     <img src="/iconos/saved.png" alt="" className="mth-action-icon" aria-hidden="true" />
-                    GUARDADOS
+                    {t('actions.saved').toUpperCase()}
                   </button>
                 </div>
               </div>
@@ -483,7 +485,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                   className="tf-btn tf-btn--wide tf-btn--primary"
                   onClick={goRegister}
                 >
-                  Crear cuenta
+                  {t('actions.createAccount')}
                 </button>
 
                 <button
@@ -491,7 +493,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                   className="tf-btn tf-btn--wide tf-btn--ghost"
                   onClick={goLogin}
                 >
-                  Iniciar sesión
+                  {t('actions.login')}
                 </button>
               </div>
             )}
@@ -504,7 +506,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                   className="mth-footerlink"
                   onClick={handleLogout}
                 >
-                  Cerrar sesión
+                  {t('actions.logout')}
                 </button>
 
                 <span className="mth-footersep" aria-hidden="true" />
@@ -514,7 +516,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                   className="mth-footerlink"
                   onClick={() => go("/myprofile/settings", true)}
                 >
-                  Configuración
+                  {t('actions.settings')}
                 </button>
               </div>
             )}
@@ -523,12 +525,12 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
       )}
 
       {showMobileSearch && (
-        <div className="mth-search-overlay" role="dialog" aria-modal="true" aria-label="Buscar">
+        <div className="mth-search-overlay" role="dialog" aria-modal="true" aria-label={t('actions.search')}>
           <div className="mth-search-overlay__inner">
             <button
               type="button"
               className="mth-search-close"
-              aria-label="Cerrar búsqueda"
+              aria-label={t('actions.closeSearch')}
               onClick={() => {
                 setShowMobileSearch(false);
                 setSearchQuery("");
@@ -536,7 +538,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                 setShowFullScreenSearch(false);
               }}
             >
-              CERRAR
+              {t('actions.closeSearch').toUpperCase()}
             </button>
 
             <div className="dashboard-search-pill expanded mth-search-pill">
@@ -545,7 +547,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
                 ref={mobileSearchInputRef}
                 type="search"
                 className="modern-search-input"
-                placeholder="Buscar creativos, publicaciones..."
+                placeholder={t('search.mobilePlaceholder')}
                 value={searchQuery}
                 onChange={handleMobileSearchChange}
                 onKeyDown={handleMobileSearchKeyDown}

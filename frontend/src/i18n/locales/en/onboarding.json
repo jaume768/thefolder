@@ -1,0 +1,218 @@
+{
+  "completeRegistration": {
+    "title": "Choose your username",
+    "subtitle": "This will be your public name.<br/>You'll be able to share your link with companies and industry professionals.",
+    "prefix": "thefolder.es/",
+    "inputAria": "Username",
+    "hint": "Use a professional name, no spaces and easy to remember.<br/>At the moment this name <1>CANNOT be changed</1>.",
+    "start": "START",
+    "loading": "LOADING...",
+    "errors": {
+      "required": "Enter a username.",
+      "tooLong": "Maximum 20 characters.",
+      "invalidChars": "Only letters, numbers and . _ -",
+      "taken": "That username is already in use.",
+      "takenLong": "That name is already in use. Try another.",
+      "stillPreparing": "We're still setting up your account, please wait a moment...",
+      "saveFailed": "We couldn't save your profile.",
+      "network": "Network error. Please try again."
+    }
+  },
+  "common": {
+    "continue": "CONTINUE",
+    "back": "Back",
+    "next": "Next",
+    "finish": "FINISH",
+    "saving": "SAVING…",
+    "loading": "LOADING...",
+    "networkError": "Network error. Please try again.",
+    "genericError": "Something went wrong. Please try again.",
+    "uploadError": "Failed to upload the photo. Please try again."
+  },
+  "type": {
+    "title": "How do you want to use THEFOLDER?",
+    "creative": {
+      "title": "Creative",
+      "main": "Publish your portfolio. Connect with the industry.",
+      "sub": "(photographers, designers, stylists…)"
+    },
+    "industry": {
+      "title": "Industry",
+      "main": "Publish your profile in the Industry directory. Discover talent.",
+      "sub": "(brands, agencies, showrooms, magazines…)"
+    },
+    "guest": {
+      "title": "Explorer / Scout",
+      "main": "Browse freely.",
+      "sub": "Explore projects and creatives without creating a public profile."
+    }
+  },
+  "username": {
+    "title": "Choose your username",
+    "subtitle": "This will be your public {{type}} profile link.<br/>Only lowercase letters, numbers and dashes. Maximum 20 characters.",
+    "typeCreative": "creative",
+    "typeCompany": "company",
+    "placeholder": "yourusername",
+    "inputAria": "Username",
+    "errors": {
+      "tooLong": "Maximum 20 characters.",
+      "invalidChars": "Only lowercase letters, numbers and dashes.",
+      "dashBoundary": "Cannot start or end with a dash.",
+      "doubleDash": "Cannot contain a double dash.",
+      "taken": "That name is already in use.",
+      "takenLong": "That name is already in use. Try another."
+    }
+  },
+  "personal": {
+    "title": "Tell us about yourself",
+    "subtitle": "This information helps us personalize your experience\nand show your profile correctly to other users.",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name(s)",
+    "country": "Country",
+    "countryPlaceholder": "Country",
+    "otherCountry": "Other country",
+    "countryQuestion": "What country are you in?",
+    "countryCustomPlaceholder": "Type your country",
+    "city": "City",
+    "cityPlaceholder": "City",
+    "cityAltPlaceholder": "Your city",
+    "cityQuestion": "What city are you in?",
+    "cityDisabledPlaceholder": "First choose a country",
+    "dateOfBirth": "Date of birth",
+    "location": "Location",
+    "publicHint": "It will be shown on your profile (you can change it later).",
+    "privateHint": "Not shown publicly."
+  },
+  "creativeLevel": {
+    "title": "Where are you in your career?",
+    "subtitle": "Complete your professional profile.",
+    "levels": {
+      "newcomer": { "name": "Newcomer", "main": "Currently studying.", "desc": "Student or recent graduate" },
+      "graduated": { "name": "Graduated", "main": "Academic training completed.", "desc": "Academic training completed" },
+      "emerging": { "name": "Emerging", "main": "Freelance / own projects.", "desc": "Freelance work or personal projects" },
+      "professional": { "name": "Professional", "main": "Active professional.", "sub": "— Subject to validation." }
+    }
+  },
+  "specialization": {
+    "title": "Add your specialization",
+    "subtitle": "Pick a group and choose up to <1>3 tags in total.</1><br/>Helps others find you easily.",
+    "otherHint": "Type your specialty and press Enter to add it.",
+    "otherPlaceholder": "Custom specialty",
+    "add": "Add",
+    "removeTitle": "Remove"
+  },
+  "photo": {
+    "title": "Add your profile photo",
+    "subtitle": "It will be part of your identity on the platform and shown publicly.",
+    "alt": "Profile photo",
+    "edit": "Edit",
+    "processing": "Processing…",
+    "remove": "Remove",
+    "hint": "You can change it later.",
+    "errorRequired": "The photo is required to publish your profile.",
+    "format": "Vertical format.",
+    "imageTypeError": "The file must be an image."
+  },
+  "errors": {
+    "connection": "Network error. Please try again.",
+    "saveFailed": "Could not save data.",
+    "requiredFields": "Please complete all required fields.",
+    "invalidDate": "The date of birth is incorrect.",
+    "allFieldsRequired": "First name, last name, date of birth, country, and city are required fields."
+  },
+  "profileStep": {
+    "levelLabel": "Your level",
+    "countryLabel": "Country",
+    "countrySelect": "Select a country",
+    "cityLabel": "City",
+    "citySelect": "Select a city",
+    "cityPlaceholder": "Your city",
+    "photoLabel": "Profile photo",
+    "photoOptional": "(optional)",
+    "photoChange": "Change",
+    "photoRemove": "Remove",
+    "photoHint": "You can add it later from your profile.",
+    "orgTypeLabel": "Organisation type",
+    "orgTypeSelect": "Select a type",
+    "companyNameLabel": "Company name",
+    "companyNamePlaceholder": "Your company's public name",
+    "shortDescLabel": "Short description",
+    "shortDescOptional": "(optional)",
+    "shortDescPlaceholder": "What does your company do? Maximum 150 characters.",
+    "linksLabel": "Links",
+    "addLink": "+ Add link",
+    "industryTypes": {
+      "brand": "Brand",
+      "showroom": "Showroom",
+      "agency": "Agency / Scout",
+      "media": "Media outlet",
+      "production": "Production company",
+      "other": "Other"
+    }
+  },
+  "profesional": {
+    "step": "step {{n}}",
+    "roleQuestion": "What is your role?",
+    "roleTitle": "I represent...",
+    "roles": {
+      "brand": "A small brand",
+      "company": "A company",
+      "agency": "An agency/scout",
+      "institution": "An educational institution",
+      "other": "Other"
+    },
+    "personalDataTitle": "Personal data",
+    "registrationDataTitle": "Registration data",
+    "lastDataTitle": "Last details...",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last name(s)",
+    "lastNamePlaceholder": "Enter your last name(s)",
+    "dateOfBirth": "Date of birth",
+    "countryResidence": "Country of residence",
+    "countrySelect": "Select your country",
+    "countryHQ": "Country of headquarters",
+    "countryHQSelect": "Select country",
+    "cityResidence": "City of residence",
+    "cityHQ": "City of headquarters",
+    "cityPlaceholder": "Enter your city",
+    "cityHQPlaceholder": "Enter the city",
+    "companyName": "Company name",
+    "brandName": "Brand name",
+    "institutionName": "Educational institution name",
+    "namePlaceholder": "Enter the name",
+    "foundingYear": "Year of founding",
+    "foundingYearPlaceholder": "yyyy",
+    "mainProduct": "What is your main product?",
+    "agencyServices": "What services do you offer?",
+    "selectOption": "Select an option",
+    "dontShare": "I prefer not to share this information",
+    "products": {
+      "custom": "Custom tailoring",
+      "vintage": "Vintage fashion",
+      "accessories": "Accessories",
+      "jewelry": "Jewelry",
+      "shoes": "Shoes",
+      "leather": "Leather goods",
+      "textile": "Textile art",
+      "sustainable": "Sustainable goods",
+      "other": "Other"
+    },
+    "services": {
+      "talent": "Talent management",
+      "creative": "Creative direction or production",
+      "photo": "Photography and video",
+      "consulting": "Brand consulting and strategy",
+      "shows": "Fashion show organization",
+      "digital": "Digital marketing"
+    },
+    "errors": {
+      "selectRole": "Please select your role.",
+      "requiredFields": "Please complete all required fields.",
+      "genericError": "An error occurred.",
+      "connection": "Connection or server error."
+    }
+  }
+}

@@ -1,12 +1,14 @@
 // src/components/CreateOffer.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import ExtraQuestionsForm from '../../components/forms/ExtraQuestionsForm';
 import VerificationRequiredModal from '../../components/modals/VerificationRequiredModal';
 import '../../components/controlPanel/css/create-offer.css';
 
 const CreateOffer = () => {
+    const { t } = useTranslation('offers');
     const navigate = useNavigate();
     const { offerId } = useParams();
     const [formData, setFormData] = useState({
@@ -99,7 +101,7 @@ const CreateOffer = () => {
                 setPreviewLogo(offer.companyLogo);
             }
         } catch (err) {
-            setError('No se pudo cargar la oferta. Intenta de nuevo.');
+            setError(t('create.loadError'));
         } finally {
             setLoading(false);
         }
@@ -173,7 +175,7 @@ const CreateOffer = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (user.role !== 'Profesional') {
-                setError('Solo profesionales pueden crear ofertas.');
+                setError(t('create.onlyProfessionals'));
                 setLoading(false);
                 return;
             }
@@ -183,7 +185,7 @@ const CreateOffer = () => {
                 'descriptionEmployer', 'description', 'requiredProfile'
             ].filter(key => !formData[key]);
             if (required.length) {
-                setError(`Faltan campos: ${required.join(', ')}`);
+                setError(`${t('create.missingFields')}: ${required.join(', ')}`);
                 setLoading(false);
                 return;
             }
@@ -212,7 +214,7 @@ const CreateOffer = () => {
             }
             navigate('/misOfertas');
         } catch (err) {
-            setError(err.response?.data?.message || 'Error al enviar la oferta');
+            setError(err.response?.data?.message || t('create.submitError'));
         } finally {
             setLoading(false);
         }
@@ -224,22 +226,22 @@ const CreateOffer = () => {
                 <VerificationRequiredModal onClose={() => setShowVerificationModal(false)} />
             )}
             <h1 className="createoffer-page-title">
-                {isEditing ? 'Editar oferta de trabajo' : 'Publica una oferta de empleo'}
+                {isEditing ? t('create.editTitle') : t('create.createTitle')}
             </h1>
             <div className="createoffer-container">
                 <aside className="createoffer-sidebar">
                     <ul>
-                        <li><a href="#imagen-cabecera">Imagen de cabecera</a></li>
-                        <li><a href="#titulo-oferta">Título</a></li>
-                        <li><a href="#especificaciones">Especificaciones</a></li>
-                        <li><a href="#descripcion-ofertante">Descripción ofertante</a></li>
-                        <li><a href="#descripcion-puesto">Descripción puesto</a></li>
-                        <li><a href="#funciones">Funciones</a></li>
-                        <li><a href="#se-ofrece">Se ofrece</a></li>
-                        <li><a href="#perfil-ideal">Perfil ideal</a></li>
-                        <li><a href="#hard-skills">Hard Skills</a></li>
-                        <li><a href="#soft-skills">Soft Skills</a></li>
-                        <li><a href="#extra-questions">Preguntas extra</a></li>
+                        <li><a href="#imagen-cabecera">{t('create.sidebar.headerImage')}</a></li>
+                        <li><a href="#titulo-oferta">{t('create.sidebar.title')}</a></li>
+                        <li><a href="#especificaciones">{t('create.sidebar.specifications')}</a></li>
+                        <li><a href="#descripcion-ofertante">{t('create.sidebar.employerDescription')}</a></li>
+                        <li><a href="#descripcion-puesto">{t('create.sidebar.jobDescription')}</a></li>
+                        <li><a href="#funciones">{t('create.sidebar.functions')}</a></li>
+                        <li><a href="#se-ofrece">{t('create.sidebar.offered')}</a></li>
+                        <li><a href="#perfil-ideal">{t('create.sidebar.idealProfile')}</a></li>
+                        <li><a href="#hard-skills">{t('create.sidebar.hardSkills')}</a></li>
+                        <li><a href="#soft-skills">{t('create.sidebar.softSkills')}</a></li>
+                        <li><a href="#extra-questions">{t('create.sidebar.extraQuestions')}</a></li>
                     </ul>
                 </aside>
 
@@ -250,11 +252,11 @@ const CreateOffer = () => {
                     <section id="imagen-cabecera" className="createoffer-form-section logo-section">
                         <div className="createoffer-header-image">
                             {previewLogo ? (
-                                <img src={previewLogo} alt="Cabecera" />
+                                <img src={previewLogo} alt={t('create.sections.headerImage')} />
                             ) : (
                                 <div className="upload-placeholder">
                                     <span className="upload-icon">⤴︎</span>
-                                    <p>Sube tu imagen de cabecera</p>
+                                    <p>{t('create.sections.headerImage')}</p>
                                 </div>
                             )}
                             <input
@@ -271,107 +273,107 @@ const CreateOffer = () => {
 
                     {/* --- Título oferta */}
                     <section id="titulo-oferta" className="createoffer-form-section">
-                        <h2 className="createoffer-section-title">Título de la oferta</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.jobTitle')}</h2>
                         <input
                             type="text"
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
                             className="createoffer-full-width-input"
-                            placeholder="Título de la oferta"
+                            placeholder={t('create.placeholders.jobTitle')}
                             required
                         />
                     </section>
 
                     {/* --- Especificaciones */}
                     <section id="especificaciones" className="createoffer-form-section">
-                        <h2 className="createoffer-section-title">Especificaciones</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.specifications')}</h2>
                         <div className="createoffer-specifications-grid">
                             <div className="createoffer-spec-item">
-                                <label>Duración</label>
+                                <label>{t('create.sections.duration')}</label>
                                 <input
                                     type="text"
                                     name="duration"
                                     value={formData.duration}
                                     onChange={handleChange}
-                                    placeholder="Ej: 6 meses"
+                                    placeholder={t('create.placeholders.duration')}
                                 />
                             </div>
                             <div className="createoffer-spec-item">
-                                <label>Ciudad</label>
+                                <label>{t('create.sections.city')}</label>
                                 <input
                                     type="text"
                                     name="city"
                                     value={formData.city}
                                     onChange={handleChange}
-                                    placeholder="Ciudad"
+                                    placeholder={t('create.placeholders.city')}
                                     required
                                 />
                             </div>
                             <div className="createoffer-spec-item">
-                                <label>País</label>
+                                <label>{t('create.sections.country')}</label>
                                 <input
                                     type="text"
                                     name="country"
                                     value={formData.country}
                                     onChange={handleChange}
-                                    placeholder="País"
+                                    placeholder={t('create.placeholders.country')}
                                     required
                                 />
                             </div>
                             <div className="createoffer-spec-item">
-                                <label>Modalidad</label>
+                                <label>{t('create.sections.mode')}</label>
                                 <select
                                     name="locationType"
                                     value={formData.locationType}
                                     onChange={handleChange}
                                 >
-                                    <option>Presencial</option>
-                                    <option>Remoto</option>
-                                    <option>Híbrido</option>
+                                    <option>{t('locationType.onsite')}</option>
+                                    <option>{t('locationType.remote')}</option>
+                                    <option>{t('locationType.hybrid')}</option>
                                 </select>
                             </div>
                             <div className="createoffer-spec-item">
-                                <label>Contrato</label>
+                                <label>{t('create.sections.contract')}</label>
                                 <select
                                     name="jobType"
                                     value={formData.jobType}
                                     onChange={handleChange}
                                 >
-                                    <option>Tiempo completo</option>
-                                    <option>Tiempo parcial</option>
-                                    <option>Prácticas</option>
+                                    <option>{t('jobType.fullTime')}</option>
+                                    <option>{t('jobType.partTime')}</option>
+                                    <option>{t('jobType.internship')}</option>
                                 </select>
                             </div>
                             <div className="createoffer-spec-item">
-                                <label>Experiencia</label>
+                                <label>{t('create.sections.experience')}</label>
                                 <input
                                     type="text"
                                     name="experienceYears"
                                     value={formData.experienceYears}
                                     onChange={handleChange}
-                                    placeholder="Años de experiencia"
+                                    placeholder={t('create.placeholders.experience')}
                                 />
                             </div>
                             <div className="createoffer-spec-item full-width">
-                                <label>Página web</label>
+                                <label>{t('create.sections.website')}</label>
                                 <input
                                     type="text"
                                     name="website"
                                     value={formData.website}
                                     onChange={handleChange}
-                                    placeholder="Escribe aquí tu enlace"
+                                    placeholder={t('create.placeholders.website')}
                                     className="createoffer-full-width-input"
                                 />
                             </div>
                             <div className="createoffer-spec-item full-width">
-                                <label>Nombre de la persona de contacto</label>
+                                <label>{t('create.sections.contactName')}</label>
                                 <input
                                     type="text"
                                     name="contactName"
                                     value={formData.contactName}
                                     onChange={handleChange}
-                                    placeholder="Nombre"
+                                    placeholder={t('create.placeholders.contactName')}
                                     className="createoffer-full-width-input"
                                 />
                             </div>
@@ -381,14 +383,14 @@ const CreateOffer = () => {
                     {/* --- Descripción del ofertante */}
                     <section id="descripcion-ofertante" className="createoffer-form-section">
                         <span className="createoffer-subtitle">
-                            Sobre ({formDataCompanyName || 'el profesional'})
+                            {t('create.subtitles.aboutEmployer')} ({formDataCompanyName || t('create.subtitles.professionalFallback')})
                         </span>
-                        <h2 className="createoffer-section-title">Descripción del ofertante</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.employerDescription')}</h2>
                         <textarea
                             name="descriptionEmployer"
                             value={formData.descriptionEmployer}
                             onChange={handleChange}
-                            placeholder="Escribe aquí la descripción."
+                            placeholder={t('create.placeholders.description')}
                             className="createoffer-full-width-textarea"
                             required
                         />
@@ -396,13 +398,13 @@ const CreateOffer = () => {
 
                     {/* --- Descripción del puesto */}
                     <section id="descripcion-puesto" className="createoffer-form-section">
-                        <span className="createoffer-subtitle">Sobre el puesto de empleo</span>
-                        <h2 className="createoffer-section-title">Descripción</h2>
+                        <span className="createoffer-subtitle">{t('create.subtitles.aboutJob')}</span>
+                        <h2 className="createoffer-section-title">{t('create.sections.aboutJob')}</h2>
                         <textarea
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
-                            placeholder="Escribe aquí la descripción."
+                            placeholder={t('create.placeholders.description')}
                             className="createoffer-full-width-textarea"
                             required
                         />
@@ -410,37 +412,37 @@ const CreateOffer = () => {
 
                     {/* --- Funciones */}
                     <section id="funciones" className="createoffer-form-section">
-                        <h2 className="createoffer-section-title">Funciones</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.functions')}</h2>
                         <textarea
                             name="functions"
                             value={formData.functions}
                             onChange={handleChange}
-                            placeholder="Escribe aquí la descripción."
+                            placeholder={t('create.placeholders.description')}
                             className="createoffer-full-width-textarea"
                         />
                     </section>
 
                     {/* --- Se ofrece */}
                     <section id="se-ofrece" className="createoffer-form-section">
-                        <h2 className="createoffer-section-title">Se ofrece</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.offered')}</h2>
                         <textarea
                             name="offered"
                             value={formData.offered}
                             onChange={handleChange}
-                            placeholder="Escribe aquí la descripción."
+                            placeholder={t('create.placeholders.description')}
                             className="createoffer-full-width-textarea"
                         />
                     </section>
 
                     {/* --- Perfil ideal */}
                     <section id="perfil-ideal" className="createoffer-form-section">
-                        <span className="createoffer-subtitle">Sobre el perfil ideal</span>
-                        <h2 className="createoffer-section-title">Describe el perfil ideal</h2>
+                        <span className="createoffer-subtitle">{t('create.subtitles.aboutProfile')}</span>
+                        <h2 className="createoffer-section-title">{t('create.sections.idealProfile')}</h2>
                         <textarea
                             name="requiredProfile"
                             value={formData.requiredProfile}
                             onChange={handleChange}
-                            placeholder="Escribe aquí la descripción."
+                            placeholder={t('create.placeholders.description')}
                             className="createoffer-full-width-textarea"
                             required
                         />
@@ -448,14 +450,14 @@ const CreateOffer = () => {
 
                     {/* --- Hard Skills */}
                     <section id="hard-skills" className="createoffer-form-section">
-                        <h2 className="createoffer-section-title">Hard Skills (Técnicas)</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.hardSkills')}</h2>
                         <div className="createoffer-skills-input-container">
                             <input
                                 type="text"
                                 value={newHardSkill}
                                 onChange={e => setNewHardSkill(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddHardSkill())}
-                                placeholder="Añadir habilidad técnica"
+                                placeholder={t('create.placeholders.addHardSkill')}
                                 className="createoffer-skill-input"
                             />
                             <button
@@ -484,14 +486,14 @@ const CreateOffer = () => {
 
                     {/* --- Soft Skills */}
                     <section id="soft-skills" className="createoffer-form-section">
-                        <h2 className="createoffer-section-title">Soft Skills (Blandas)</h2>
+                        <h2 className="createoffer-section-title">{t('create.sections.softSkills')}</h2>
                         <div className="createoffer-skills-input-container">
                             <input
                                 type="text"
                                 value={newSoftSkill}
                                 onChange={e => setNewSoftSkill(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddSoftSkill())}
-                                placeholder="Añadir habilidad blanda"
+                                placeholder={t('create.placeholders.addSoftSkill')}
                                 className="createoffer-skill-input"
                             />
                             <button
@@ -535,8 +537,8 @@ const CreateOffer = () => {
                             disabled={loading}
                         >
                             {loading
-                                ? isEditing ? 'Actualizando…' : 'Publicando…'
-                                : isEditing ? 'Actualizar oferta' : 'Crear oferta'}
+                                ? isEditing ? t('create.submit.updating') : t('create.submit.publishing')
+                                : isEditing ? t('create.submit.update') : t('create.submit.create')}
                         </button>
                     </div>
                 </form>

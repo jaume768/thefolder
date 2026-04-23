@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter+Tight:wght@100;200;300;400;500;600;700;800;900&family=Work+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Fuentes cargadas en index.html con preconnect para evitar FOUT/layout-shift */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter Tight', sans-serif;

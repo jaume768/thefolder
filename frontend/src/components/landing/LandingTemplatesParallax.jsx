@@ -1,8 +1,10 @@
 // LandingTemplatesParallax.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./css/landing-templates-parallax.css";
 
 export default function LandingTemplatesParallax({ templates }) {
+  const { t } = useTranslation("landing");
   const sectionRef = useRef(null);
   const rafRef = useRef(null);
 
@@ -16,9 +18,9 @@ export default function LandingTemplatesParallax({ templates }) {
 
   const ITEMS = useMemo(() => {
     const fallback = [
-      { id: "t1", src: "/multimedia/Plantilla (4).png", kind: "desktop", label: "Plantilla nº1 horizontal [Ordenador]" },
-      { id: "t2", src: "/multimedia/Plantilla (1).png", kind: "mobile",  label: "Plantilla nº1 vertical [Móvil]" },
-      { id: "t4", src: "/multimedia/Plantilla (2).png", kind: "mobile",  label: "Plantilla nº2 vertical [Móvil]" },
+      { id: "t1", src: "/multimedia/Plantilla (4).png", kind: "desktop" },
+      { id: "t2", src: "/multimedia/Plantilla (1).png", kind: "mobile" },
+      { id: "t4", src: "/multimedia/Plantilla (2).png", kind: "mobile" },
     ];
     return templates?.length ? templates : fallback;
   }, [templates]);
@@ -81,7 +83,7 @@ export default function LandingTemplatesParallax({ templates }) {
     <section
       ref={sectionRef}
       className={`tf-templates ${active ? "tf-templates--active" : ""}`}
-      aria-label="Plantillas"
+      aria-label={t("templatesParallax.ariaLabel")}
     >
       <div className="tf-templates__inner">
         <div className="tf-templates__stage" aria-hidden="true">
@@ -89,14 +91,14 @@ export default function LandingTemplatesParallax({ templates }) {
           {/* TEXTO CENTRAL STICKY */}
           <div className="tf-templates__center">
             <div className="tf-templates__centerInner">
-              <span className="tf-templates__centerTitle">Elige tu plantilla</span>
+              <span className="tf-templates__centerTitle">{t("templatesParallax.chooseTemplate")}</span>
               <span className="tf-templates__centerTitle tf-templates__decor">(5)</span>
             </div>
           </div>
 
           {/* TEXTO ABAJO DERECHA — fijo, no parallax */}
           <p className="tf-floating-text">
-            Adaptadas a Fotografía, Estilismo,<br />Dirección creativa, MUAH y más.
+            {t("templatesParallax.description")}
           </p>
 
           {/* tA — grande, arriba izquierda, sangra desde borde */}

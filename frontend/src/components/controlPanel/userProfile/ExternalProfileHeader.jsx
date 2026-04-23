@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { FaTimes } from "react-icons/fa";
 import ProfileOptionsModal from '../../modals/ProfileOptionsModal';
 import SearchResults from '../../search/SearchResults';
@@ -9,6 +10,7 @@ import SearchFullScreen from '../../search/SearchFullScreen';
 import { useCreatePost } from "../../../contexts/CreatePostContext";
 
 const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, viewedAvatar, isDark }) => {
+  const { t } = useTranslation("profile");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -380,7 +382,7 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
             aria-haspopup="menu"
             aria-expanded={showNavMenu}
           >
-            Menú
+            {t("menu")}
             {(showNavMenu || activeNavItem) && <span className="header-dot" />}
           </button>
           {showNavMenu && (
@@ -413,7 +415,7 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
             type="button"
             className="dashboard-search-trigger"
             onClick={openSearch}
-            aria-label="Abrir búsqueda"
+            aria-label={t("openSearch")}
           >
             <img src="/iconos/search.svg" alt="" aria-hidden="true" className="search-sparkles-icon" />
           </button>
@@ -424,7 +426,7 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
               ref={searchInputRef}
               type="text"
               className="modern-search-input"
-              placeholder="Busca creativos, proyectos…"
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={handleSearchInputChange}
               onKeyDown={handleSearch}
@@ -432,7 +434,7 @@ const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, vi
                 if (searchQuery && searchQuery.trim().length >= 2 && searchResults) setShowResults(true);
               }}
             />
-            <button type="button" className="search-clear-btn" onClick={clearSearch} aria-label="Cerrar búsqueda">
+            <button type="button" className="search-clear-btn" onClick={clearSearch} aria-label={t("closeSearch")}>
               <img src="/iconos/close.svg" alt="" aria-hidden="true" />
             </button>
           </div>

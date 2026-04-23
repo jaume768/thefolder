@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./css/landing-final-cta.css";
 
 const IMAGES = [
@@ -8,6 +9,7 @@ const IMAGES = [
 export default function LandingFinalCTA({ onCtaClick }) {
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(false);
+  const { t } = useTranslation("home");
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -49,21 +51,12 @@ export default function LandingFinalCTA({ onCtaClick }) {
 
         {/* Texto descriptivo — cols 1-5 */}
         <p className="tf-finalCta__desc tf-reveal" style={{ "--d": "120ms", gridColumn: "1 / 4" }}>
-          El directorio que reúne todo el talento emergente en moda [ estilismo,
-          dirección creativa,
-          fotografía,
-          muah,
-          diseño,
-          & + ]. Filtra. Conecta. Encuentra a tu equipo.
-          / HOW / Publica tus fotos de portfolio y edita tu info de CV. 
-          Tu link estará listo para compartir con marcas y agencias.
+          {t("finalCta.descLeft")}
         </p>
 
         {/* Texto descriptivo — cols 8-10 */}
         <p className="tf-finalCta__desc tf-reveal" style={{ "--d": "120ms" }}>
-          / ABOUT / Creamos herramientas para creativos de moda que necesitan
-          mostrar su trabajo de forma profesional. / WHY / Para que el diseño, la técnica
-          o el formato no sean un obstáculo para acceder a la industria.
+          {t("finalCta.descRight")}
         </p>
 
       </div>
@@ -76,7 +69,7 @@ export default function LandingFinalCTA({ onCtaClick }) {
           style={{ "--d": "240ms" }}
           onClick={onCtaClick}
         >
-          Crea tu perfil <em className="tf-italic">gratis</em>
+          {t("finalCta.ctaText")} <em className="tf-italic">{t("finalCta.ctaEm")}</em>
         </button>
       </div>
 

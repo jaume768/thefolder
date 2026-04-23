@@ -1,0 +1,63 @@
+{
+  "hero": {
+    "titleDesktop": "The directory that brings together all emerging fashion talent",
+    "titleMobile": "The directory of emerging fashion talent",
+    "subtitle": "Publish your profile. Connect with the industry."
+  },
+  "cookies": {
+    "ariaLabel": "Cookies",
+    "close": "Close",
+    "textDesktop": "We use basic cookies so the website works properly and to improve your experience.",
+    "textMobile": "We use basic cookies so the website works properly and to improve your experience.",
+    "accept": "Continue",
+    "acceptUpper": "CONTINUE",
+    "policy": "Cookie policy"
+  },
+  "filtersShowcase": {
+    "f1": "Photography + Copenhagen + #backstage",
+    "f2": "Makeup + Valencia + #testshoot",
+    "f3": "Fashion design + Barcelona + #fitting",
+    "subtitle": "Filter to your taste",
+    "location": "Location",
+    "specialty": "Specialty",
+    "experience": "Experience"
+  },
+  "creatorsShowcase": {
+    "title": "Explore all the images uploaded by creatives",
+    "saveFavorites": "Save your favorite photos",
+    "connect": "Connect with other creatives",
+    "ariaLabel": "Featured profiles",
+    "viewProfile": "View profile of {{name}}"
+  },
+  "perfiles": {
+    "profesionales": {
+      "titulo": "PROFESSIONALS",
+      "subtitulo": "Defined identity, consolidated career, personal vision.",
+      "descripcion": "Bring everything you've built into one profile \u2014 career history, networks, portfolio, collaborations. Be found in the directory where the industry looks for talent and use it as a reference point to find teams, expand your network and be visible to the next generation looking for industry leaders."
+    },
+    "emergente": {
+      "titulo": "EMERGING",
+      "subtitulo": "Own projects, creative direction in the making.",
+      "descripcion": "The directory where the industry discovers new talent. Bring your first projects together in one profile \u2014 portfolio, history, networks, collaborations \u2014 and let them find you. Connect with other creatives, expand your network and reach the agencies and brands you need to take the next step."
+    },
+    "estudiantes": {
+      "titulo": "STUDENTS & GRADUATES",
+      "subtitulo": "In training or recently graduated, looking for your place in the industry.",
+      "descripcion": "Publish your first projects and let the industry discover you. See how creatives who are already where you want to be present themselves, get inspired and build your own profile with what you have now. Your THEFOLDER profile is everything you need to professionalise your portfolio and CV \u2014 and present yourself to the industry without distractions."
+    }
+  },
+  "linkSection": {
+    "kicker": "(One single link)",
+    "title": "Your CV + Portfolio, always up to date.",
+    "desc": "Copy and paste your link. Share it with companies, studios or on social media."
+  },
+  "templatesParallax": {
+    "ariaLabel": "Templates",
+    "chooseTemplate": "Choose your template",
+    "decor": "(5)",
+    "description": "Adapted to Photography, Styling, Creative direction, MUAH and more.",
+    "template1Desktop": "Template nº1 horizontal [Desktop]",
+    "template1Mobile": "Template nº1 vertical [Mobile]",
+    "template2Mobile": "Template nº2 vertical [Mobile]"
+  }
+}

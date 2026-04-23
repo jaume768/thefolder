@@ -1,0 +1,63 @@
+{
+  "hero": {
+    "titleDesktop": "El directorio que reúne todo el talento emergente en moda",
+    "titleMobile": "El directorio del talento emergente en moda",
+    "subtitle": "Publica tu perfil. Conecta con la industria."
+  },
+  "cookies": {
+    "ariaLabel": "Cookies",
+    "close": "Cerrar",
+    "textDesktop": "Usamos cookies básicas para que la web funcione correctamente y mejorar tu experiencia.",
+    "textMobile": "Usamos cookies básicas para que la web funcione correctamente y mejorar tu experiencia.",
+    "accept": "Continuar",
+    "acceptUpper": "CONTINUAR",
+    "policy": "Política de cookies"
+  },
+  "filtersShowcase": {
+    "f1": "Fotografía + Copenhage + #backstage",
+    "f2": "Makeup + Valencia + #testshoot",
+    "f3": "Diseño moda + Barcelona + #fitting",
+    "subtitle": "Filtra a tu gusto",
+    "location": "Ubicación",
+    "specialty": "Especialidad",
+    "experience": "Experiencia"
+  },
+  "creatorsShowcase": {
+    "title": "Explora todas las imágenes subidas por los creativos",
+    "saveFavorites": "Guarda tus fotos favoritas",
+    "connect": "Conecta con otros creativos",
+    "ariaLabel": "Perfiles destacados",
+    "viewProfile": "Ver perfil de {{name}}"
+  },
+  "perfiles": {
+    "profesionales": {
+      "titulo": "PROFESIONALES",
+      "subtitulo": "Identidad definida, trayectoria consolidada, criterio propio.",
+      "descripcion": "Haz que todo lo que ya has construido conviva en un mismo perfil recorrido profesional, redes, portfolio, colaboraciones. Aparece en el directorio donde la industria busca talento y úsalo como punto de referencia para encontrar equipo, ampliar tu red y ser visible para las nuevas generaciones que buscan referentes en la industria."
+    },
+    "emergente": {
+      "titulo": "EMERGENTE",
+      "subtitulo": "Proyectos propios, dirección creativa en construcción.",
+      "descripcion": "El directorio donde la industria descubre talento nuevo. Haz que tus primeros proyectos convivan en un mismo perfil portfolio, recorrido, redes, colaboraciones y deja que te encuentren. Conecta con otros creativos, amplía tu red y llega a las agencias y marcas que necesitas para dar el siguiente paso."
+    },
+    "estudiantes": {
+      "titulo": "ESTUDIANTES Y GRADUADOS",
+      "subtitulo": "En formación o recién graduado, buscando tu lugar en la industria.",
+      "descripcion": "Publica tus primeros proyectos y déjate descubrir por la industria. Observa cómo se presentan los creativos que ya están donde tú quieres estar, inspírate y construye tu propio perfil con lo que tienes ahora. Tu perfil en THEFOLDER es todo lo que necesitas para profesionalizar tu portfolio y tu CV \u2014 y presentarte ante la industria sin distracciones."
+    }
+  },
+  "linkSection": {
+    "kicker": "(Un solo link)",
+    "title": "Tu CV + Portfolio, siempre actualizados.",
+    "desc": "Copia y pega tu enlace. Compártelo con empresas, estudios o en redes sociales."
+  },
+  "templatesParallax": {
+    "ariaLabel": "Plantillas",
+    "chooseTemplate": "Elige tu plantilla",
+    "decor": "(5)",
+    "description": "Adaptadas a Fotografía, Estilismo, Dirección creativa, MUAH y más.",
+    "template1Desktop": "Plantilla nº1 horizontal [Ordenador]",
+    "template1Mobile": "Plantilla nº1 vertical [Móvil]",
+    "template2Mobile": "Plantilla nº2 vertical [Móvil]"
+  }
+}

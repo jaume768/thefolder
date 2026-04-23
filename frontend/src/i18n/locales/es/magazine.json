@@ -1,0 +1,11 @@
+{
+  "title": "Revista",
+  "description": "Publicación anual del talento emergente en diseño y moda, con proyectos y colecciones creados por estudiantes y graduados.",
+  "ownPublication": "¿Tienes una publicación propia?",
+  "contactUs": "Si eres autopublicado o quieres mostrar tu proyecto en este espacio, escríbenos a <a href=\"mailto:thefolderworld@gmail.com\">thefolderworld@gmail.com</a>. ¡Queremos conocerte!",
+  "loading": "Cargando revistas...",
+  "noMagazines": "No hay revistas disponibles en este momento.",
+  "unavailable": "No disponible",
+  "errorLoad": "No se pudieron cargar las revistas",
+  "errorConnect": "Error al conectar con el servidor"
+}

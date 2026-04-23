@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaUser, FaImage, FaBriefcase, FaGraduationCap, FaSpinner, FaArrowRight } from 'react-icons/fa';
 import '../controlPanel/css/searchResults.css';
 import { clImg } from '../../utils/optimizeImage';
 
 const SearchResults = ({ results, onResultClick, isLoading, onViewAll }) => {
+const { t } = useTranslation('common');
 const { users = [], posts = [], offers = [], educationalOffers = [] } = results || {};
 
 // 🔕 Por ahora solo contamos usuarios y publicaciones
@@ -15,7 +17,7 @@ const totalResults = users.length + posts.length;
             <div className="search-results-container">
                 <div className="search-loading">
                     <FaSpinner className="spin-icon" />
-                    <p>Buscando...</p>
+                    <p>{t('search.searching')}</p>
                 </div>
             </div>
         );
@@ -25,7 +27,7 @@ const totalResults = users.length + posts.length;
         return (
             <div className="search-results-container">
                 <div className="no-results">
-                    <p className="loading-indicator">No se encontraron resultados</p>
+                    <p className="loading-indicator">{t('search.noResultsSimple')}</p>
                 </div>
             </div>
         );
@@ -36,7 +38,7 @@ const totalResults = users.length + posts.length;
             {users.length > 0 && (
                 <div className="results-section">
                      <h3>
-                        Usuarios /
+                        {t('search.usersSection')}
                     </h3>
                     <div className="results-list">
                         {users.slice(0, 3).map(user => (
@@ -47,13 +49,13 @@ const totalResults = users.length + posts.length;
                             >
                                 <div className="result-image-profile">
                                     {user.profile && user.profile.profilePicture ? (
-                                        <img src={clImg.avatar(user.profile.profilePicture)} alt={user.fullName || user.companyName || 'Usuario'} />
+                                        <img src={clImg.avatar(user.profile.profilePicture)} alt={user.fullName || user.companyName || t('search.userFallback')} />
                                     ) : (
                                         <div className="placeholder-image"><FaUser /></div>
                                     )}
                                 </div>
                                 <div className="result-info">
-                                    <h4>{user.fullName || user.companyName || 'Usuario'}</h4>
+                                    <h4>{user.fullName || user.companyName || t('search.userFallback')}</h4>
                                     <p className="subtitle">@{user.professionalTitle || user.username}</p>
                                 </div>
                             </div>
@@ -70,7 +72,7 @@ const totalResults = users.length + posts.length;
             {posts.length > 0 && (
                 <div className="results-section">
                      <h3>
-                        Proyectos /
+                        {t('search.projectsSection')}
                     </h3>
                     <div className="results-list">
                         {posts.slice(0, 3).map(post => (

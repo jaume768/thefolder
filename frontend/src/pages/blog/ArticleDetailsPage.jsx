@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import '../../components/controlPanel/css/blog.css';
 import '../../components/controlPanel/css/article-detail.css';
 import { FaArrowLeft, FaSpinner, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 
 const ArticleDetail = () => {
+    const { t } = useTranslation('blog');
     const { id } = useParams();
     const [article, setArticle] = useState(null);
     const [relatedArticles, setRelatedArticles] = useState([]);
@@ -41,10 +43,10 @@ const ArticleDetail = () => {
                     
                     setError(null);
                 } else {
-                    setError('No se pudo cargar el artículo');
+                    setError(t('errorLoadArticle'));
                 }
             } catch (error) {
-                setError('Ocurrió un error al cargar el artículo. Por favor, inténtalo de nuevo más tarde.');
+                setError(t('errorRetry'));
             } finally {
                 setLoading(false);
             }
@@ -103,7 +105,7 @@ const ArticleDetail = () => {
             <div className="article-container">
                 <div className="article-loading">
                     <FaSpinner className="fa-spin" />
-                    <span className="loading-indicator">Cargando artículo...</span>
+                    <span className="loading-indicator">{t('loadingArticle')}</span>
                 </div>
             </div>
         );
@@ -114,9 +116,9 @@ const ArticleDetail = () => {
             <div className="article-container">
                 <div className="article-error">
                     <FaExclamationTriangle />
-                    <span>{error || 'No se pudo cargar el artículo'}</span>
+                    <span>{error || t('errorLoadArticle')}</span>
                     <Link to="/blog" className="back-to-blog-btn">
-                        <FaArrowLeft /> Volver al blog
+                        <FaArrowLeft /> {t('backToBlog')}
                     </Link>
                 </div>
             </div>
@@ -171,8 +173,8 @@ const ArticleDetail = () => {
                 </div>
                 
                 <h1 className="article-title">{article.title}</h1>
-                <h2 className="article-subtitle">{article.excerpt || 'Subtítulo del artículo'}</h2>
-                <p className="article-author">Palabras de <span className="article-author-name"> {article.author}</span></p>
+                <h2 className="article-subtitle">{article.excerpt || t('subtitleFallback')}</h2>
+                <p className="article-author">{t('wordsBy')} <span className="article-author-name"> {article.author}</span></p>
                 
                 {/* Contenido principal del artículo */}
                 <div 
@@ -191,7 +193,7 @@ const ArticleDetail = () => {
                                 <div key={index} className="additional-image-container">
                                     <img 
                                         src={image} 
-                                        alt={`${article.title} - imagen ${index + 1}`}
+                                        alt={`${article.title} - ${t('imageNumber', { number: index + 1 })}`}
                                         className="additional-image"
                                         onClick={() => {
                                             if (!images.length) return;
@@ -245,7 +247,7 @@ const ArticleDetail = () => {
                                     <h3 className="related-article-title">{relatedArticle.title}</h3>
                                     <p className="related-article-excerpt">{relatedArticle.excerpt}</p>
                                     <Link to={`/article/${relatedArticle._id}`} className="related-article-link">
-                                        Leer más
+                                        {t('readMore')}
                                     </Link>
                                 </div>
                             </div>
@@ -261,15 +263,15 @@ const ArticleDetail = () => {
                         <button 
                             className="fullscreen-close-btn" 
                             onClick={() => setShowFullScreenPreview(false)}
-                            aria-label="Cerrar"
+                            aria-label={t('close')}
                         >
                             <span className='tagged-person__role'>
-                            CERRAR
+                            {t('close').toUpperCase()}
                             </span>
                         </button>
                         <img
                             src={selectedImage}
-                            alt="Vista previa a pantalla completa"
+                            alt={t('fullscreenPreview')}
                             className="fullscreen-image"
                             onClick={(e) => e.stopPropagation()}
                         />

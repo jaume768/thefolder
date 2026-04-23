@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const closeIcon = "/iconos/close.svg";
 
@@ -10,6 +11,7 @@ export default function LanguagesSection({
   removeLanguageRow,
   addLanguageRow,
 }) {
+  const { t } = useTranslation("profile");
   const rows = Array.isArray(languagesRows) ? languagesRows : [];
 
   if (rows.length === 0) {
@@ -21,7 +23,7 @@ export default function LanguagesSection({
             className="ux-btn ux-exp-add-btn"
             onClick={addLanguageRow}
           >
-            + Añadir idioma
+            + {t("editProfile.addLanguage")}
           </button>
         </div>
       </div>
@@ -33,7 +35,7 @@ export default function LanguagesSection({
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="language-0">
           <img src="/iconos/languages.png" className="ux-section-icon" alt="" />
-          Idiomas
+          {t("sections.languages")}
         </label>
 
         {/* Filas */}
@@ -53,7 +55,7 @@ export default function LanguagesSection({
                       ? "Castellano"
                       : idx === 1
                       ? "Inglés"
-                      : "Idioma"
+                      : t("sections.languages")
                   }
                   value={row.language}
                   onChange={(e) =>
@@ -77,7 +79,7 @@ export default function LanguagesSection({
                       checked={row.level === "basic"}
                       onChange={() => setLanguageLevel(idx, "basic")}
                     />
-                    <span>Básico</span>
+                    <span>{t("languageLevels.basic")}</span>
                   </label>
 
                   <label
@@ -92,7 +94,7 @@ export default function LanguagesSection({
                       checked={row.level === "intermediate"}
                       onChange={() => setLanguageLevel(idx, "intermediate")}
                     />
-                    <span>Intermedio</span>
+                    <span>{t("languageLevels.intermediate")}</span>
                   </label>
 
                   <label
@@ -107,7 +109,7 @@ export default function LanguagesSection({
                       checked={row.level === "advanced"}
                       onChange={() => setLanguageLevel(idx, "advanced")}
                     />
-                    <span>Avanzado</span>
+                    <span>{t("languageLevels.advanced")}</span>
                   </label>
 
                   <label
@@ -122,7 +124,7 @@ export default function LanguagesSection({
                       checked={row.level === "native"}
                       onChange={() => setLanguageLevel(idx, "native")}
                     />
-                    <span>Nativo</span>
+                    <span>{t("languageLevels.native")}</span>
                   </label>
                 </div>
               </div>
@@ -132,11 +134,11 @@ export default function LanguagesSection({
                 type="button"
                 className="ux-link-btn danger"
                 onClick={() => removeLanguageRow(idx)}
-                aria-label="Eliminar idioma"
-                title="Eliminar"
+                aria-label={t("editProfile.removeLanguage")}
+                title={t("editProfile.removeLabel")}
                 style={{ padding: "6px 10px", justifyContent: "center" }}
               >
-                <img src={closeIcon} className="ux-icon-sm" alt="Eliminar" />
+                <img src={closeIcon} className="ux-icon-sm" alt={t("editProfile.removeLabel")} />
               </button>
             </div>
           ))}
@@ -149,7 +151,7 @@ export default function LanguagesSection({
             className="ux-btn ux-exp-add-btn"
             onClick={addLanguageRow}
           >
-            Añadir idioma
+            {t("editProfile.addLanguage")}
           </button>
         </div>
       </div>

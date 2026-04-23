@@ -1,17 +1,19 @@
 // UserCompanyOffersSection.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaBriefcase, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const UserCompanyOffersSection = ({ offers = [] }) => {
+  const { t } = useTranslation('profile');
   if (!Array.isArray(offers) || offers.length === 0) {
     return (
       <div className="user-extern-offers-empty">
         <div className="user-extern-offers-empty-icon">
           <FaBriefcase />
         </div>
-        <h3>No hay ofertas publicadas</h3>
-        <p>Esta empresa aún no ha publicado ninguna oferta de trabajo.</p>
+        <h3>{t('offers.emptyCompanyTitle')}</h3>
+        <p>{t('offers.emptyCompanyDesc')}</p>
       </div>
     );
   }
@@ -20,7 +22,7 @@ const UserCompanyOffersSection = ({ offers = [] }) => {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
+    return date.toLocaleDateString(document.documentElement.lang || 'es-ES', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -32,12 +34,12 @@ const UserCompanyOffersSection = ({ offers = [] }) => {
       {offers.map((offer, index) => (
         <div key={offer._id || index} className="user-extern-offer-card">
           <div className="user-extern-offer-header">
-            <span className="user-extern-offer-type">{offer.position || 'Oferta de trabajo'}</span>
+            <span className="user-extern-offer-type">{offer.position || t('offers.jobOffer')}</span>
 
             <div className="user-extern-offer-metadata">
               {offer.yearsExperience && (
                 <>
-                  <span className="user-extern-offer-years">{offer.yearsExperience} años</span>
+                  <span className="user-extern-offer-years">{offer.yearsExperience} {t('sections.years')}</span>
                   <span className="user-extern-offer-separator">|</span>
                 </>
               )}
@@ -54,7 +56,7 @@ const UserCompanyOffersSection = ({ offers = [] }) => {
               {offer.practices && (
                 <>
                   <span className="user-extern-offer-separator">|</span>
-                  <span className="user-extern-offer-practices">Prácticas</span>
+                  <span className="user-extern-offer-practices">{t('sections.practices')}</span>
                 </>
               )}
 
@@ -74,7 +76,7 @@ const UserCompanyOffersSection = ({ offers = [] }) => {
             <p>
               {offer.description && offer.description.length > 150
                 ? `${offer.description.substring(0, 150)}...`
-                : offer.description || 'No hay descripción disponible.'}
+                : offer.description || t('offers.noDescription')}
             </p>
           </div>
 
@@ -99,13 +101,13 @@ const UserCompanyOffersSection = ({ offers = [] }) => {
                 </span>
               ))
             ) : (
-              <span className="user-extern-offer-tag">Sin categorías</span>
+              <span className="user-extern-offer-tag">{t('sections.noCategories')}</span>
             )}
           </div>
 
           <div className="user-extern-offer-footer">
             <Link to={`/JobOfferDetail/${offer._id}`} className="user-extern-offer-button">
-              Más información
+              {t('sections.moreInfo')}
             </Link>
           </div>
         </div>

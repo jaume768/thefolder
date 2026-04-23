@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const GallerySection = ({ 
     gallery, 
@@ -8,9 +9,10 @@ const GallerySection = ({
     handleNextImage, 
     programName 
 }) => {
+    const { t } = useTranslation('offers');
     return (
         <section className="job-section-jobdetail">
-            <h3 className="section-title-jobdetail">Galería</h3>
+            <h3 className="section-title-jobdetail">{t('view.gallery')}</h3>
             <div className="educational-offer-gallery-jobdetail">
                 <div className="gallery-navigation-jobdetail">
                     <button onClick={handlePrevImage} className="gallery-nav-button-jobdetail">
@@ -19,7 +21,7 @@ const GallerySection = ({
                     <div className="gallery-image-container-jobdetail">
                         <img 
                             src={gallery[galleryIndex]} 
-                            alt={`Imagen ${galleryIndex + 1} de ${programName}`} 
+                            alt={t('view.imageAlt', { index: galleryIndex + 1, programName })} 
                         />
                     </div>
                     <button onClick={handleNextImage} className="gallery-nav-button-jobdetail">

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ExtraQuestionsForm = ({ formData, setFormData }) => {
+    const { t } = useTranslation('offers');
     // Añadir una nueva pregunta vacía
     const addQuestion = () => {
         if (!formData.extraQuestions) {
@@ -49,9 +51,9 @@ const ExtraQuestionsForm = ({ formData, setFormData }) => {
 
     return (
         <div className="create-educational-form-section">
-            <h3>Preguntas extra</h3>
+            <h3>{t('create.extraQuestionsForm.title')}</h3>
             <p className="create-educational-form-description">
-                ¿Te gustaría preguntar algo concreto a los candidatos que se interesen por tu oferta?
+                {t('create.extraQuestionsForm.subtitle')}
             </p>
 
             {formData.extraQuestions && formData.extraQuestions.length > 0 && (
@@ -59,7 +61,7 @@ const ExtraQuestionsForm = ({ formData, setFormData }) => {
                     {formData.extraQuestions.map((question, index) => (
                         <div key={index} className="create-educational-question-item">
                             <div className="create-educational-question-header">
-                                <h4>Pregunta {index + 1}</h4>
+                                <h4>{t('create.extraQuestionsForm.questionLabel', { number: index + 1 })}</h4>
                                 <button 
                                     type="button" 
                                     className="create-educational-remove-question"
@@ -73,21 +75,21 @@ const ExtraQuestionsForm = ({ formData, setFormData }) => {
                                     type="text"
                                     value={question.question || ''}
                                     onChange={(e) => updateQuestion(index, 'question', e.target.value)}
-                                    placeholder="Escribe aquí tu pregunta"
+                                    placeholder={t('create.extraQuestionsForm.questionPlaceholder')}
                                     className="create-educational-question-input"
                                 />
                             </div>
                             <div className="create-educational-form-field">
-                                <label>Selecciona el tipo de respuesta</label>
+                                <label>{t('create.extraQuestionsForm.responseTypeLabel')}</label>
                                 <select
                                     value={question.responseType || 'text'}
                                     onChange={(e) => updateQuestion(index, 'responseType', e.target.value)}
                                     className="create-educational-question-select"
                                 >
-                                    <option value="text">Texto</option>
-                                    <option value="number">Numérico</option>
-                                    <option value="boolean">Sí/No - Verdadero/Falso</option>
-                                    <option value="url">Enlace</option>
+                                    <option value="text">{t('create.extraQuestionsForm.responseText')}</option>
+                                    <option value="number">{t('create.extraQuestionsForm.responseNumber')}</option>
+                                    <option value="boolean">{t('create.extraQuestionsForm.responseBoolean')}</option>
+                                    <option value="url">{t('create.extraQuestionsForm.responseUrl')}</option>
                                 </select>
                             </div>
                         </div>
@@ -101,7 +103,7 @@ const ExtraQuestionsForm = ({ formData, setFormData }) => {
                     className="create-educational-add-question-button"
                     onClick={addQuestion}
                 >
-                    <i className="fas fa-plus"></i> Añadir pregunta
+                    <i className="fas fa-plus"></i> {t('create.extraQuestionsForm.addQuestion')}
                 </button>
             )}
         </div>

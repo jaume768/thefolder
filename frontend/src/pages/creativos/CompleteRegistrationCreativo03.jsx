@@ -1,10 +1,12 @@
 // CompleteRegistrationCreativo03.jsx
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/thefolder-logotipo.png";
 import "../css/complete-registration.css";
 
 const CompleteRegistrationCreativo03 = () => {
+  const { t } = useTranslation(["onboarding", "common"]);
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -39,7 +41,7 @@ const CompleteRegistrationCreativo03 = () => {
     if (!f) return;
 
     if (!f.type.startsWith("image/")) {
-      setError("El archivo debe ser una imagen.");
+      setError(t("onboarding:photo.imageTypeError"));
       return;
     }
     setFile(f);
@@ -58,7 +60,7 @@ const CompleteRegistrationCreativo03 = () => {
 
   const handleFinish = async () => {
     if (!file) {
-      setError("Por favor, sube una foto de perfil.");
+      setError(t("onboarding:photo.errorRequired"));
       return;
     }
 
@@ -82,10 +84,10 @@ const CompleteRegistrationCreativo03 = () => {
       if (response.ok) {
         navigate("/explorer"); // ✅ al Explorador
       } else {
-        setError(data?.error || "Error al actualizar la foto.");
+        setError(data?.error || t("common:error.update"));
       }
     } catch {
-      setError("Error en la conexión o en el servidor.");
+      setError(t("common:error.connection"));
     } finally {
       setIsUploading(false);
     }
@@ -98,12 +100,14 @@ const CompleteRegistrationCreativo03 = () => {
       </div>
 
       <div className="ob-center">
-        <h1 className="ob-title">Añade tu foto de perfil</h1>
-
+        <p className="ob-step-subtitle">
+          {t('photo.title')}
+        </p>
+        <p className="ob-step-subtitle">
+          {t('photo.subtitle')}
+        </p>
         <p className="ob-subtitle">
-          Formará parte de tu identidad en la plataforma y se mostrará de forma pública.
-          <br  />
-          Formato vertical.
+          {t("onboarding:photo.format")}
         </p>
 
         <div className="ob-photo">
@@ -115,14 +119,14 @@ const CompleteRegistrationCreativo03 = () => {
           >
             <img
               src={previewUrl || defaultAvatar}
-              alt="Foto de perfil"
+              alt={t('photo.alt')}
               className="ob-photo-img"
             />
           </div>
 
           <div className="ob-photo-actions">
             <button type="button" className="ob-photo-action" onClick={handlePickFile}>
-              ✎ <span>Editar</span>
+              ✎ <span>{t('photo.edit')}</span>
             </button>
             <span className="ob-photo-sep">|</span>
             <button
@@ -131,7 +135,7 @@ const CompleteRegistrationCreativo03 = () => {
               onClick={handleRemove}
               disabled={!file}
             >
-              🗑 <span>Borrar</span>
+              🗑 <span>{t('photo.remove')}</span>
             </button>
 
             <input
@@ -143,20 +147,19 @@ const CompleteRegistrationCreativo03 = () => {
             />
           </div>
 
-          <div className="ob-mini-hint ob-mini-hint-center">
-            Puedes cambiarla más adelante.
-          </div>
+          <p className="ob-step-subtitle">
+            {t('photo.hint')}
+          </p>
         </div>
 
         {error && <p className="ob-error">{error}</p>}
 
         <div className="ob-buttons">
-          <button type="button" className="ob-back" onClick={handleBack}>
-            Volver atrás
+          <button className="ob-btn-back" onClick={handleBack} disabled={isUploading}>
+            ← {t('common:actions.back')}
           </button>
-
-          <button className="ob-cta" onClick={handleFinish} disabled={isUploading}>
-            {isUploading ? "SUBIENDO..." : "FINALIZAR"}
+          <button className="ob-btn-submit" onClick={handleFinish} disabled={isUploading}>
+            {isUploading ? t('photo.processing') : t('common:actions.finish')}
           </button>
         </div>
 

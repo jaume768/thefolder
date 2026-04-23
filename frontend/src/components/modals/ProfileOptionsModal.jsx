@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const ProfileOptionsModal = ({
@@ -9,6 +10,7 @@ const ProfileOptionsModal = ({
   onSelectOption,
 }) => {
 
+  const { t } = useTranslation("modals");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -18,7 +20,7 @@ const ProfileOptionsModal = ({
   const hasToken = useMemo(() => !!localStorage.getItem("authToken"), []);
 
   // Nombre y avatar finales: primero props, luego fallback
-  const finalName = userName?.trim() || (hasToken ? "Usuario" : "Invitado");
+  const finalName = userName?.trim() || (hasToken ? t("profileOptions.user") : t("profileOptions.guest"));
   const finalPic = userAvatar || "/multimedia/usuarioDefault.jpg";
 
   const finalUsername = useMemo(() => {
@@ -107,7 +109,7 @@ const ProfileOptionsModal = ({
           type="button"
           className="mth-userblock__avatarBtn"
           onClick={goProfile}
-          aria-label="Ir a perfil"
+          aria-label={t("profileOptions.goToProfile")}
         >
           <img className="mth-userblock__avatar" src={finalPic} alt="" />
           <div>
@@ -132,7 +134,7 @@ const ProfileOptionsModal = ({
           onKeyDown={(e) => e.key === "Enter" && handleSelect("editProfile")}
         >
           <img src="/iconos/edit-my-profile.png" alt="" className="pom-icon" aria-hidden="true" />
-          <span>Editar perfil</span>
+          <span>{t("profileOptions.editProfile")}</span>
         </li>
 
         <li
@@ -144,7 +146,7 @@ const ProfileOptionsModal = ({
           onKeyDown={(e) => e.key === "Enter" && handleSelect("guardados")}
         >
           <img src="/iconos/saved.png" alt="" className="pom-icon saved-icon" aria-hidden="true" />
-          <span>Guardados</span>
+          <span>{t("profileOptions.saved")}</span>
         </li>
 
         <li
@@ -156,7 +158,7 @@ const ProfileOptionsModal = ({
           onKeyDown={(e) => e.key === "Enter" && handleSelect("community")}
         >
           <img src="/iconos/community.png" alt="" className="pom-icon community-pom-icon" aria-hidden="true" />
-          <span>Mi comunidad</span>
+          <span>{t("profileOptions.myCommunity")}</span>
         </li>
 
         <li
@@ -167,7 +169,7 @@ const ProfileOptionsModal = ({
           onKeyDown={(e) => e.key === "Enter" && handleSelect("configuracion")}
         >
           <img src="/iconos/settings.png" alt="" className="pom-icon" aria-hidden="true" />
-          <span>Configuración</span>
+          <span>{t("profileOptions.settings")}</span>
         </li>
       </ul>
 
@@ -178,7 +180,7 @@ const ProfileOptionsModal = ({
           className="profile-options-logout-btn"
           onClick={() => handleSelect("logout")}
         >
-          Cerrar sesión
+          {t("profileOptions.logout")}
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/bin.png";
@@ -34,14 +35,15 @@ export default function AwardsSection({
 
   updateAwardField,
 }) {
+  const { t } = useTranslation("profile");
   const list = Array.isArray(awards) ? awards : [];
 
   const renderForm = () => (
     <div className="ux-exp-form-wrap">
       <div className="ux-exp-form-title">
         {awardEditingIndex !== null
-          ? `Editando reconocimiento nº ${awardEditingIndex + 1}`
-          : `Reconocimiento nº ${list.length + 1}`}
+          ? `${t("editProfile.edit")} ${t("editProfile.awardsSectionLabel")} #${awardEditingIndex + 1}`
+          : `${t("editProfile.awardsSectionLabel")} #${list.length + 1}`}
       </div>
 
       <div className="ux-exp-form-layout">
@@ -51,7 +53,7 @@ export default function AwardsSection({
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="award-name">
-                Nombre del reconocimiento *
+                {t("editProfile.awardNameLabel")}
               </label>
               <input
                 id="award-name"
@@ -59,13 +61,13 @@ export default function AwardsSection({
                 className="ux-input"
                 value={awardDraft.name}
                 onChange={(e) => updateAwardField("name", e.target.value)}
-                placeholder="Premio Nacional de Diseño"
+                placeholder={t("editProfile.awardNamePlaceholder")}
               />
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="award-type">
-                Tipo
+                {t("editProfile.awardTypePlaceholder")}
               </label>
               <select
                 id="award-type"
@@ -73,7 +75,7 @@ export default function AwardsSection({
                 value={awardDraft.type}
                 onChange={(e) => updateAwardField("type", e.target.value)}
               >
-                <option value="">Sin especificar</option>
+                <option value="">{t("editProfile.pressRolePlaceholder")}</option>
                 {AWARD_TYPES.map((t) => (
                   <option key={t} value={t}>{t}</option>
                 ))}
@@ -83,7 +85,7 @@ export default function AwardsSection({
             {awardDraft.type === "Otro" && (
               <div className="ux-form-field ux-exp-full">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="award-other-type">
-                  Especifica el tipo
+                  {t("editProfile.eduOtherTypeLabel")}
                 </label>
                 <input
                   id="award-other-type"
@@ -91,14 +93,14 @@ export default function AwardsSection({
                   className="ux-input"
                   value={awardDraft.otherType}
                   onChange={(e) => updateAwardField("otherType", e.target.value)}
-                  placeholder="Describe el tipo de reconocimiento"
+                  placeholder={t("editProfile.awardTypePlaceholder")}
                 />
               </div>
             )}
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="award-issuer">
-                Emisor o institución *
+                {t("editProfile.awardIssuerLabel")}
               </label>
               <input
                 id="award-issuer"
@@ -106,21 +108,21 @@ export default function AwardsSection({
                 className="ux-input"
                 value={awardDraft.issuer}
                 onChange={(e) => updateAwardField("issuer", e.target.value)}
-                placeholder="Quién lo otorga"
+                placeholder={t("editProfile.awardIssuerPlaceholder")}
               />
             </div>
 
             {/* FECHA */}
             <div className="ux-exp-dates">
               <div className="ux-exp-date-block">
-                <label className="ux-form-label ux-form-label-sm">Fecha</label>
+                <label className="ux-form-label ux-form-label-sm">{t("editProfile.dateStart")}</label>
                 <div className="ux-exp-two">
                   <select
                     className="ux-input"
                     value={awardDraft.awardMonth}
                     onChange={(e) => updateAwardField("awardMonth", e.target.value)}
                   >
-                    <option value="">Mes</option>
+                    <option value="">{t("editProfile.month")}</option>
                     {MONTHS_ES.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
@@ -130,7 +132,7 @@ export default function AwardsSection({
                     value={awardDraft.awardYear}
                     onChange={(e) => updateAwardField("awardYear", e.target.value)}
                   >
-                    <option value="">Año</option>
+                    <option value="">{t("editProfile.year")}</option>
                     {years.map((y) => (
                       <option key={y} value={y}>{y}</option>
                     ))}
@@ -142,7 +144,7 @@ export default function AwardsSection({
             {/* DESCRIPCIÓN */}
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="award-description">
-                Descripción (opcional)
+                {t("editProfile.descriptionOptional")}
               </label>
               <textarea
                 id="award-description"
@@ -152,17 +154,17 @@ export default function AwardsSection({
                 onChange={(e) =>
                   updateAwardField("description", e.target.value.slice(0, MAX_AWARD_DESC))
                 }
-                placeholder="Contexto breve sobre el reconocimiento."
+                placeholder={t("editProfile.awardContextPlaceholder")}
               />
               <div className="ux-counter">
-                <span>Máximo {MAX_AWARD_DESC} caracteres.</span>
+                <span>{t("editProfile.maxChars", { count: MAX_AWARD_DESC })}</span>
                 <span>{(awardDraft.description || "").length} / {MAX_AWARD_DESC}</span>
               </div>
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="award-url">
-                URL o enlace de referencia (opcional)
+                {t("editProfile.awardUrlLabel")}
               </label>
               <input
                 id="award-url"
@@ -179,14 +181,14 @@ export default function AwardsSection({
           <div className="ux-exp-form-actions">
             {list.length > 0 && (
               <button className="ux-btn" type="button" onClick={cancelAwardForm}>
-                Cancelar
+                {t("editProfile.modals.cancel")}
               </button>
             )}
             <button className="ux-btn" type="button" onClick={() => saveAwardAsDraft()}>
-              Guardar como borrador
+              {t("editProfile.saveAsDraft")}
             </button>
             <button className="ux-btn primary" type="button" onClick={() => saveAward()}>
-              Guardar
+              {t("editProfile.save")}
             </button>
           </div>
         </div>
@@ -199,11 +201,11 @@ export default function AwardsSection({
       <div className="ux-card">
         <label className="ux-form-label separator">
           <img src="/iconos/prizes.png" className="ux-section-icon" alt="" />
-          Reconocimientos y premios
+          {t("editProfile.awardsSectionLabel")}
         </label>
 
         <div className="ux-helper ux-exp-helper">
-          Premios, becas, exposiciones y otros reconocimientos recibidos.
+          {t("editProfile.awardsSubtitle")}
         </div>
 
         {list.length > 0 && (
@@ -235,14 +237,14 @@ export default function AwardsSection({
                       className="ux-link-btn"
                       onClick={() => openEditAwardForm(idx)}
                     >
-                      <img src={editCard} className="ux-icon" alt="Editar" />
+                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
                     </button>
                     <button
                       type="button"
                       className="ux-link-btn danger"
                       onClick={() => confirmDeleteAward(idx)}
                     >
-                      <img src={trashDelete} className="ux-icon" alt="Borrar" style={{ width: "12px" }} />
+                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{ width: "12px" }} />
                     </button>
                   </div>
                   {item?.isDraft && (
@@ -250,7 +252,7 @@ export default function AwardsSection({
                       position: "absolute", bottom: 8, right: 12,
                       fontSize: "11px", fontStyle: "italic", color: "#999",
                     }}>
-                      Borrador
+                      {t("editProfile.draft")}
                     </span>
                   )}
                 </div>
@@ -268,7 +270,7 @@ export default function AwardsSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewAwardForm}
             >
-              Añadir reconocimiento o premio
+              {t("editProfile.addAward")}
             </button>
           </div>
         )}

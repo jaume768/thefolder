@@ -1,15 +1,17 @@
 // UserCompanyTagsSection.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaTags } from 'react-icons/fa';
 
 const UserCompanyTagsSection = ({ companyTags, offersPractices = false }) => {
+  const { t } = useTranslation('profile');
   const hasContent = Array.isArray(companyTags) && companyTags.length > 0;
 
   return (
     <section className="user-extern-section">
       <h2>
         <FaTags className="user-extern-section-icon" style={{ marginRight: '8px' }} />
-        Especialización
+        {t('sections.specialization')}
       </h2>
 
       {hasContent ? (
@@ -21,7 +23,7 @@ const UserCompanyTagsSection = ({ companyTags, offersPractices = false }) => {
           ))}
         </div>
       ) : (
-        <p>No hay etiquetas de especialización registradas.</p>
+        <p>{t('sections.emptySpecialization')}</p>
       )}
 
       {offersPractices && (
@@ -35,7 +37,7 @@ const UserCompanyTagsSection = ({ companyTags, offersPractices = false }) => {
             display: 'inline-block',
           }}
         >
-          <span>Ofrece prácticas profesionales</span>
+          <span>{t('sections.offersPractices')}</span>
         </div>
       )}
     </section>

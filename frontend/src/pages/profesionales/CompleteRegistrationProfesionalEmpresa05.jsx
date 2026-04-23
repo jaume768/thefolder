@@ -1,29 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../css/complete-registration.css';
 
 const CompleteRegistrationProfesionalEmpresa05 = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('onboarding');
     const [companyName, setCompanyName] = useState("");
     const [foundingYear, setFoundingYear] = useState("");
     const [productServiceType, setProductServiceType] = useState("");
     const [error, setError] = useState(""); // Estado para mensaje de error
 
     const productOptions = [
-        "Confección a medida",
-        "Moda vintage",
-        "Accesorios",
-        "Joyería",
-        "Zapatos",
-        "Artículos de cuero",
-        "Arte textil",
-        "Artículos sostenibles",
-        "Otro"
+        t('profesional.products.custom'),
+        t('profesional.products.vintage'),
+        t('profesional.products.accessories'),
+        t('profesional.products.jewelry'),
+        t('profesional.products.shoes'),
+        t('profesional.products.leather'),
+        t('profesional.products.textile'),
+        t('profesional.products.sustainable'),
+        t('profesional.products.other')
     ];
 
     const handleNext = async () => {
         if (!companyName || !foundingYear || !productServiceType) {
-            setError("Por favor, completa todos los campos requeridos.");
+            setError(t('profesional.errors.requiredFields'));
             return;
         }
         setError("");
@@ -42,10 +44,10 @@ const CompleteRegistrationProfesionalEmpresa05 = () => {
             if (response.ok) {
                 navigate('/creativo/registro/final');
             } else {
-                setError(data.error || "Ha ocurrido un error.");
+                setError(data.error || t('profesional.errors.genericError'));
             }
         } catch (error) {
-            setError("Error en la conexión o en el servidor.");
+            setError(t('profesional.errors.connection'));
         }
     };
 
@@ -56,13 +58,13 @@ const CompleteRegistrationProfesionalEmpresa05 = () => {
     return (
         <div className="complete-registration-container">
             <div className="contenedor-registro-objetivo">
-                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>paso 5</p>
-                <h2 className="titulo">Últimos datos...</h2>
+                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>{t('profesional.step', { n: 5 })}</p>
+                <h2 className="titulo">{t('profesional.lastDataTitle')}</h2>
                 <div className="form-group-datos">
-                    <label>Nombre de la marca</label>
+                    <label>{t('profesional.brandName')}</label>
                     <input
                         type="text"
-                        placeholder="Introduce el nombre"
+                        placeholder={t('profesional.namePlaceholder')}
                         value={companyName}
                         onChange={(e) => {
                             setCompanyName(e.target.value);
@@ -73,7 +75,7 @@ const CompleteRegistrationProfesionalEmpresa05 = () => {
                     />
                 </div>
                 <div className="form-group-datos">
-                    <label>Año de la fundación</label>
+                    <label>{t('profesional.foundingYear')}</label>
                     <input
                         type="text"
                         placeholder="yyyy"
@@ -87,7 +89,7 @@ const CompleteRegistrationProfesionalEmpresa05 = () => {
                     />
                 </div>
                 <div className="form-group-datos">
-                    <label>¿Cuál es tu producto principal?</label>
+                    <label>{t('profesional.mainProduct')}</label>
                     <select
                         value={productServiceType}
                         onChange={(e) => {
@@ -97,7 +99,7 @@ const CompleteRegistrationProfesionalEmpresa05 = () => {
                         className="input-field"
                         style={{ backgroundColor: '#f0f0f0', color: '#000' }}
                     >
-                        <option value="">Selecciona una opción</option>
+                        <option value="">{t('profesional.selectOption')}</option>
                         {productOptions.map((option, index) => (
                             <option key={index} value={option}>{option}</option>
                         ))}
@@ -111,10 +113,10 @@ const CompleteRegistrationProfesionalEmpresa05 = () => {
                         onClick={handleBack}
                         style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer' }}
                     >
-                        &#8592; Volver atrás
+                        &#8592; {t('common.back')}
                     </button>
                     <button className="next-button" onClick={handleNext}>
-                        Siguiente
+                        {t('common.next')}
                     </button>
                 </div>
                 <div className="pagination-dots" style={{ marginTop: '1rem' }}>

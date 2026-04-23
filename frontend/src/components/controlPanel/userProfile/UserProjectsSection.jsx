@@ -1,9 +1,11 @@
 import React from 'react';
 import { FaTh, FaList } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
 import { clImg } from '../../../utils/optimizeImage';
 
 const UserProjectsSection = ({ isGalleryView, toggleView, userPosts }) => {
+    const { t } = useTranslation("profile");
     const navigate = useNavigate();
     
     const minGridItems = 15; // Minimum number of grid items (including placeholders)
@@ -20,7 +22,7 @@ const UserProjectsSection = ({ isGalleryView, toggleView, userPosts }) => {
                 >
                     <img
                         src={clImg.post(post.mainImage)}
-                        alt={`Publicación ${index + 1}`}
+                        alt={t("publicationAlt", { number: index + 1 })}
                         className="user-profile-project-image"
                     />
                 </div>
@@ -40,7 +42,7 @@ const UserProjectsSection = ({ isGalleryView, toggleView, userPosts }) => {
                     >
                         <img
                             src={clImg.post(post.mainImage)}
-                            alt={`Publicación ${index + 1}`}
+                            alt={t("publicationAlt", { number: index + 1 })}
                             className="user-profile-project-image"
                         />
                     </div>

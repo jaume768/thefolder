@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import Masonry from "react-masonry-css";
 import { useNavigate } from 'react-router-dom';
@@ -58,10 +59,10 @@ const getHeaderGradient = (seed) => {
 };
 
 const CREATIVE_LEVELS = [
-  { value: 1, label: 'Newcomer',     icon: 'newcomer.png',     description: 'Estudiantes o recién graduados.' },
-  { value: 2, label: 'Graduated',    icon: 'graduated.png',    description: 'Formación académica completada.' },
-  { value: 3, label: 'Emerging',     icon: 'emerging.png',     description: '1-3 años de experiencia.' },
-  { value: 4, label: 'Professional', icon: 'professional.png', description: 'Trayectoria y portfolio sólidos.' },
+  { value: 1, label: 'levels.1', description: 'levels.1_desc', icon: 'newcomer.png' },
+  { value: 2, label: 'levels.2', description: 'levels.2_desc', icon: 'graduated.png' },
+  { value: 3, label: 'levels.3', description: 'levels.3_desc', icon: 'emerging.png' },
+  { value: 4, label: 'levels.4', description: 'levels.4_desc', icon: 'professional.png' },
 ];
 
 const GROUP_ORDER = [
@@ -137,6 +138,7 @@ const GUEST_ROLES_BY_GROUP = {
 const cloudinaryOptimize = (url) => url || '';
 
 const Creatives = () => {
+  const { t } = useTranslation('creatives');
   const [creatives, setCreatives] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tagOptions, setTagOptions] = useState([]);
@@ -372,10 +374,10 @@ const Creatives = () => {
     })),
     ...(appliedFilters.creativeLevel || []).map(v => ({
       key: 'creativeLevel',
-      label: CREATIVE_LEVELS.find(l => l.value === v)?.label || v,
+      label: t(CREATIVE_LEVELS.find(l => l.value === v)?.label) || v,
       value: v,
     })),
-  ], [appliedFilters, tagLabelById]);
+  ], [appliedFilters, tagLabelById, t]);
 
   const hasActiveFilters = activeChips.length > 0;
 
@@ -448,7 +450,7 @@ const Creatives = () => {
 
       } catch (error) {
         if (error.name === "CanceledError" || error.code === "ERR_CANCELED") return;
-        setError("No se pudieron cargar los creativos. Por favor, recarga la página o inténtalo de nuevo más tarde.");
+        setError(t('errorLoad'));
         if (page === 1) setHasFetchedOnce(true);
       } finally {
         setLoading(false);
@@ -496,13 +498,13 @@ const Creatives = () => {
       <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
 
         <div className="filters-modal-header">
-          <span className="filters-modal-title">Filtros</span>
+          <span className="filters-modal-title">{t('filters.title')}</span>
           <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
         </div>
 
         {/* ── EXPERIENCIA ───────────────────────────────────── */}
         <div className="filters-modal-section filters-margin-bottom">
-          <p className="filters-col-title">Experiencia</p>
+          <p className="filters-col-title">{t('filters.experience')}</p>
           <div className="filters-tags filters-tags--level">
             {CREATIVE_LEVELS.map(lvl => {
               const sel = (filters.creativeLevel || []).includes(lvl.value);
@@ -518,8 +520,8 @@ const Creatives = () => {
                   onClick={() => toggleTag('creativeLevel', lvl.value)}
                 >
                   <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
-                  <span className="experience-tag-label">{lvl.label}</span>
-                  <span className="experience-tag-desc">{lvl.description}</span>
+                  <span className="experience-tag-label">{t(lvl.label)}</span>
+                  <span className="experience-tag-desc">{t(lvl.description)}</span>
                 </button>
               );
             })}
@@ -528,7 +530,7 @@ const Creatives = () => {
 
         {/* ── ESPECIALIDAD ──────────────────────────────────── */}
         <div className="filters-modal-section filters-modal-section--specialty">
-          <p className="filters-col-title">Especialidad del creativo</p>
+          <p className="filters-col-title">{t('filters.specialty')}</p>
           <div className="filters-tags filters-tags--level">
             {orderedGroups.map(group => {
               const isActive = activeRoleGroup === group;
@@ -608,7 +610,7 @@ const Creatives = () => {
 
                 {/* ── UBICACIÓN ─────────────────────────────────────── */}
         <div className="filters-modal-section">
-          <p className="filters-col-title">Ubicación</p>
+          <p className="filters-col-title">{t('filters.location')}</p>
           <div className="filters-tags filters-tags--level">
             {ALL_COUNTRIES
               .filter(country => isLoggedIn
@@ -648,8 +650,8 @@ const Creatives = () => {
                 className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
                 onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
               >
-                <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="Otros" /></span>
-                Otros
+                <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="" /></span>
+                {t('others')}
               </button>
             )}
           </div>
@@ -663,7 +665,7 @@ const Creatives = () => {
             return (
               <div className="filters-country-cities">
                 {cities.length === 0 ? (
-                  <p className="filters-empty">Sin creativos en este país</p>
+                  <p className="filters-empty">{t('noCreativesInCountry')}</p>
                 ) : (
                   <div className="filters-tags filters-tags--level">
                     {cities.map(city => {
@@ -706,7 +708,7 @@ const Creatives = () => {
             }
             setShowFiltersModal(false);
           }}>
-            Filtrar
+            {t('filters.apply')}
           </button>
         </div>
 
@@ -718,11 +720,11 @@ const Creatives = () => {
   const renderCreativesGallery = () => {
     if (error) return <div className="error-message">{error}</div>;
     if (loading && page === 1) {
-      return <div className="loading-indicator">{hasActiveFilters ? "Filtrando..." : "Cargando..."}</div>;
+      return <div className="loading-indicator">{hasActiveFilters ? t('filtering') : t('loading')}</div>;
     }
     if (!hasFetchedOnce) return null;
     if (creatives.length === 0 && !loading) {
-      return <div className="no-results">No se encontraron creativos con los filtros aplicados.</div>;
+      return <div className="no-results">{t('noResults')}</div>;
     }
 
     return (
@@ -765,7 +767,7 @@ const Creatives = () => {
                   <div
                     className="creative-card-image creative-card-image--placeholder"
                     style={{ background: getHeaderGradient(creative.username || creative._id) }}
-                    aria-label="Portada del creativo"
+                    aria-label={t('card.coverLabel')}
                   />
                 )}
 
@@ -834,16 +836,16 @@ const Creatives = () => {
       {showFirstPostCta && (
         <div className="first-post-cta-overlay" onClick={dismissFirstPostCta}>
           <div className="first-post-cta-card" onClick={(e) => e.stopPropagation()}>
-            <h2 className="first-post-cta-title">¿Quieres verte aquí?</h2>
+            <h2 className="first-post-cta-title">{t('cta.title')}</h2>
             <p className="first-post-cta-body">
-              Publica tu primer proyecto y forma parte del directorio de creativos.
+              {t('cta.body')}
             </p>
             <div className="first-post-cta-actions">
               <button className="first-post-cta-btn--primary" onClick={handlePublicar}>
-                Publicar proyecto
+                {t('cta.publish')}
               </button>
               <button className="first-post-cta-btn--ghost" onClick={dismissFirstPostCta}>
-                Ahora no
+                {t('cta.dismiss')}
               </button>
             </div>
           </div>
@@ -851,7 +853,7 @@ const Creatives = () => {
       )}
 
       <p className="creatives-subtitle --show-mobile">
-        Encuentra o descubre talento. Diseñadores, estilistas, fotógraf@s y más. Filtra a tu medida.
+        {t('subtitle')}
       </p>
 
       {/* ── Barra de filtros (igual que Explorer) ──────────────────────── */}
@@ -867,7 +869,7 @@ const Creatives = () => {
               }}
             >
               <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
-              Filtros
+              {t('filters.title')}
               {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
             </button>
           </div>
@@ -889,7 +891,7 @@ const Creatives = () => {
               </div>
               <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
                 <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
-                Borrar filtros
+                {t('filters.clear')}
               </button>
             </div>
           )}
@@ -898,8 +900,8 @@ const Creatives = () => {
         {showFiltersModal && renderAllFiltersModal()}
 
       <div className="creatives-hero-inner">
-        <h1 className="centerTitle">
-          Creativos <span className="creatives-count">[{totalCreatives}]</span>
+          <h1 className="centerTitle">
+          {t('title')} <span className="creatives-count">[{totalCreatives}]</span>
         </h1>
 
         <div className="creatives-toolbar"></div>
@@ -913,7 +915,7 @@ const Creatives = () => {
           {renderCreativesGallery()}
 
           {loading && page > 1 && (
-            <div className="loading-indicator">Cargando más creativos...</div>
+            <div className="loading-indicator">{t('loadingMore')}</div>
           )}
 
           {!hasMore && creatives.length > 0 && <div className="end-message"></div>}
@@ -921,13 +923,13 @@ const Creatives = () => {
 
         {!isLoggedIn && (
           <div className="creatives-guest-wall">
-            <p className="creatives-guest-wall__text">Únete para descubrir todos los creativos</p>
+            <p className="creatives-guest-wall__text">{t('guest.text')}</p>
             <button
               type="button"
               className="new-tablero-button"
               onClick={() => setShowRegisterPopup(true)}
             >
-              Crear cuenta gratis
+              {t('guest.register')}
             </button>
           </div>
         )}

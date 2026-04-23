@@ -1,10 +1,12 @@
 // ProfileStickyActions.jsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useCreatePost } from "../../../contexts/CreatePostContext";
 import "../css/ProfileStickyActions.css";
 
 const ProfileStickyActions = ({ username }) => {
+  const { t } = useTranslation('profile');
   const navigate = useNavigate();
   const { openCreatePost } = useCreatePost();
 
@@ -29,7 +31,7 @@ const ProfileStickyActions = ({ username }) => {
   };
 
 return (
-  <div className="profile-sticky-actions" aria-label="Acciones rápidas">
+  <div className="profile-sticky-actions" aria-label={t('header.quickActions')}>
     
     <button
       type="button"
@@ -41,7 +43,7 @@ return (
         alt=""
         className="profile-sticky-action__icon"
       />
-      <span>Vista previa</span>
+      <span>{t('header.preview')}</span>
     </button>
 
       <button
@@ -54,7 +56,7 @@ return (
         alt=""
         className="profile-sticky-action__icon"
       />
-      <span>Subir publicación</span>
+      <span>{t('sections.uploadPost')}</span>
     </button>
 
     <button
@@ -67,7 +69,7 @@ return (
         alt=""
         className="profile-sticky-action__icon"
       />
-      <span>Editar mi perfil</span>
+      <span>{t('header.editMyProfile')}</span>
     </button>
 
   </div>

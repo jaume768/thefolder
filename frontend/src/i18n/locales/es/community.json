@@ -1,0 +1,36 @@
+{
+  "title": "Mi comunidad",
+  "subtitle": "Conoce los perfiles que sigues y quienes te siguen. Explora tu red, descubre conexiones relevantes y filtra por ciudad o especialidad.",
+  "tabs": {
+    "following": "Seguidos",
+    "followers": "Seguidores"
+  },
+  "loading": "Cargando perfiles...",
+  "errorFollowing": "No se pudieron cargar los seguidos.",
+  "errorFollowers": "No se pudieron cargar los seguidores.",
+  "emptyFollowing": "No sigues a ningún perfil. Explora la plataforma para encontrar perfiles interesantes.",
+  "emptyFollowers": "No tienes seguidores. Comparte tu perfil para que otros usuarios puedan descubrirte.",
+  "noResultsFilters": "No se encontraron resultados con los filtros aplicados.",
+  "levels": {
+    "newcomer": "Estudiantes o recién graduados.",
+    "graduated": "Formación completada.",
+    "emerging": "1-3 años de experiencia.",
+    "professional": "Trayectoria y portfolio sólidos."
+  },
+  "filters": {
+    "title": "Filtros",
+    "experience": "Experiencia",
+    "location": "Ubicación",
+    "others": "Otros",
+    "specialty": "Especialidad",
+    "noProfilesInCountry": "Sin perfiles en este país",
+    "clear": "Borrar filtros",
+    "apply": "Filtrar",
+    "remove": "Quitar {{label}}"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {{page}} de {{totalPages}}"
+  }
+}

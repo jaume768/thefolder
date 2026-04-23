@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/Legal.css';
 
 const Terminos = () => {
+    const { t } = useTranslation('legal');
     const navigate = useNavigate();
 
     const goBack = () => {
@@ -13,8 +15,8 @@ const Terminos = () => {
     return (
         <div className="legal-container">
             <div className="legal-content">
-                <h1 className="legal-title">Términos y Condiciones de Uso</h1>
-                <p className="legal-version">Actualizado: Abril de 2026 · Versión: 1.0</p>
+                <h1 className="legal-title">{t('terminos.title')}</h1>
+                <p className="legal-version">{t('terminos.version')}</p>
 
                 <p className="legal-paragraph">
                     Por favor, lee estos Términos y Condiciones con atención antes de utilizar THEFOLDER. Al registrarte o acceder a la plataforma, aceptas quedar vinculado por ellos. Si no estás de acuerdo con alguno de estos términos, no utilices el servicio.

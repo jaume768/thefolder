@@ -1,0 +1,26 @@
+{
+  "categories": {
+    "all": "Todos",
+    "designers": "Diseñadores",
+    "industry": "Industria",
+    "education": "Educación",
+    "events": "Eventos"
+  },
+  "loadingArticles": "Cargando artículos...",
+  "loadingArticle": "Cargando artículo...",
+  "errorLoadArticles": "No se pudieron cargar los artículos del blog",
+  "errorLoadArticle": "No se pudo cargar el artículo",
+  "errorRetry": "Ocurrió un error al cargar. Por favor, inténtalo de nuevo más tarde.",
+  "title": "Blog",
+  "description": "Explora las últimas noticias, tendencias y entrevistas del mundo de la moda",
+  "noArticles": "No se encontraron artículos en esta categoría",
+  "categoryFallback": "Categoría",
+  "anonymous": "Anónimo",
+  "readMore": "Leer más",
+  "backToBlog": "Volver al blog",
+  "subtitleFallback": "Subtítulo del artículo",
+  "wordsBy": "Palabras de",
+  "close": "Cerrar",
+  "fullscreenPreview": "Vista previa a pantalla completa",
+  "imageNumber": "imagen {{number}}"
+}

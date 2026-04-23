@@ -1,0 +1,50 @@
+{
+  "title": "Explorador",
+  "subtitle": "Explora el trabajo de la comunidad creativa. Navega entre proyectos y descubre nuevos talentos. Filtra según tus necesidades.",
+  "filters": {
+    "button": "Filtros",
+    "modalTitle": "Filtros",
+    "experience": "Experiencia",
+    "specialty": "Especialidad del creativo",
+    "location": "Ubicación",
+    "otherCities": "Otros",
+    "noCreativesInCountry": "Sin creativos en este país",
+    "projectTags": "Tags de proyecto",
+    "clear": "Borrar filtros",
+    "apply": "Filtrar",
+    "noResults": "Sin resultados para los filtros aplicados."
+  },
+  "levels": {
+    "newcomer": "Newcomer",
+    "newcomerDesc": "Estudiantes o recién graduados.",
+    "graduated": "Graduated",
+    "graduatedDesc": "Formación académica completada.",
+    "emerging": "Emerging",
+    "emergingDesc": "1-3 años de experiencia.",
+    "professional": "Professional",
+    "professionalDesc": "Trayectoria y portfolio sólidos."
+  },
+  "user": {
+    "defaultLabel": "Usuario"
+  },
+  "save": {
+    "action": "Guardar",
+    "saved": "Guardada",
+    "tooltipDefault": "Guardar",
+    "tooltipSaved": "Guardada"
+  },
+  "loading": "Cargando...",
+  "tagFeed": {
+    "noProjects": "No hay proyectos con el tag {{tag}} todavía."
+  },
+  "morePosts": {
+    "title": "EXPLORADOR /",
+    "noMore": "No hay más publicaciones para mostrar.",
+    "continue": "Continuar en el explorador"
+  },
+  "guest": {
+    "wallText": "Regístrate para descubrir más proyectos de creativos de moda",
+    "cta": "Crear cuenta gratis ↗",
+    "login": "Ya tengo cuenta"
+  }
+}

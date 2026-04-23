@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import BiographySection from "./cv/BiographySection";
 import ExperienceSection from "./cv/ExperienceSection";
@@ -106,13 +107,19 @@ export default function CvTab({
   toggleDraftBool,
   setJobSearchActive,
 }) {
+  const { t } = useTranslation("profile");
+
   return (
     <div>
       <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">Curriculum Vitae</h2>
+        <h2 className="ux-card-title-h2">{t("editProfile.tabs.cv")}</h2>
         <p className="ux-card-subtitle">
-          Tu trayectoria profesional.<br />
-          Añade tu experiencia, formación, habilidades e idiomas.
+          {t("editProfile.cvSubtitle").split("\\n").map((line, i) => (
+            <React.Fragment key={i}>
+              {line}
+              {i < t("editProfile.cvSubtitle").split("\\n").length - 1 && <br />}
+            </React.Fragment>
+          ))}
         </p>
       </div>
 

@@ -1,0 +1,50 @@
+{
+  "title": "Explorer",
+  "subtitle": "Explore the work of the creative community. Browse projects and discover new talents. Filter according to your needs.",
+  "filters": {
+    "button": "Filters",
+    "modalTitle": "Filters",
+    "experience": "Experience",
+    "specialty": "Creative specialty",
+    "location": "Location",
+    "otherCities": "Others",
+    "noCreativesInCountry": "No creatives in this country",
+    "projectTags": "Project tags",
+    "clear": "Clear filters",
+    "apply": "Filter",
+    "noResults": "No results for the applied filters."
+  },
+  "levels": {
+    "newcomer": "Newcomer",
+    "newcomerDesc": "Students or recent graduates.",
+    "graduated": "Graduated",
+    "graduatedDesc": "Academic training completed.",
+    "emerging": "Emerging",
+    "emergingDesc": "1-3 years of experience.",
+    "professional": "Professional",
+    "professionalDesc": "Solid track record and portfolio."
+  },
+  "user": {
+    "defaultLabel": "User"
+  },
+  "save": {
+    "action": "Save",
+    "saved": "Saved",
+    "tooltipDefault": "Save",
+    "tooltipSaved": "Saved"
+  },
+  "loading": "Loading...",
+  "tagFeed": {
+    "noProjects": "No projects with the {{tag}} tag yet."
+  },
+  "morePosts": {
+    "title": "EXPLORER /",
+    "noMore": "No more posts to show.",
+    "continue": "Continue in the explorer"
+  },
+  "guest": {
+    "wallText": "Sign up to discover more fashion creative projects",
+    "cta": "Create free account ↗",
+    "login": "I already have an account"
+  }
+}

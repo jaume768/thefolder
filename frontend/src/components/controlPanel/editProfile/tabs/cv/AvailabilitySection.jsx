@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function AvailabilitySection({
   jobSearchActive,
@@ -7,6 +8,7 @@ export default function AvailabilitySection({
   toggleDraftBool,
   setJobSearchActive,
 }) {
+  const { t } = useTranslation("profile");
   const safeContract = contract || {
     practicas: false,
     convenioPracticas: false,
@@ -26,15 +28,15 @@ export default function AvailabilitySection({
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="jobSearchActive-yes">
           <img src="/iconos/job-availability.png" className="ux-section-icon" alt="" />
-          Disponibilidad laboral
+          {t("sections.availability")}
         </label>
 
         <div className="ux-hardskills-subtitle" style={{ marginTop: 6 }}>
-          Esta información es opcional y solo se mostrará si indicas que estás en búsqueda activa.
+          {t("editProfile.availabilityOptional")}
         </div>
 
         <div style={{ marginTop: 18 }}>
-          <div className="ux-popular-title">¿Estás buscando oportunidades ahora?</div>
+          <div className="ux-popular-title">{t("editProfile.searchingNow")}</div>
 
           <div className="ux-form-column" style={{ gap: 10 }}>
             <label
@@ -50,7 +52,7 @@ export default function AvailabilitySection({
                 checked={!!jobSearchActive}
                 onChange={() => setJobSearchActive(true)}
               />
-              <span>Sí, estoy disponible</span>
+              <span>{t("editProfile.availableYes")}</span>
             </label>
 
             <label
@@ -66,7 +68,7 @@ export default function AvailabilitySection({
                 checked={!jobSearchActive}
                 onChange={() => setJobSearchActive(false)}
               />
-              <span>No, no estoy en búsqueda activa</span>
+              <span>{t("editProfile.availableNo")}</span>
             </label>
           </div>
         </div>
@@ -77,7 +79,7 @@ export default function AvailabilitySection({
             style={{ marginTop: 22, gap: 40, alignItems: "flex-start" }}
           >
             <div style={{ flex: 1 }}>
-              <div className="ux-popular-title">Contrato</div>
+              <div className="ux-popular-title">{t("editProfile.contract")}</div>
 
               <div className="ux-form-column" style={{ gap: 10 }}>
                 <label
@@ -93,7 +95,7 @@ export default function AvailabilitySection({
                     checked={!!safeContract.practicas}
                     onChange={() => toggleDraftBool("contract.practicas")}
                   />
-                  <span>Prácticas</span>
+                  <span>{t("editProfile.internship")}</span>
                 </label>
 
                 <label
@@ -109,7 +111,7 @@ export default function AvailabilitySection({
                     checked={!!safeContract.convenioPracticas}
                     onChange={() => toggleDraftBool("contract.convenioPracticas")}
                   />
-                  <span>Convenio de prácticas (universidad)</span>
+                  <span>{t("editProfile.internshipAgreement")}</span>
                 </label>
 
                 <label
@@ -125,7 +127,7 @@ export default function AvailabilitySection({
                     checked={!!safeContract.tiempoCompleto}
                     onChange={() => toggleDraftBool("contract.tiempoCompleto")}
                   />
-                  <span>Tiempo completo</span>
+                  <span>{t("editProfile.fullTime")}</span>
                 </label>
 
                 <label
@@ -141,7 +143,7 @@ export default function AvailabilitySection({
                     checked={!!safeContract.parcial}
                     onChange={() => toggleDraftBool("contract.parcial")}
                   />
-                  <span>Tiempo parcial</span>
+                  <span>{t("editProfile.partTime")}</span>
                 </label>
 
                 <label
@@ -164,7 +166,7 @@ export default function AvailabilitySection({
 
             <div style={{ flex: 1 }}>
               <div className="ux-popular-title" style={{ marginBottom: 10 }}>
-                Modalidad
+                {t("editProfile.mode")}
               </div>
 
               <div className="ux-form-column" style={{ gap: 10 }}>
@@ -181,7 +183,7 @@ export default function AvailabilitySection({
                     checked={!!safeLocationType.presencial}
                     onChange={() => toggleDraftBool("locationType.presencial")}
                   />
-                  <span>Presencial</span>
+                  <span>{t("editProfile.inPerson")}</span>
                 </label>
 
                 <label
@@ -197,7 +199,7 @@ export default function AvailabilitySection({
                     checked={!!safeLocationType.remoto}
                     onChange={() => toggleDraftBool("locationType.remoto")}
                   />
-                  <span>Remoto</span>
+                  <span>{t("editProfile.remote")}</span>
                 </label>
 
                 <label
@@ -213,7 +215,7 @@ export default function AvailabilitySection({
                     checked={!!safeLocationType.hibrido}
                     onChange={() => toggleDraftBool("locationType.hibrido")}
                   />
-                  <span>Híbrido</span>
+                  <span>{t("editProfile.hybrid")}</span>
                 </label>
               </div>
             </div>

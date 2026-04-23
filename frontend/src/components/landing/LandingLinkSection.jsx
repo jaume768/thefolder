@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./css/landing-link.css";
 
 const USERNAMES = [
@@ -12,6 +13,7 @@ const USERNAMES = [
 ];
 
 export default function LandingLinkSection({ onCtaClick }) {
+  const { t } = useTranslation("landing");
   const sectionRef = useRef(null);
 
   const [isVisible, setIsVisible] = useState(false);
@@ -74,9 +76,9 @@ export default function LandingLinkSection({ onCtaClick }) {
 
         {/* TOP LEFT — cols 1-5 */}
         <div className="tf-link__top-left">
-          <p className="tf-link__kicker">(Un solo link)</p>
+          <p className="tf-link__kicker">{t("linkSection.kicker")}</p>
           <p className="tf-link__title">
-            Tu CV + Portfolio,<br />siempre actualizados.
+            {t("linkSection.title")}
           </p>
         </div>
 
@@ -90,8 +92,7 @@ export default function LandingLinkSection({ onCtaClick }) {
         {/* BOTTOM RIGHT — cols 8-12 */}
         <div className="tf-link__bottom-right">
           <p className="tf-link__desc">
-            Copia y pega tu enlace. Compártelo con empresas,
-            estudios o en redes sociales.
+            {t("linkSection.desc")}
           </p>
         </div>
 

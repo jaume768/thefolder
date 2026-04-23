@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaSpinner, FaSearch } from 'react-icons/fa';
 import '../controlPanel/css/searchResults.css';
 import { clImg } from '../../utils/optimizeImage';
@@ -6,6 +7,7 @@ import { clImg } from '../../utils/optimizeImage';
 // ✅ Ahora NO congelamos initialResults/initialQuery en state.
 // ✅ Usamos props reactivos que vienen del Header.
 const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onResultClick }) => {
+  const { t } = useTranslation('common');
   const [activeTab, setActiveTab] = useState('all');
 
   const searchQuery = query || '';
@@ -17,9 +19,9 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
 
   const renderFilterTabs = () => {
     const tabs = [
-      { id: 'all', label: 'Todos', count: totalResults },
-      { id: 'users', label: 'Usuarios', count: users.length },
-      { id: 'posts', label: 'Publicaciones', count: posts.length },
+      { id: 'all', label: t('search.all'), count: totalResults },
+      { id: 'users', label: t('search.users'), count: users.length },
+      { id: 'posts', label: t('search.posts'), count: posts.length },
 
       // 🔕 FUTURO: Ofertas de trabajo
       // { id: 'offers', label: 'Ofertas de trabajo', count: offers.length },
@@ -50,7 +52,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
       return (
         <div className="search-loading">
           <FaSpinner className="spin-icon" />
-          <p>Buscando...</p>
+          <p>{t('search.searching')}</p>
         </div>
       );
     }
@@ -59,7 +61,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
       return (
         <div className="no-filter-results">
           <FaSearch style={{ fontSize: '32px', color: '#ddd' }} />
-          <p className="loading-indicator">No se encontraron resultados para "{searchQuery}"</p>
+          <p className="loading-indicator">{t('search.noResults', { query: searchQuery })}</p>
         </div>
       );
     }
@@ -77,14 +79,14 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
             {user.profile && user.profile.profilePicture ? (
               <img
                 src={clImg.avatar(user.profile.profilePicture)}
-                alt={user.fullName || user.companyName || 'Usuario'}
+                alt={user.fullName || user.companyName || t('search.userFallback')}
               />
             ) : (
               <div className="placeholder-image"></div>
             )}
           </div>
           <div className="grid-result-info">
-            <h3>{user.fullName || user.companyName || 'Usuario'} <span> /</span></h3>
+            <h3>{user.fullName || user.companyName || t('search.userFallback')} <span> /</span></h3>
             <p className="subtitle">@{user.professionalTitle || user.username}</p>
           </div>
         </div>
@@ -94,7 +96,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
       else if (userItems.length > 0) {
         contentToRender.push(
           <div key="users-section" className="fullscreen-section">
-            <h3 className="fullscreen-section-title">Usuarios /</h3>
+            <h3 className="fullscreen-section-title">{t('search.usersSection')}</h3>
             <div className="fullscreen-section-grid">{userItems}</div>
           </div>
         );
@@ -126,7 +128,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
       else if (postItems.length > 0) {
         contentToRender.push(
           <div key="posts-section" className="fullscreen-section">
-            <h3 className="fullscreen-section-title">Publicaciones /</h3>
+            <h3 className="fullscreen-section-title">{t('search.postsSection')}</h3>
             <div className="fullscreen-section-grid">{postItems}</div>
           </div>
         );

@@ -1,6 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function BiographySection({ draft, setDraftField, MAX_BIO }) {
+  const { t } = useTranslation("profile");
+
   return (
     <div id="sec-cv-biografia-personal" className="ux-anchor-target">
       <div className="ux-card">
@@ -9,7 +12,7 @@ export default function BiographySection({ draft, setDraftField, MAX_BIO }) {
           htmlFor="biography"
         >
           <img src="/iconos/biography.png" className="ux-section-icon" alt="" />
-          Biografía personal
+          {t("editProfile.biographyLabel")}
         </label>
 
         <textarea
@@ -22,11 +25,11 @@ export default function BiographySection({ draft, setDraftField, MAX_BIO }) {
           onChange={(e) =>
             setDraftField("biography", e.target.value.slice(0, MAX_BIO))
           }
-          placeholder="Describe brevemente quién eres..."
+          placeholder={t("editProfile.biographyPlaceholder")}
         />
 
         <div className="ux-helper">
-          <span>Máximo {MAX_BIO} caracteres.</span>
+          <span>{t("editProfile.maxChars", { count: MAX_BIO })}</span>
           <span>
             {(draft?.biography || "").length} / {MAX_BIO}
           </span>

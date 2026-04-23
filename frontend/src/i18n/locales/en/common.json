@@ -1,0 +1,70 @@
+{
+  "brand": "THEFOLDER",
+  "language": {
+    "label": "Language",
+    "es": "ES",
+    "en": "EN",
+    "spanish": "Spanish",
+    "english": "English"
+  },
+  "nav": {
+    "creatives": "Creatives",
+    "profiles": "Profiles",
+    "fashion": "Study fashion",
+    "industry": "Industry",
+    "menu": "Menu",
+    "home": "Home",
+    "explorer": "Explorer"
+  },
+  "actions": {
+    "login": "Log in",
+    "register": "Create profile",
+    "createProfile": "Create your profile",
+    "publish": "Publish",
+    "myProfile": "My profile",
+    "profileOptions": "Profile options",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "accept": "Accept",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "search": "Search",
+    "openSearch": "Open search",
+    "closeSearch": "Close search",
+    "editProfile": "Edit profile",
+    "myCommunity": "My community",
+    "saved": "Saved",
+    "logout": "Log out",
+    "settings": "Settings",
+    "createAccount": "Create account"
+  },
+  "search": {
+    "placeholder": "Search creatives, projects…",
+    "mobilePlaceholder": "Search creatives, posts...",
+    "all": "All",
+    "users": "Users",
+    "posts": "Posts",
+    "searching": "Searching...",
+    "noResults": "No results found for \"{{query}}\"",
+    "noResultsSimple": "No results found",
+    "usersSection": "Users /",
+    "postsSection": "Posts /",
+    "projectsSection": "Projects /",
+    "userFallback": "User"
+  },
+  "footer": {
+    "contact": "Contact",
+    "legal": "Legal Notice",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "linksAriaLabel": "Footer links",
+    "brandAriaLabel": "© {{year}} thefolder"
+  }
+}

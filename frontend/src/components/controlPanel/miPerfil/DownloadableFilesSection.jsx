@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { printUserProfile } from './printProfile'; // Importamos la nueva función de impresión
 import downloadPdfIcon from '../../../../public/iconos/download-pdf.svg';
 
 
 const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
+    const { t } = useTranslation('profile');
     const [profileData, setProfileData] = useState(null);
     
     // Cargar los datos del perfil para el componente de impresión
@@ -35,7 +37,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         if (profile.biography) {
             sections += `
                 <section style="margin-bottom: 25px;">
-                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">Descripción</h2>
+                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">${t('sections.description')}</h2>
                     <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${profile.biography}</p>
                 </section>
             `;
@@ -50,12 +52,12 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
             if (validExperience.length > 0) {
                 sections += `
                     <section style="margin-bottom: 25px;">
-                        <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">Experiencia profesional</h2>
+                        <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">${t('sections.experience')}</h2>
                         ${validExperience.map(exp => `
                             <div style="display: flex; margin-bottom: 15px;">
                                 <div style="margin-right: 15px; flex-shrink: 0;">
                                     ${exp.companyLogo ? 
-                                        `<img src="${exp.companyLogo}" alt="${exp.institution || 'Empresa'}" style="width: 35px; height: 35px; border-radius: 4px; object-fit: cover;" />` : 
+                                        `<img src="${exp.companyLogo}" alt="${exp.institution || t('sections.company')}" style="width: 35px; height: 35px; border-radius: 4px; object-fit: cover;" />` : 
                                         `<div style="width: 35px; height: 35px; border-radius: 4px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                                             ${exp.institution ? exp.institution.charAt(0).toUpperCase() : 'E'}
                                         </div>`
@@ -68,7 +70,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                                     <p style="font-size: 13px; color: #777; margin: 0 0 5px 0;">
                                         ${formatDateForPrint(exp.startMonth, exp.startYear)}
                                         - 
-                                        ${exp.currentlyWorking ? "Actual" : formatDateForPrint(exp.endMonth, exp.endYear)}
+                                        ${exp.currentlyWorking ? t('sections.current') : formatDateForPrint(exp.endMonth, exp.endYear)}
                                         · 
                                         <span style="color: #666;">${calculateDuration(exp)}</span>
                                     </p>
@@ -90,12 +92,12 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
             if (validEducation.length > 0) {
                 sections += `
                     <section style="margin-bottom: 25px;">
-                        <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">Formación educativa</h2>
+                        <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">${t('sections.education')}</h2>
                         ${validEducation.map(edu => `
                             <div style="display: flex; margin-bottom: 15px;">
                                 <div style="margin-right: 15px; flex-shrink: 0;">
                                     ${edu.institutionLogo ? 
-                                        `<img src="${edu.institutionLogo}" alt="${edu.institution || edu.otherInstitution || 'Institución'}" style="width: 35px; height: 35px; border-radius: 4px; object-fit: cover;" />` : 
+                                        `<img src="${edu.institutionLogo}" alt="${edu.institution || edu.otherInstitution || t('sections.institution')}" style="width: 35px; height: 35px; border-radius: 4px; object-fit: cover;" />` : 
                                         `<div style="width: 35px; height: 35px; border-radius: 4px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                                             ${edu.institution ? edu.institution.charAt(0).toUpperCase() : 'I'}
                                         </div>`
@@ -108,7 +110,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                                     <p style="font-size: 13px; color: #777; margin: 0 0 5px 0;">
                                         ${formatDateForPrint(edu.formationStartMonth, edu.formationStartYear)}
                                         - 
-                                        ${edu.currentlyEnrolled ? "Actual" : formatDateForPrint(edu.formationEndMonth, edu.formationEndYear)}
+                                        ${edu.currentlyEnrolled ? t('sections.current') : formatDateForPrint(edu.formationEndMonth, edu.formationEndYear)}
                                         · 
                                         <span style="color: #666;">${calculateEducationDuration(edu)}</span>
                                     </p>
@@ -124,7 +126,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         if (profile.skills && profile.skills.length > 0) {
             sections += `
                 <section style="margin-bottom: 25px;">
-                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">Habilidades</h2>
+                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">${t('sections.skills')}</h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                         ${profile.skills.map(skill => `<span style="display: inline-block; padding: 6px 12px; margin: 3px; border-radius: 20px; background-color: #f2f2f2; color: #444; font-size: 13px;">${skill}</span>`).join('')}
                     </div>
@@ -136,7 +138,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         if (profile.software && profile.software.length > 0) {
             sections += `
                 <section style="margin-bottom: 25px;">
-                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">Software</h2>
+                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">${t('sections.software')}</h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                         ${profile.software.map(sw => `<span style="display: inline-block; padding: 6px 12px; margin: 3px; border-radius: 20px; background-color: #f2f2f2; color: #444; font-size: 13px;">${sw}</span>`).join('')}
                     </div>
@@ -148,7 +150,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         if (profile.languages && profile.languages.length > 0) {
             sections += `
                 <section style="margin-bottom: 25px;">
-                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">Idiomas</h2>
+                    <h2 style="font-size: 18px; color: #333; margin-bottom: 15px; font-weight: 600;">${t('sections.languages')}</h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                         ${profile.languages.map(lang => `<span style="display: inline-block; padding: 6px 12px; margin: 3px; border-radius: 20px; background-color: #f2f2f2; color: #444; font-size: 13px;">${lang}</span>`).join('')}
                     </div>
@@ -164,8 +166,8 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
         if (!month || !year) return '';
         
         const months = [
-            'Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.',
-            'Jul.', 'Ago.', 'Sep.', 'Oct.', 'Nov.', 'Dic.'
+            t('months.jan'), t('months.feb'), t('months.mar'), t('months.apr'), t('months.may'), t('months.jun'),
+            t('months.jul'), t('months.aug'), t('months.sep'), t('months.oct'), t('months.nov'), t('months.dec')
         ];
         
         return `${months[month - 1]} ${year}`;
@@ -190,15 +192,15 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                       (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
-            return `${months} ${months === 1 ? 'mes' : 'meses'}`;
+            return `${months} ${months === 1 ? t('duration.month') : t('duration.months')}`;
         } else {
             const years = Math.floor(months / 12);
             const remainingMonths = months % 12;
             
             if (remainingMonths === 0) {
-                return `${years} ${years === 1 ? 'año' : 'años'}`;
+                return `${years} ${years === 1 ? t('duration.year') : t('duration.years')}`;
             } else {
-                return `${years} ${years === 1 ? 'año' : 'años'} ${remainingMonths} ${remainingMonths === 1 ? 'mes' : 'meses'}`;
+                return `${years} ${years === 1 ? t('duration.year') : t('duration.years')} ${remainingMonths} ${remainingMonths === 1 ? t('duration.month') : t('duration.months')}`;
             }
         }
     };
@@ -222,15 +224,15 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                       (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
-            return `${months} ${months === 1 ? 'mes' : 'meses'}`;
+            return `${months} ${months === 1 ? t('duration.month') : t('duration.months')}`;
         } else {
             const years = Math.floor(months / 12);
             const remainingMonths = months % 12;
             
             if (remainingMonths === 0) {
-                return `${years} ${years === 1 ? 'año' : 'años'}`;
+                return `${years} ${years === 1 ? t('duration.year') : t('duration.years')}`;
             } else {
-                return `${years} ${years === 1 ? 'año' : 'años'} ${remainingMonths} ${remainingMonths === 1 ? 'mes' : 'meses'}`;
+                return `${years} ${years === 1 ? t('duration.year') : t('duration.years')} ${remainingMonths} ${remainingMonths === 1 ? t('duration.month') : t('duration.months')}`;
             }
         }
     };
@@ -243,14 +245,14 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
     // Mensaje de estado de carga del perfil
     const renderProfileStatus = () => {
         if (!profileData) {
-            return <p style={{fontSize: '12px', color: '#666', marginBottom: '10px'}}>Cargando datos del perfil...</p>;
+            return <p style={{fontSize: '12px', color: '#666', marginBottom: '10px'}}>{t('sections.loadingPdfData')}</p>;
         }
-        return <p style={{fontSize: '12px', color: '#666', marginBottom: '10px'}}>Datos del perfil listos para impresión</p>;
+        return <p style={{fontSize: '12px', color: '#666', marginBottom: '10px'}}>{t('sections.pdfDataReady')}</p>;
     };
 
     return (
         <section className="miPerfil-section">
-            <h2>Archivos descargables</h2>
+            <h2>{t('sections.downloads')}</h2>
             {renderProfileStatus()} {/* Mostrar el estado de carga */}
             <div className="miPerfil-downloads">
                 <div className="pdf-row">
@@ -261,10 +263,10 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                             handlePrintProfile();
                         }}
                         className="pdf-button"
-                        title="Imprimir perfil como PDF"
+                        title={t('sections.printPdf')}
                         style={{position: 'relative'}}
                     >
-                        Visualizar página PDF
+                        {t('sections.viewPdf')}
                         <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
                     </a>
                 </div>
@@ -276,7 +278,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                         className={`pdf-button ${!portfolioUrl ? 'disabled' : ''}`}
                         onClick={e => !portfolioUrl && e.preventDefault()}
                     >
-                        Portfolio PDF
+                        {t('sections.portfolioPdf')}
                         <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
 
                     </a>
@@ -288,7 +290,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                         className={`pdf-button ${!cvUrl ? 'disabled' : ''}`}
                         onClick={e => !cvUrl && e.preventDefault()}
                     >
-                        CV / Resumé PDF
+                        {t('sections.cvPdf')}
                         <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
 
                     </a>

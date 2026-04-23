@@ -1,22 +1,24 @@
 // UserMilestoneSection.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaAward } from 'react-icons/fa';
 
 const UserMilestoneSection = ({ professionalMilestones }) => {
+  const { t } = useTranslation('profile');
   if (!Array.isArray(professionalMilestones) || professionalMilestones.length === 0) {
     return (
       <section className="user-extern-section">
         <h2>
-          <FaAward style={{ marginRight: '8px' }} /> Hitos profesionales
+          <FaAward style={{ marginRight: '8px' }} /> {t('sections.milestones')}
         </h2>
-        <p>No hay hitos profesionales registrados.</p>
+        <p>{t('sections.emptyMilestones')}</p>
       </section>
     );
   }
 
   return (
     <section className="user-extern-section">
-      <h2>Hitos profesionales</h2>
+      <h2>{t('sections.milestones')}</h2>
 
       <ul className="user-extern-experience-list">
         {professionalMilestones.map((milestone, index) => (

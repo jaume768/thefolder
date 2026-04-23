@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaGraduationCap, FaCalendarAlt, FaMapMarkerAlt, FaFilter } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const EducationalOffersSection = ({ offers = [] }) => {
+    const { t } = useTranslation('profile');
     const [statusFilter, setStatusFilter] = useState('all');
 
     if (!Array.isArray(offers) || offers.length === 0) {
@@ -11,10 +13,10 @@ const EducationalOffersSection = ({ offers = [] }) => {
                 <div className="offers-empty-icon-company">
                     <FaGraduationCap />
                 </div>
-                <h3>No hay ofertas educativas publicadas</h3>
-                <p>Aún no has publicado ninguna oferta educativa.</p>
+                <h3>{t('offers.emptyEducationalTitle')}</h3>
+                <p>{t('offers.emptyEducationalDescPersonal')}</p>
                 <Link to="/createEducationalOffer" className="create-offer-button-company">
-                    Publicar oferta educativa
+                    {t('offers.publishEducational')}
                 </Link>
             </div>
         );
@@ -23,10 +25,10 @@ const EducationalOffersSection = ({ offers = [] }) => {
     // Helper function to translate status
     const translateStatus = (status) => {
         switch (status) {
-            case 'pending': return 'Pendiente';
-            case 'accepted': return 'Aceptada';
-            case 'cancelled': return 'Cancelada';
-            default: return 'Desconocido';
+            case 'pending': return t('status.pending');
+            case 'accepted': return t('status.accepted');
+            case 'cancelled': return t('status.cancelled');
+            default: return t('status.unknown');
         }
     };
 
@@ -37,7 +39,7 @@ const EducationalOffersSection = ({ offers = [] }) => {
 
     // Helper function to format duration
     const formatDuration = (duration) => {
-        if (!duration) return 'No especificada';
+        if (!duration) return t('offers.notSpecified');
         return `${duration.value} ${duration.unit}`;
     };
 
@@ -45,7 +47,7 @@ const EducationalOffersSection = ({ offers = [] }) => {
         <div className="company-offers-container-company">
             {filteredOffers.length === 0 ? (
                 <div className="no-filtered-offers">
-                    <p>No hay ofertas educativas con el filtro seleccionado.</p>
+                    <p>{t('offers.noFiltered')}</p>
                 </div>
             ) : (
                 filteredOffers.map((offer, index) => (
@@ -60,7 +62,7 @@ const EducationalOffersSection = ({ offers = [] }) => {
                         <div className="offer-details-company">
                             <div className="offer-detail-company">
                                 <FaGraduationCap className="offer-icon-company" />
-                                <span>{offer.studyType || 'Tipo no especificado'}</span>
+                                <span>{offer.studyType || t('offers.typeNotSpecified')}</span>
                             </div>
                             
                             <div className="offer-detail-company">
@@ -81,12 +83,12 @@ const EducationalOffersSection = ({ offers = [] }) => {
                                 ? (typeof offer.description === 'string' && offer.description.length > 120
                                     ? `${offer.description.replace(/<[^>]*>/g, '').substring(0, 120)}...`
                                     : offer.description.replace(/<[^>]*>/g, ''))
-                                : 'Sin descripción'}
+                                : t('offers.noDescriptionShort')}
                         </div>
 
                         <div className="offer-actions-company">
                             <Link to={`/EducationalOfferDetail/${offer._id}`} className="view-offer-button-company">
-                                Ver detalles
+                                {t('offers.viewDetails')}
                             </Link>
                         </div>
                     </div>

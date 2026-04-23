@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { clImg } from "../../../../../utils/optimizeImage";
 
 const editCard = "/iconos/edit-card.svg";
@@ -22,21 +23,22 @@ export default function EducationSection({
   updateEducationField,
   uploadInstitutionLogo,
 }) {
+  const { t } = useTranslation("profile");
   const list = Array.isArray(educations) ? educations : [];
 
   const renderForm = () => (
     <div className="ux-exp-form-wrap">
       <div className="ux-exp-form-title">
         {eduEditingIndex !== null
-          ? `Editando formación nº ${eduEditingIndex + 1}`
-          : `Formación nº ${list.length + 1}`}
+          ? `${t("editProfile.edit")} ${t("editProfile.educationSectionLabel")} #${eduEditingIndex + 1}`
+          : `${t("editProfile.educationSectionLabel")} #${list.length + 1}`}
       </div>
 
       <div className="ux-exp-form-layout">
 
         {/* LOGO */}
         <div className="ux-exp-logo-col">
-          <div className="ux-form-label ux-form-label-sm">Logo</div>
+          <div className="ux-form-label ux-form-label-sm">{t("editProfile.logoLabel")}</div>
 
           <button
             type="button"
@@ -59,14 +61,14 @@ export default function EducationSection({
             />
 
             {eduDraft.institutionLogo ? (
-              <img src={clImg.logo(eduDraft.institutionLogo)} alt="Logo" />
+              <img src={clImg.logo(eduDraft.institutionLogo)} alt={t("editProfile.logoLabel")} />
             ) : (
               <span className="ux-exp-logo-icon">📷</span>
             )}
           </button>
 
           <div className="ux-helper ux-exp-helper">
-            Sube el logo de la institución (imagen cuadrada).
+            {t("editProfile.logoUploadHint")}
           </div>
         </div>
 
@@ -76,7 +78,7 @@ export default function EducationSection({
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="edu-educationType">
-                Tipo de formación
+                {t("editProfile.eduTypeLabel")}
               </label>
               <select
                 id="edu-educationType"
@@ -85,25 +87,25 @@ export default function EducationSection({
                 value={eduDraft.educationType}
                 onChange={(e) => updateEducationField("educationType", e.target.value)}
               >
-                <option value="">Selecciona tipo</option>
-                <option value="Grado">Grado</option>
-                <option value="Máster">Máster</option>
-                <option value="Doctorado">Doctorado</option>
-                <option value="FP">Formación Profesional (FP)</option>
-                <option value="Ciclo Superior">Ciclo Superior</option>
-                <option value="Ciclo Medio">Ciclo Medio</option>
-                <option value="Bachillerato">Bachillerato</option>
-                <option value="Certificación Profesional">Certificación Profesional</option>
-                <option value="Curso / Taller">Curso / Taller</option>
-                <option value="Autodidacta">Autodidacta</option>
-                <option value="OTRO">OTRO</option>
+                <option value="">{t("editProfile.eduTypePlaceholder")}</option>
+                <option value="Grado">{t("editProfile.eduTypes.grado")}</option>
+                <option value="Máster">{t("editProfile.eduTypes.master")}</option>
+                <option value="Doctorado">{t("editProfile.eduTypes.doctorado")}</option>
+                <option value="FP">{t("editProfile.eduTypes.fp")}</option>
+                <option value="Ciclo Superior">{t("editProfile.eduTypes.cicloSuperior")}</option>
+                <option value="Ciclo Medio">{t("editProfile.eduTypes.cicloMedio")}</option>
+                <option value="Bachillerato">{t("editProfile.eduTypes.bachillerato")}</option>
+                <option value="Certificación Profesional">{t("editProfile.eduTypes.certProfesional")}</option>
+                <option value="Curso / Taller">{t("editProfile.eduTypes.cursoTaller")}</option>
+                <option value="Autodidacta">{t("editProfile.eduTypes.autodidacta")}</option>
+                <option value="OTRO">{t("editProfile.eduTypes.otro")}</option>
               </select>
             </div>
 
             {(eduDraft.educationType === "Certificación Profesional" || eduDraft.educationType === "Curso / Taller") && (
               <div className="ux-form-field ux-exp-full">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="edu-educationHours">
-                  Número de horas cursadas <span className="ux-form-optional">(opcional)</span>
+                  {t("editProfile.eduHoursLabel")}
                 </label>
                 <input
                   id="edu-educationHours"
@@ -113,7 +115,7 @@ export default function EducationSection({
                   className="ux-input"
                   value={eduDraft.educationHours}
                   onChange={(e) => updateEducationField("educationHours", e.target.value)}
-                  placeholder="Ej: 120 h"
+                  placeholder={t("editProfile.eduHoursPlaceholder")}
                 />
               </div>
             )}
@@ -121,7 +123,7 @@ export default function EducationSection({
             {eduDraft.educationType === "OTRO" && (
               <div className="ux-form-field ux-exp-full">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="edu-educationOtherType">
-                  Especifica el tipo de formación <span style={{ color: "#e53" }}>*</span>
+                  {t("editProfile.eduOtherTypeLabel")} <span style={{ color: "#e53" }}>*</span>
                 </label>
                 <input
                   id="edu-educationOtherType"
@@ -131,14 +133,14 @@ export default function EducationSection({
                   className="ux-input"
                   value={eduDraft.educationOtherType}
                   onChange={(e) => updateEducationField("educationOtherType", e.target.value)}
-                  placeholder="Especifica el tipo de formación"
+                  placeholder={t("editProfile.eduOtherTypeLabel")}
                 />
               </div>
             )}
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="edu-institution">
-                Institución
+                {t("editProfile.eduInstitutionLabel")}
               </label>
               <input
                 id="edu-institution"
@@ -148,13 +150,13 @@ export default function EducationSection({
                 className="ux-input"
                 value={eduDraft.institution}
                 onChange={(e) => updateEducationField("institution", e.target.value)}
-                placeholder="Nombre de la institución"
+                placeholder={t("editProfile.institutionPlaceholder")}
               />
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="edu-formationName">
-                Nombre de la formación
+                {t("editProfile.eduFormationLabel")}
               </label>
               <input
                 id="edu-formationName"
@@ -164,13 +166,13 @@ export default function EducationSection({
                 className="ux-input"
                 value={eduDraft.formationName}
                 onChange={(e) => updateEducationField("formationName", e.target.value)}
-                placeholder="Ej: Diseño de Moda"
+                placeholder={t("editProfile.formationNamePlaceholder")}
               />
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="edu-location">
-                Ubicación
+                {t("editProfile.eduLocationLabel")}
               </label>
               <input
                 id="edu-location"
@@ -180,7 +182,7 @@ export default function EducationSection({
                 className="ux-input"
                 value={eduDraft.location}
                 onChange={(e) => updateEducationField("location", e.target.value)}
-                placeholder="Ciudad, País"
+                placeholder={t("editProfile.locationPlaceholder")}
               />
             </div>
 
@@ -189,7 +191,7 @@ export default function EducationSection({
 
               <div className="ux-exp-date-block">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="edu-formationStartMonth">
-                  Inicio
+                  {t("editProfile.dateStart")}
                 </label>
                 <div className="ux-exp-two">
                   <select
@@ -199,7 +201,7 @@ export default function EducationSection({
                     value={eduDraft.formationStartMonth}
                     onChange={(e) => updateEducationField("formationStartMonth", e.target.value)}
                   >
-                    <option value="">Mes</option>
+                    <option value="">{t("editProfile.month")}</option>
                     {MONTHS_ES.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
@@ -212,7 +214,7 @@ export default function EducationSection({
                     value={eduDraft.formationStartYear}
                     onChange={(e) => updateEducationField("formationStartYear", e.target.value)}
                   >
-                    <option value="">Año</option>
+                    <option value="">{t("editProfile.year")}</option>
                     {years.map((y) => (
                       <option key={y} value={y}>{y}</option>
                     ))}
@@ -222,7 +224,7 @@ export default function EducationSection({
 
               <div className="ux-exp-date-block">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="edu-formationEndMonth">
-                  Finalización
+                  {t("editProfile.eduEndLabel")}
                 </label>
 
                 <div className="ux-exp-two">
@@ -234,7 +236,7 @@ export default function EducationSection({
                     onChange={(e) => updateEducationField("formationEndMonth", e.target.value)}
                     disabled={eduDraft.currentlyEnrolled}
                   >
-                    <option value="">Mes</option>
+                    <option value="">{t("editProfile.month")}</option>
                     {MONTHS_ES.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
@@ -248,7 +250,7 @@ export default function EducationSection({
                     onChange={(e) => updateEducationField("formationEndYear", e.target.value)}
                     disabled={eduDraft.currentlyEnrolled}
                   >
-                    <option value="">Año</option>
+                    <option value="">{t("editProfile.year")}</option>
                     {years.map((y) => (
                       <option key={y} value={y}>{y}</option>
                     ))}
@@ -266,7 +268,7 @@ export default function EducationSection({
                       updateEducationField("currentlyEnrolled", e.target.checked)
                     }
                   />
-                  <span>Actualmente cursando</span>
+                  <span>{t("editProfile.eduCurrentlyStudying")}</span>
                 </label>
               </div>
             </div>
@@ -279,7 +281,7 @@ export default function EducationSection({
                 type="button"
                 onClick={cancelEducationForm}
               >
-                Cancelar
+                {t("editProfile.modals.cancel")}
               </button>
             )}
             <button
@@ -287,14 +289,14 @@ export default function EducationSection({
               type="button"
               onClick={saveEducationAsDraft}
             >
-              Guardar como borrador
+              {t("editProfile.saveAsDraft")}
             </button>
             <button
               className="ux-btn primary"
               type="button"
               onClick={() => saveEducation()}
             >
-              Guardar
+              {t("editProfile.save")}
             </button>
           </div>
         </div>
@@ -307,11 +309,11 @@ export default function EducationSection({
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="edu-institution">
           <img src="/iconos/education.png" className="ux-section-icon" alt="" />
-          Formación educativa
+          {t("editProfile.educationSectionLabel")}
         </label>
 
         <div className="ux-helper ux-exp-helper">
-          Se ordena por fecha: más reciente arriba.
+          {t("editProfile.educationSubtitle")}
         </div>
 
         {/* LISTA con form inline en acordeón */}
@@ -322,10 +324,10 @@ export default function EducationSection({
                 <div className="ux-exp-card" style={{ position: "relative", ...(edu?.isDraft ? { background: "#f0f0f0" } : {}) }}>
                   <div className="ux-exp-logo">
                     {edu?.institutionLogo ? (
-                      <img src={clImg.logo(edu.institutionLogo)} alt={edu?.institution || "Institución"} />
+                      <img src={clImg.logo(edu.institutionLogo)} alt={edu?.institution || t("editProfile.eduInstitutionLabel")} />
                     ) : (
                       <div className="ux-exp-logo-placeholder">
-                        {(edu?.institution || "I").trim().charAt(0).toUpperCase()}
+                        {(edu?.institution || t("editProfile.eduInstitutionLabel")).trim().charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -349,7 +351,7 @@ export default function EducationSection({
                           {MONTHS_ES[(Number(edu.formationStartMonth) || 1) - 1]?.label}. {edu.formationStartYear}
                           {" · "}
                           {edu?.currentlyEnrolled
-                            ? "Actual"
+                            ? t("editProfile.currentlyWorkingShort")
                             : edu?.formationEndMonth && edu?.formationEndYear
                             ? `${MONTHS_ES[(Number(edu.formationEndMonth) || 1) - 1]?.label}. ${edu.formationEndYear}`
                             : "—"}
@@ -366,7 +368,7 @@ export default function EducationSection({
                       className="ux-link-btn"
                       onClick={() => openEditEducationForm(idx)}
                     >
-                      <img src={editCard} className="ux-icon" alt="Editar" />
+                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
                     </button>
 
                     <button
@@ -374,7 +376,7 @@ export default function EducationSection({
                       className="ux-link-btn danger"
                       onClick={() => confirmDeleteEducation(idx)}
                     >
-                      <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} />
+                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} />
                     </button>
                   </div>
 
@@ -383,7 +385,7 @@ export default function EducationSection({
                       position: "absolute", bottom: 8, right: 12,
                       fontSize: "11px", fontStyle: "italic", color: "#999",
                     }}>
-                      Borrador
+                      {t("editProfile.draft")}
                     </span>
                   )}
                 </div>
@@ -403,7 +405,7 @@ export default function EducationSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewEducationForm}
             >
-              Añadir formación educativa
+              {t("editProfile.addEducation")}
             </button>
           </div>
         )}

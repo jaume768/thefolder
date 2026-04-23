@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -16,6 +17,7 @@ import { validateForm } from '../../components/controlPanel/CreateEducationalOff
 import '../../components/controlPanel/css/create-educational-offer.css';
 
 const CreateEducationalOffer = () => {
+    const { t } = useTranslation('offers');
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         programName: '',
@@ -229,7 +231,7 @@ const CreateEducationalOffer = () => {
             {showVerificationModal && (
                 <VerificationRequiredModal onClose={() => setShowVerificationModal(false)} />
             )}
-            <h2>Publica una oferta educativa</h2>
+            <h2>{t('create.createEducationalTitle')}</h2>
             <form onSubmit={handleSubmit}>
                 <HeaderSection 
                     files={files} 

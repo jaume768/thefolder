@@ -1,0 +1,43 @@
+{
+  "title": "Creatives",
+  "subtitle": "Find or discover talent. Designers, stylists, photographers and more. Filter to your needs.",
+  "loading": "Loading...",
+  "loadingMore": "Loading more creatives...",
+  "filtering": "Filtering...",
+  "errorLoad": "Could not load creatives. Please reload the page or try again later.",
+  "noResults": "No creatives found with the applied filters.",
+  "noCreativesInCountry": "No creatives in this country",
+  "others": "Others",
+  "filters": {
+    "title": "Filters",
+    "experience": "Experience",
+    "specialty": "Creative specialty",
+    "location": "Location",
+    "clear": "Clear filters",
+    "apply": "Filter"
+  },
+  "levels": {
+    "1": "Student",
+    "1_desc": "Looking for my first opportunity",
+    "2": "Graduate",
+    "2_desc": "Ready for new projects",
+    "3": "Freelance",
+    "3_desc": "Working independently",
+    "4": "Professional",
+    "4_desc": "With industry experience"
+  },
+  "cta": {
+    "title": "Want to see yourself here?",
+    "body": "Publish your first project and become part of the creatives directory.",
+    "publish": "Publish project",
+    "dismiss": "Not now"
+  },
+  "guest": {
+    "text": "Join to discover all creatives",
+    "register": "Create free account"
+  },
+  "card": {
+    "coverLabel": "Creative cover",
+    "roleFallback": "Creative"
+  }
+}

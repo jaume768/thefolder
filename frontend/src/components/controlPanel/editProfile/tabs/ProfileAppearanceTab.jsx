@@ -1,21 +1,22 @@
 // src/components/controlPanel/editProfile/tabs/ProfileAppearanceTab.jsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import MiniHeroPreview from "../templates/MiniHeroPreview";
 import GalleryPreview from "../templates/GalleryPreview";
 import editCard from "../../../../../public/iconos/edit-card.svg";
 import trashDelete from "../../../../../public/iconos/bin.png";
 
-const GALLERY_OPTIONS = [
+const getGalleryOptions = (t) => [
   {
     id: "gap",
-    label: "Galería con espacio",
-    description: "Las fotos se muestran con separación entre ellas.",
+    label: t("editProfile.galleryWithSpace"),
+    description: t("editProfile.galleryWithSpaceDesc"),
     preview: <GalleryPreview nogap={false} />,
   },
   {
     id: "nogap",
-    label: "Mosaico",
-    description: "Las fotos se muestran pegadas, efecto mosaico.",
+    label: t("editProfile.mosaic"),
+    description: t("editProfile.mosaicDesc"),
     preview: <GalleryPreview nogap={true} />,
   },
 ];
@@ -48,6 +49,7 @@ export default function ProfileAppearanceTab({
   profileLayout,
   setProfileLayout,
 }) {
+  const { t } = useTranslation("profile");
   const [activeSubTab, setActiveSubTab]         = useState("portada");
   const [portadaModalOpen, setPortadaModalOpen] = useState(false);
   const [headerUploading, setHeaderUploading]   = useState(false);
@@ -72,9 +74,9 @@ export default function ProfileAppearanceTab({
 
       {/* ── Cabecera ────────────────────────────────────────────────────── */}
       <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">Apariencia del perfil</h2>
+        <h2 className="ux-card-title-h2">{t("editProfile.appearanceTitle")}</h2>
         <p className="ux-card-subtitle">
-          Elige la plantilla de tu perfil y personaliza su apariencia.
+          {t("editProfile.appearanceSubtitle")}
         </p>
       </div>
 
@@ -83,9 +85,9 @@ export default function ProfileAppearanceTab({
       ══════════════════════════════════════════════════════════════════ */}
       <section className="ux-card">
         <div className="ux-iv-head">
-          <div className="ux-iv-title">Elige tu plantilla</div>
+          <div className="ux-iv-title">{t("editProfile.chooseTemplate")}</div>
           <div className="ux-iv-subtitle">
-            El contenido es el mismo, cambia la presentación.
+            {t("editProfile.templateSubtitle")}
           </div>
         </div>
 
@@ -112,8 +114,8 @@ export default function ProfileAppearanceTab({
                 </div>
               </div>
             </div>
-            <div className="ux-gallery-option-label">Clásico</div>
-            <div className="ux-gallery-option-desc">Hero de portada + galería de proyectos.</div>
+            <div className="ux-gallery-option-label">{t("editProfile.classic")}</div>
+            <div className="ux-gallery-option-desc">{t("editProfile.classicDesc")}</div>
             {isClassic && <div className="ux-template-check">✓</div>}
           </button>
 
@@ -167,8 +169,8 @@ export default function ProfileAppearanceTab({
                 </div>
               </div>
             </div>
-            <div className="ux-gallery-option-label">Editorial Index (BETA)</div>
-            <div className="ux-gallery-option-desc">Grid asimétrico tipo índice editorial.</div>
+            <div className="ux-gallery-option-label">{t("editProfile.editorialIndex")}</div>
+            <div className="ux-gallery-option-desc">{t("editProfile.editorialIndexDesc")}</div>
             {profileLayout === "index-gallery" && <div className="ux-template-check">✓</div>}
           </button>
 
@@ -183,14 +185,14 @@ export default function ProfileAppearanceTab({
                 className={`ux-edit-tab ${activeSubTab === "portada" ? "active" : ""}`}
                 onClick={() => setActiveSubTab("portada")}
               >
-                Portada
+                {t("editProfile.cover")}
               </button>
               <button
                 type="button"
                 className={`ux-edit-tab ${activeSubTab === "galeria" ? "active" : ""}`}
                 onClick={() => setActiveSubTab("galeria")}
               >
-                Galería
+                {t("editProfile.gallery")}
               </button>
             </div>
 
@@ -202,14 +204,14 @@ export default function ProfileAppearanceTab({
                   className="new-tablero-button new-profile"
                   onClick={() => setPortadaModalOpen(true)}
                 >
-                  <img src="/iconos/add.png" alt="Cambiar" className="button-icon invert" />
-                  Cambiar foto de portada
+                  <img src="/iconos/add.png" alt={t("editProfile.changeCoverPhoto")} className="button-icon invert" />
+                  {t("editProfile.changeCoverPhoto")}
                 </button>
 
                 <div className="ux-iv-head">
-                  <div className="ux-iv-title">Plantilla de portada</div>
+                  <div className="ux-iv-title">{t("editProfile.coverTemplate")}</div>
                   <div className="ux-iv-subtitle">
-                    Elige el estilo de tu portada. Selecciona una plantilla y adapta tu foto.
+                    {t("editProfile.coverTemplateSubtitle")}
                   </div>
                 </div>
 
@@ -219,7 +221,7 @@ export default function ProfileAppearanceTab({
                     className={`ux-edit-tab ${isDesktop ? "active" : ""}`}
                     onClick={() => setCoverView("desktop")}
                   >
-                    Ordenador
+                    {t("editProfile.desktop")}
                     <span className="ux-coverview-icon" aria-hidden="true" />
                   </button>
                   <button
@@ -227,7 +229,7 @@ export default function ProfileAppearanceTab({
                     className={`ux-edit-tab ${!isDesktop ? "active" : ""}`}
                     onClick={() => setCoverView("mobile")}
                   >
-                    Móvil
+                    {t("editProfile.mobile")}
                     <span className="ux-coverview-icon mobile" aria-hidden="true" />
                   </button>
                 </div>
@@ -264,14 +266,14 @@ export default function ProfileAppearanceTab({
             {activeSubTab === "galeria" && (
               <>
                 <div className="ux-iv-head">
-                  <div className="ux-iv-title">Estilo de galería</div>
+                  <div className="ux-iv-title">{t("editProfile.galleryStyle")}</div>
                   <div className="ux-iv-subtitle">
-                    Elige cómo se muestran tus publicaciones en tu perfil.
+                    {t("editProfile.galleryStyleSubtitle")}
                   </div>
                 </div>
 
                 <div className="ux-gallery-options">
-                  {GALLERY_OPTIONS.map((opt) => {
+                  {getGalleryOptions(t).map((opt) => {
                     const isSelected = (galleryStyle || "gap") === opt.id;
                     return (
                       <button
@@ -302,20 +304,20 @@ export default function ProfileAppearanceTab({
           className="filters-modal-overlay"
           role="dialog"
           aria-modal="true"
-          aria-label="Cambiar imagen de portada"
+          aria-label={t("editProfile.changeCoverImage")}
           onMouseDown={(e) => { if (e.target === e.currentTarget) closePortadaModal(); }}
         >
           <div className="filters-modal-panel" onMouseDown={(e) => e.stopPropagation()}>
 
             <div className="filters-panel-header">
-              <div className="filters-panel-title">Imagen de portada</div>
+              <div className="filters-panel-title">{t("editProfile.coverImageTitle")}</div>
               <button
                 type="button"
                 className="filters-panel-close"
                 onClick={closePortadaModal}
-                aria-label="Cerrar"
+                aria-label={t("editProfile.closeTitle")}
               >
-                <img src="/iconos/close.svg" alt="Cerrar" className="image-icon" />
+                <img src="/iconos/close.svg" alt={t("editProfile.closeTitle")} className="image-icon" />
               </button>
             </div>
 
@@ -327,7 +329,7 @@ export default function ProfileAppearanceTab({
                   className={`ux-edit-tab ${isDesktop ? "active" : ""}`}
                   onClick={() => { setCoverView("desktop"); }}
                 >
-                  Ordenador
+                  {t("editProfile.desktop")}
                   <span className="ux-coverview-icon" aria-hidden="true" />
                 </button>
                 <button
@@ -335,7 +337,7 @@ export default function ProfileAppearanceTab({
                   className={`ux-edit-tab ${!isDesktop ? "active" : ""}`}
                   onClick={() => { setCoverView("mobile"); }}
                 >
-                  Móvil
+                  {t("editProfile.mobile")}
                   <span className="ux-coverview-icon mobile" aria-hidden="true" />
                 </button>
               </div>
@@ -366,7 +368,7 @@ export default function ProfileAppearanceTab({
                 />
                 {headerUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
                 {headerImage ? (
-                  <img src={headerImage} alt={`Portada - ${isDesktop ? "desktop" : "móvil"}`} />
+                  <img src={headerImage} alt={t("headerAlt", { device: isDesktop ? "desktop" : t("editProfile.mobile") })} />
                 ) : (
                   <div className="ux-iv-placeholder">
                     <span className="ux-iv-camera">📷</span>
@@ -374,11 +376,11 @@ export default function ProfileAppearanceTab({
                 )}
               </div>
 
-              <div className="ux-iv-caption">{isDesktop ? "Imagen en ordenador" : "Imagen en móvil"}</div>
+              <div className="ux-iv-caption">{isDesktop ? t("editProfile.imageDesktop") : t("editProfile.imageMobile")}</div>
 
               <div className="ux-iv-actions">
                 <button className="ux-link-btn" type="button" onClick={() => headerRef.current?.click()}>
-                  <img src={editCard} className="ux-icon" alt="Editar" /> Editar
+                  <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} /> {t("editProfile.edit")}
                 </button>
                 <span className="ux-iv-sep">|</span>
                 <button
@@ -386,13 +388,13 @@ export default function ProfileAppearanceTab({
                   type="button"
                   onClick={() => deleteHeaderVariant(isDesktop ? "desktop" : "mobile")}
                 >
-                  <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} /> Borrar
+                  <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} /> {t("editProfile.delete")}
                 </button>
               </div>
 
               <div className="ux-iv-hints" style={{ marginTop: 12 }}>
-                <div>Cualquier formato (JPG, PNG, HEIC…). Se optimiza automáticamente.</div>
-                <div className="ux-iv-note">Este cambio puede tardar unos minutos en establecerse.</div>
+                <div>{t("editProfile.directoryHints")}</div>
+                <div className="ux-iv-note">{t("editProfile.changeMayTakeTime")}</div>
               </div>
 
             </div>

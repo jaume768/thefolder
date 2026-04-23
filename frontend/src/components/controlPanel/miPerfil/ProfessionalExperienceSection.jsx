@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
 import { clImg } from '../../../utils/optimizeImage';
 
 const ProfessionalExperienceSection = ({ professionalFormation }) => {
+    const { t } = useTranslation('profile');
     // No renderizar la sección si no hay experiencia profesional o está vacía
     if (!professionalFormation || professionalFormation.length === 0) return null;
     
@@ -21,27 +23,26 @@ const ProfessionalExperienceSection = ({ professionalFormation }) => {
         let endDate;
         
         if (exp.currentlyWorking) {
-            endDate = new Date(); // Fecha actual
+            endDate = new Date();
         } else if (exp.endMonth && exp.endYear) {
             endDate = new Date(exp.endYear, exp.endMonth - 1);
         } else {
             return '';
         }
         
-        // Calcular diferencia en meses
         const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
                        (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
-            return `${months} ${months === 1 ? 'mes' : 'meses'}`;
+            return `${months} ${t(months === 1 ? 'duration.month' : 'duration.months')}`;
         } else {
             const years = Math.floor(months / 12);
             const remainingMonths = months % 12;
             
             if (remainingMonths === 0) {
-                return `${years} ${years === 1 ? 'año' : 'años'}`;
+                return `${years} ${t(years === 1 ? 'duration.year' : 'duration.years')}`;
             } else {
-                return `${years} ${years === 1 ? 'año' : 'años'} ${remainingMonths} ${remainingMonths === 1 ? 'mes' : 'meses'}`;
+                return `${years} ${t(years === 1 ? 'duration.year' : 'duration.years')} ${remainingMonths} ${t(remainingMonths === 1 ? 'duration.month' : 'duration.months')}`;
             }
         }
     };
@@ -49,24 +50,19 @@ const ProfessionalExperienceSection = ({ professionalFormation }) => {
     // Función para formatear la fecha
     const formatDate = (month, year) => {
         if (!month || !year) return '';
-        
-        const months = [
-            'Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.',
-            'Jul.', 'Ago.', 'Sep.', 'Oct.', 'Nov.', 'Dic.'
-        ];
-        
-        return `${months[month - 1]} ${year}`;
+        const monthKeys = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+        return `${t(`months.${monthKeys[month - 1]}`)} ${year}`;
     };
     
     return (
         <section className="miPerfil-section">
-            <h2>Experiencia profesional</h2>
+            <h2>{t('sections.experience')}</h2>
             <div className="experience-list">
                 {validExperience.map((exp, index) => (
                     <div key={index} className="experience-item">
                         <div className="experience-logo">
                             {exp.companyLogo ? (
-                                <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || 'Empresa'} />
+                                <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || t('sections.company')} />
                             ) : (
                                 <div className="experience-logo-placeholder">
                                     {exp.institution ? exp.institution.charAt(0).toUpperCase() : 'E'}
@@ -80,7 +76,7 @@ const ProfessionalExperienceSection = ({ professionalFormation }) => {
                             <p className="experience-period">
                                 {formatDate(exp.startMonth, exp.startYear)}
                                 {" - "}
-                                {exp.currentlyWorking ? "Actual" : formatDate(exp.endMonth, exp.endYear)}
+                                {exp.currentlyWorking ? t('sections.current') : formatDate(exp.endMonth, exp.endYear)}
                                 {" · "}
                                 <span className="experience-duration">{calculateDuration(exp)}</span>
                             </p>

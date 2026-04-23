@@ -1,0 +1,11 @@
+{
+  "title": "Industria",
+  "subtitle": "Directorio de industria de la moda. Encuentra empresas y perfiles por país, ciudad y categoría. ¿Quieres aparecer aquí? Escríbenos a info@thefolder.es.",
+  "searchPlaceholder": "Buscar por nombre, ciudad, país o categoría…",
+  "errorLoad": "No se pudieron cargar los perfiles de industria. Revisa el endpoint /api/industry.",
+  "filters": {
+    "country": "País",
+    "city": "Ciudad",
+    "category": "Categoría"
+  }
+}

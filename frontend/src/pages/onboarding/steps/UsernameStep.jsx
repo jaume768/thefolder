@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 
 const normalizeUsername = (value) =>
   String(value || '').replace(/\s+/g, '').toLowerCase();
@@ -6,6 +7,7 @@ const normalizeUsername = (value) =>
 const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNext, onBack }) => {
   const inputRef = useRef(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { t } = useTranslation('onboarding');
 
   const [checking, setChecking] = useState(false);
   const [isTaken, setIsTaken] = useState(false);
@@ -14,12 +16,12 @@ const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNe
   const localError = useMemo(() => {
     const v = username.trim();
     if (!v) return '';
-    if (v.length > 20) return 'Máximo 20 caracteres.';
-    if (!/^[a-z0-9-]+$/.test(v)) return 'Solo letras minúsculas, números y guiones.';
-    if (v.startsWith('-') || v.endsWith('-')) return 'No puede empezar ni acabar con guión.';
-    if (v.includes('--')) return 'No puede contener guión doble.';
+    if (v.length > 20) return t('username.errors.tooLong');
+    if (!/^[a-z0-9-]+$/.test(v)) return t('username.errors.invalidChars');
+    if (v.startsWith('-') || v.endsWith('-')) return t('username.errors.dashBoundary');
+    if (v.includes('--')) return t('username.errors.doubleDash');
     return '';
-  }, [username]);
+  }, [username, t]);
 
   // Disponibilidad con debounce
   useEffect(() => {
@@ -56,19 +58,23 @@ const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNe
   const isOk = !!username && !localError && !checking && !isTaken;
 
   const handleNext = () => {
-    if (!isOk) { setError(localError || (isTaken ? 'Ese nombre ya está en uso.' : '')); return; }
+    if (!isOk) { setError(localError || (isTaken ? t('username.errors.taken') : '')); return; }
     setError('');
     onNext();
   };
 
-  const typeLabel = accountType === 'creative' ? 'creativo' : 'empresa';
+  const typeLabel = accountType === 'creative' ? t('username.typeCreative') : t('username.typeCompany');
 
   return (
     <div className="ob-center">
-      <h1 className="ob-title">Elige tu nombre de usuario</h1>
+      <h1 className="ob-title">{t('username.title')}</h1>
       <p className="ob-subtitle">
-        Este será tu enlace público como perfil {typeLabel}.<br />
-        Solo letras minúsculas, números y guiones. Máximo 20 caracteres.
+        <Trans
+          i18nKey="username.subtitle"
+          ns="onboarding"
+          values={{ type: typeLabel }}
+          components={{ br: <br /> }}
+        />
       </p>
 
       <div
@@ -81,7 +87,7 @@ const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNe
           ref={inputRef}
           className="ob-input"
           value={username}
-          placeholder={suggestedUsername || 'tunombreusuario'}
+          placeholder={suggestedUsername || t('username.placeholder')}
           onChange={e => onChange(normalizeUsername(e.target.value))}
           onKeyDown={e => { if (e.key === ' ') e.preventDefault(); }}
           onPaste={e => { e.preventDefault(); onChange(normalizeUsername(e.clipboardData.getData('text'))); }}
@@ -89,7 +95,7 @@ const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNe
           autoCorrect="off"
           autoCapitalize="none"
           spellCheck={false}
-          aria-label="Nombre de usuario"
+          aria-label={t('username.inputAria')}
         />
 
         <span
@@ -109,14 +115,14 @@ const UsernameStep = ({ accountType, username, suggestedUsername, onChange, onNe
 
       {localError && username && <p className="ob-error">{localError}</p>}
       {isTaken && !checking && !localError && (
-        <p className="ob-error">Ese nombre ya está en uso. Prueba con otro.</p>
+        <p className="ob-error">{t('username.errors.takenLong')}</p>
       )}
       {error && !localError && !isTaken && <p className="ob-error">{error}</p>}
 
       <div className="ob-buttons">
-        {onBack && <button type="button" className="ob-back" onClick={onBack}>Volver atrás</button>}
+        {onBack && <button type="button" className="ob-back" onClick={onBack}>{t('common.back')}</button>}
         <button className="ob-cta" disabled={!isOk} onClick={handleNext}>
-          CONTINUAR
+          {t('common.continue')}
         </button>
       </div>
 

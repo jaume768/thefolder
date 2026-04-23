@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import Masonry from 'react-masonry-css';
 import '../../components/controlPanel/css/explorer.css';
@@ -9,6 +10,7 @@ const TagFeedPage = () => {
   const { tag } = useParams();
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { t } = useTranslation('explorer');
 
   const [postImages, setPostImages]     = useState([]);
   const [savedPosts, setSavedPosts]     = useState(new Map());
@@ -139,7 +141,9 @@ const TagFeedPage = () => {
           {postImages.map((item, idx) => {
             const totalImagesInPost = imagesCountByPostId.get(item.postId) || 1;
             const extraImages = Math.max(0, totalImagesInPost - 1);
-            const userLabel = item.user?.fullName || item.user?.name || item.user?.username || 'Usuario';
+            const userLabel = item.user?.username
+                ? (item.user.fullName || item.user.name || item.user.username)
+                : t('user.defaultLabel');
             const isSaved = savedPosts.has(`${item.postId}-${item.imageUrl}`);
 
             return (
@@ -148,7 +152,7 @@ const TagFeedPage = () => {
                 className="masonry-item"
                 onClick={() => handlePostClick(item.postId, item.imageUrl)}
               >
-                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || 'Imagen'} loading="lazy" />
+                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || t('user.defaultLabel')} loading="lazy" />
 
                 <div className="user-profile-hover">
                   <div className="user-info-hover">
@@ -169,16 +173,21 @@ const TagFeedPage = () => {
                 <button
                   className={`save-button-explorer ${isSaved ? 'saved' : ''}`}
                   onClick={(e) => handleSavePost(e, item.postId, item.imageUrl)}
-                  aria-label={isSaved ? 'Guardada' : 'Guardar'}
+                  aria-label={isSaved ? t('save.saved') : t('save.action')}
                   type="button"
                 >
                   {isSaved ? (
-                    <img src="/iconos/check-tick.svg" alt="" aria-hidden="true" className="save-icon" />
+                    <img
+                      src="/iconos/check-tick.svg"
+                      alt=""
+                      aria-hidden="true"
+                      className="save-icon"
+                    />
                   ) : (
                     <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
                   )}
                   <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
-                    {isSaved ? 'Guardada' : 'Guardar'}
+                    {isSaved ? t('save.tooltipSaved') : t('save.tooltipDefault')}
                   </span>
                 </button>
               </div>
@@ -188,7 +197,7 @@ const TagFeedPage = () => {
 
         {!loading && postImages.length === 0 && !hasMore && (
           <div className="explorer-no-results">
-            <p>No hay proyectos con el tag {tagLabel} todavía.</p>
+            <p>{t('tagFeed.noProjects', { tag: tagLabel })}</p>
           </div>
         )}
 

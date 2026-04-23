@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/Contacto.css';
 
 const Contacto = () => {
+    const { t } = useTranslation('legal');
     const navigate = useNavigate();
 
     const goBack = () => {
@@ -14,12 +16,12 @@ const Contacto = () => {
         <div className="contacto-container">
             <div className="contacto-header">
                 <button className="contacto-back-button" onClick={goBack}>
-                    <FaArrowLeft /> Volver
+                    <FaArrowLeft /> {t('contact.back')}
                 </button>
             </div>
 
             <div className="contacto-content">
-                <h1 className="contacto-title">Contacto</h1>
+                <h1 className="contacto-title">{t('contact.title')}</h1>
 
                 <div className="contacto-info-section">
                     <div className="contacto-info-card">
@@ -27,9 +29,9 @@ const Contacto = () => {
                             <FaEnvelope />
                         </div>
                         <div className="contacto-info-text">
-                            <h3>Correo Electrónico</h3>
+                            <h3>{t('contact.emailTitle')}</h3>
                             <p><a href="mailto:thefolderworld@gmail.com">thefolderworld@gmail.com</a></p>
-                            <p className="contacto-info-description">Para consultas generales, soporte técnico y colaboraciones.</p>
+                            <p className="contacto-info-description">{t('contact.emailDescription')}</p>
                         </div>
                     </div>
 
@@ -38,7 +40,7 @@ const Contacto = () => {
                             <FaMapMarkerAlt />
                         </div>
                         <div className="contacto-info-text">
-                            <h3>Dirección</h3>
+                            <h3>{t('contact.addressTitle')}</h3>
                             <p>Pasaje Robledano, nº3</p>
                             <p>San Pedro de Alcántara (Marbella)</p>
                             <p>Málaga, España</p>
@@ -47,7 +49,7 @@ const Contacto = () => {
                 </div>
 
                 <div className="contacto-social-section">
-                    <h2>Síguenos en redes sociales</h2>
+                    <h2>{t('contact.socialTitle')}</h2>
                     <div className="contacto-social-links">
                         <a href="https://instagram.com/thefolderworld" target="_blank" rel="noopener noreferrer" className="contacto-social-link">
                             <FaInstagram />
@@ -65,12 +67,12 @@ const Contacto = () => {
                 </div>
 
                 <div className="contacto-about-section">
-                    <h2>Sobre TheFolderWorld</h2>
+                    <h2>{t('contact.aboutTitle')}</h2>
                     <p>
-                        TheFolderWorld es una plataforma digital diseñada para conectar creativos con otros creativos, profesionales de la industria e instituciones educativas dentro del campo de la moda. Nuestro objetivo es crear un espacio donde los talentos emergentes puedan mostrar su trabajo, conectar con oportunidades profesionales y educativas, y formar parte de una comunidad vibrante de creativos.
+                        {t('contact.aboutText1')}
                     </p>
                     <p>
-                        Fundada en 2025 por Miriam Reina Bolaños, TheFolderWorld nace de la necesidad de crear un punto de encuentro especializado para el sector de la moda y el diseño, con un enfoque en la visibilidad de nuevos talentos y la conexión entre diferentes actores del sector.
+                        {t('contact.aboutText2')}
                     </p>
                 </div>
             </div>

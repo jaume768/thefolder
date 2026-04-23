@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { clImg } from "../../../../../utils/optimizeImage";
 
 const editCard = "/iconos/edit-card.svg";
@@ -26,6 +27,7 @@ export default function ExperienceSection({
   updateExperienceField,
   uploadExperienceLogo,
 }) {
+  const { t } = useTranslation("profile");
   const list = Array.isArray(experiences) ? experiences : [];
   const [logoUploading, setLogoUploading] = useState(false);
 
@@ -33,14 +35,14 @@ export default function ExperienceSection({
     <div className="ux-exp-form-wrap">
       <div className="ux-exp-form-title">
         {expEditingIndex !== null
-          ? `Editando experiencia nº ${expEditingIndex + 1}`
-          : `Experiencia nº ${list.length + 1}`}
+          ? `${t("editProfile.edit")} ${t("editProfile.tabs.experience")} #${expEditingIndex + 1}`
+          : `${t("editProfile.tabs.experience")} #${list.length + 1}`}
       </div>
 
       <div className="ux-exp-form-layout">
         {/* LOGO */}
         <div className="ux-exp-logo-col">
-          <div className="ux-form-label ux-form-label-sm">Logo</div>
+          <div className="ux-form-label ux-form-label-sm">{t("editProfile.logoLabel")}</div>
 
           <button
             type="button"
@@ -65,14 +67,14 @@ export default function ExperienceSection({
 
             {logoUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
             {expDraft.companyLogo ? (
-              <img src={clImg.logo(expDraft.companyLogo)} alt="Logo" />
+              <img src={clImg.logo(expDraft.companyLogo)} alt={t("editProfile.logoLabel")} />
             ) : (
               <span className="ux-exp-logo-icon">📷</span>
             )}
           </button>
 
           <div className="ux-helper ux-exp-helper">
-            Sube el logo de la empresa (imagen cuadrada).
+            {t("editProfile.logoUploadHint")}
           </div>
         </div>
 
@@ -82,7 +84,7 @@ export default function ExperienceSection({
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="exp-title">
-                Cargo
+                {t("editProfile.positionLabel")}
               </label>
               <input
                 id="exp-title"
@@ -92,13 +94,13 @@ export default function ExperienceSection({
                 className="ux-input"
                 value={expDraft.title}
                 onChange={(e) => updateExperienceField("title", e.target.value)}
-                placeholder="Asistente de ventas"
+                placeholder={t("editProfile.positionPlaceholder")}
               />
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="exp-institution">
-                Empresa
+                {t("editProfile.companyLabel")}
               </label>
               <input
                 id="exp-institution"
@@ -108,13 +110,13 @@ export default function ExperienceSection({
                 className="ux-input"
                 value={expDraft.institution}
                 onChange={(e) => updateExperienceField("institution", e.target.value)}
-                placeholder="Nombre de la empresa"
+                placeholder={t("editProfile.companyNamePlaceholder")}
               />
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="exp-companyWebsite">
-                Web de la empresa (opcional)
+                {t("editProfile.companyWebsiteLabelOptional")}
               </label>
               <input
                 id="exp-companyWebsite"
@@ -126,12 +128,12 @@ export default function ExperienceSection({
                 onChange={(e) => updateExperienceField("companyWebsite", e.target.value)}
                 placeholder="empresa.com"
               />
-              <div className="ux-helper">Se mostrará como link en tu CV.</div>
+              <div className="ux-helper">{t("editProfile.seMostraraComoLink")}</div>
             </div>
 
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="exp-location">
-                Ubicación
+                {t("editProfile.location")}
               </label>
               <input
                 id="exp-location"
@@ -141,7 +143,7 @@ export default function ExperienceSection({
                 className="ux-input"
                 value={expDraft.location}
                 onChange={(e) => updateExperienceField("location", e.target.value)}
-                placeholder="Ciudad, País"
+                placeholder={t("editProfile.locationPlaceholder")}
               />
             </div>
 
@@ -150,7 +152,7 @@ export default function ExperienceSection({
 
               <div className="ux-exp-date-block">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="exp-startMonth">
-                  Inicio
+                  {t("editProfile.dateStart")}
                 </label>
                 <div className="ux-exp-two">
                   <select
@@ -160,7 +162,7 @@ export default function ExperienceSection({
                     value={expDraft.startMonth}
                     onChange={(e) => updateExperienceField("startMonth", e.target.value)}
                   >
-                    <option value="">Mes</option>
+                    <option value="">{t("editProfile.month")}</option>
                     {MONTHS_ES.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
@@ -173,7 +175,7 @@ export default function ExperienceSection({
                     value={expDraft.startYear}
                     onChange={(e) => updateExperienceField("startYear", e.target.value)}
                   >
-                    <option value="">Año</option>
+                    <option value="">{t("editProfile.year")}</option>
                     {years.map((y) => (
                       <option key={y} value={y}>{y}</option>
                     ))}
@@ -183,7 +185,7 @@ export default function ExperienceSection({
 
               <div className="ux-exp-date-block">
                 <label className="ux-form-label ux-form-label-sm" htmlFor="exp-endMonth">
-                  Finalización
+                  {t("editProfile.dateEnd")}
                 </label>
 
                 <div className="ux-exp-two">
@@ -195,7 +197,7 @@ export default function ExperienceSection({
                     onChange={(e) => updateExperienceField("endMonth", e.target.value)}
                     disabled={expDraft.currentlyWorking}
                   >
-                    <option value="">Mes</option>
+                    <option value="">{t("editProfile.month")}</option>
                     {MONTHS_ES.map((m) => (
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
@@ -209,7 +211,7 @@ export default function ExperienceSection({
                     onChange={(e) => updateExperienceField("endYear", e.target.value)}
                     disabled={expDraft.currentlyWorking}
                   >
-                    <option value="">Año</option>
+                    <option value="">{t("editProfile.year")}</option>
                     {years.map((y) => (
                       <option key={y} value={y}>{y}</option>
                     ))}
@@ -227,7 +229,7 @@ export default function ExperienceSection({
                       updateExperienceField("currentlyWorking", e.target.checked)
                     }
                   />
-                  <span>Actualmente en curso</span>
+                  <span>{t("editProfile.currentlyWorking")}</span>
                 </label>
               </div>
             </div>
@@ -235,7 +237,7 @@ export default function ExperienceSection({
             {/* DESCRIPCIÓN */}
             <div className="ux-form-field ux-exp-full">
               <label className="ux-form-label ux-form-label-sm" htmlFor="exp-description">
-                Descripción
+                {t("editProfile.descriptionLabel")}
               </label>
               <textarea
                 id="exp-description"
@@ -250,10 +252,10 @@ export default function ExperienceSection({
                     e.target.value.slice(0, MAX_EXP_DESC)
                   )
                 }
-                placeholder="Describe brevemente tu experiencia laboral."
+                placeholder={t("editProfile.experiencePlaceholder")}
               />
               <div className="ux-counter">
-                <span>Máximo {MAX_EXP_DESC} caracteres.</span>
+                <span>{t("editProfile.maxChars", { count: MAX_EXP_DESC })}</span>
                 <span>
                   {(expDraft.description || "").length} / {MAX_EXP_DESC}
                 </span>
@@ -269,7 +271,7 @@ export default function ExperienceSection({
                 type="button"
                 onClick={cancelExperienceForm}
               >
-                Cancelar
+                {t("editProfile.modals.cancel")}
               </button>
             )}
             <button
@@ -277,14 +279,14 @@ export default function ExperienceSection({
               type="button"
               onClick={saveExperienceAsDraft}
             >
-              Guardar como borrador
+              {t("editProfile.saveAsDraft")}
             </button>
             <button
               className="ux-btn primary"
               type="button"
               onClick={() => saveExperience()}
             >
-              Guardar
+              {t("editProfile.save")}
             </button>
           </div>
         </div>
@@ -297,11 +299,11 @@ export default function ExperienceSection({
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="exp-title">
           <img src="/iconos/experience-job.png" className="ux-section-icon" alt="" />
-          Experiencia laboral
+          {t("editProfile.experienceSectionLabel")}
         </label>
 
         <div className="ux-helper ux-exp-helper">
-          Se ordena por fecha: más reciente arriba.
+          {t("editProfile.experienceSubtitle")}
         </div>
 
         {/* LISTA con form inline en acordeón */}
@@ -312,10 +314,10 @@ export default function ExperienceSection({
                 <div className="ux-exp-card" style={{ position: "relative", ...(exp?.isDraft ? { background: "#f0f0f0" } : {}) }}>
                   <div className="ux-exp-logo">
                     {exp?.companyLogo ? (
-                      <img src={clImg.logo(exp.companyLogo)} alt={exp?.institution || "Empresa"} />
+                      <img src={clImg.logo(exp.companyLogo)} alt={exp?.institution || t("editProfile.companyLabel")} />
                     ) : (
                       <div className="ux-exp-logo-placeholder">
-                        {(exp?.institution || "E").trim().charAt(0).toUpperCase()}
+                        {(exp?.institution || t("editProfile.companyLabel")).trim().charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -351,7 +353,7 @@ export default function ExperienceSection({
                           {MONTHS_ES[(Number(exp.startMonth) || 1) - 1]?.label}. {exp.startYear}
                           {" · "}
                           {exp?.currentlyWorking
-                            ? "Actual"
+                            ? t("editProfile.currentlyWorkingShort")
                             : exp?.endMonth && exp?.endYear
                             ? `${MONTHS_ES[(Number(exp.endMonth) || 1) - 1]?.label}. ${exp.endYear}`
                             : "—"}
@@ -368,7 +370,7 @@ export default function ExperienceSection({
                       className="ux-link-btn"
                       onClick={() => openEditExperienceForm(idx)}
                     >
-                      <img src={editCard} className="ux-icon" alt="Editar" />
+                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
                     </button>
 
                     <button
@@ -376,7 +378,7 @@ export default function ExperienceSection({
                       className="ux-link-btn danger"
                       onClick={() => confirmDeleteExperience(idx)}
                     >
-                      <img src={trashDelete} className="ux-icon" alt="Borrar" style={{width:"12px"}} />
+                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} />
                     </button>
                   </div>
 
@@ -385,7 +387,7 @@ export default function ExperienceSection({
                       position: "absolute", bottom: 8, right: 12,
                       fontSize: "11px", fontStyle: "italic", color: "#999",
                     }}>
-                      Borrador
+                      {t("editProfile.draft")}
                     </span>
                   )}
                 </div>
@@ -405,7 +407,7 @@ export default function ExperienceSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewExperienceForm}
             >
-              Añadir experiencia laboral
+              {t("editProfile.addExperience")}
             </button>
           </div>
         )}

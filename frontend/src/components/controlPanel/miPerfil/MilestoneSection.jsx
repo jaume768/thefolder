@@ -1,15 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaAward } from 'react-icons/fa';
 
 const MilestoneSection = ({ professionalMilestones }) => {
+    const { t } = useTranslation('profile');
     if (!Array.isArray(professionalMilestones) || professionalMilestones.length === 0) {
         return (
             <section className="miPerfil-section">
                 <h2>
                     <FaAward style={{marginRight: '8px'}} />
-                    Hitos profesionales
+                    {t('sections.milestones')}
                 </h2>
-                <p>No hay hitos profesionales registrados.</p>
+                <p>{t('sections.emptyMilestones')}</p>
             </section>
         );
     }
@@ -17,7 +19,7 @@ const MilestoneSection = ({ professionalMilestones }) => {
     return (
         <section className="miPerfil-section">
             <h2>
-                Hitos profesionales
+                {t('sections.milestones')}
             </h2>
             <ul className="miPerfil-experience-list">
                 {professionalMilestones.map((milestone, index) => (

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const closeIcon = "/iconos/close.svg";
 const moreFull = "/iconos/more-full.svg";
@@ -14,6 +15,7 @@ export default function SoftwareSection({
   popularSoftwareFiltered,
   addPopularSoftware,
 }) {
+  const { t } = useTranslation("profile");
   const tags = Array.isArray(softwareTags) ? softwareTags : [];
   const popular = Array.isArray(popularSoftwareFiltered) ? popularSoftwareFiltered : [];
 
@@ -22,11 +24,11 @@ export default function SoftwareSection({
       <div className="ux-card">
         <label className="ux-form-label separator" htmlFor="softwareInput">
           <img src="/iconos/hardskills.png" className="ux-section-icon" alt="" />
-          Hardskills
+          {t("sections.hardskills")}
         </label>
 
         <p className="ux-hardskills-subtitle">
-          Agrega etiquetas para identificar tus conocimientos de software o habilidades técnicas (patronaje, moulage, etc.)
+          {t("editProfile.softwareSectionSubtitle")}
         </p>
 
         {/* Input grande con tags dentro */}
@@ -38,10 +40,10 @@ export default function SoftwareSection({
                 type="button"
                 className="ux-tag-x"
                 onClick={() => removeSoftwareTag(idx)}
-                aria-label="Eliminar etiqueta"
-                title="Eliminar"
+                aria-label={t("editProfile.removeLabel")}
+                title={t("editProfile.remove")}
               >
-                <img src={closeIcon} className="ux-icon-sm" alt="Eliminar" />
+                <img src={closeIcon} className="ux-icon-sm" alt={t("editProfile.remove")} />
               </button>
             </span>
           ))}
@@ -56,25 +58,25 @@ export default function SoftwareSection({
               value={softwareInput}
               onChange={(e) => setSoftwareInput(e.target.value)}
               onKeyDown={handleSoftwareKeyDown}
-              placeholder={tags.length ? "" : "Escribe aquí."}
+              placeholder={tags.length ? "" : t("editProfile.typeHere")}
               maxLength={50}
             />
           )}
         </div>
 
         <p className="ux-helper">
-          Presiona "Enter" al finalizar de escribir para añadir una etiqueta. Elimina haciendo clic en la X.
+          {t("editProfile.pressEnterToAdd")}
         </p>
 
         <div className="ux-helper">
-          <span>Máximo 15 etiquetas.</span>
+          <span>{t("editProfile.max15Tags")}</span>
           <span>{tags.length}/15</span>
         </div>
 
         {/* Populares */}
         {tags.length < 15 && popular.length > 0 && (
           <div className="ux-popular-wrap">
-            <h4 className="ux-popular-title">Software populares</h4>
+            <h4 className="ux-popular-title">{t("editProfile.popularSoftware")}</h4>
 
             <div className="ux-popular-row">
               {popular.map((sw) => (
@@ -85,7 +87,7 @@ export default function SoftwareSection({
                   onClick={() => addPopularSoftware(sw)}
                 >
                   <span className="ux-popular-text">{sw}</span>
-                  <img src={moreFull} className="ux-icon-sm" alt="Añadir" />
+                  <img src={moreFull} className="ux-icon-sm" alt={t("editProfile.add")} />
                 </button>
               ))}
             </div>

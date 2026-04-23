@@ -1,10 +1,12 @@
 // CompleteRegistrationProfesionalDatosPersonales.jsx
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../css/complete-registration.css';
 
 const CompleteRegistrationProfesionalDatosPersonales = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('onboarding');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
@@ -29,7 +31,7 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
 
     const handleNext = async () => {
         if (!firstName || !lastName || !dateOfBirth || !country || !city) {
-            setError("Por favor, completa todos los campos requeridos.");
+            setError(t('profesional.errors.requiredFields'));
             return;
         }
         setError("");
@@ -49,10 +51,10 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
             if (response.ok) {
                 navigate('/photo/registro/03');
             } else {
-                setError(data.error || "Ha ocurrido un error.");
+                setError(data.error || t('profesional.errors.genericError'));
             }
         } catch (error) {
-            setError("Error en la conexión o en el servidor.");
+            setError(t('profesional.errors.connection'));
         }
     };
 
@@ -74,13 +76,13 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
     return (
         <div className="complete-registration-container">
             <div className="contenedor-registro-objetivo">
-                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>paso 2</p>
-                <h2 className="titulo">Datos personales</h2>
+                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>{t('profesional.step', { n: 2 })}</p>
+                <h2 className="titulo">{t('profesional.personalDataTitle')}</h2>
                 <div className="form-group-datos">
-                    <label>Nombre</label>
+                    <label>{t('profesional.firstName')}</label>
                     <input
                         type="text"
-                        placeholder="Introduce tu nombre"
+                        placeholder={t('profesional.firstNamePlaceholder')}
                         value={firstName}
                         onChange={(e) => {
                             setFirstName(e.target.value);
@@ -91,10 +93,10 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
                     />
                 </div>
                 <div className="form-group-datos">
-                    <label>Apellido/s</label>
+                    <label>{t('profesional.lastName')}</label>
                     <input
                         type="text"
-                        placeholder="Introduce tu/s apellido/s"
+                        placeholder={t('profesional.lastNamePlaceholder')}
                         value={lastName}
                         onChange={(e) => {
                             setLastName(e.target.value);
@@ -105,7 +107,7 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
                     />
                 </div>
                 <div className="form-group-datos">
-                    <label>Fecha de nacimiento</label>
+                    <label>{t('profesional.dateOfBirth')}</label>
                     <div className="input-with-icon" style={{ position: 'relative' }}>
                         <input
                             ref={dateInputRef}
@@ -136,7 +138,7 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
                     </div>
                 </div>
                 <div className="form-group-datos">
-                    <label>País de residencia</label>
+                    <label>{t('profesional.countryResidence')}</label>
                     <select
                         value={country}
                         onChange={(e) => {
@@ -146,17 +148,17 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
                         className="input-field"
                         style={{ backgroundColor: '#f0f0f0', color: '#000' }}
                     >
-                        <option value="">Selecciona tu país</option>
+                        <option value="">{t('profesional.countrySelect')}</option>
                         {countries.map((c, index) => (
                             <option key={index} value={c}>{c}</option>
                         ))}
                     </select>
                 </div>
                 <div className="form-group-datos">
-                    <label>Ciudad de residencia</label>
+                    <label>{t('profesional.cityResidence')}</label>
                     <input
                         type="text"
-                        placeholder="Introduce tu ciudad"
+                        placeholder={t('profesional.cityPlaceholder')}
                         value={city}
                         onChange={(e) => {
                             setCity(e.target.value);
@@ -174,10 +176,10 @@ const CompleteRegistrationProfesionalDatosPersonales = () => {
                         onClick={handleBack}
                         style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer' }}
                     >
-                        &#8592; Volver atrás
+                        &#8592; {t('common.back')}
                     </button>
                     <button className="next-button" onClick={handleNext}>
-                        Siguiente
+                        {t('common.next')}
                     </button>
                 </div>
                 <div className="pagination-dots" style={{ marginTop: '1rem' }}>

@@ -1,0 +1,150 @@
+{
+  "create": {
+    "emptyDropLabel": "Publica un proyecto",
+    "emptyDropSub": "Hasta 6 imágenes por proyecto",
+    "cover": "Portada",
+    "addImage": "Añadir imagen",
+    "removeImage": "Eliminar imagen",
+    "titlePlaceholder": "TÍTULO (*)",
+    "titleRequired": "El título es obligatorio.",
+    "descPlaceholder": "Descripción del proyecto (opcional)",
+    "rolePlaceholder": "Tu rol en el proyecto (Fotógrafo, Estilista…)",
+    "team": {
+      "label": "Equipo /",
+      "namePlaceholder": "Nombre o busca @usuario dentro de THEFOLDER",
+      "rolePlaceholder": "Rol (Fotógrafo, Estilista…)",
+      "linkPlaceholder": "Link (opcional)",
+      "addCollaborator": "Añadir colaborador",
+      "unregistered": "No registrado",
+      "registered": "Registrado ✅",
+      "searching": "Buscando...",
+      "noMatches": "Sin coincidencias — añádelo como externo 👆",
+      "addTeamBtn": "Etiquetar Equipo"
+    },
+    "credits": {
+      "label": "Créditos de estilismo /",
+      "placeholder": "Escribe tus créditos (Falda de NouNou, zapatos de...)",
+      "noImagesFirst": "Sube imágenes primero para añadir créditos.",
+      "addCreditsBtn": "Créditos de Estilismo"
+    },
+    "projectTags": {
+      "title": "Tags de proyecto",
+      "subtitle": "Ayuda a que tu trabajo se filtre correctamente (máx. 3)",
+      "rightsLabel": "Confirmo que tengo los derechos necesarios sobre estas imágenes y autorizo a THEFOLDER a mostrarlas en la plataforma. El contenido no infringe derechos de autor, privacidad ni propiedad intelectual de terceros.",
+      "rightsError": "Debes confirmar los derechos de imagen."
+    },
+    "saveDraft": "GUARDAR BORRADOR",
+    "publish": "PUBLICAR",
+    "publishing": "PUBLICANDO...",
+    "loadingTitle": "Subiendo tu proyecto…",
+    "loadingSub": "Esto puede tardar unos segundos",
+    "draft": {
+      "resumeTitle": "¿Retomar el borrador?",
+      "resumeText": "Puedes continuar donde lo dejaste o empezar desde cero.",
+      "startNew": "Empezar de cero",
+      "continue": "Continuar"
+    },
+    "success": {
+      "title": "¡Proyecto publicado!",
+      "subtitle": "Tu publicación ya está disponible para toda la comunidad.",
+      "viewPost": "Ver publicación"
+    },
+    "errors": {
+      "gifSize": "\"{{name}}\" es un GIF y supera los 10 MB permitidos. Intenta reducir su peso antes de subirlo.",
+      "imageSize": "\"{{name}}\" supera los 20 MB permitidos.",
+      "genericPublish": "Error al publicar el post",
+      "fillRequired": "Completa los campos obligatorios"
+    }
+  },
+  "view": {
+    "loading": "Cargando proyecto",
+    "noData": "No hay datos del proyecto",
+    "team": "Equipo /",
+    "edit": "Editar publicación",
+    "delete": "Eliminar publicación",
+    "deleteConfirm": "¿Estás seguro de eliminar esta publicación?",
+    "cancel": "Cancelar",
+    "deleteAction": "Eliminar",
+    "download": {
+      "honorTitle": "No olvides dar crédito",
+      "honorText": "Asegúrate de tener autorización antes de usar o descargar la imagen",
+      "accept": "Acepto",
+      "started": "Descarga iniciada ⬇️"
+    },
+    "actions": {
+      "more": "Más opciones",
+      "copyLink": "Copiar link",
+      "download": "Descargar",
+      "report": "Reportar"
+    },
+    "report": {
+      "title": "Reportar publicación",
+      "desc": "Describe brevemente el motivo del reporte. El equipo de THEFOLDER revisará tu solicitud.",
+      "placeholder": "Ej: contenido ofensivo, imagen sin consentimiento...",
+      "notice": "Al enviar confirmas que este reporte es legítimo. Se notificará al administrador.",
+      "submit": "Enviar reporte",
+      "submitting": "Enviando...",
+      "sentTitle": "Reporte enviado",
+      "sentDesc": "Gracias. Hemos recibido tu reporte y lo revisaremos en breve.",
+      "close": "Cerrar"
+    },
+    "fullscreen": {
+      "close": "CERRAR",
+      "alt": "Vista previa a pantalla completa"
+    },
+    "externalLink": {
+      "title": "Estás saliendo de la plataforma",
+      "subtitle": "Verifica el enlace antes de continuar.",
+      "cancel": "Cancelar",
+      "continue": "Continuar"
+    },
+    "scrollTop": "Subir",
+    "copied": "Link copiado ✅",
+    "saved": "¡Guardado!",
+    "saveAction": "Guardar",
+    "removed": "¡Eliminado!",
+    "guestGateTitle": "Descubre más en THEFOLDER",
+    "guestGateDesc": "Crea tu cuenta gratis para seguir explorando el trabajo de la comunidad creativa.",
+    "downloadStarted": "Descarga iniciada ⬇️"
+  },
+  "edit": {
+    "newBadge": "Nueva",
+    "removeImage": "Eliminar imagen",
+    "titlePlaceholder": "TÍTULO (*)",
+    "titleRequired": "El título es obligatorio.",
+    "descPlaceholder": "Descripción del proyecto (opcional)",
+    "rolePlaceholder": "Tu rol en el proyecto (Fotógrafo, Estilista…)",
+    "team": {
+      "label": "Equipo /",
+      "namePlaceholder": "Nombre o busca @usuario dentro de THEFOLDER",
+      "rolePlaceholder": "Rol (Fotógrafo, Estilista…)",
+      "linkPlaceholder": "Link (opcional)",
+      "addCollaborator": "Añadir colaborador",
+      "unregistered": "No registrado",
+      "registered": "Registrado ✅",
+      "searching": "Buscando...",
+      "noMatches": "Sin coincidencias — añádelo como externo 👆"
+    },
+    "credits": {
+      "label": "Créditos de estilismo /",
+      "placeholder": "Escribe tus créditos (Falda de NouNou, zapatos de...)"
+    },
+    "projectTags": {
+      "label": "Tags de proyecto /",
+      "max": "máx. 3"
+    },
+    "optional": {
+      "team": "Etiquetar Equipo",
+      "credits": "Créditos de Estilismo",
+      "tags": "Tags de Proyecto"
+    },
+    "cancel": "CANCELAR",
+    "save": "GUARDAR",
+    "saving": "GUARDANDO...",
+    "deleteConfirm": "Sin imágenes, este post se eliminará. ¿Continuar?",
+    "deleteAction": "Eliminar post",
+    "deleting": "Eliminando...",
+    "errorSave": "Error al guardar los cambios.",
+    "errorDelete": "Error al eliminar el post."
+  }
+}

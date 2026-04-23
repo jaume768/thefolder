@@ -1,5 +1,6 @@
 // UserProfessionalExperienceSection.jsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "../css/professionalExperience.css";
 import { clImg } from "../../../utils/optimizeImage";
 
@@ -13,6 +14,7 @@ const prettyUrl = (raw = "") =>
   String(raw).trim().replace(/^https?:\/\//i, "").replace(/\/$/, "");
 
 const UserProfessionalExperienceSection = ({ professionalFormation }) => {
+  const { t } = useTranslation("profile");
   if (!professionalFormation || professionalFormation.length === 0) return null;
 
   const validExperience = professionalFormation.filter(
@@ -41,16 +43,16 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
     if (months < 1) return "";
 
     if (months < 12) {
-      return `${months} ${months === 1 ? "mes" : "meses"}`;
+      return `${months} ${months === 1 ? t("duration.month") : t("duration.months")}`;
     } else {
       const years = Math.floor(months / 12);
       const remainingMonths = months % 12;
 
       if (remainingMonths === 0) {
-        return `${years} ${years === 1 ? "año" : "años"}`;
+        return `${years} ${years === 1 ? t("duration.year") : t("duration.years")}`;
       }
-      return `${years} ${years === 1 ? "año" : "años"} ${remainingMonths} ${
-        remainingMonths === 1 ? "mes" : "meses"
+      return `${years} ${years === 1 ? t("duration.year") : t("duration.years")} ${remainingMonths} ${
+        remainingMonths === 1 ? t("duration.month") : t("duration.months")
       }`;
     }
   };
@@ -59,18 +61,9 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
     if (!month || !year) return "";
 
     const months = [
-      "Ene.",
-      "Feb.",
-      "Mar.",
-      "Abr.",
-      "May.",
-      "Jun.",
-      "Jul.",
-      "Ago.",
-      "Sep.",
-      "Oct.",
-      "Nov.",
-      "Dic.",
+      t("months.jan"), t("months.feb"), t("months.mar"), t("months.apr"),
+      t("months.may"), t("months.jun"), t("months.jul"), t("months.aug"),
+      t("months.sep"), t("months.oct"), t("months.nov"), t("months.dec"),
     ];
 
     return `${months[month - 1]} ${year}`;
@@ -78,7 +71,7 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
 
   return (
     <section className="user-extern-section">
-      <h2>Experiencia profesional</h2>
+      <h2>{t("sections.experience")}</h2>
 
       <div className="experience-list">
         {validExperience.map((exp, index) => {
@@ -89,10 +82,10 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
             <div key={index} className="experience-item">
               <div className="experience-logo">
                 {exp.companyLogo ? (
-                  <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || "Empresa"} />
+                  <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || t("sections.company")} />
                 ) : (
                   <div className="experience-logo-placeholder">
-                    {exp.institution ? exp.institution.charAt(0).toUpperCase() : "E"}
+                    {exp.institution ? exp.institution.charAt(0).toUpperCase() : t("sections.company").charAt(0)}
                   </div>
                 )}
               </div>
@@ -119,7 +112,7 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
                   <p className="experience-period">
                     {formatDate(exp.startMonth, exp.startYear)}
                     {" · "}
-                    {exp.currentlyWorking ? "Actual" : formatDate(exp.endMonth, exp.endYear)}
+                    {exp.currentlyWorking ? t("sections.current") : formatDate(exp.endMonth, exp.endYear)}
                     {" · "}
                     <span className="experience-duration">{calculateDuration(exp)}</span>
                   </p>

@@ -1,0 +1,50 @@
+{
+  "reclassify": {
+    "title": "Reclassify your profile",
+    "subtitle": "Select your current profile and we'll help you set up your account correctly.",
+    "eyebrow": "Creative level",
+    "done": "Done",
+    "saving": "Saving…",
+    "requestVerification": "Understood, request verification",
+    "confirm": "Confirm",
+    "back": "Back",
+    "professionalWarning": "You'll need professional verification for this level.",
+    "error": "Network error. Please try again.",
+    "levels": {
+      "student": "Student",
+      "1_desc": "Looking for my first opportunity",
+      "graduate": "Graduate",
+      "2_desc": "Ready for new projects",
+      "freelance": "Freelance",
+      "3_desc": "Working independently",
+      "professional": "Professional",
+      "4_desc": "With industry experience",
+      "expert": "Expert",
+      "5_desc": "Recognized in my specialty"
+    }
+  },
+  "verification": {
+    "title": "Verification required",
+    "description": "To continue with this action, you need to verify your account.",
+    "requirements": "Verification requirements:",
+    "requirements.1": "Verified email",
+    "requirements.2": "100% complete profile",
+    "requirements.3": "Portfolio with at least 5 works",
+    "requirements.4": "Updated profile picture",
+    "requirements.5": "Account active for more than 30 days",
+    "requirements.6": "No reports of inappropriate behavior",
+    "note": "Verification may take up to 48 hours.",
+    "understood": "Understood",
+    "verify": "Verify account"
+  },
+  "profileOptions": {
+    "user": "User",
+    "guest": "Guest",
+    "goToProfile": "Go to profile",
+    "editProfile": "Edit profile",
+    "saved": "Saved",
+    "myCommunity": "My community",
+    "settings": "Settings",
+    "logout": "Log out"
+  }
+}

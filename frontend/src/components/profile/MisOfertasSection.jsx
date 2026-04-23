@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaCheck, FaTimesCircle } from 'react-icons/fa';
@@ -6,6 +7,7 @@ import '../controlPanel/css/MisOfertasSection.css';
 import { clImg } from '../../utils/optimizeImage';
 
 const MisOfertasSection = ({ userRole, professionalType }) => {
+    const { t } = useTranslation('offers');
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('aplicadas');
     const [appliedOffers, setAppliedOffers] = useState([]);
@@ -53,7 +55,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
         try {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                setError('Necesitas iniciar sesión para ver tus ofertas');
+                setError(t('myOffers.loginRequired'));
                 return;
             }
 
@@ -101,7 +103,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             setAppliedOffers(appliedOffersData);
             setExpiredOffers(processedExpiredOffers);
         } catch (error) {
-            setError('No se pudieron cargar las ofertas. Inténtalo de nuevo más tarde.');
+            setError(t('myOffers.loadError'));
         } finally {
             setLoading(false);
         }
@@ -118,7 +120,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
         try {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                setError('Necesitas iniciar sesión para ver los candidatos');
+                setError(t('myOffers.loginRequiredCandidates'));
                 return;
             }
 
@@ -185,7 +187,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                 setCandidates([]);
             }
         } catch (error) {
-            setError('No se pudieron cargar los candidatos. Inténtalo de nuevo más tarde.');
+            setError(t('myOffers.loadCandidatesError'));
         } finally {
             setLoading(false);
         }
@@ -239,7 +241,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
         try {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                setError('Necesitas iniciar sesión para ver tus ofertas');
+                setError(t('myOffers.loginRequired'));
                 return;
             }
 
@@ -340,7 +342,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             setCompanyOffers(allOffers);
             setTotalResults(allOffers.length);
         } catch (error) {
-            setError('No se pudieron cargar tus ofertas publicadas. Inténtalo de nuevo más tarde.');
+            setError(t('myOffers.loadPublishedError'));
         } finally {
             setLoading(false);
         }
@@ -449,17 +451,17 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                     <div className="confirmation-modal-overlay">
                         <div className="confirmation-modal">
                             <div className="confirmation-modal-header">
-                                <h3>Confirmar eliminación</h3>
+                                <h3>{t('myOffers.deleteConfirmTitle')}</h3>
                                 <button onClick={closeModals} className="close-button">
                                     <FaTimes />
                                 </button>
                             </div>
                             <div className="confirmation-modal-content">
-                                <p>¿Estás seguro de que deseas eliminar esta oferta? Esta acción no se puede deshacer.</p>
+                                <p>{t('myOffers.deleteConfirmText')}</p>
                             </div>
                             <div className="confirmation-modal-actions">
-                                <button onClick={closeModals} className="cancel-button">Cancelar</button>
-                                <button onClick={handleDeleteOffer} className="confirm-button">Eliminar</button>
+                                <button onClick={closeModals} className="cancel-button">{t('apply.cancel')}</button>
+                                <button onClick={handleDeleteOffer} className="confirm-button">{t('myOffers.deleteOffer')}</button>
                             </div>
                         </div>
                     </div>
@@ -470,17 +472,17 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                     <div className="confirmation-modal-overlay">
                         <div className="confirmation-modal">
                             <div className="confirmation-modal-header">
-                                <h3>Confirmar desactivación</h3>
+                                <h3>{t('myOffers.deactivateConfirmTitle')}</h3>
                                 <button onClick={closeModals} className="close-button">
                                     <FaTimes />
                                 </button>
                             </div>
                             <div className="confirmation-modal-content">
-                                <p>¿Estás seguro de que deseas desactivar esta oferta? Los candidatos ya no podrán aplicar a ella.</p>
+                                <p>{t('myOffers.deactivateConfirmText')}</p>
                             </div>
                             <div className="confirmation-modal-actions">
-                                <button onClick={closeModals} className="cancel-button">Cancelar</button>
-                                <button onClick={() => handleChangeOfferStatus('cancelled')} className="confirm-button deactivate">Desactivar</button>
+                                <button onClick={closeModals} className="cancel-button">{t('apply.cancel')}</button>
+                                <button onClick={() => handleChangeOfferStatus('cancelled')} className="confirm-button deactivate">{t('myOffers.deactivate')}</button>
                             </div>
                         </div>
                     </div>
@@ -493,7 +495,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
         return (
             <div className="mis-ofertas-loading">
                 <i className="fas fa-spinner fa-spin"></i>
-                <p className="loading-indicator">Cargando ofertas...</p>
+                <p className="loading-indicator">{t('myOffers.loading')}</p>
             </div>
         );
     }
@@ -503,7 +505,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             <div className="mis-ofertas-error">
                 <p>{error}</p>
                 <button onClick={handleSearchMoreOffers} className="buscar-ofertas-btn">
-                    Buscar ofertas
+                    {t('myOffers.searchOffers')}
                 </button>
                 {renderModals()}
             </div>
@@ -529,7 +531,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             className="candidatos-back-button"
                             onClick={handleBackToOffers}
                         >
-                            &larr; Volver a ofertas
+                            {t('myOffers.backToOffers')}
                         </button>
                         <h2 className="candidatos-title">{currentOffer.position}</h2>
                     </div>
@@ -540,19 +542,19 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                 className={`candidatos-filter ${candidatesFilter === 'todos' ? 'active' : ''}`}
                                 onClick={() => setCandidatesFilter('todos')}
                             >
-                                Todos
+                                {t('myOffers.filterAll')}
                             </button>
                             <button 
                                 className={`candidatos-filter ${candidatesFilter === 'seleccionados' ? 'active' : ''}`}
                                 onClick={() => setCandidatesFilter('seleccionados')}
                             >
-                                Seleccionados
+                                {t('myOffers.filterSelected')}
                             </button>
                             <button 
                                 className={`candidatos-filter ${candidatesFilter === 'descartados' ? 'active' : ''}`}
                                 onClick={() => setCandidatesFilter('descartados')}
                             >
-                                Descartados
+                                {t('myOffers.filterRejected')}
                             </button>
                         </div>
                     </div>
@@ -562,18 +564,18 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             className={`candidatos-response-button ${showResponses ? 'active' : ''}`}
                             onClick={() => setShowResponses(true)}
                         >
-                            Mostrar respuestas
+                            {t('myOffers.showResponses')}
                         </button>
                         <button 
                             className={`candidatos-response-button ${!showResponses ? 'active' : ''}`}
                             onClick={() => setShowResponses(false)}
                         >
-                            Ocultar respuestas
+                            {t('myOffers.hideResponses')}
                         </button>
                     </div>
                     
                     <div className="candidatos-count">
-                        {filteredCandidates.length} Resultados
+                        {t('myOffers.results', { count: filteredCandidates.length })}
                     </div>
                     
                     <div className={`candidatos-list ${!showResponses ? 'compact' : ''}`}>
@@ -630,14 +632,14 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                                             <p className="candidatos-response-question">{answer.question}</p>
                                                             <p className="candidatos-response-answer">
                                                                 {typeof answer.answer === 'boolean' 
-                                                                    ? (answer.answer ? 'Sí' : 'No')
+                                                                    ? (answer.answer ? t('apply.yes') : t('apply.no'))
                                                                     : answer.answer
                                                                 }
                                                             </p>
                                                         </div>
                                                     ))}
                                                     {(!candidate.answers || candidate.answers.length === 0) && (
-                                                        <p className="candidatos-no-responses">No hay respuestas disponibles</p>
+                                                        <p className="candidatos-no-responses">{t('myOffers.noResponses')}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -647,7 +649,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                                 className="candidatos-view-profile"  
                                                 onClick={() => navigate(`/profile/${candidate.user.username}`)}  
                                             >  
-                                                Ver perfil  
+                                                {t('myOffers.viewProfile')}  
                                             </button>  
                                         )}
                                     </div>
@@ -655,7 +657,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             ))
                         ) : (
                             <div className="candidatos-no-results">
-                                <p>No hay candidatos que coincidan con los filtros seleccionados.</p>
+                                <p>{t('myOffers.noCandidatesFilter')}</p>
                             </div>
                         )}
                     </div>
@@ -667,10 +669,9 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
         return (
             <>
                 <div className="company-offers-section">
-                    <h2 className="company-offers-title">Gestionar ofertas</h2>
+                    <h2 className="company-offers-title">{t('myOffers.manageOffers')}</h2>
                     <p className="company-offers-description">
-                        Explora opciones para estudiar moda y filtra por nivel, modalidad y ubicación para 
-                        encontrar la formación que mejor se adapte a ti.
+                        {t('myOffers.manageOffersDesc')}
                     </p>
                     
                     <div className="company-offers-filters">
@@ -679,19 +680,19 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             className={`status-filter ${statusFilter === 'activas' ? 'active' : ''}`}
                             onClick={() => setStatusFilter('activas')}
                         >
-                            Activas
+                            {t('myOffers.statusActiveFilter')}
                         </button>
                         <button 
                             className={`status-filter ${statusFilter === 'pendientes' ? 'active' : ''}`}
                             onClick={() => setStatusFilter('pendientes')}
                         >
-                            Pendientes de aprobación
+                            {t('myOffers.statusPendingFilter')}
                         </button>
                         <button 
                             className={`status-filter ${statusFilter === 'inactivas' ? 'active' : ''}`}
                             onClick={() => setStatusFilter('inactivas')}
                         >
-                            Inactivas
+                            {t('myOffers.statusInactiveFilter')}
                         </button>
                     </div>
                     
@@ -703,7 +704,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                 setShowPracticas(false);
                             }}
                         >
-                            Todas
+                            {t('myOffers.filterAllOffers')}
                         </button>
                         <button 
                             className={`secondary-filter ${showPracticas ? 'active' : ''}`}
@@ -712,12 +713,12 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                 setShowAllOffers(false);
                             }}
                         >
-                            Prácticas
+                            {t('myOffers.filterInternships')}
                         </button>
                     </div>
                     
                     <div className="results-count">
-                        {totalResults} Resultados
+                        {t('myOffers.results', { count: totalResults })}
                     </div>
                 </div>
                 
@@ -730,43 +731,43 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             >
                                 {/* Indicador de tipo de oferta */}
                                 <div className={`offer-type-badge ${offer.offerType}`}>
-                                    {offer.offerType === 'educational' ? '🎓 Oferta Educativa' : '💼 Oferta de Trabajo'}
+                                    {offer.offerType === 'educational' ? t('myOffers.educationalOfferBadge') : t('myOffers.jobOfferBadge')}
                                 </div>
                                 
                                 <h3 className="offer-title">{offer.position || offer.programName}</h3>
                                 <div className="offer-details">
                                     <div className="offer-detail">
-                                        <span className="detail-label">Publicación:</span>
+                                        <span className="detail-label">{t('myOffers.publication')}</span>
                                         <span className="detail-value">{formatDate(offer.publicationDate || offer.createdAt)}</span>
                                     </div>
                                     
                                     {offer.offerType === 'job' ? (
                                         <div className="offer-detail">
-                                            <span className="detail-label">Tipo de oferta:</span>
+                                            <span className="detail-label">{t('myOffers.offerType')}</span>
                                             <span className={`detail-value ${offer.isUrgent ? 'urgent' : ''}`}>
-                                                {offer.isUrgent ? 'Urgente' : 'Normal'}
+                                                {offer.isUrgent ? t('myOffers.urgent') : t('myOffers.normal')}
                                             </span>
                                         </div>
                                     ) : (
                                         <div className="offer-detail">
-                                            <span className="detail-label">Modalidad:</span>
-                                            <span className="detail-value">{offer.modality || 'No especificada'}</span>
+                                            <span className="detail-label">{t('myOffers.modality')}</span>
+                                            <span className="detail-value">{offer.modality || t('myOffers.notSpecified')}</span>
                                         </div>
                                     )}
                                     
                                     <div className="offer-detail">
-                                        <span className="detail-label">Estado de la oferta:</span>
+                                        <span className="detail-label">{t('myOffers.offerStatusLabel')}</span>
                                         <span className={`detail-value status-${offer.status === 'accepted' ? 'activa' : offer.status === 'pending' ? 'pendiente' : 'inactiva'}`}>
-                                            {offer.status === 'accepted' ? 'Activa' : 
-                                            offer.status === 'cancelled' ? 'Inactiva' : 
-                                            offer.status === 'pending' ? 'Pendiente de aprobación' : 'Activa'}
+                                            {offer.status === 'accepted' ? t('myOffers.statusActive') : 
+                                            offer.status === 'cancelled' ? t('myOffers.statusInactive') : 
+                                            offer.status === 'pending' ? t('myOffers.statusPending') : t('myOffers.statusActive')}
                                         </span>
                                     </div>
                                     
                                     {offer.offerType === 'educational' && offer.duration && (
                                         <div className="offer-detail">
-                                            <span className="detail-label">Duración:</span>
-                                            <span className="detail-value">{offer.duration} {offer.durationUnit || 'meses'}</span>
+                                            <span className="detail-label">{t('myOffers.durationLabel')}</span>
+                                            <span className="detail-value">{offer.duration} {offer.durationUnit || t('myOffers.months')}</span>
                                         </div>
                                     )}
                                 </div>
@@ -774,20 +775,20 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                 {/* Solo mostrar candidatos para ofertas de trabajo */}
                                 {offer.offerType === 'job' && (
                                     <div className="offer-candidates">
-                                        <span className="candidates-count">{offer.applicationsCount || 0} candidatos</span>
+                                        <span className="candidates-count">{t('myOffers.candidatesCount', { count: offer.applicationsCount || 0 })}</span>
                                         <span className="candidates-separator">|</span>
-                                        <span className="candidates-reviewed">{offer.reviewedApplicationsCount || 0} revisados</span>
+                                        <span className="candidates-reviewed">{t('myOffers.reviewedCount', { count: offer.reviewedApplicationsCount || 0 })}</span>
                                     </div>
                                 )}
                                 
                                 {/* Mostrar información de fecha de inicio para ofertas educativas */}
                                 {offer.offerType === 'educational' && offer.startDate && (
                                     <div className="offer-candidates">
-                                        <span className="candidates-count">Inicio: {formatDate(offer.startDate)}</span>
+                                        <span className="candidates-count">{t('myOffers.start')} {formatDate(offer.startDate)}</span>
                                         {offer.endDate && (
                                             <>
                                                 <span className="candidates-separator">|</span>
-                                                <span className="candidates-reviewed">Fin: {formatDate(offer.endDate)}</span>
+                                                <span className="candidates-reviewed">{t('myOffers.end')} {formatDate(offer.endDate)}</span>
                                             </>
                                         )}
                                     </div>
@@ -800,21 +801,21 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                                 className="action-btn review-btn"
                                                 onClick={(e) => handleReviewCandidates(offer._id, e)}
                                             >
-                                                Revisar candidatos
+                                                {t('myOffers.reviewCandidates')}
                                             </button>
                                             
                                             <button 
                                                 className="action-btn deactivate-btn"
                                                 onClick={(e) => openDeactivateModal(offer._id, e)}
                                             >
-                                                Desactivar oferta
+                                                {t('myOffers.deactivateOffer')}
                                             </button>
                                             
                                             <button 
                                                 className="action-btn delete-btn"
                                                 onClick={(e) => openDeleteModal(offer._id, e)}
                                             >
-                                                Borrar
+                                                {t('myOffers.deleteOffer')}
                                             </button>
                                         </>
                                     ) : (
@@ -823,14 +824,14 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                                 className="action-btn view-btn"
                                                 onClick={() => navigate(`/EducationalOfferDetail/${offer._id}`)}
                                             >
-                                                Ver detalles
+                                                {t('myOffers.viewDetails')}
                                             </button>
                                             
                                             <button 
                                                 className="action-btn delete-btn"
                                                 onClick={(e) => openDeleteModal(offer._id, e)}
                                             >
-                                                Borrar
+                                                {t('myOffers.deleteOffer')}
                                             </button>
                                         </>
                                     )}
@@ -839,12 +840,12 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                         ))
                     ) : (
                         <div className="no-offers-message">
-                            <p>No tienes ofertas publicadas con los filtros seleccionados.</p>
+                            <p>{t('myOffers.noPublishedOffers')}</p>
                             <button 
                                 onClick={handleCreateOffer} 
                                 className="create-offer-btn"
                             >
-                                Crear nueva oferta
+                                {t('myOffers.createNewOffer')}
                             </button>
                         </div>
                     )}
@@ -856,7 +857,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                 onClick={handleCreateOffer} 
                                 className="create-offer-btn"
                             >
-                                Crear nueva oferta
+                                {t('myOffers.createNewOffer')}
                             </button>
                         </div>
                     )}
@@ -878,20 +879,20 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                             className={`ofertas-tab ${activeTab === 'aplicadas' ? 'active' : ''}`}
                             onClick={() => setActiveTab('aplicadas')}
                         >
-                            Aplicaciones enviadas
+                            {t('myOffers.tabApplied')}
                         </button>
                     )}
                     <button
                         className={`ofertas-tab ${activeTab === 'guardadas' ? 'active' : ''}`}
                         onClick={() => setActiveTab('guardadas')}
                     >
-                        Guardadas
+                        {t('myOffers.tabSaved')}
                     </button>
                     <button
                         className={`ofertas-tab ${activeTab === 'caducadas' ? 'active' : ''}`}
                         onClick={() => setActiveTab('caducadas')}
                     >
-                        Caducadas
+                        {t('myOffers.tabExpired')}
                     </button>
                 </div>
                 
@@ -911,33 +912,33 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                         />
                                     </div>
                                     <div className="oferta-details">
-                                        <h4 className="oferta-job-title">Descripción del puesto de trabajo</h4>
-                                        <p className="oferta-company-name">{offer.companyName || 'Nombre de la empresa o marca'}</p>
+                                        <h4 className="oferta-job-title">{t('myOffers.jobDescription')}</h4>
+                                        <p className="oferta-company-name">{offer.companyName || t('myOffers.companyDefault')}</p>
                                         
                                         <div className="oferta-info-row">
                                             <span className="info-item">{formatDate(offer.publicationDate)}</span>
                                             <span className="info-separator">|</span>
-                                            <span className="info-item">{offer.jobType || 'No especificado'}</span>
+                                            <span className="info-item">{offer.jobType || t('myOffers.jobTypeDefault')}</span>
                                             <span className="info-separator">|</span>
-                                            <span className="info-item"><i className="location-icon"></i> {offer.city}, {offer.country || 'País'}</span>
+                                            <span className="info-item"><i className="location-icon"></i> {offer.city}, {offer.country || t('myOffers.countryDefault')}</span>
                                         </div>
                                         
-                                        {offer.isUrgent && <div className="urgent-tag">Urgente</div>}
+                                        {offer.isUrgent && <div className="urgent-tag">{t('myOffers.urgentTag')}</div>}
                                         
                                         <div className="oferta-status">
                                             {activeTab === 'aplicadas' && (
                                                 <div className="status-pill aplicadas">
-                                                    Aplicación enviada
+                                                    {t('myOffers.applicationSent')}
                                                 </div>
                                             )}
                                             {activeTab === 'guardadas' && (
                                                 <div className="status-pill guardadas">
-                                                    Ver detalles
+                                                    {t('myOffers.viewDetails')}
                                                 </div>
                                             )}
                                             {activeTab === 'caducadas' && (
                                                 <div className="status-pill caducadas">
-                                                    Oferta caducada
+                                                    {t('myOffers.offerExpired')}
                                                 </div>
                                             )}
                                         </div>
@@ -949,20 +950,20 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                 ) : (
                     <div className="no-ofertas-message">
                         {activeTab === 'aplicadas' && isCreative && (
-                            <p>No has aplicado a ninguna oferta todavía.</p>
+                            <p>{t('myOffers.noApplied')}</p>
                         )}
                         {activeTab === 'guardadas' && (
-                            <p>No tienes ofertas guardadas.</p>
+                            <p>{t('myOffers.noSaved')}</p>
                         )}
                         {activeTab === 'caducadas' && (
-                            <p>No tienes ofertas caducadas.</p>
+                            <p>{t('myOffers.noExpired')}</p>
                         )}
                     </div>
                 )}
                 
                 <div className="ofertas-footer">
                     <button className="buscar-ofertas-btn" onClick={handleSearchMoreOffers}>
-                        Buscar ofertas
+                        {t('myOffers.searchOffers')}
                     </button>
                 </div>
             </div>

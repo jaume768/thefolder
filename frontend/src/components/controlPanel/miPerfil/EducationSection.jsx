@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
 import { clImg } from '../../../utils/optimizeImage';
 
 const EducationSection = ({ education }) => {
+    const { t } = useTranslation('profile');
     // No renderizar la sección si no hay educación o está vacía
     if (!education || education.length === 0) return null;
     
@@ -21,27 +23,26 @@ const EducationSection = ({ education }) => {
         let endDate;
         
         if (edu.currentlyEnrolled) {
-            endDate = new Date(); // Fecha actual
+            endDate = new Date();
         } else if (edu.formationEndMonth && edu.formationEndYear) {
             endDate = new Date(edu.formationEndYear, edu.formationEndMonth - 1);
         } else {
             return '';
         }
         
-        // Calcular diferencia en meses
         const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
                       (endDate.getMonth() - startDate.getMonth()) + 1;
         
         if (months < 12) {
-            return `${months} ${months === 1 ? 'mes' : 'meses'}`;
+            return `${months} ${t(months === 1 ? 'duration.month' : 'duration.months')}`;
         } else {
             const years = Math.floor(months / 12);
             const remainingMonths = months % 12;
             
             if (remainingMonths === 0) {
-                return `${years} ${years === 1 ? 'año' : 'años'}`;
+                return `${years} ${t(years === 1 ? 'duration.year' : 'duration.years')}`;
             } else {
-                return `${years} ${years === 1 ? 'año' : 'años'} ${remainingMonths} ${remainingMonths === 1 ? 'mes' : 'meses'}`;
+                return `${years} ${t(years === 1 ? 'duration.year' : 'duration.years')} ${remainingMonths} ${t(remainingMonths === 1 ? 'duration.month' : 'duration.months')}`;
             }
         }
     };
@@ -49,24 +50,19 @@ const EducationSection = ({ education }) => {
     // Función para formatear la fecha
     const formatDate = (month, year) => {
         if (!month || !year) return '';
-        
-        const months = [
-            'Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.',
-            'Jul.', 'Ago.', 'Sep.', 'Oct.', 'Nov.', 'Dic.'
-        ];
-        
-        return `${months[month - 1]} ${year}`;
+        const monthKeys = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+        return `${t(`months.${monthKeys[month - 1]}`)} ${year}`;
     };
     
     return (
         <section className="miPerfil-section">
-            <h2>Formación educativa</h2>
+            <h2>{t('sections.education')}</h2>
             <div className="experience-list">
                 {validEducation.map((edu, index) => (
                     <div key={index} className="experience-item">
                         <div className="experience-logo">
                             {edu.institutionLogo ? (
-                                <img src={clImg.logo(edu.institutionLogo)} alt={edu.institution || edu.otherInstitution || 'Institución'} />
+                                <img src={clImg.logo(edu.institutionLogo)} alt={edu.institution || edu.otherInstitution || t('sections.institution')} />
                             ) : (
                                 <div className="experience-logo-placeholder">
                                     {edu.institution ? edu.institution.charAt(0).toUpperCase() : 'I'}
@@ -80,7 +76,7 @@ const EducationSection = ({ education }) => {
                             <p className="experience-period">
                                 {formatDate(edu.formationStartMonth, edu.formationStartYear)}
                                 {" - "}
-                                {edu.currentlyEnrolled ? "Actual" : formatDate(edu.formationEndMonth, edu.formationEndYear)}
+                                {edu.currentlyEnrolled ? t('sections.current') : formatDate(edu.formationEndMonth, edu.formationEndYear)}
                                 {" · "}
                                 <span className="experience-duration">{calculateDuration(edu)}</span>
                             </p>

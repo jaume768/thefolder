@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../controlPanel/css/applyOfferModal.css';
 
 const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
+    const { t } = useTranslation('offers');
     const [answers, setAnswers] = useState([]);
     const [step, setStep] = useState(1); // 1: Preguntas, 2: Confirmación
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,7 +46,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
         if (validateAnswers()) {
             setStep(2);
         } else {
-            alert('Por favor, responde todas las preguntas.');
+            alert(t('applyModal.sendError'));
         }
     };
 
@@ -60,7 +62,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
             await onSubmitApplication(answers);
             onClose();
         } catch (error) {
-            alert('Hubo un error al enviar tu aplicación. Por favor, intenta de nuevo.');
+            alert(t('applyModal.sendError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -75,7 +77,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                         value={answers[index]?.answer || ''}
                         onChange={(e) => handleAnswerChange(index, e.target.value)}
                         className="apply-offer-textarea"
-                        placeholder="Escribe tu respuesta aquí..."
+                        placeholder={t('applyModal.placeholder')}
                     />
                 );
             case 'number':
@@ -98,7 +100,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                                 checked={answers[index]?.answer === true}
                                 onChange={() => handleAnswerChange(index, true)}
                             />
-                            Sí
+                            {t('applyModal.yes')}
                         </label>
                         <label>
                             <input
@@ -107,7 +109,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                                 checked={answers[index]?.answer === false}
                                 onChange={() => handleAnswerChange(index, false)}
                             />
-                            No
+                            {t('applyModal.no')}
                         </label>
                     </div>
                 );
@@ -128,7 +130,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                         value={answers[index]?.answer || ''}
                         onChange={(e) => handleAnswerChange(index, e.target.value)}
                         className="apply-offer-input"
-                        placeholder="Escribe tu respuesta aquí..."
+                        placeholder={t('applyModal.placeholder')}
                     />
                 );
         }
@@ -144,7 +146,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                 </button>
                 
                 <div className="apply-offer-modal-header">
-                    <h2>{step === 1 ? 'Preguntas adicionales' : 'Confirmar inscripción'}</h2>
+                    <h2>{step === 1 ? t('applyModal.questionsTitle') : t('applyModal.confirmTitle')}</h2>
                 </div>
                 
                 <div className="apply-offer-modal-content">
@@ -152,7 +154,7 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                         // Paso 1: Responder preguntas
                         <>
                             <p className="apply-offer-description">
-                                Para completar tu inscripción a esta oferta, por favor responde las siguientes preguntas.
+                                {t('applyModal.description')}
                             </p>
                             
                             {offer?.extraQuestions?.length > 0 ? (
@@ -166,25 +168,25 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                                 </div>
                             ) : (
                                 <p className="apply-offer-no-questions">
-                                    Esta oferta no tiene preguntas adicionales. Puedes continuar con la inscripción.
+                                    {t('applyModal.noQuestions')}
                                 </p>
                             )}
                         </>
                     ) : (
                         // Paso 2: Confirmar inscripción
                         <div className="apply-offer-confirmation">
-                            <p>Estás a punto de inscribirte a la oferta:</p>
+                            <p>{t('applyModal.confirmationText')}</p>
                             <h3>{offer.position} - {offer.companyName}</h3>
                             
                             {offer?.extraQuestions?.length > 0 && (
                                 <div className="apply-offer-summary">
-                                    <h4>Tus respuestas:</h4>
+                                    <h4>{t('applyModal.answersTitle')}</h4>
                                     {answers.map((answer, index) => (
                                         <div key={index} className="apply-offer-answer-summary">
                                             <p className="apply-offer-question-text">{answer.question}</p>
                                             <p className="apply-offer-answer-text">
                                                 {answer.responseType === 'boolean' 
-                                                    ? (answer.answer ? 'Sí' : 'No') 
+                                                    ? (answer.answer ? t('applyModal.yes') : t('applyModal.no')) 
                                                     : answer.answer}
                                             </p>
                                         </div>
@@ -200,14 +202,14 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                         // Botones para el paso 1
                         <div className="apply-offer-footer-buttons">
                             <button className="apply-offer-cancel-button" onClick={onClose}>
-                                Cancelar
+                                {t('applyModal.cancel')}
                             </button>
                             <button 
                                 className="apply-offer-next-button" 
                                 onClick={handleNextStep}
                                 disabled={!validateAnswers()}
                             >
-                                Continuar
+                                {t('applyModal.continue')}
                             </button>
                         </div>
                     ) : (
@@ -218,14 +220,14 @@ const ApplyOfferModal = ({ isOpen, onClose, offer, onSubmitApplication }) => {
                                 onClick={handlePreviousStep}
                                 disabled={isSubmitting}
                             >
-                                Volver
+                                {t('applyModal.back')}
                             </button>
                             <button 
                                 className="apply-offer-submit-button" 
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? 'Enviando...' : 'Confirmar inscripción'}
+                                {isSubmitting ? t('applyModal.sending') : t('applyModal.confirm')}
                             </button>
                         </div>
                     )}

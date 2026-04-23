@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import {
   FaUserCircle,
@@ -17,6 +18,7 @@ const GUEST_POST_LIMIT = 3;
 
 const UserPost = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['post', 'explorer']);
   const { id } = useParams();
   const location = useLocation();
   const clickedImageUrl = location.state?.clickedImageUrl;
@@ -458,23 +460,23 @@ const UserPost = () => {
     return (
       <div className="guest-gate-overlay">
         <div className="guest-gate-box">
-          <p className="guest-gate-title">Descubre más en THEFOLDER</p>
+          <p className="guest-gate-title">{t('post:view.guestGateTitle', { defaultValue: 'Descubre más en THEFOLDER' })}</p>
           <p className="guest-gate-desc">
-          Crea tu cuenta gratis para seguir explorando el trabajo de la comunidad creativa.
+          {t('post:view.guestGateDesc', { defaultValue: 'Crea tu cuenta gratis para seguir explorando el trabajo de la comunidad creativa.' })}
           </p>
           <button
             type="button"
             className="tf-btn tf-btn--CTA tf-btn-CTA--wall"
             onClick={() => navigate("/", { state: { showRegister: true } })}
           >
-            Crear cuenta gratis ↗
+            {t('explorer:guest.cta')}
           </button>
           <button
             type="button"
             className="guest-gate-login"
             onClick={() => navigate("/", { state: { showLogin: true } })}
           >
-            Ya tengo cuenta
+            {t('explorer:guest.login')}
           </button>
         </div>
       </div>
@@ -485,11 +487,11 @@ const UserPost = () => {
     return (
       <div className="modern-loading-container">
         <div className="loading-spinner"></div>
-        <p className="loading-indicator">Cargando proyecto</p>
+        <p className="loading-indicator">{t('post:view.loading')}</p>
       </div>
     );
 
-  if (!post) return <div>No hay datos del proyecto</div>;
+  if (!post) return <div>{t('post:view.noData')}</div>;
 
   const isOwner =
     currentUserId && post?.user &&
@@ -536,7 +538,7 @@ const UserPost = () => {
 
     try {
       await navigator.clipboard.writeText(url);
-      showToastMsg("Link copiado ✅");
+      showToastMsg(t('post:view.copied'));
     } catch {
       const tmp = document.createElement("textarea");
       tmp.value = url;
@@ -544,7 +546,7 @@ const UserPost = () => {
       tmp.select();
       document.execCommand("copy");
       document.body.removeChild(tmp);
-      showToastMsg("Link copiado ✅");
+      showToastMsg(t('post:view.copied'));
     } finally {
       setShowActionsMenu(false);
     }
@@ -592,7 +594,7 @@ const UserPost = () => {
     setShowHonorModal(false);
     await downloadFile(pendingDownloadUrl, filename);
 
-    showToastMsg("Descarga iniciada ⬇️");
+    showToastMsg(t('post:view.downloadStarted'));
     setPendingDownloadUrl("");
   };
 
@@ -693,8 +695,8 @@ const UserPost = () => {
         setSaveFeedback({
           show: true,
           imageUrl,
-          text: "¡Guardado!",
-          message: "¡Guardado!",
+          text: t('post:view.saved'),
+          message: t('post:view.saved'),
         });
       } else {
         await axios.delete(`${backendUrl}/api/users/favorites/${id}`, {
@@ -714,8 +716,8 @@ const UserPost = () => {
         setSaveFeedback({
           show: true,
           imageUrl,
-          text: "Eliminado",
-          message: "¡Eliminado!",
+          text: t('post:view.removed'),
+          message: t('post:view.removed'),
         });
       }
 
@@ -769,8 +771,8 @@ const UserPost = () => {
           show: true,
           postId,
           imageUrl,
-          text: "¡Guardado!",
-          message: "¡Guardado!",
+          text: t('post:view.saved'),
+          message: t('post:view.saved'),
         });
       } else {
         await axios.delete(`${backendUrl}/api/users/favorites/${postId}`, {
@@ -791,8 +793,8 @@ const UserPost = () => {
           show: true,
           postId,
           imageUrl,
-          text: "¡Eliminado!",
-          message: "¡Eliminado!",
+          text: t('post:view.removed'),
+          message: t('post:view.removed'),
         });
       }
 
@@ -932,8 +934,8 @@ const UserPost = () => {
                             e.stopPropagation();
                             setActionsForUrl((prev) => (prev === img ? null : img));
                             }}
-                            aria-label="Más opciones"
-                            title="Más opciones"
+                            aria-label={t('post:view.actions.more')}
+                            title={t('post:view.actions.more')}
                         >
                             <img
                             src="/iconos/more-info.svg"
@@ -954,21 +956,21 @@ const UserPost = () => {
                                 type="button"
                                 onClick={handleCopyLink}
                             >
-                                Copiar link
+                                {t('post:view.actions.copyLink')}
                             </button>
                             <button
                                 className="actions-menu-item"
                                 type="button"
                                 onClick={(e) => requestDownload(e, img)}
                             >
-                                Descargar
+                                {t('post:view.actions.download')}
                             </button>
                             <button
                                 className="actions-menu-item danger"
                                 type="button"
                                 onClick={handleReport}
                             >
-                                Reportar
+                                {t('post:view.actions.report')}
                             </button>
                             </div>
                         )}
@@ -979,7 +981,7 @@ const UserPost = () => {
                             isSaved ? "saved" : ""
                         }`}
                         onClick={(e) => handleSaveImage(e, img)}
-                        aria-label={isSaved ? "Guardada" : "Guardar"}
+                        aria-label={isSaved ? t('post:view.saved') : t('post:view.saveAction')}
                         type="button"
                         >
                         {isSaved ? (
@@ -998,7 +1000,7 @@ const UserPost = () => {
                             isSaved ? "tooltip-saved" : "tooltip-default"
                             }`}
                         >
-                            {isSaved ? "Guardada" : "Guardar"}
+                            {isSaved ? t('post:view.saved') : t('post:view.saveAction')}
                         </span>
                         </button>
                     </div>
@@ -1079,7 +1081,7 @@ const UserPost = () => {
                                 String(p?.username || "").trim()
                             ) && (
                             <div className="perfil__personas">
-                                <h3 className="personas__titulo">Equipo /</h3>
+                                <h3 className="personas__titulo">{t('post:view.team')}</h3>
                                   <PeopleTagsList
                                     people={post.peopleTags}
                                     taggedUsersInfo={taggedUsersInfo}
@@ -1115,7 +1117,7 @@ const UserPost = () => {
                                 setShowEditModal(true);
                               }}
                             >
-                              Editar publicación
+                              {t('post:view.edit')}
                             </button>
                             <button
                               className="delete-post"
@@ -1125,7 +1127,7 @@ const UserPost = () => {
                                 setShowDeleteModal(true);
                               }}
                             >
-                              Eliminar publicación
+                              {t('post:view.delete')}
                             </button>
                           </>
                         )}
@@ -1147,27 +1149,27 @@ const UserPost = () => {
         {!isLoggedIn ? (
           <div className="post-guest-wall">
             <div className="post-guest-wall__inner">
-              <p className="post-guest-wall__text">Regístrate para descubrir más proyectos de creativos de moda</p>
+              <p className="post-guest-wall__text">{t('explorer:guest.wallText')}</p>
               <button
                 type="button"
                 className="tf-btn tf-btn--CTA tf-btn-CTA--wall"
                 onClick={() => navigate("/", { state: { showRegister: true } })}
               >
-                Crear cuenta gratis ↗
+                {t('explorer:guest.cta')}
               </button>
               <button
                 type="button"
                 className="post-guest-wall__login"
                 onClick={() => navigate("/", { state: { showLogin: true } })}
               >
-                Ya tengo cuenta
+                {t('explorer:guest.login')}
               </button>
             </div>
           </div>
         ) : (
         <section className="more-posts-section">
 
-        <h3 className="personas__titulo post-explorer">EXPLORADOR /</h3>
+        <h3 className="personas__titulo post-explorer">{t('explorer:morePosts.title')}</h3>
         <div className="explorer-content explorer-user-post">
             <Masonry
             breakpointCols={{
@@ -1235,7 +1237,7 @@ const UserPost = () => {
                     <button
                     className={`save-button-explorer ${isSaved ? "saved" : ""}`}
                     onClick={(e) => handleSavePost(e, postId, imageUrl)}
-                    aria-label={isSaved ? "Guardada" : "Guardar"}
+                    aria-label={isSaved ? t('explorer:save.saved') : t('explorer:save.action')}
                     type="button"
                     >
                     {isSaved ? (
@@ -1252,7 +1254,7 @@ const UserPost = () => {
                     )}
 
                     <span className={`save-tooltip ${isSaved ? "tooltip-saved" : "tooltip-default"}`}>
-                        {isSaved ? "Guardada" : "Guardar"}
+                        {isSaved ? t('explorer:save.tooltipSaved') : t('explorer:save.tooltipDefault')}
                     </span>
                     </button>
                 </div>
@@ -1261,7 +1263,7 @@ const UserPost = () => {
             </Masonry>
 
             {!moreLoading && randomPosts.length === 0 && (
-            <div className="more-results">No hay más publicaciones para mostrar.</div>
+            <div className="more-results">{t('explorer:morePosts.noMore')}</div>
             )}
 
             <div ref={moreSentinelRef} style={{ height: "1px" }} />
@@ -1275,7 +1277,7 @@ const UserPost = () => {
 
         <div style={{ display: "flex", justifyContent: "center", padding: "18px 0 8px" }}>
             <button type="button" className="continue-explorer-btn" onClick={handleContinueExplorer}>
-            Continuar en el explorador
+            {t('explorer:morePosts.continue')}
             </button>
         </div>
         </section>
@@ -1299,10 +1301,10 @@ const UserPost = () => {
         {showDeleteModal && (
             <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <p>¿Estás seguro de eliminar esta publicación?</p>
+                <p>{t('post:view.deleteConfirm')}</p>
                 <div className="modal-actions">
-                <button onClick={handleDeletePost}>Eliminar</button>
-                <button onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+                <button onClick={handleDeletePost}>{t('post:view.deleteAction')}</button>
+                <button onClick={() => setShowDeleteModal(false)}>{t('post:view.cancel')}</button>
                 </div>
             </div>
             </div>
@@ -1324,24 +1326,24 @@ const UserPost = () => {
                 />
                 </div>
 
-                <h2 className="honor-title">No olvides dar crédito</h2>
+                <h2 className="honor-title">{t('post:view.download.honorTitle')}</h2>
                 <p className="honor-text">
-                Asegúrate de tener autorización antes de usar o descargar la imagen
+                {t('post:view.download.honorText')}
                 </p>
 
                 <button className="honor-btn" type="button" onClick={confirmDownload}>
-                Acepto
+                {t('post:view.download.accept')}
                 </button>
 
                 <button
                 className="honor-close"
                 type="button"
                 onClick={() => setShowHonorModal(false)}
-                aria-label="Cerrar"
+                aria-label={t('post:view.report.close')}
                 >
                 <img
                     src="/iconos/close.svg"
-                    alt="Cerrar"
+                    alt={t('post:view.report.close')}
                     style={{ width: "20px", height: "20px" }}
                 />
                 </button>
@@ -1364,16 +1366,16 @@ const UserPost = () => {
                 <button
                 className="fullscreen-close-btn"
                 onClick={(e) => { e.stopPropagation(); setShowFullScreenPreview(false); }}
-                aria-label="Cerrar"
+                aria-label={t('post:view.report.close')}
                 >
                   <span className='tagged-person__role'>
-                  CERRAR
+                  {t('post:view.fullscreen.close')}
                   </span>
                 </button>
 
                 <img
                 src={clImg.cover(mainImage)}
-                alt="Vista previa a pantalla completa"
+                alt={t('post:view.fullscreen.alt')}
                 className="fullscreen-image"
                 />
 
@@ -1402,10 +1404,10 @@ const UserPost = () => {
             className="scroll-top-btn"
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            aria-label="Subir"
-            title="Subir"
+            aria-label={t('post:view.scrollTop')}
+            title={t('post:view.scrollTop')}
             >
-            Subir ↑
+            {t('post:view.scrollTop')} ↑
             </button>
         )}
 
@@ -1443,7 +1445,7 @@ const UserPost = () => {
                     setExternalLinkModal({ open: false, url: "", name: "" })
                     }
                 >
-                    Cancelar
+                    {t('post:view.externalLink.cancel')}
                 </button>
 
                 <button
@@ -1456,7 +1458,7 @@ const UserPost = () => {
                     setExternalLinkModal({ open: false, url: "", name: "" });
                     }}
                 >
-                    Continuar
+                    {t('post:view.externalLink.continue')}
                 </button>
                 </div>
             </div>
@@ -1473,13 +1475,13 @@ const UserPost = () => {
             >
               {!reportSent ? (
                 <>
-                  <h3 className="report-modal__title">Reportar publicación</h3>
+                  <h3 className="report-modal__title">{t('post:view.report.title')}</h3>
                   <p className="report-modal__desc">
-                    Describe brevemente el motivo del reporte. El equipo de THEFOLDER revisará tu solicitud.
+                    {t('post:view.report.desc')}
                   </p>
                   <textarea
                     className="report-modal__textarea"
-                    placeholder="Ej: contenido ofensivo, imagen sin consentimiento..."
+                    placeholder={t('post:view.report.placeholder')}
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
                     maxLength={500}
@@ -1487,7 +1489,7 @@ const UserPost = () => {
                     autoFocus
                   />
                   <p className="report-modal__notice">
-                    Al enviar confirmas que este reporte es legítimo. Se notificará al administrador.
+                    {t('post:view.report.notice')}
                   </p>
                   <div className="report-modal__actions">
                     <button
@@ -1495,7 +1497,7 @@ const UserPost = () => {
                       className="report-modal__cancel"
                       onClick={() => setShowReportModal(false)}
                     >
-                      Cancelar
+                      {t('post:view.report.cancel')}
                     </button>
                     <button
                       type="button"
@@ -1503,15 +1505,15 @@ const UserPost = () => {
                       onClick={handleSubmitReport}
                       disabled={!reportReason.trim() || reportSubmitting}
                     >
-                      {reportSubmitting ? 'Enviando...' : 'Enviar reporte'}
+                      {reportSubmitting ? t('post:view.report.submitting') : t('post:view.report.submit')}
                     </button>
                   </div>
                 </>
               ) : (
                 <>
-                  <h3 className="report-modal__title">Reporte enviado</h3>
+                  <h3 className="report-modal__title">{t('post:view.report.sentTitle')}</h3>
                   <p className="report-modal__desc">
-                    Gracias. Hemos recibido tu reporte y lo revisaremos en breve.
+                    {t('post:view.report.sentDesc')}
                   </p>
                   <div className="report-modal__actions">
                     <button
@@ -1519,7 +1521,7 @@ const UserPost = () => {
                       className="report-modal__submit"
                       onClick={() => setShowReportModal(false)}
                     >
-                      Cerrar
+                      {t('post:view.report.close')}
                     </button>
                   </div>
                 </>

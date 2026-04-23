@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import LandingHeader from "./LandingHeader";
 import "./css/landing-styles.css";
 
@@ -13,6 +14,7 @@ export default function LandingHero({
   ],
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -62,18 +64,18 @@ export default function LandingHero({
         <div className="tf-hero__copy">
           {/* Desktop */}
           <h1 className="tf-h1 tf-only-desktop">
-            El directorio que reúne todo el talento emergente en moda
+            {t("hero.titleDesktop")}
           </h1>
           {/* Mobile */}
           <h1 className="tf-h1 tf-only-mobile-h1">
-            El directorio del talento emergente en moda
+            {t("hero.titleMobile")}
           </h1>
 
           <p className="tf-sub tf-only-desktop">
-            Publica tu perfil. Conecta con la industria.
+            {t("hero.subtitle")}
           </p>
           <p className="tf-sub tf-only-mobile">
-            Publica tu perfil. Conecta con la industria.
+            {t("hero.subtitle")}
           </p>
         </div>
 
@@ -92,39 +94,33 @@ export default function LandingHero({
       {/* ===== COOKIE CONSENT ===== */}
       {cookieOpen && (
         <>
-          <div className="tf-cookie tf-only-desktop" role="dialog" aria-label="Cookies">
+          <div className="tf-cookie tf-only-desktop" role="dialog" aria-label={t("cookies.ariaLabel")}>
             <p className="tf-cookie__text">
-              Usamos cookies básicas para que
-              <br />
-              la web funcione correctamente y
-              <br />
-              mejorar tu experiencia.
+              {t("cookies.textDesktop")}
             </p>
             <button type="button" className="tf-btn tf-btn--cookie" onClick={acceptCookies}>
-              Continuar
+              {t("cookies.accept")}
             </button>
             <a className="tf-cookie__link" href="/cookies">
-              Política de cookies
+              {t("cookies.policy")}
             </a>
           </div>
 
-          <div className="tf-cookieSheet tf-only-mobile" role="dialog" aria-label="Cookies">
+          <div className="tf-cookieSheet tf-only-mobile" role="dialog" aria-label={t("cookies.ariaLabel")}>
             <div className="tf-cookieSheet__overlay" aria-hidden="true" />
             <div className="tf-cookieSheet__panel">
               <p className="tf-cookie__text">
-                Usamos cookies básicas para que la web funcione correctamente
-                <br />
-                y mejorar tu experiencia.
+                {t("cookies.textMobile")}
               </p>
               <button
                 type="button"
                 className="tf-btn tf-btn--cookie tf-cookieSheet__btn"
                 onClick={acceptCookies}
               >
-                CONTINUAR
+                {t("cookies.acceptUpper")}
               </button>
               <a className="tf-cookie__link" href="/cookies">
-                Política de cookies
+                {t("cookies.policy")}
               </a>
             </div>
           </div>

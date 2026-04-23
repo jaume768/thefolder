@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./css/landing-creators-showcase.css";
 
 export default function LandingCreatorsShowcase({
@@ -42,6 +43,7 @@ export default function LandingCreatorsShowcase({
   ],
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation("landing");
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(false);
 
@@ -72,21 +74,21 @@ export default function LandingCreatorsShowcase({
       */}
       <div className="tf-creators__header">
         <h2 className="tf-creators__title tf-reveal" style={{ "--d": "0ms" }}>
-          Explora todas las imágenes<br />subidas por los creativos
+          {t("creatorsShowcase.title")}
         </h2>
 
         <div className="tf-creators__headerRight">
           <p className="tf-creators__floatText tf-reveal" style={{ "--d": "80ms" }}>
-            Guarda tus fotos favoritas
+            {t("creatorsShowcase.saveFavorites")}
           </p>
           <p className="tf-creators__floatText tf-reveal" style={{ "--d": "160ms" }}>
-            Conecta con otros creativos
+            {t("creatorsShowcase.connect")}
           </p>
         </div>
       </div>
 
       {/* ===== FILA 4 IMÁGENES — sin gap, todo el ancho ===== */}
-      <div className="tf-creators__row" aria-label="Perfiles destacados">
+      <div className="tf-creators__row" aria-label={t("creatorsShowcase.ariaLabel")}>
         {creators.map((c, i) => (
           <button
             key={c.slug}
@@ -94,7 +96,7 @@ export default function LandingCreatorsShowcase({
             className={`tf-creatorCard tf-reveal tf-creatorCard--${i}`}
             style={{ "--d": `${200 + i * 80}ms` }}
             onClick={() => navigate(`/profile/${c.slug}`)}
-            aria-label={`Ver perfil de ${c.name}`}
+            aria-label={t("creatorsShowcase.viewProfile", { name: c.name })}
           >
             <div className="tf-creatorCard__imgWrap">
               <img

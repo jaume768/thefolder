@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import './css/verification-required-modal.css';
 
 const VerificationRequiredModal = ({ onClose }) => {
+    const { t } = useTranslation('modals');
     const navigate = useNavigate();
 
     const handleContactClick = () => {
@@ -16,26 +18,26 @@ const VerificationRequiredModal = ({ onClose }) => {
             <div className="verification-modal-container" onClick={(e) => e.stopPropagation()}>
                 
                 <div className="verification-modal-content">
-                    <h2>Verificación Requerida</h2>
+                    <h2>{t('verification.title')}</h2>
                     
                     <div className="verification-modal-info">
-                        <p className="verification-modal-title">Para poder verificar tu perfil, envíanos un correo a:</p>
+                        <p className="verification-modal-title">{t('verification.description')}</p>
                         <p className="verification-modal-email">thefolderworld@gmail.com</p>
                         
                         <div className="verification-modal-requirements">
-                            <p>con los siguientes datos:</p>
+                            <p>{t('verification.requirements')}</p>
                             <ul>
-                                <li>Nombre legal de la empresa o institución</li>
-                                <li>Número de identificación fiscal</li>
-                                <li>Documento oficial que acredite la existencia de la empresa</li>
-                                <li>Nombre completo de la persona que envía el correo</li>
-                                <li>Cargo o rol dentro de la organización</li>
-                                <li>Enlace al sitio web oficial y/o redes sociales activas</li>
+                                <li>{t('verification.requirements.1')}</li>
+                                <li>{t('verification.requirements.2')}</li>
+                                <li>{t('verification.requirements.3')}</li>
+                                <li>{t('verification.requirements.4')}</li>
+                                <li>{t('verification.requirements.5')}</li>
+                                <li>{t('verification.requirements.6')}</li>
                             </ul>
                         </div>
                         
                         <p className="verification-modal-note">
-                            Una vez recibida la información, revisaremos los datos y te contactaremos para confirmar la verificación.
+                            {t('verification.note')}
                         </p>
                     </div>
                     
@@ -44,7 +46,7 @@ const VerificationRequiredModal = ({ onClose }) => {
                             className="verification-modal-button verification-modal-primary"
                             onClick={handleContactClick}
                         >
-                            Entendido
+                            {t('verification.understood')}
                         </button>
 
                     </div>

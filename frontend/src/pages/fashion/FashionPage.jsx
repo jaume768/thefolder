@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaChevronDown } from 'react-icons/fa';
@@ -8,6 +9,7 @@ import '../../components/controlPanel/css/fashion.css';
 import '../../components/controlPanel/css/explorer.css';
 
 const Fashion = () => {
+    const { t } = useTranslation('fashion');
     const navigate = useNavigate();
     const [institutions, setInstitutions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -205,12 +207,12 @@ const renderTagSection = (key, label) => {
 
 const renderFilterTriggersRow = () => (
   <div className="filters-triggers-row">
-    {renderTagSection("country", "País")}
-    {renderTagSection("city", "Ciudad")}
-    {renderTagSection("educationLevel", "Nivel")}
-    {renderTagSection("modality", "Modalidad")}
-    {renderTagSection("category", "Categoría")}
-    {renderTagSection("centerType", "Centro")}
+    {renderTagSection("country", t('filters.country'))}
+    {renderTagSection("city", t('filters.city'))}
+    {renderTagSection("educationLevel", t('filters.level'))}
+    {renderTagSection("modality", t('filters.modality'))}
+    {renderTagSection("category", t('filters.category'))}
+    {renderTagSection("centerType", t('filters.centerType'))}
   </div>
 );
 
@@ -289,7 +291,7 @@ const activeChips = [
                     ...new Set(data.map((i) => i.location?.city).filter(Boolean)),
                 ]);
             } catch (err) {
-                setError('No se pudieron cargar las instituciones.');
+                setError(t('errorLoad'));
             } finally {
                 setLoading(false);
             }
@@ -406,7 +408,7 @@ const filteredInstitutions = institutions.filter((inst) => {
         return true;
     });
 
-    if (loading) return <div className="loading-indicator">Cargando...</div>;
+    if (loading) return <div className="loading-indicator">{t('loading')}</div>;
     if (error) return <div className="error">{error}</div>;
 
     return (
@@ -463,7 +465,7 @@ const filteredInstitutions = institutions.filter((inst) => {
 <div className={`fashion-filters-panel ${showFilters ? 'show' : ''}`}>
   <div className="fashion-filters-container">
     <div className="fashion-filters-header">
-      <h3>Filtros</h3>
+      <h3>{t('filters.title')}</h3>
       <button
         className="fashion-filters-close"
         onClick={() => setShowFilters(false)}
@@ -475,7 +477,7 @@ const filteredInstitutions = institutions.filter((inst) => {
     <div className="filter-search">
       <input
         type="text"
-        placeholder="Buscador"
+        placeholder={t('filters.searchPlaceholder')}
         value={filters.search}
         onChange={(e) => handleFilterChange('search', e.target.value)}
       />
@@ -484,7 +486,7 @@ const filteredInstitutions = institutions.filter((inst) => {
     <div className="filter-input">
       <input
         list="countries"
-        placeholder="País"
+        placeholder={t('filters.country')}
         value={filters.country}
         onChange={(e) => handleFilterChange('country', e.target.value)}
       />
@@ -498,7 +500,7 @@ const filteredInstitutions = institutions.filter((inst) => {
     <div className="filter-input">
       <input
         list="cities"
-        placeholder="Ciudad"
+        placeholder={t('filters.city')}
         value={filters.city}
         onChange={(e) => handleFilterChange('city', e.target.value)}
       />
@@ -514,9 +516,9 @@ const filteredInstitutions = institutions.filter((inst) => {
         value={filters.centerType}
         onChange={(e) => handleFilterChange('centerType', e.target.value)}
       >
-        <option value="all">Tipo de centro</option>
-        <option value="public">Público</option>
-        <option value="private">Privado</option>
+        <option value="all">{t('institution.type')}</option>
+        <option value="public">{t('institution.public')}</option>
+        <option value="private">{t('institution.private')}</option>
       </select>
       <FaChevronDown className="chevron-icon" />
     </div>
@@ -526,7 +528,7 @@ const filteredInstitutions = institutions.filter((inst) => {
         value={filters.modality}
         onChange={(e) => handleFilterChange('modality', e.target.value)}
       >
-        <option value="">Tipo de formación</option>
+        <option value="">{t('filters.formationType')}</option>
         {modalityList.map((m) => (
           <option key={m} value={m}>
             {m}
@@ -541,7 +543,7 @@ const filteredInstitutions = institutions.filter((inst) => {
         value={filters.category}
         onChange={(e) => handleFilterChange('category', e.target.value)}
       >
-        <option value="">Categoría</option>
+        <option value="">{t('filters.category')}</option>
         {categoriesList.map((c) => (
           <option key={c} value={c}>
             {c}
@@ -552,10 +554,10 @@ const filteredInstitutions = institutions.filter((inst) => {
     </div>
 
     <button className="apply-filters-btn" onClick={applyFilters}>
-      Aplicar filtros
+      {t('filters.apply')}
     </button>
     <button className="clear-filters-btn" onClick={clearAllFilters}>
-      Borrar filtros
+      {t('filters.clear')}
     </button>
   </div>
 </div>
@@ -571,7 +573,7 @@ const filteredInstitutions = institutions.filter((inst) => {
   >
     <div className="explorer-mobile-filters-content">
       <div className="explorer-mobile-filters-header">
-        <h3>Filtros</h3>
+        <h3>{t('filters.title')}</h3>
         <button
           className="explorer-mobile-filters-close"
           onClick={() => setShowMobileFilters(false)}
@@ -585,7 +587,7 @@ const filteredInstitutions = institutions.filter((inst) => {
           <div className="explorer-filter-search">
             <input
               type="text"
-              placeholder="Buscador"
+              placeholder={t('filters.searchPlaceholder')}
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
             />
@@ -596,7 +598,7 @@ const filteredInstitutions = institutions.filter((inst) => {
               value={filters.country}
               onChange={(e) => handleFilterChange('country', e.target.value)}
             >
-              <option value="" disabled>País</option>
+              <option value="" disabled>{t('filters.country')}</option>
               {countries.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -608,7 +610,7 @@ const filteredInstitutions = institutions.filter((inst) => {
               value={filters.city}
               onChange={(e) => handleFilterChange('city', e.target.value)}
             >
-              <option value="" disabled>Ciudad</option>
+              <option value="" disabled>{t('filters.city')}</option>
               {cities.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -618,16 +620,21 @@ const filteredInstitutions = institutions.filter((inst) => {
           <div className="explorer-filter-select">
             <select
               value={filters.centerType}
-              onChange={(e) => handleFilterChange('centerType', e.targ
-
+              onChange={(e) => handleFilterChange('centerType', e.target.value)}
+            >
+              <option value="" disabled>{t('institution.type')}</option>
+              <option value="public">{t('institution.public')}</option>
+              <option value="private">{t('institution.private')}</option>
+            </select>
+          </div>
 
             {/* ============= CONTENIDO PRINCIPAL ============= */}
             <main className="main-content">
                 <p className="creatives-subtitle --show-mobile">
-                Explora opciones para estudiar moda. Un directorio con toda la información necesaria para que descubras tu próxima formación educativa. Filtra por nivel, modalidad y ubicación para encontrar la formación que mejor se adapte a tu perfil creativo.
+                {t('subtitle')}
                 </p>
                 <div className="creatives-hero-inner">
-                    <h1 class="centerTitle"> Estudiar moda <span className="creatives-count">[0]</span></h1>
+                    <h1 class="centerTitle"> {t('title')} <span className="creatives-count">[0]</span></h1>
                 </div>
 
 {/* ✅ fila de triggers debajo del título */}

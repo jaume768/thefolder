@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaTags } from 'react-icons/fa';
 
 const CompanyTagsSection = ({ companyTags, offersPractices = false }) => {
+    const { t } = useTranslation('profile');
     const hasContent = Array.isArray(companyTags) && companyTags.length > 0;
 
     return (
@@ -15,12 +17,12 @@ const CompanyTagsSection = ({ companyTags, offersPractices = false }) => {
                     ))}
                 </div>
             ) : (
-                <p className="no-data-message">No hay etiquetas de especialización registradas.</p>
+                <p className="no-data-message">{t('sections.emptySpecialization')}</p>
             )}
             
             {offersPractices && (
                 <div className="practice-badge">
-                    <span>Ofrece prácticas profesionales</span>
+                    <span>{t('sections.offersPractices')}</span>
                 </div>
             )}
         </div>

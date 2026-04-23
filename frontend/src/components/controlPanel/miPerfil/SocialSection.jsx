@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FaLinkedin,
   FaInstagram,
@@ -14,12 +15,13 @@ import { SiSubstack } from 'react-icons/si';
 import { buildSocialMediaUrl } from '../../../utils/socialMediaUtils';
 
 const SocialSection = ({ social }) => {
+    const { t } = useTranslation('profile');
     // Solo renderizamos la sección si hay al menos una red social
     if (!social || Object.values(social).every(value => !value)) return null;
     
     return (
         <section className="miPerfil-section miPerfil-social">
-            <h2>Redes sociales</h2>
+            <h2>{t('sections.socialNetworks')}</h2>
             <div className="miPerfil-social-links">
                 {social?.instagram && (
                     <a

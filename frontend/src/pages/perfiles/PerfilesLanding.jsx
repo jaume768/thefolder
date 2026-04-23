@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './PerfilesLanding.css';
 
 // ─── PLACEHOLDER IMAGES ───────────────────────────────────────────────────────
@@ -29,40 +30,10 @@ const IMAGES = {
 // Cuando tengas los datos reales, pasa el count como prop o desde tu API.
 const COUNT_PLACEHOLDER = 16;
 
-// ─── SECCIONES ────────────────────────────────────────────────────────────────
-const SECCIONES = [
-  {
-    id: 'profesionales',
-    titulo: 'PROFESIONALES',
-    subtitulo: 'Identidad definida, trayectoria consolidada, criterio propio.',
-    descripcion: 'Haz que todo lo que ya has construido conviva en un mismo perfil recorrido profesional, redes, portfolio, colaboraciones. Aparece en el directorio donde la industria busca talento y úsalo como punto de referencia para encontrar equipo, ampliar tu red y ser visible para las nuevas generaciones que buscan referentes en la industria.',
-    images: IMAGES.profesionales,
-    imageLayout: 'row-4',
-    countKey: 'professional',
-  },
-  {
-    id: 'emergente',
-    titulo: 'EMERGENTE',
-    subtitulo: 'Proyectos propios, dirección creativa en construcción.',
-    descripcion: 'El directorio donde la industria descubre talento nuevo. Haz que tus primeros proyectos convivan en un mismo perfil portfolio, recorrido, redes, colaboraciones y deja que te encuentren. Conecta con otros creativos, amplía tu red y llega a las agencias y marcas que necesitas para dar el siguiente paso.',
-    images: IMAGES.emergente,
-    imageLayout: 'row-3',
-    countKey: 'emerging',
-  },
-  {
-    id: 'estudiantes',
-    titulo: 'ESTUDIANTES Y GRADUADOS',
-    subtitulo: 'En formación o recién graduado, buscando tu lugar en la industria.',
-    descripcion: 'Publica tus primeros proyectos y déjate descubrir por la industria. Observa cómo se presentan los creativos que ya están donde tú quieres estar, inspírate y construye tu propio perfil con lo que tienes ahora. Tu perfil en THEFOLDER es todo lo que necesitas para profesionalizar tu portfolio y tu CV — y presentarte ante la industria sin distracciones.',
-    images: IMAGES.estudiantes,
-    imageLayout: 'row-1',
-    countKey: 'students',
-  },
-];
-
 // ─── COMPONENTE ───────────────────────────────────────────────────────────────
 
 const PerfilesLanding = () => {
+  const { t } = useTranslation('landing');
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
@@ -71,6 +42,36 @@ const PerfilesLanding = () => {
       .then((data) => setCounts(data))
       .catch(() => {});
   }, []);
+
+  const SECCIONES = [
+    {
+      id: 'profesionales',
+      titulo: t('perfiles.profesionales.titulo'),
+      subtitulo: t('perfiles.profesionales.subtitulo'),
+      descripcion: t('perfiles.profesionales.descripcion'),
+      images: IMAGES.profesionales,
+      imageLayout: 'row-4',
+      countKey: 'professional',
+    },
+    {
+      id: 'emergente',
+      titulo: t('perfiles.emergente.titulo'),
+      subtitulo: t('perfiles.emergente.subtitulo'),
+      descripcion: t('perfiles.emergente.descripcion'),
+      images: IMAGES.emergente,
+      imageLayout: 'row-3',
+      countKey: 'emerging',
+    },
+    {
+      id: 'estudiantes',
+      titulo: t('perfiles.estudiantes.titulo'),
+      subtitulo: t('perfiles.estudiantes.subtitulo'),
+      descripcion: t('perfiles.estudiantes.descripcion'),
+      images: IMAGES.estudiantes,
+      imageLayout: 'row-1',
+      countKey: 'students',
+    },
+  ];
 
   return (
     <div className="paraquien-page">

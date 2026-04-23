@@ -1,13 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TrainingForm = ({ formData, handleInputChange, errors }) => {
+    const { t } = useTranslation('offers');
     return (
         <div className="create-educational-form-section">
-            <h3>Formación</h3>
+            <h3>{t('create.training.title')}</h3>
             
             <div className="create-educational-form-row">
                 <div className="create-educational-form-field">
-                    <label htmlFor="modality">Presencial</label>
+                    <label htmlFor="modality">{t('create.training.modalityLabel')}</label>
                     <select
                         id="modality"
                         name="modality"
@@ -15,14 +17,14 @@ const TrainingForm = ({ formData, handleInputChange, errors }) => {
                         onChange={handleInputChange}
                         required
                     >
-                        <option value="">Seleccionar...</option>
-                        <option value="Presencial">Presencial</option>
-                        <option value="Online">Online</option>
-                        <option value="Híbrida">Híbrida</option>
+                        <option value="">{t('create.training.select')}</option>
+                        <option value="Presencial">{t('create.training.presencial')}</option>
+                        <option value="Online">{t('create.training.online')}</option>
+                        <option value="Híbrida">{t('create.training.hibrida')}</option>
                     </select>
                 </div>
                 <div className="create-educational-form-field create-educational-checkbox-field">
-                    <label htmlFor="morningSchedule">Horario de mañana?</label>
+                    <label htmlFor="morningSchedule">{t('create.training.morningSchedule')}</label>
                     <input
                         type="checkbox"
                         id="morningSchedule"
@@ -35,7 +37,7 @@ const TrainingForm = ({ formData, handleInputChange, errors }) => {
             
             <div className="create-educational-form-row">
                 <div className="create-educational-form-field">
-                    <label htmlFor="duration">Duración (Años)</label>
+                    <label htmlFor="duration">{t('create.training.durationLabel')}</label>
                     <input
                         type="number"
                         id="duration"
@@ -49,7 +51,7 @@ const TrainingForm = ({ formData, handleInputChange, errors }) => {
                     {errors.duration && <span className="create-educational-error-message">{errors.duration}</span>}
                 </div>
                 <div className="create-educational-form-field">
-                    <label htmlFor="credits">¿Créditos?</label>
+                    <label htmlFor="credits">{t('create.training.creditsLabel')}</label>
                     <input
                         type="number"
                         id="credits"
@@ -65,7 +67,7 @@ const TrainingForm = ({ formData, handleInputChange, errors }) => {
             
             <div className="create-educational-form-row create-educational-checkbox-group">
                 <div className="create-educational-form-field create-educational-checkbox-field">
-                    <label htmlFor="internships">¿Prácticas?</label>
+                    <label htmlFor="internships">{t('create.training.internshipsLabel')}</label>
                     <input
                         type="checkbox"
                         id="internships"
@@ -75,7 +77,7 @@ const TrainingForm = ({ formData, handleInputChange, errors }) => {
                     />
                 </div>
                 <div className="create-educational-form-field create-educational-checkbox-field">
-                    <label htmlFor="erasmus">¿Erasmus?</label>
+                    <label htmlFor="erasmus">{t('create.training.erasmusLabel')}</label>
                     <input
                         type="checkbox"
                         id="erasmus"
@@ -85,7 +87,7 @@ const TrainingForm = ({ formData, handleInputChange, errors }) => {
                     />
                 </div>
                 <div className="create-educational-form-field create-educational-checkbox-field">
-                    <label htmlFor="bilingualEducation">Educación bilingüe</label>
+                    <label htmlFor="bilingualEducation">{t('create.training.bilingualLabel')}</label>
                     <input
                         type="checkbox"
                         id="bilingualEducation"

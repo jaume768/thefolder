@@ -1,0 +1,70 @@
+{
+  "brand": "THEFOLDER",
+  "language": {
+    "label": "Idioma",
+    "es": "ES",
+    "en": "EN",
+    "spanish": "Español",
+    "english": "Inglés"
+  },
+  "nav": {
+    "creatives": "Creativos",
+    "profiles": "Perfiles",
+    "fashion": "Estudiar moda",
+    "industry": "Industria",
+    "menu": "Menú",
+    "home": "Home",
+    "explorer": "Explorador"
+  },
+  "actions": {
+    "login": "Iniciar sesión",
+    "register": "Crear perfil",
+    "createProfile": "Crea tu perfil",
+    "publish": "Publicar",
+    "myProfile": "Mi perfil",
+    "profileOptions": "Opciones de perfil",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "accept": "Aceptar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "continue": "Continuar",
+    "search": "Buscar",
+    "openSearch": "Abrir búsqueda",
+    "closeSearch": "Cerrar búsqueda",
+    "editProfile": "Editar perfil",
+    "myCommunity": "Mi comunidad",
+    "saved": "Guardados",
+    "logout": "Cerrar sesión",
+    "settings": "Configuración",
+    "createAccount": "Crear cuenta"
+  },
+  "search": {
+    "placeholder": "Busca creativos, proyectos…",
+    "mobilePlaceholder": "Buscar creativos, publicaciones...",
+    "all": "Todos",
+    "users": "Usuarios",
+    "posts": "Publicaciones",
+    "searching": "Buscando...",
+    "noResults": "No se encontraron resultados para \"{{query}}\"",
+    "noResultsSimple": "No se encontraron resultados",
+    "usersSection": "Usuarios /",
+    "postsSection": "Publicaciones /",
+    "projectsSection": "Proyectos /",
+    "userFallback": "Usuario"
+  },
+  "footer": {
+    "contact": "Contacto",
+    "legal": "Aviso Legal",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "cookies": "Cookies",
+    "linksAriaLabel": "Enlaces del pie",
+    "brandAriaLabel": "© {{year}} thefolder"
+  }
+}

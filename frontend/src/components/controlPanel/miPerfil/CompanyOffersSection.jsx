@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaBriefcase, FaCalendarAlt, FaMapMarkerAlt, FaFilter } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const CompanyOffersSection = ({ offers = [] }) => {
+    const { t } = useTranslation('profile');
     const [statusFilter, setStatusFilter] = useState('all');
 
     if (!Array.isArray(offers) || offers.length === 0) {
@@ -11,10 +13,10 @@ const CompanyOffersSection = ({ offers = [] }) => {
                 <div className="offers-empty-icon-company">
                     <FaBriefcase />
                 </div>
-                <h3>No hay ofertas publicadas</h3>
-                <p>Aún no has publicado ninguna oferta de trabajo.</p>
+                <h3>{t('offers.emptyCompanyTitle')}</h3>
+                <p>{t('offers.emptyCompanyDescPersonal')}</p>
                 <Link to="/createOffer" className="create-offer-button-company">
-                    Publicar oferta
+                    {t('offers.publishJob')}
                 </Link>
             </div>
         );
@@ -23,10 +25,10 @@ const CompanyOffersSection = ({ offers = [] }) => {
     // Helper function to translate status
     const translateStatus = (status) => {
         switch (status) {
-            case 'pending': return 'Pendiente';
-            case 'accepted': return 'Aceptada';
-            case 'cancelled': return 'Cancelada';
-            default: return 'Desconocido';
+            case 'pending': return t('status.pending');
+            case 'accepted': return t('status.accepted');
+            case 'cancelled': return t('status.cancelled');
+            default: return t('status.unknown');
         }
     };
 
@@ -40,7 +42,7 @@ const CompanyOffersSection = ({ offers = [] }) => {
 
             {filteredOffers.length === 0 ? (
                 <div className="no-filtered-offers">
-                    <p>No hay ofertas con el filtro seleccionado.</p>
+                    <p>{t('offers.noFilteredJobs')}</p>
                 </div>
             ) : (
                 filteredOffers.map((offer, index) => (
@@ -64,19 +66,19 @@ const CompanyOffersSection = ({ offers = [] }) => {
 
                             <div className="offer-detail-company">
                                 <FaMapMarkerAlt className="offer-icon-company" />
-                                <span>{offer.city || 'Ubicación no especificada'}</span>
+                                <span>{offer.city || t('offers.notSpecified')}</span>
                             </div>
                         </div>
 
                         <div className="offer-description-company">
                             {offer.description && offer.description.length > 120
                                 ? `${offer.description.substring(0, 120)}...`
-                                : offer.description || 'Sin descripción'}
+                                : offer.description || t('offers.noDescriptionShort')}
                         </div>
 
                         <div className="offer-actions-company">
                             <Link to={`/JobOfferDetail/${offer._id}`} className="view-offer-button-company">
-                                Ver detalles
+                                {t('offers.viewDetails')}
                             </Link>
                         </div>
                     </div>

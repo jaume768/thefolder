@@ -1,0 +1,50 @@
+{
+  "reclassify": {
+    "title": "Reclasificar tu perfil",
+    "subtitle": "Selecciona tu perfil actual y te ayudaremos a configurar tu cuenta correctamente.",
+    "eyebrow": "Nivel creativo",
+    "done": "Hecho",
+    "saving": "Guardando…",
+    "requestVerification": "Entendido, solicitar validación",
+    "confirm": "Confirmar",
+    "back": "Volver",
+    "professionalWarning": "Necesitarás verificación profesional para este nivel.",
+    "error": "Error de red. Inténtalo de nuevo.",
+    "levels": {
+      "student": "Estudiante",
+      "1_desc": "Buscando mi primera oportunidad",
+      "graduate": "Graduado",
+      "2_desc": "Listo para nuevos proyectos",
+      "freelance": "Freelance",
+      "3_desc": "Trabajando por cuenta propia",
+      "professional": "Profesional",
+      "4_desc": "Con experiencia en la industria",
+      "expert": "Experto",
+      "5_desc": "Reconocido en mi especialidad"
+    }
+  },
+  "verification": {
+    "title": "Verificación necesaria",
+    "description": "Para continuar con esta acción, necesitas verificar tu cuenta.",
+    "requirements": "Requisitos de verificación:",
+    "requirements.1": "Correo electrónico verificado",
+    "requirements.2": "Perfil completo al 100%",
+    "requirements.3": "Portafolio con al menos 5 trabajos",
+    "requirements.4": "Foto de perfil actualizada",
+    "requirements.5": "Cuenta activa por más de 30 días",
+    "requirements.6": "Sin reportes de comportamiento inapropiado",
+    "note": "La verificación puede tardar hasta 48 horas.",
+    "understood": "Entendido",
+    "verify": "Verificar cuenta"
+  },
+  "profileOptions": {
+    "user": "Usuario",
+    "guest": "Invitado",
+    "goToProfile": "Ir a perfil",
+    "editProfile": "Editar perfil",
+    "saved": "Guardados",
+    "myCommunity": "Mi comunidad",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  }
+}

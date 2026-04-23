@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import './css/register-modal.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const RegisterModal = ({ onClose, onSwitchToLogin }) => {
   const [step, setStep] = useState("register");
   const navigate = useNavigate();
+  const { t } = useTranslation('auth');
 
   const [formData, setFormData] = useState({
     // username: '', // (opcional) lo dejamos en el state por si lo reactivas
@@ -103,7 +105,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
     ) {
       setErrors(prev => ({
         ...prev,
-        incomplete: 'Completa todos los campos para continuar',
+        incomplete: t('register.errors.incomplete'),
       }));
       return;
     }
@@ -111,7 +113,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
     if (formData.password !== formData.confirmPassword) {
       setErrors(prev => ({
         ...prev,
-        passwordMismatch: 'Las contraseñas no coinciden',
+        passwordMismatch: t('register.errors.passwordMismatch'),
       }));
       return;
     }
@@ -169,13 +171,13 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setBackendError(data.error || 'Error al enviar el código de verificación.');
+        setBackendError(data.error || t('register.errors.sendCodeFailed'));
         return;
       }
 
       setStep("verify");
     } catch (error) {
-      setBackendError('Error al conectar con el servidor.');
+      setBackendError(t('register.errors.serverError'));
     }
   };
 
@@ -231,11 +233,11 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setVerificationError(data.error || 'Código incorrecto.');
+        setVerificationError(data.error || t('verify.errors.invalid'));
         return;
       }
 
-      setVerificationSuccess(data.message || '¡Código verificado exitosamente!');
+      setVerificationSuccess(data.message || t('verify.success'));
 
       const { token } = data;
       localStorage.setItem("authToken", token);
@@ -247,7 +249,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
       // navigate("/complete-registration", { state: { username: formData.username } }); // (comentado)
 
     } catch (err) {
-      setVerificationError('Error de red.');
+      setVerificationError(t('register.errors.networkError'));
     }
   };
 
@@ -267,13 +269,13 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setVerificationError(data.error || 'Error al reenviar el código.');
+        setVerificationError(data.error || t('verify.errors.resendFailed'));
         return;
       }
 
-      setResendMessage(data.message || 'Nuevo código enviado. Revise bandeja de correo.');
+      setResendMessage(data.message || t('verify.resendSuccess'));
     } catch (error) {
-      setVerificationError('Error de red.');
+      setVerificationError(t('register.errors.networkError'));
     }
   };
 
@@ -287,7 +289,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
         <div className={`login-card login-card-register ${backendError || errors.incomplete || errors.passwordMismatch || verificationError ? 'with-error' : ''}`}>
           {step === "register" ? (
             <>
-              <h1>Registra tu perfil</h1>
+              <h1>{t('register.title')}</h1>
 
               {(errors.incomplete || backendError) && (
                 <p className="error">
@@ -317,12 +319,12 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                 */}
 
                 <div className="input-group">
-                  <label htmlFor="email">Correo electrónico</label>
+                  <label htmlFor="email">{t('register.email')}</label>
                   <input
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="Introduce tu email"
+                    placeholder={t('register.emailPlaceholder')}
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -331,12 +333,12 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                 </div>
 
                 <div className="input-group">
-                  <label htmlFor="password">Contraseña</label>
+                  <label htmlFor="password">{t('register.password')}</label>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
-                    placeholder="••••••"
+                    placeholder={t('register.passwordPlaceholder')}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -345,20 +347,20 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                     type="button"
                     className="toggle-password"
                     onClick={() => setShowPassword(v => !v)}
-                    aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                    aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                   >
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
                   </button>
-                  <p className="password-hint">Mín. 6 caracteres, una letra y un número.</p>
+                  <p className="password-hint">{t('register.passwordHint')}</p>
                 </div>
 
                 <div className="input-group">
-                  <label htmlFor="confirmPassword">Repetir contraseña</label>
+                  <label htmlFor="confirmPassword">{t('register.confirmPassword')}</label>
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
                     name="confirmPassword"
-                    placeholder="••••••"
+                    placeholder={t('register.passwordPlaceholder')}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
@@ -367,7 +369,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                     type="button"
                     className="toggle-password"
                     onClick={() => setShowConfirmPassword(v => !v)}
-                    aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                    aria-label={showConfirmPassword ? t('login.hidePassword') : t('login.showPassword')}
                   >
                     {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
                   </button>
@@ -383,15 +385,15 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                     required
                   />
                   <span className='terms'>
-                    Acepto los{' '}
+                    {t('register.termsPrefix')}{' '}
                     <a href="/terminos" target="_blank" rel="noopener noreferrer">
-                      términos y condiciones
+                      {t('register.termsLink')}
                     </a>
                   </span>
                 </label>
 
                 <button type="submit" className="btn login-btn">
-                  Registrarme
+                  {t('register.submit')}
                 </button>
               </form>
 
@@ -405,12 +407,12 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                 }}
               >
                 <img src="/iconos/google-logo.png" alt="Google" className="google-icon" />
-                Continuar con Google
+                {t('register.google')}
               </button>
 
               <div className="extra-links">
                 <p>
-                  ¿Ya tienes cuenta?{' '}
+                  {t('register.hasAccount')}{' '}
                   <a
                     href="#"
                     onClick={(e) => {
@@ -418,7 +420,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                       onSwitchToLogin();
                     }}
                   >
-                    Accede
+                    {t('register.loginLink')}
                   </a>
                 </p>
               </div>
@@ -426,10 +428,15 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
             </>
           ) : (
             <>
-              <h1>Código de verificación</h1>
+              <h1>{t('verify.title')}</h1>
 
               <p className="verify-sub">
-                Se ha enviado un código al correo <strong style={{ fontWeight: 500, color: '#111', textDecoration: 'underline' }}>{formData.email}</strong>
+                <Trans
+                  i18nKey="verify.subtitle"
+                  ns="auth"
+                  values={{ email: formData.email }}
+                  components={{ 1: <strong style={{ fontWeight: 500, color: '#111', textDecoration: 'underline' }} /> }}
+                />
               </p>
 
               {verificationError && <p className="resend-row error">{verificationError}</p>}
@@ -454,13 +461,13 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                 </div>
 
                 <button type="submit" className="btn login-btn">
-                  Verificar
+                  {t('verify.submit')}
                 </button>
 
                 <p className="resend-row">
-                  ¿No te ha llegado?{' '}
+                  {t('verify.resendPrompt')}{' '}
                   <button className="resend-btn" onClick={handleResend} type="button">
-                    Reenviar código
+                    {t('verify.resend')}
                   </button>
                 </p>
 
@@ -469,7 +476,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
 
               <div className="extra-links">
                 <p>
-                  ¿Tu email no es correcto?{' '}
+                  {t('verify.wrongEmail')}{' '}
                   <a
                     href="#"
                     onClick={(e) => {
@@ -477,7 +484,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
                       setStep("register");
                     }}
                   >
-                    Editar email
+                    {t('verify.editEmail')}
                   </a>
                 </p>
               </div>

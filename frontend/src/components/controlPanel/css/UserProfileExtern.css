@@ -35,7 +35,10 @@
   text-decoration: underline;
 }
 
-.dashboard-content {
+/* Scoped: solo cuando la página de perfil externo está montada.
+   Antes era un selector global que machacaba el padding del dashboard en
+   otras rutas (ej. /explorer) tras visitar una página de perfil. */
+.dashboard-content:has(.user-extern-container) {
     flex: 1;
     padding: 0px !important;
 }

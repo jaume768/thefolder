@@ -1,10 +1,12 @@
 // UserDownloadableFilesSection.jsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { printUserProfile } from '../miPerfil/printProfile';
 import downloadPdfIcon from '../../../../public/iconos/download-pdf.svg';
 
 const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username }) => {
+  const { t } = useTranslation('profile');
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +39,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
 
   const handlePrintProfile = () => {
     if (!profileData) {
-      alert('Cargando datos del perfil. Por favor, espere un momento.');
+      alert(t('sections.loadingProfileData'));
       return;
     }
     // Usar la misma función de impresión que se usa en MiPerfil
@@ -46,7 +48,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
 
   return (
     <section className="user-extern-section">
-      <h2>Archivos descargables</h2>
+      <h2>{t('sections.downloads')}</h2>
 
       <div className="user-extern-downloads">
         <div className="pdf-row">
@@ -58,7 +60,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
             }}
             className="pdf-button"
           >
-            Visualizar página PDF
+            {t('sections.viewPdf')}
             <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
           </a>
         </div>

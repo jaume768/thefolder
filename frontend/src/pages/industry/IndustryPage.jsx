@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { clImg } from "../../utils/optimizeImage";
 
 const Industry = () => {
   const navigate = useNavigate();
-
+  const { t } = useTranslation("industry");
 
   // ====== DATA (desde panel/backend) ======
   const [items, setItems] = useState([]);
@@ -26,28 +27,26 @@ const Industry = () => {
         const data = await res.json();
 
         const raw =
-        Array.isArray(data) ? data :
-        Array.isArray(data.industries) ? data.industries :
-        Array.isArray(data.industry) ? data.industry :
-        [];
+          Array.isArray(data) ? data :
+            Array.isArray(data.industries) ? data.industries :
+              Array.isArray(data.industry) ? data.industry :
+                [];
 
         const normalized = raw.map((x) => ({
-        id: x._id ?? x.id ?? crypto.randomUUID(),
-        name: x.name ?? "",
-        city: x.city ?? "",
-        country: x.country ?? "",
-        category: x.category ? [x.category] : [],
-        imageUrl: x.image ?? x.imageUrl ?? "",      // 👈 en tu DB es "image"
-        websiteUrl: x.link ?? x.websiteUrl ?? "",   // 👈 en tu DB es "link"
-        profileUrl: x.profileUrl ?? "",
+          id: x._id ?? x.id ?? crypto.randomUUID(),
+          name: x.name ?? "",
+          city: x.city ?? "",
+          country: x.country ?? "",
+          category: x.category ? [x.category] : [],
+          imageUrl: x.image ?? x.imageUrl ?? "",      // 👈 en tu DB es "image"
+          websiteUrl: x.link ?? x.websiteUrl ?? "",   // 👈 en tu DB es "link"
+          profileUrl: x.profileUrl ?? "",
         }));
 
         setItems(normalized);
       } catch (e) {
         if (!mounted) return;
-        setLoadError(
-          "No se pudieron cargar los perfiles de industria. Revisa el endpoint /api/industry.",
-        );
+        setLoadError(t("errorLoad"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -152,9 +151,9 @@ const Industry = () => {
 
   const renderFilterTriggersRow = () => (
     <div className="filters-triggers-row">
-      {renderTagSection("country", "País")}
-      {renderTagSection("city", "Ciudad")}
-      {renderTagSection("category", "Categoría")}
+      {renderTagSection("country", t("filters.country"))}
+      {renderTagSection("city", t("filters.city"))}
+      {renderTagSection("category", t("filters.category"))}
     </div>
   );
 
@@ -242,27 +241,25 @@ const Industry = () => {
 
       <main className="main-content">
         <p className="creatives-subtitle">
-          Directorio de industria de la moda. Encuentra empresas y perfiles por
-          país, ciudad y categoría. ¿Quieres aparecer aquí? Escríbenos a info@thefolder.es.
+          {t("subtitle")}
         </p>
 
         <div className="explorer-header">
           <h1 className="centerTitle">
-            Industria{" "}
+            {t("title")}{" "}
             <span className="creatives-count">
               [{loading ? "…" : filteredItems.length}]
             </span>
           </h1>
         </div>
 
-        {/* Search input (si lo quieres igual que otras páginas) */}
         <div className="explorer-search">
           <input
             value={tagFilters.search}
             onChange={(e) =>
               setTagFilters((p) => ({ ...p, search: e.target.value }))
             }
-            placeholder="Buscar por nombre, ciudad, país o categoría…"
+            placeholder={t("searchPlaceholder")}
           />
         </div>
 

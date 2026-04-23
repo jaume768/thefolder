@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
 import { clImg } from "../../utils/optimizeImage";
 import '../../components/controlPanel/css/explorer.css';
@@ -45,12 +46,6 @@ const GROUP_ICONS = {
 
 const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
 
-const CREATIVE_LEVELS = [
-  { value: 1, label: 'Newcomer',     icon: 'newcomer.png',     description: 'Estudiantes o recién graduados.' },
-  { value: 2, label: 'Graduated',    icon: 'graduated.png',    description: 'Formación completada.' },
-  { value: 3, label: 'Emerging',     icon: 'emerging.png',     description: '1-3 años de experiencia.' },
-  { value: 4, label: 'Professional', icon: 'professional.png', description: 'Trayectoria y portfolio sólidos.' },
-];
 
 const GROUP_ORDER = [
   "Diseño",
@@ -70,6 +65,12 @@ const GROUP_ORDER = [
 const EMPTY_FILTERS = { city: [], professionalProfile: [], creativeLevel: [] };
 
 const MyComunity = () => {
+  const CREATIVE_LEVELS = [
+    { value: 1, label: 'Newcomer',     icon: 'newcomer.png',     descKey: 'levels.newcomer' },
+    { value: 2, label: 'Graduated',    icon: 'graduated.png',    descKey: 'levels.graduated' },
+    { value: 3, label: 'Emerging',     icon: 'emerging.png',     descKey: 'levels.emerging' },
+    { value: 4, label: 'Professional', icon: 'professional.png', descKey: 'levels.professional' },
+  ];
   const [activeTab, setActiveTab] = useState('seguidos');
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -121,7 +122,7 @@ const MyComunity = () => {
         setProfiles(profilesList || []);
         setTotalPages(data.totalPages || 1);
       } catch (err) {
-        setError(`No se pudieron cargar los ${activeTab}.`);
+        setError(activeTab === 'seguidos' ? t('errorFollowing') : t('errorFollowers'));
       } finally {
         setLoading(false);
       }
@@ -356,14 +357,14 @@ const MyComunity = () => {
       <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
 
         <div className="filters-modal-header">
-          <span className="filters-modal-title">Filtros</span>
+          <span className="filters-modal-title">{t('filters.title')}</span>
           <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
         </div>
 
         {/* ── EXPERIENCIA ───────────────────────────────────── */}
         {levelsWithProfiles.length > 0 && (
           <div className="filters-modal-section">
-            <p className="filters-col-title">Experiencia</p>
+            <p className="filters-col-title">{t('filters.experience')}</p>
             <div className="filters-tags filters-tags--level">
               {levelsWithProfiles.map(lvl => {
                 const sel = (filters.creativeLevel || []).includes(lvl.value);
@@ -380,7 +381,7 @@ const MyComunity = () => {
                   >
                     <img className="experience-tag-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
                     <span className="experience-tag-label">{lvl.label}</span>
-                    <span className="experience-tag-desc">{lvl.description}</span>
+                    <span className="experience-tag-desc">{t(lvl.descKey)}</span>
                   </button>
                 );
               })}
@@ -391,7 +392,7 @@ const MyComunity = () => {
         {/* ── UBICACIÓN ─────────────────────────────────────── */}
         {(countriesWithUsers.length > 0 || otherCities.length > 0) && (
           <div className="filters-modal-section">
-            <p className="filters-col-title">Ubicación</p>
+            <p className="filters-col-title">{t('filters.location')}</p>
             <div className="filters-tags filters-tags--level">
               {countriesWithUsers.map(country => {
                 const code = COUNTRY_CODES[country];
@@ -424,8 +425,8 @@ const MyComunity = () => {
                   className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
                   onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
                 >
-                  <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="Otros" /></span>
-                  Otros
+                  <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt={t('filters.others')} /></span>
+                  {t('filters.others')}
                 </button>
               )}
             </div>
@@ -437,7 +438,7 @@ const MyComunity = () => {
               return (
                 <div className="filters-country-cities">
                   {cities.length === 0 ? (
-                    <p className="filters-empty">Sin perfiles en este país</p>
+                    <p className="filters-empty">{t('filters.noProfilesInCountry')}</p>
                   ) : (
                     <div className="filters-tags filters-tags--level">
                       {cities.map(city => {
@@ -469,7 +470,7 @@ const MyComunity = () => {
         {/* ── ESPECIALIDAD ──────────────────────────────────── */}
         {groupsWithProfiles.length > 0 && (
           <div className="filters-modal-section filters-modal-section--specialty">
-            <p className="filters-col-title">Especialidad</p>
+            <p className="filters-col-title">{t('filters.specialty')}</p>
             <div className="filters-tags filters-tags--level">
               {groupsWithProfiles.map(group => {
                 const isActive = activeRoleGroup === group;
@@ -556,11 +557,11 @@ const MyComunity = () => {
           {hasActiveFilters ? (
             <button type="button" className="filters-modal-clear" onClick={clearAll}>
               <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
-              Borrar filtros
+              {t('filters.clear')}
             </button>
           ) : <span />}
           <button type="button" className="filters-modal-apply" onClick={() => setShowFiltersModal(false)}>
-            Filtrar
+            {t('filters.apply')}
           </button>
         </div>
 
@@ -572,7 +573,7 @@ const MyComunity = () => {
   return (
     <div>
       <p className="creatives-subtitle --show-mobile">
-        Conoce los perfiles que sigues y quienes te siguen. Explora tu red, descubre conexiones relevantes y filtra por ciudad o especialidad.
+        {t('subtitle')}
       </p>
 
               <div className="mycomunity-filters">
@@ -584,7 +585,7 @@ const MyComunity = () => {
                   onClick={() => { setActiveCountryPanel(null); setActiveRoleGroup(null); setShowFiltersModal(true); }}
                 >
                   <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
-                  Filtros
+                  {t('filters.title')}
                   {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
                 </button>
               </div>
@@ -598,7 +599,7 @@ const MyComunity = () => {
                         type="button"
                         className="filters-sticky-chip"
                         onClick={() => removeChip(chip.key, chip.value)}
-                        aria-label={`Quitar ${chip.label}`}
+                        aria-label={t('filters.remove', { label: chip.label })}
                       >
                         {chip.label} <span className="chip-x">×</span>
                       </button>
@@ -606,7 +607,7 @@ const MyComunity = () => {
                   </div>
                   <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
                     <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
-                    Borrar filtros
+                    {t('filters.clear')}
                   </button>
                 </div>
               )}
@@ -615,7 +616,7 @@ const MyComunity = () => {
 
       <div className="mycomunity-container">
         <div className="mycomunity-header">
-          <h1 className="centerTitle mycomunity">Mi comunidad</h1>
+          <h1 className="centerTitle mycomunity">{t('title')}</h1>
         </div>
 
         <div className="mycomunity-tabs-wrapper">
@@ -625,14 +626,14 @@ const MyComunity = () => {
               className={`mycomunity-tab ${activeTab === 'seguidos' ? 'active' : ''}`}
               onClick={() => handleTabChange('seguidos')}
             >
-              Seguidos [{followingCount}]
+              {t('tabs.following')} [{followingCount}]
             </button>
             <button
               type="button"
               className={`mycomunity-tab ${activeTab === 'seguidores' ? 'active' : ''}`}
               onClick={() => handleTabChange('seguidores')}
             >
-              Seguidores [{followersCount}]
+              {t('tabs.followers')} [{followersCount}]
             </button>
           </div>
         </div>
@@ -640,17 +641,17 @@ const MyComunity = () => {
         {showFiltersModal && renderAllFiltersModal()}
 
         {loading ? (
-          <div className="loading-indicator">Cargando perfiles...</div>
+          <div className="loading-indicator">{t('loading')}</div>
         ) : error ? (
           <div className="mycomunity-error">{error}</div>
         ) : profiles.length === 0 ? (
           <div className="loading-indicator">
             {activeTab === 'seguidos'
-              ? 'No sigues a ningún perfil. Explora la plataforma para encontrar perfiles interesantes.'
-              : 'No tienes seguidores. Comparte tu perfil para que otros usuarios puedan descubrirte.'}
+              ? t('emptyFollowing')
+              : t('emptyFollowers')}
           </div>
         ) : finalProfiles.length === 0 && hasActiveFilters ? (
-          <div className="loading-indicator">No se encontraron resultados con los filtros aplicados.</div>
+          <div className="loading-indicator">{t('noResultsFilters')}</div>
         ) : (
           <>
             <div className="mycomunity-flex">
@@ -698,15 +699,15 @@ const MyComunity = () => {
                   disabled={page === 1}
                   className="pagination-button"
                 >
-                  Anterior
+                  {t('pagination.previous')}
                 </button>
-                <span className="pagination-info">Página {page} de {totalPages}</span>
+                <span className="pagination-info">{t('pagination.pageOf', { page, totalPages })}</span>
                 <button
                   onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={page === totalPages}
                   className="pagination-button"
                 >
-                  Siguiente
+                  {t('pagination.next')}
                 </button>
               </div>
             )}

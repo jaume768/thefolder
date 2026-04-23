@@ -1,5 +1,6 @@
 // src/components/controlPanel/editProfile/tabs/SocialTab.jsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { FaInstagram, FaLinkedinIn, FaBehance, FaTumblr, FaYoutube, FaPinterest } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 import { SiSubstack } from "react-icons/si";
@@ -9,13 +10,18 @@ export default function SocialTab({
   extractUsername,
   handleSocialUsernameChange,
 }) {
+  const { t } = useTranslation("profile");
   return (
     <div>
       <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">Redes sociales</h2>
+        <h2 className="ux-card-title-h2">{t("editProfile.socialTitle")}</h2>
         <p className="ux-card-subtitle">
-          Conecta tu perfil con tus redes profesionales y creativas.<br />
-          Facilita que otros usuarios descubran tu trabajo y contacten contigo.
+          {t("editProfile.socialSubtitle").split("\\n").map((line, i) => (
+            <React.Fragment key={i}>
+              {line}
+              {i < t("editProfile.socialSubtitle").split("\\n").length - 1 && <br />}
+            </React.Fragment>
+          ))}
         </p>
       </div>
 
@@ -40,7 +46,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.instagram, "instagram.com/")}
                 onChange={(e) => handleSocialUsernameChange(e, "instagram")}
               />
@@ -66,7 +72,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.linkedin, "linkedin.com/in/")}
                 onChange={(e) => handleSocialUsernameChange(e, "linkedin")}
               />
@@ -92,7 +98,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.behance, "behance.net/")}
                 onChange={(e) => handleSocialUsernameChange(e, "behance")}
               />
@@ -118,7 +124,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.tiktok, "tiktok.com/")}
                 onChange={(e) => handleSocialUsernameChange(e, "tiktok")}
               />
@@ -144,7 +150,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.tumblr, "tumblr.com/")}
                 onChange={(e) => handleSocialUsernameChange(e, "tumblr")}
               />
@@ -170,7 +176,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.youtube, "youtube.com/")}
                 onChange={(e) => handleSocialUsernameChange(e, "youtube")}
               />
@@ -196,7 +202,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="text"
                 autoComplete="off"
-                placeholder="Escribe tu usuario"
+                placeholder={t("editProfile.placeholderUsername")}
                 value={extractUsername(draft?.social?.pinterest, "pinterest.com/")}
                 onChange={(e) => handleSocialUsernameChange(e, "pinterest")}
               />
@@ -219,7 +225,7 @@ export default function SocialTab({
                 className="ux-social-field"
                 type="url"
                 autoComplete="off"
-                placeholder="https://tuusuario.substack.com"
+                placeholder={t("editProfile.placeholderSubstack")}
                 value={draft?.social?.substack || ""}
                 onChange={(e) => handleSocialUsernameChange(e, "substack")}
               />

@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/Legal.css';
 
 const AvisoLegal = () => {
+    const { t } = useTranslation('legal');
     const navigate = useNavigate();
 
     const goBack = () => {
@@ -13,8 +15,8 @@ const AvisoLegal = () => {
     return (
         <div className="legal-container">
             <div className="legal-content">
-                <h1 className="legal-title">Aviso Legal</h1>
-                <p className="legal-version">Actualizado: Abril de 2026 · Versión: 2.0</p>
+                <h1 className="legal-title">{t('avisoLegal.title')}</h1>
+                <p className="legal-version">{t('avisoLegal.version')}</p>
 
                 <p className="legal-paragraph">
                     El presente documento constituye el Aviso Legal de THEFOLDER y regula la relación entre la plataforma y las personas usuarias del servicio. THEFOLDER cumple con lo establecido en la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), el Reglamento (UE) 2016/679, Reglamento General de Protección de Datos (RGPD), y la Ley Orgánica 3/2018, de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).

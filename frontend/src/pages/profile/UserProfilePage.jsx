@@ -1,6 +1,7 @@
 // UserProfile.jsx
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import ProfileIndexGallery from "./ProfileIndexGallery";
 import ProfileStudioGallery from "./ProfileStudioGallery";
@@ -33,6 +34,7 @@ import LandingHeader from "../../components/landing/LandingHeader";
 
 
 const UserProfile = () => {
+  const { t } = useTranslation("profile");
 
   const isLoggedIn = !!localStorage.getItem("authToken");
 
@@ -89,7 +91,7 @@ const UserProfile = () => {
     setExternalLinkModal({ open: true, url: full });
   };
 
-  // ✅ responsive
+  // responsive
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);
@@ -147,7 +149,7 @@ const UserProfile = () => {
   };
   
 
-  // ✅ carga perfil + posts (sin hoisting issues)
+  // carga perfil + posts (sin hoisting issues)
   useEffect(() => {
     // Reset al cambiar de usuario para evitar que datos del perfil anterior
     // (especialmente fallbackHeaderImage) se muestren en el nuevo perfil.
@@ -206,7 +208,7 @@ const UserProfile = () => {
         setLoading(false);
       } catch (e) {
         setError(
-          "No se pudo cargar el perfil del usuario. El usuario puede no existir o haber ocurrido un error en el servidor."
+          t("notifications.profileLoadError")
         );
         setLoading(false);
         setPostsLoading(false);
@@ -236,7 +238,7 @@ const UserProfile = () => {
     fetchRoleLabels();
   }, []);
 
-  // ✅ fallback header image (si no hay featuredHeaderImage)
+  // fallback header image (si no hay featuredHeaderImage)
   useEffect(() => {
     if (!profile) {
       setFallbackHeaderImage(null);
@@ -263,7 +265,7 @@ const UserProfile = () => {
     setFallbackHeaderImage(validPosts[randomIndex].mainImage);
   }, [profile, userPosts]);
 
-  // ✅ ofertas (UN SOLO flujo)
+  // ofertas (UN SOLO flujo)
   useEffect(() => {
     const fetchOffers = async () => {
       if (!profile) return;
@@ -287,7 +289,7 @@ const UserProfile = () => {
     fetchOffers();
   }, [profile, isCompany, isEducationalInstitution, username]);
 
-  // ✅ follow/unfollow
+  // follow/unfollow
   const handleFollow = async () => {
     try {
       setFollowLoading(true);
@@ -304,20 +306,20 @@ const UserProfile = () => {
 
       setIsFollowing(true);
       setIsNotificationActive(true);
-      showNotification("success", "Ahora sigues a este usuario");
+      showNotification("success", t("notifications.nowFollowing"));
     } catch (e) {
-      let errorMessage = "Ha ocurrido un error. Por favor, inténtalo de nuevo.";
+      let errorMessage = t("notifications.genericError");
       if (e.response) {
         if (e.response.status === 401) {
-          errorMessage = "Debes iniciar sesión para realizar esta acción.";
+          errorMessage = t("notifications.loginRequired");
           navigate("/login");
         } else if (e.response.status === 404) {
-          errorMessage = "Usuario no encontrado.";
+          errorMessage = t("notifications.userNotFound");
         } else if (e.response.status === 400) {
           errorMessage = e.response.data?.error || errorMessage;
         }
       } else if (e.request) {
-        errorMessage = "No se pudo conectar con el servidor. Verifica tu conexión.";
+        errorMessage = t("notifications.connectionError");
       }
 
       showNotification("error", errorMessage);
@@ -340,20 +342,20 @@ const UserProfile = () => {
 
       setIsFollowing(false);
       setIsNotificationActive(false);
-      showNotification("success", "Has dejado de seguir a este usuario");
+      showNotification("success", t("notifications.unfollowed"));
     } catch (e) {
-      let errorMessage = "Ha ocurrido un error. Por favor, inténtalo de nuevo.";
+      let errorMessage = t("notifications.genericError");
       if (e.response) {
         if (e.response.status === 401) {
-          errorMessage = "Debes iniciar sesión para realizar esta acción.";
+          errorMessage = t("notifications.loginRequired");
           navigate("/login");
         } else if (e.response.status === 404) {
-          errorMessage = "Usuario no encontrado.";
+          errorMessage = t("notifications.userNotFound");
         } else if (e.response.status === 400) {
           errorMessage = e.response.data?.error || errorMessage;
         }
       } else if (e.request) {
-        errorMessage = "No se pudo conectar con el servidor. Verifica tu conexión.";
+        errorMessage = t("notifications.connectionError");
       }
 
       showNotification("error", errorMessage);
@@ -391,7 +393,7 @@ const UserProfile = () => {
   if (loading) {
     return (
       <div className="user-extern-loading">
-        <p className="loading-indicator">Cargando perfil...</p>
+        <p className="loading-indicator">{t("loading")}</p>
       </div>
     );
   }
@@ -399,9 +401,9 @@ const UserProfile = () => {
   if (error) {
     return (
       <div className="user-extern-error">
-        <h2>Error</h2>
+        <h2>{t("common.error")}</h2>
         <p>{error}</p>
-        <button onClick={() => navigate("/explorer")}>Volver al explorador</button>
+        <button onClick={() => navigate("/explorer")}>{t("backToExplorer")}</button>
       </div>
     );
   }
@@ -480,15 +482,15 @@ const UserProfile = () => {
             onLoginClick={() => navigate("/", { state: { showLogin: true } })}
             onRegisterClick={() => navigate("/", { state: { showRegister: true } })}
           />
-          <div className="tf-guest-profile" role="dialog" aria-label="Invitación registro">
+          <div className="tf-guest-profile" role="dialog" aria-label={t("guestAriaLabel")}>
             <button
               type="button"
               className="tf-btn tf-btn--CTA"
               onClick={() => navigate("/", { state: { showRegister: true } })}
             >
-              Crea tu perfil
+              {t("guestCta")}
               <br />
-              en THEFOLDER ↗
+              {t("guestCtaLine2")}
             </button>
           </div>
         </>
@@ -525,7 +527,7 @@ const UserProfile = () => {
               <div className="resume-avatar-wrapper">
                 <img
                   src={profileImage}
-                  alt={profile?.username || "Foto de perfil"}
+                  alt={profile?.username || t("default.profilePictureAlt")}
                   className="resume-avatar"
                 />
               </div>
@@ -534,8 +536,8 @@ const UserProfile = () => {
             <div className="title-user-extern-container">
               <h1 className="user-extern-fullname">
                 {isCompany || isEducationalInstitution
-                  ? profile?.companyName || "Nombre de la Empresa/Institución"
-                  : profile?.fullName || "Nombre Completo"}
+                  ? profile?.companyName || t("default.externalCompanyName")
+                  : profile?.fullName || t("default.externalFullName")}
               </h1>
 
               {Array.isArray(profile?.profileHeadlines) &&
@@ -582,19 +584,19 @@ const UserProfile = () => {
                   onClick={isFollowing ? handleUnfollow : handleFollow}
                   disabled={followLoading}
                 >
-                  {followLoading ? "Cargando..." : isFollowing ? (
+                  {followLoading ? t("follow.loading") : isFollowing ? (
                     <p className="normal-14px-text">
-                      <i>Siguiendo </i>
+                      <i>{t("follow.following")} </i>
                     </p>
                   ) : (
-                    <p className="normal-14px-text">Seguir +</p>
+                    <p className="normal-14px-text">{t("follow.follow")}</p>
                   )}
                 </button>
                 )}
 
                 {profile?.email && (
                   <button className="resume-contact-btn" onClick={() => setShowEmailPopup(true)}>
-                    Contactar
+                    {t("contact.button")}
                   </button>
                 )}
               </div>
@@ -619,7 +621,7 @@ const UserProfile = () => {
 
               {profile?.social?.representationName && (
                 <div className="resume-website resume-representation">
-                  <span className="resume-representation__label">Represented by </span>
+                  <span className="resume-representation__label">{t("representation.label")}</span>
                   {profile.social.representationWeb ? (
                     <button
                       type="button"
@@ -642,13 +644,13 @@ const UserProfile = () => {
 
         {/* TABS — solo si hay datos de CV */}
         {hasCvData && (
-          <nav className="guardados-tabs" aria-label="Navegación perfil">
+          <nav className="guardados-tabs" aria-label={t("guestAriaLabel")}>
             <button
               type="button"
               className={`tab portfolio ${activeTab === "publicaciones" ? "active" : ""}`}
               onClick={() => setActiveTab("publicaciones")}
             >
-              Portfolio
+              {t("tabs.portfolio")}
             </button>
 
             <button
@@ -656,7 +658,7 @@ const UserProfile = () => {
               className={`tab portfolio ${activeTab === "perfil" ? "active" : ""}`}
               onClick={() => setActiveTab("perfil")}
             >
-              About (CV)
+              {t("tabs.cv")}
             </button>
           </nav>
         )}
@@ -667,7 +669,7 @@ const UserProfile = () => {
             <UserGallery
               posts={userPosts}
               loading={postsLoading}
-              emptyMessage={isOwner ? undefined : "Este perfil todavía no tiene publicaciones."}
+              emptyMessage={isOwner ? undefined : t("emptyPostsExternal")}
               emptyContent={isOwner ? (
                 <p className="user-extern-no-content user-extern-no-content--owner">
                   <button
@@ -675,9 +677,9 @@ const UserProfile = () => {
                     className="user-extern-publish-link"
                     onClick={openCreatePost}
                   >
-                    Publica
+                    {t("publishFirst")}
                   </button>
-                  {" tu primer proyecto y forma parte del directorio de creativos."}
+                  {t("publishFirstRest")}
                 </p>
               ) : undefined}
               galleryStyle={profile?.galleryStyle || "gap"}
@@ -756,11 +758,11 @@ const UserProfile = () => {
         <div className="success-popup-overlay" onClick={() => setShowEmailPopup(false)}>
           <div className="success-popup" onClick={(e) => e.stopPropagation()}>
             <div className="success-popup-header">
-              <h3>Información de contacto</h3>
+              <h3>{t("contact.popupTitle")}</h3>
               <button
                 className="email-popup-close"
                 onClick={() => setShowEmailPopup(false)}
-                title="Cerrar"
+                title={t("contact.closeTitle")}
               >
                 <FaTimes />
               </button>
@@ -772,12 +774,12 @@ const UserProfile = () => {
                   className="copy-email-btn"
                   onClick={() => {
                     navigator.clipboard.writeText(profile?.email || "");
-                    showNotification("success", "Email copiado al portapapeles");
+                    showNotification("success", t("contact.copied"));
                     setShowEmailPopup(false);
                   }}
-                  title="Copiar email"
+                  title={t("contact.copy") + " email"}
                 >
-                  <FaCopy /> Copiar
+                  <FaCopy /> {t("contact.copy")}
                 </button>
               </div>
             </div>
@@ -793,12 +795,12 @@ const UserProfile = () => {
           aria-modal="true"
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <p className="modal-content-title">Estás saliendo de la plataforma</p>
-            <p className="modal-content-subtitle">Verifica el enlace antes de continuar.</p>
+            <p className="modal-content-title">{t("externalLink.title")}</p>
+            <p className="modal-content-subtitle">{t("externalLink.subtitle")}</p>
             <div className="modal-content-link">{externalLinkModal.url}</div>
             <div className="modal-actions">
               <button onClick={() => setExternalLinkModal({ open: false, url: "" })}>
-                Cancelar
+                {t("externalLink.cancel")}
               </button>
               <button
                 onClick={() => {
@@ -806,7 +808,7 @@ const UserProfile = () => {
                   setExternalLinkModal({ open: false, url: "" });
                 }}
               >
-                Continuar
+                {t("externalLink.continue")}
               </button>
             </div>
           </div>

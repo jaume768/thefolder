@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const WebsiteForm = ({ formData, handleInputChange, errors }) => {
+    const { t } = useTranslation('offers');
     return (
         <div className="create-educational-form-section">
-            <h3>Página web donde ampliar información</h3>
+            <h3>{t('create.websiteForm.title')}</h3>
             <div className="create-educational-form-field">
                 <input
                     type="url"
@@ -11,7 +13,7 @@ const WebsiteForm = ({ formData, handleInputChange, errors }) => {
                     name="websiteUrl"
                     value={formData.websiteUrl}
                     onChange={handleInputChange}
-                    placeholder="Escribe aquí tu enlace"
+                    placeholder={t('create.websiteForm.placeholder')}
                 />
                 {errors.websiteUrl && <span className="create-educational-error-message">{errors.websiteUrl}</span>}
             </div>

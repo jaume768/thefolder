@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import './css/login-modal.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
@@ -9,6 +10,7 @@ const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const { t } = useTranslation('auth');
 
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
@@ -37,10 +39,10 @@ const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
                 const needsWizard = !user.accountType && !user.profileCompleted;
                 navigate(needsWizard ? '/complete-registration' : '/explorer');
             } else {
-                setError(data.message || 'Error en el inicio de sesión');
+                setError(data.message || t('login.genericError'));
             }
         } catch (err) {
-            setError('Error de red, inténtalo nuevamente.');
+            setError(t('login.networkError'));
         }
     };
 
@@ -58,27 +60,27 @@ const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
         className={`login-card ${error ? 'with-error' : ''}`}
         onClick={(e) => e.stopPropagation()} // click dentro → NO cerrar
         >
-        <h1>Inicio de sesión</h1>
+        <h1>{t('login.title')}</h1>
         {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleLogin}>
             <div className="input-group">
-            <label htmlFor="email">Correo electrónico</label>
+            <label htmlFor="email">{t('login.email')}</label>
             <input
                 id="email"
                 type="email"
-                placeholder="tu@email.com"
+                placeholder={t('login.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
             </div>
 
             <div className="input-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">{t('login.password')}</label>
             <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="••••••"
+                placeholder={t('login.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
@@ -86,7 +88,7 @@ const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
             >
                 {showPassword ? <FaEye /> : <FaEyeSlash />}
             </button>
@@ -100,22 +102,22 @@ const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
                 onSwitchToReset();
             }}
             >
-            ¿Has olvidado tu contraseña?
+            {t('login.forgot')}
             </a>
 
             <button className="btn login-btn" type="submit">
-            Iniciar sesión
+            {t('login.submit')}
             </button>
         </form>
 
         <button className="btn google-btn" onClick={handleGoogleLogin}>
             <img src="/iconos/google-logo.png" alt="Google" className="google-icon" />
-            Continuar con Google
+            {t('login.google')}
         </button>
 
         <div className="extra-links">
             <p>
-            ¿No tienes cuenta?{' '}
+            {t('login.noAccount')}{' '}
             <a
                 href="#"
                 onClick={(e) => {
@@ -123,7 +125,7 @@ const LoginModal = ({ onClose, onSwitchToRegister, onSwitchToReset }) => {
                 onSwitchToRegister();
                 }}
             >
-                Regístrate
+                {t('login.registerLink')}
             </a>
             </p>
         </div>

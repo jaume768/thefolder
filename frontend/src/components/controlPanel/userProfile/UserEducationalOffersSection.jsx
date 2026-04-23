@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaGraduationCap, FaCalendarAlt, FaMapMarkerAlt, FaFilter, FaTag } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const UserEducationalOffersSection = ({ offers = [] }) => {
+  const { t } = useTranslation('profile');
     const [statusFilter, setStatusFilter] = useState('all');
 
     if (!Array.isArray(offers) || offers.length === 0) {
@@ -11,8 +13,8 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
                 <div className="user-extern-offers-empty-icon">
                     <FaGraduationCap />
                 </div>
-                <h3>No hay ofertas educativas publicadas</h3>
-                <p>Esta institución aún no ha publicado ninguna oferta educativa.</p>
+                <h3>{t('offers.emptyEducationalTitle')}</h3>
+                <p>{t('offers.emptyEducationalDesc')}</p>
             </div>
         );
     }
@@ -20,11 +22,11 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
     // Helper function to translate status
     const translateStatus = (status) => {
         switch (status) {
-            case 'pending': return 'Pendiente';
-            case 'accepted': return 'Aceptada';
-            case 'cancelled': return 'Cancelada';
-            case 'active': return 'Activa';
-            default: return 'Activa';
+            case 'pending': return t('status.pending');
+            case 'accepted': return t('status.accepted');
+            case 'cancelled': return t('status.cancelled');
+            case 'active': return t('status.active');
+            default: return t('status.active');
         }
     };
 
@@ -43,7 +45,7 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
     const formatDate = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', {
+        return date.toLocaleDateString(document.documentElement.lang || 'es-ES', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
@@ -56,13 +58,13 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
                 <div className="user-extern-offers-filter">
                     <div className="user-extern-filter-header">
                         <FaFilter className="user-extern-filter-icon" />
-                        <span>Filtro activo: {translateStatus(statusFilter)}</span>
+                        <span>{t('offers.filterActive')}: {translateStatus(statusFilter)}</span>
                     </div>
                     <button 
                         className="user-extern-clear-filter" 
                         onClick={() => setStatusFilter('all')}
                     >
-                        Mostrar todas
+                        {t('offers.showAll')}
                     </button>
                 </div>
             )}
@@ -70,13 +72,13 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
             <div className="user-extern-offers-container">
                 {filteredOffers.length === 0 ? (
                     <div className="user-extern-no-filtered-offers">
-                        No hay ofertas educativas con el filtro seleccionado
+                        {t('offers.noFiltered')}
                     </div>
                 ) : (
                     filteredOffers.map((offer, index) => (
                         <div key={offer._id || index} className="user-extern-offer-card">
                             <div className="user-extern-offer-header">
-                                <span className="user-extern-offer-type">{offer.programName || offer.title || 'Oferta educativa'}</span>
+                                <span className="user-extern-offer-type">{offer.programName || offer.title || t('offers.educationalOffer')}</span>
                                 <div className="user-extern-offer-metadata">
                                     {offer.duration && (
                                         <>
@@ -96,7 +98,7 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
                                     {offer.practices && (
                                         <>
                                             <span className="user-extern-offer-separator">|</span>
-                                            <span className="user-extern-offer-practices">Prácticas</span>
+                                            <span className="user-extern-offer-practices">{t('sections.practices')}</span>
                                         </>
                                     )}
                                     {offer.publicationDate && (
@@ -114,7 +116,7 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
                             <div className="user-extern-offer-description">
                                 <p>{offer.description && offer.description.length > 150 
                                     ? `${offer.description.substring(0, 150)}...` 
-                                    : offer.description || 'No hay descripción disponible.'}</p>
+                                    : offer.description || t('offers.noDescription')}</p>
                             </div>
                             
                             {offer.location && (
@@ -125,7 +127,7 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
                                             ? offer.location 
                                             : offer.location.city 
                                                 ? `${offer.location.city}${offer.location.country ? `, ${offer.location.country}` : ''}` 
-                                                : 'Ubicación no especificada'}
+                                                : t('header.locationNotSpecified')}
                                     </span>
                                 </div>
                             )}
@@ -142,13 +144,13 @@ const UserEducationalOffersSection = ({ offers = [] }) => {
                                 ) : offer.studyType ? (
                                     <span className="user-extern-offer-tag">{offer.studyType}</span>
                                 ) : (
-                                    <span className="user-extern-offer-tag">Sin categorías</span>
+                                    <span className="user-extern-offer-tag">{t('sections.noCategories')}</span>
                                 )}
                             </div>
                             
                             <div className="user-extern-offer-footer">
                                 <Link to={`/EducationalOfferDetail/${offer._id}`} className="user-extern-offer-button">
-                                    Más información
+                                    {t('sections.moreInfo')}
                                 </Link>
                             </div>
                         </div>

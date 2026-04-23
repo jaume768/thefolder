@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const closeIcon = "/iconos/close.svg";
 
@@ -10,6 +11,7 @@ export default function SoftSkillsSection({
   handleSoftSkillsKeyDown,
   removeSoftSkillTag,
 }) {
+  const { t } = useTranslation("profile");
   const tags = Array.isArray(softSkillsTags) ? softSkillsTags : [];
 
   return (
@@ -17,11 +19,11 @@ export default function SoftSkillsSection({
       <div className="ux-card">
         <h3 className="ux-form-label separator">
           <img src="/iconos/softskills.png" className="ux-section-icon" alt="" />
-          Softskills
+          {t("sections.softskills")}
         </h3>
 
         <p className="ux-hardskills-subtitle">
-          Añade etiquetas que describan tu forma de trabajar y colaborar con otros. (Trabajo en equipo, atención al detalle, etc.)
+          {t("editProfile.softSkillsSubtitle")}
         </p>
 
         {/* ✅ Caja visual con tags dentro */}
@@ -34,9 +36,9 @@ export default function SoftSkillsSection({
                   type="button"
                   className="ux-tag-x"
                   onClick={() => removeSoftSkillTag(idx)}
-                  aria-label="Eliminar"
+                  aria-label={t("editProfile.removeLabel")}
                 >
-                  <img src={closeIcon} className="ux-icon-sm" alt="Eliminar" />
+                  <img src={closeIcon} className="ux-icon-sm" alt={t("editProfile.removeLabel")} />
                 </button>
               </span>
             ))}
@@ -52,7 +54,7 @@ export default function SoftSkillsSection({
               type="text"
               autoComplete="off"
               className="ux-tags-input"
-              placeholder="Escribe aquí."
+              placeholder={t("editProfile.typeHere")}
               value={softSkillsInput}
               onChange={(e) => setSoftSkillsInput(e.target.value)}
               onKeyDown={handleSoftSkillsKeyDown}
@@ -62,11 +64,11 @@ export default function SoftSkillsSection({
         )}
 
         <p className="ux-helper">
-          Presiona "Enter" al finalizar de escribir para añadir una etiqueta. Elimina haciendo clic en la X.
+          {t("editProfile.pressEnterToAdd")}
         </p>
 
         <div className="ux-helper">
-          <span>Máximo 10 etiquetas.</span>
+          <span>{t("editProfile.max10Tags")}</span>
           <span>{tags.length}/10</span>
         </div>
       </div>

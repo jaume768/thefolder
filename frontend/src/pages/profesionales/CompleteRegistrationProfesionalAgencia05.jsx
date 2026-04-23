@@ -1,27 +1,29 @@
 // CompleteRegistrationProfesionalAgencia05.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../css/complete-registration.css';
 
 const CompleteRegistrationProfesionalAgencia05 = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('onboarding');
     const [companyName, setCompanyName] = useState("");
     const [agencyServices, setAgencyServices] = useState("");
     const [shareName, setShareName] = useState(true);
     const [error, setError] = useState(""); // Estado para mensaje de error
 
     const serviceOptions = [
-        "Gestión de talentos",
-        "Dirección creativa o producción",
-        "Fotografía y video",
-        "Consultoría y estrategia de marca",
-        "Organización de desfiles",
-        "Marketing digital"
+        t('profesional.services.talent'),
+        t('profesional.services.creative'),
+        t('profesional.services.photo'),
+        t('profesional.services.consulting'),
+        t('profesional.services.shows'),
+        t('profesional.services.digital')
     ];
 
     const handleNext = async () => {
         if (!companyName || !agencyServices) {
-            setError("Por favor, completa todos los campos requeridos.");
+            setError(t('profesional.errors.requiredFields'));
             return;
         }
         setError("");
@@ -45,10 +47,10 @@ const CompleteRegistrationProfesionalAgencia05 = () => {
             if (response.ok) {
                 navigate('/creativo/registro/final');
             } else {
-                setError(data.error || "Ha ocurrido un error.");
+                setError(data.error || t('profesional.errors.genericError'));
             }
         } catch (error) {
-            setError("Error en la conexión o en el servidor.");
+            setError(t('profesional.errors.connection'));
         }
     };
 
@@ -59,13 +61,13 @@ const CompleteRegistrationProfesionalAgencia05 = () => {
     return (
         <div className="complete-registration-container">
             <div className="contenedor-registro-objetivo">
-                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>paso 5</p>
-                <h2 className="titulo">Últimos datos...</h2>
+                <p className="paso" style={{ color: 'gray', fontSize: '0.8rem' }}>{t('profesional.step', { n: 5 })}</p>
+                <h2 className="titulo">{t('profesional.lastDataTitle')}</h2>
                 <div className="form-group-datos">
-                    <label>Nombre de la Empresa</label>
+                    <label>{t('profesional.companyName')}</label>
                     <input
                         type="text"
-                        placeholder="Introduce el nombre"
+                        placeholder={t('profesional.namePlaceholder')}
                         value={companyName}
                         onChange={(e) => {
                             setCompanyName(e.target.value);
@@ -80,11 +82,11 @@ const CompleteRegistrationProfesionalAgencia05 = () => {
                             checked={!shareName}
                             onChange={(e) => setShareName(!e.target.checked)}
                         />
-                        <span>Prefiero no compartir esta información</span>
+                        <span>{t('profesional.dontShare')}</span>
                     </div>
                 </div>
                 <div className="form-group-datos">
-                    <label>¿Servicios que ofrece?</label>
+                    <label>{t('profesional.agencyServices')}</label>
                     <select
                         value={agencyServices}
                         onChange={(e) => {
@@ -94,7 +96,7 @@ const CompleteRegistrationProfesionalAgencia05 = () => {
                         className="input-field"
                         style={{ backgroundColor: '#f0f0f0', color: '#000' }}
                     >
-                        <option value="">Selecciona una opción</option>
+                        <option value="">{t('profesional.selectOption')}</option>
                         {serviceOptions.map((option, index) => (
                             <option key={index} value={option}>{option}</option>
                         ))}
@@ -111,10 +113,10 @@ const CompleteRegistrationProfesionalAgencia05 = () => {
                         onClick={handleBack}
                         style={{ background: 'none', border: 'none', color: '#000', cursor: 'pointer' }}
                     >
-                        &#8592; Volver atrás
+                        &#8592; {t('common.back')}
                     </button>
                     <button className="next-button" onClick={handleNext}>
-                        Siguiente
+                        {t('common.next')}
                     </button>
                 </div>
                 <div className="pagination-dots" style={{ marginTop: '1rem' }}>

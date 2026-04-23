@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "../modals/css/editprofilemodal.css";
 import closeIcon from "../../../public/iconos/close.svg";
 
 
 export default function Modal({ open, title, children, onClose, footer }) {
+  const { t } = useTranslation('common');
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -20,8 +22,8 @@ export default function Modal({ open, title, children, onClose, footer }) {
       <div className="ux-modal" onClick={(e) => e.stopPropagation()}>
         <div className="ux-modal-header">
           <h3 className="ux-modal-title">{title}</h3>
-          <button className="ux-modal-close" onClick={onClose} aria-label="Cerrar">
-            <img src={closeIcon} className="ux-icon" alt="Cerrar" />
+          <button className="ux-modal-close" onClick={onClose} aria-label={t('actions.close')}>
+            <img src={closeIcon} className="ux-icon" alt={t('actions.close')} />
           </button>
         </div>
 

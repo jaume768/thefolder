@@ -1,0 +1,11 @@
+{
+  "title": "Magazine",
+  "description": "Annual publication of emerging talent in design and fashion, with projects and collections created by students and graduates.",
+  "ownPublication": "Do you have your own publication?",
+  "contactUs": "If you are self-published or want to showcase your project in this space, write to us at <a href=\"mailto:thefolderworld@gmail.com\">thefolderworld@gmail.com</a>. We want to meet you!",
+  "loading": "Loading magazines...",
+  "noMagazines": "No magazines available at this time.",
+  "unavailable": "Not available",
+  "errorLoad": "Could not load magazines",
+  "errorConnect": "Error connecting to server"
+}

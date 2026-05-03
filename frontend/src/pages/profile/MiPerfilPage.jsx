@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import "../../components/controlPanel/css/miPerfil.css";
 import { clImg } from "../../utils/optimizeImage";
+import { formatUserLocation } from "../../utils/locations";
 
 import { FaTimes, FaCopy } from "react-icons/fa";
 
@@ -306,10 +307,7 @@ return (
             <div className="resume-section miPerfil-location-section">
               <p className="resume-location miPerfil-location">
                 <span>[</span>
-                {profile?.city && profile?.country
-                  ? `${profile.city}, ${profile.country}`
-                  : profile?.city || profile?.country || ""}
-                {profile?.city2 ? ` | ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
+                {formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2 })}
                 <span>]</span>
               </p>
             </div>

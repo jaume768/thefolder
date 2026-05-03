@@ -10,6 +10,7 @@ import { useCreatePost } from "../../contexts/CreatePostContext";
 import "../../components/controlPanel/css/UserProfileExtern.css";
 import "../../components/controlPanel/css/UserProfile.css";
 import { clImg } from "../../utils/optimizeImage";
+import { formatUserLocation } from "../../utils/locations";
 import { FaCheckCircle, FaExclamationCircle, FaCopy, FaTimes } from "react-icons/fa";
 
 // Componentes
@@ -567,10 +568,7 @@ const UserProfile = () => {
               <div className="resume-section">
                 <p className="resume-location">
                   <span>[</span>
-                  {profile?.city && profile?.country
-                    ? `${profile.city}, ${profile.country}`
-                    : profile?.city || profile?.country || ""}
-                  {profile?.city2 ? ` | ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
+                  {formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2 })}
                   <span>]</span>
                 </p>
               </div>

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FaUserPlus, FaUserCheck, FaBell, FaBellSlash, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { clImg } from '../../../utils/optimizeImage';
+import { formatUserLocation } from '../../../utils/locations';
 
 const UserProfileHeader = ({ 
     profile, 
@@ -40,10 +41,8 @@ const UserProfileHeader = ({
                             {profile?.professionalTitle || t('sections.defaultTitle')}
                         </p>
                         <p className="user-profile-location">
-                            {profile?.city && profile?.country
-                                ? `${profile.city}, ${profile.country}`
-                                : profile?.city || t('header.locationNotSpecified')}
-                            {profile?.city2 ? ` · ${profile.city2}${profile.country2 ? `, ${profile.country2}` : ""}` : ""}
+                            {formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2 })
+                              || t('header.locationNotSpecified')}
                         </p>
                         <div className="user-profile-stats">
                             <span className="user-profile-stat">

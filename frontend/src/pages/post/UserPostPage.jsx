@@ -13,6 +13,7 @@ import "../../components/controlPanel/css/explorer.css";
 import "../../components/controlPanel/css/MasonryGallery.css";
 import Masonry from "react-masonry-css";
 import { clImg } from "../../utils/optimizeImage";
+import { formatUserLocation } from "../../utils/locations";
 
 const GUEST_POST_LIMIT = 3;
 
@@ -1051,11 +1052,7 @@ const UserPost = () => {
                                   </h2>
                               </div>
                             <p className="perfil__ubicacion">
-                                {post.user?.city && post.user?.country
-                                ? `${post.user?.city}, ${post.user?.country}`
-                                : post.user?.city || ""}
-                                {post.user?.city2 ? ` |
-                                 ${post.user.city2}${post.user.country2 ? `, ${post.user.country2}` : ""}` : ""}
+                                {formatUserLocation(post.user?.city, post.user?.country, t, { city2: post.user?.city2, country2: post.user?.country2 })}
                             </p>
                             </div>
                         </div>

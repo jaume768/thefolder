@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
 import { clImg } from '../../../utils/optimizeImage';
+import LogoWithFallback from '../userProfile/LogoWithFallback';
 
 const ProfessionalExperienceSection = ({ professionalFormation }) => {
     const { t } = useTranslation('profile');
@@ -60,15 +61,11 @@ const ProfessionalExperienceSection = ({ professionalFormation }) => {
             <div className="experience-list">
                 {validExperience.map((exp, index) => (
                     <div key={index} className="experience-item">
-                        <div className="experience-logo">
-                            {exp.companyLogo ? (
-                                <img src={clImg.logo(exp.companyLogo)} alt={exp.institution || t('sections.company')} />
-                            ) : (
-                                <div className="experience-logo-placeholder">
-                                    {exp.institution ? exp.institution.charAt(0).toUpperCase() : 'E'}
-                                </div>
-                            )}
-                        </div>
+                        <LogoWithFallback
+                            src={clImg.logo(exp.companyLogo)}
+                            name={exp.institution || t('sections.company')}
+                            alt={exp.institution || t('sections.company')}
+                        />
                         <div className="experience-content">
                             <h3 className="experience-title">{exp.title}</h3>
                             <p className="experience-company">{exp.institution}</p>

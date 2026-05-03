@@ -3,6 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
 import { clImg } from '../../../utils/optimizeImage';
+import LogoWithFallback from './LogoWithFallback';
 
 const UserEducationSection = ({ education }) => {
   const { t } = useTranslation('profile');
@@ -72,18 +73,11 @@ const UserEducationSection = ({ education }) => {
       <div className="experience-list">
         {validEducation.map((edu, index) => (
           <div key={index} className="experience-item">
-            <div className="experience-logo">
-              {edu.institutionLogo ? (
-                <img
-                  src={clImg.logo(edu.institutionLogo)}
-                  alt={edu.institution || edu.otherInstitution || t('sections.institution')}
-                />
-              ) : (
-                <div className="experience-logo-placeholder">
-                  {edu.institution ? edu.institution.charAt(0).toUpperCase() : t('sections.institution').charAt(0)}
-                </div>
-              )}
-            </div>
+            <LogoWithFallback
+              src={clImg.logo(edu.institutionLogo)}
+              name={edu.institution || edu.otherInstitution || t('sections.institution')}
+              alt={edu.institution || edu.otherInstitution || t('sections.institution')}
+            />
 
             <div className="experience-content">
               {edu.educationType && (

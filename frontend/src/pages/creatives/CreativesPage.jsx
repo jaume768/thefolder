@@ -5,7 +5,7 @@ import Masonry from "react-masonry-css";
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/explorer.css';
 import '../../components/controlPanel/css/Creatives.css';
-import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
+import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES, formatUserLocation } from "../../utils/locations";
 import { AuthContext } from '../../contexts/AuthContext';
 import { useCreatePost } from '../../contexts/CreatePostContext';
 import RegisterModal from '../../components/landing/RegisterModal';
@@ -813,13 +813,7 @@ const Creatives = () => {
 
                 {(creative.city || creative.city2) && (
                   <div className="creative-location">
-                    {creative.city}
-                    {creative.country && COUNTRY_CODES[creative.country]
-                      ? `, ${COUNTRY_CODES[creative.country]}`
-                      : creative.country
-                        ? `, ${creative.country}`
-                        : ""}
-                    {creative.city2 ? ` | ${creative.city2}${creative.country2 && COUNTRY_CODES[creative.country2] ? `, ${COUNTRY_CODES[creative.country2]}` : creative.country2 ? `, ${creative.country2}` : ""}` : ""}
+                    {formatUserLocation(creative.city, creative.country, t, { city2: creative.city2, country2: creative.country2 })}
                   </div>
                 )}
               </div>

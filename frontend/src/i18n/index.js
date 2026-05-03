@@ -40,6 +40,8 @@ import modalsES from './locales/es/modals.json';
 import modalsEN from './locales/en/modals.json';
 import legalES from './locales/es/legal.json';
 import legalEN from './locales/en/legal.json';
+import filtersES from './locales/es/filters.json';
+import filtersEN from './locales/en/filters.json';
 
 const resources = {
   es: {
@@ -61,6 +63,7 @@ const resources = {
     fashion: fashionES,
     modals: modalsES,
     legal: legalES,
+    filters: filtersES,
   },
   en: {
     common: commonEN,
@@ -81,6 +84,7 @@ const resources = {
     fashion: fashionEN,
     modals: modalsEN,
     legal: legalEN,
+    filters: filtersEN,
   },
 };
 
@@ -99,7 +103,7 @@ i18n
     fallbackLng: 'es',
     supportedLngs: ['es', 'en'],
     load: 'languageOnly',
-    ns: ['common', 'home', 'auth', 'onboarding', 'explorer', 'offers', 'post', 'profile', 'blog', 'magazine', 'landing', 'industry', 'community', 'saved', 'creatives', 'fashion', 'modals', 'legal'],
+    ns: ['common', 'home', 'auth', 'onboarding', 'explorer', 'offers', 'post', 'profile', 'blog', 'magazine', 'landing', 'industry', 'community', 'saved', 'creatives', 'fashion', 'modals', 'legal', 'filters'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false, // React ya protege contra XSS

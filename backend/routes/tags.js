@@ -38,6 +38,7 @@ router.get("/", async (req, res, next) => {
       tags: tags.map((t) => ({
         id: t.id,
         label: t.label,
+        labelEn: t.labelEn || "",
         type: t.type,
         group: t.group,
         order: t.order,

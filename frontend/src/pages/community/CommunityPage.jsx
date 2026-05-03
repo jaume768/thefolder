@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from "../../utils/locations";
+import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES, formatUserLocation } from "../../utils/locations";
 import { clImg } from "../../utils/optimizeImage";
 import '../../components/controlPanel/css/explorer.css';
 import '../../components/controlPanel/css/MyComunity.css';
@@ -65,6 +65,7 @@ const GROUP_ORDER = [
 const EMPTY_FILTERS = { city: [], professionalProfile: [], creativeLevel: [] };
 
 const MyComunity = () => {
+  const { t } = useTranslation('community');
   const CREATIVE_LEVELS = [
     { value: 1, label: 'Newcomer',     icon: 'newcomer.png',     descKey: 'levels.newcomer' },
     { value: 2, label: 'Graduated',    icon: 'graduated.png',    descKey: 'levels.graduated' },
@@ -682,10 +683,7 @@ const MyComunity = () => {
                         .join(' | ') || user.professionalTitle || ''}
                     </p>
                     <p className="mycomunity-user-location">
-                      ({user.city && user.country
-                        ? `${user.city}, ${COUNTRY_CODES[user.country] || user.country}`
-                        : user.city || ''}
-                      {user.city2 ? ` · ${user.city2}${user.country2 && COUNTRY_CODES[user.country2] ? `, ${COUNTRY_CODES[user.country2]}` : user.country2 ? `, ${user.country2}` : ''}` : ''})
+                      ({formatUserLocation(user.city, user.country, t, { city2: user.city2, country2: user.country2 })})
                     </p>
                   </div>
                 </div>

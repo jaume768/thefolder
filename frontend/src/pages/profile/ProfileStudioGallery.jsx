@@ -12,6 +12,7 @@ import UserEducationSection from "../../components/controlPanel/userProfile/User
 import UserLanguagesSection from "../../components/controlPanel/userProfile/UserLanguagesSection";
 import { buildSocialMediaUrl } from "../../utils/socialMediaUtils";
 import { clImg } from "../../utils/optimizeImage";
+import { formatUserLocation } from "../../utils/locations";
 
 const countImages = (post) => {
   if (!post) return 0;
@@ -56,12 +57,7 @@ const ProfileStudioGallery = ({
       ? profile?.companyName
       : profile?.fullName;
 
-  const location = [
-    [profile?.city, profile?.country].filter(Boolean).join(", "),
-    profile?.city2 ? [profile.city2, profile.country2].filter(Boolean).join(", ") : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const location = formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2 });
 
   const hasCvData = !!(
     profile?.professionalFormation?.length ||

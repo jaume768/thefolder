@@ -213,11 +213,11 @@ async function main() {
   for (const u of users) {
     const updates = {};
 
-    // experience[].companyLogo
-    if (Array.isArray(u.profile?.experience) && u.profile.experience.length) {
+    // professionalFormation[].companyLogo
+    if (Array.isArray(u.professionalFormation) && u.professionalFormation.length) {
       const newArr = [];
       let changed = false;
-      for (const exp of u.profile.experience) {
+      for (const exp of u.professionalFormation) {
         const res = await fixLogoUrl(exp.companyLogo, BASE);
         counters[res.action] = (counters[res.action] || 0) + 1;
         let next = { ...exp };
@@ -238,14 +238,14 @@ async function main() {
         }
         newArr.push(next);
       }
-      if (changed) updates['profile.experience'] = newArr;
+      if (changed) updates['professionalFormation'] = newArr;
     }
 
     // education[].institutionLogo
-    if (Array.isArray(u.profile?.education) && u.profile.education.length) {
+    if (Array.isArray(u.education) && u.education.length) {
       const newArr = [];
       let changed = false;
-      for (const edu of u.profile.education) {
+      for (const edu of u.education) {
         const res = await fixLogoUrl(edu.institutionLogo, BASE);
         counters[res.action] = (counters[res.action] || 0) + 1;
         let next = { ...edu };
@@ -266,7 +266,7 @@ async function main() {
         }
         newArr.push(next);
       }
-      if (changed) updates['profile.education'] = newArr;
+      if (changed) updates['education'] = newArr;
     }
 
     if (Object.keys(updates).length) {

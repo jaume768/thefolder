@@ -203,8 +203,8 @@ async function main() {
 
   const users = await User.find({}, {
     username: 1,
-    'profile.experience': 1,
-    'profile.education': 1,
+    education: 1,
+    professionalFormation: 1,
   }).lean();
 
   const counters = { ok: 0, copied: 0, rewritten: 0, nulled: 0, 'skip-empty': 0 };

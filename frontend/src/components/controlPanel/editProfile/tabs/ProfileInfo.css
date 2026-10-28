@@ -1,0 +1,1244 @@
+/* ── "Info de perfil" (InfoTab.jsx) ────────────────────────────────
+   Mismo lenguaje que el home del panel (HomeTab.css), "Tus proyectos"
+   (ProjectsLibrary.css) y el editor de proyecto (ProjectEditor.css):
+   - Solo Inter Tight, sin mayúsculas ni letter-spacing; jerarquía por
+     tamaño y peso (400/500/600).
+   - Texto #111 / #555. Gris tenue #00000006 para campos, bloques y botones
+     secundarios (hover #ececec). Negro solo para lo seleccionado y la
+     acción principal. Sin rojo.
+   - Esquinas rectas. Sin bordes, líneas ni tarjetas de sección: separa el
+     espacio.
+   Desktop >992px · tablet 769–992px · mobile ≤768px. */
+
+.pi-root {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.pi-root button,
+.pi-root input,
+.pi-root select,
+.pi-root textarea,
+.pi-root a,
+.pi-sheet button,
+.pi-sheet input {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* ── Secciones: fila título+ayuda | campos ─────────────────────────── */
+.pi-section {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 48px;
+  padding: 40px 0;
+  scroll-margin-top: 90px; /* enlaces #sec-… sin quedar bajo la cabecera fija */
+}
+
+.pi-section-head {
+  min-width: 0;
+}
+
+.pi-section-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.pi-section-help {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.pi-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.pi-section-aside {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -8px;
+}
+
+/* ── Campos (como .pe-input del editor de proyecto) ────────────────── */
+.pi-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pi-label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pi-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: #555;
+}
+
+.pi-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  color: #111;
+  outline: none;
+}
+
+.pi-input::placeholder {
+  color: #8a8a8a;
+}
+
+.pi-input:focus,
+.pi-input:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+.pi-input:disabled {
+  color: #8a8a8a;
+  cursor: not-allowed;
+}
+
+.pi-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.pi-textarea {
+  height: auto;
+  padding: 14px 16px;
+  line-height: 1.5;
+  resize: none;
+}
+
+.pi-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pi-help-sm {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* ── Botones ───────────────────────────────────────────────────────── */
+.pi-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pi-btn:hover:not(:disabled) {
+  background: #ececec;
+}
+
+.pi-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pi-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pi-text-btn:hover:not(:disabled) {
+  color: #111;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pi-text-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pi-text-btn--sm {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* "+ Añadir otra ubicación" / "Cambiar etiquetas" / "+ Añadir idioma":
+   mismo diseño que "+ Añadir crédito" del editor de proyecto
+   (.pe-add-btn): a todo el ancho, alto de un campo, sin fondo, solo borde
+   discontinuo ("hueco para una fila más"). Al hover, borde negro. */
+.pi-add-btn {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  background: none;
+  border: 1px dashed #bdbdbd;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.pi-add-btn:hover,
+.pi-add-btn:focus-visible {
+  border-color: #111;
+}
+
+.pi-mobile-only {
+  display: none;
+}
+
+/* ── 1. Foto ───────────────────────────────────────────────────────── */
+.pi-photo {
+  position: relative;
+  width: 195px;
+  aspect-ratio: 3 / 4;
+  background: #00000006;
+}
+
+.pi-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.pi-photo-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(253, 253, 253, 0.7);
+}
+
+@keyframes pi-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pi-spinner {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid rgba(17, 17, 17, 0.2);
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: pi-spin 0.8s linear infinite;
+}
+
+/* Icono ↗ al final de un título de sección (p. ej. "Portada en Creativos"
+   → abre /creatives en otra pestaña). Tooltip negro recto al hover, como
+   .ht-tooltip del home; la flecha se desplaza como .ht-view-project. */
+.pi-title-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 4px;
+  vertical-align: -3px;
+  color: #111;
+  text-decoration: none;
+}
+
+.pi-title-link svg {
+  transition: transform 0.15s ease;
+}
+
+.pi-title-link:hover svg,
+.pi-title-link:focus-visible svg {
+  transform: translate(2px, -2px);
+}
+
+.pi-title-link:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+.pi-title-link-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  padding: 5px 10px;
+  background: #111;
+  color: #fdfdfd;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+
+.pi-title-link:hover .pi-title-link-tip,
+.pi-title-link:focus-visible .pi-title-link-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Portada en Creativos sin imagen propia: se ve la foto de perfil (la que
+   usa la tarjeta) algo apagada, con una etiqueta blanca abajo que lo dice. */
+.pi-photo--fallback img {
+  opacity: 0.55;
+}
+
+.pi-photo-note {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  padding: 6px 8px;
+  background: #fff;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #111;
+}
+
+.pi-photo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -4px; /* 16px de gap de sección − 4 = 12px bajo la foto */
+}
+
+/* ── 3. Ubicación ──────────────────────────────────────────────────── */
+.pi-locations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pi-location {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── 4. Especialización ────────────────────────────────────────────── */
+.pi-counter {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+}
+
+.pi-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.pi-slot {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  min-height: 64px;
+  padding: 12px 8px 12px 14px;
+  background: #00000006;
+}
+
+.pi-slot-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pi-slot-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+.pi-slot-group {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #555;
+}
+
+.pi-slot--empty {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Picker maestro–detalle (desktop/tablet): una categoría a la vez, como el
+   popover "Mover a" de "Tus proyectos". */
+.pi-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pi-picker-box {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  height: 360px;
+  background: #00000006;
+}
+
+.pi-picker-groups {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 0 8px 8px;
+}
+
+.pi-picker-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 12px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pi-picker-group:hover:not(.is-active) {
+  background: #ececec;
+}
+
+.pi-picker-group.is-active {
+  background: #fff;
+  font-weight: 600;
+}
+
+.pi-picker-group svg {
+  flex-shrink: 0;
+  color: #8a8a8a;
+}
+
+.pi-picker-group-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pi-picker-group-count {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pi-picker-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 8px;
+  background: #fff;
+}
+
+.pi-picker-head {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 12px 12px 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.pi-picker-tags {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 4px 8px;
+}
+
+.pi-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  height: 40px;
+  padding: 0 8px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #8a8a8a;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pi-tag-row:hover:not(:disabled) {
+  background: #00000006;
+  color: #111;
+}
+
+.pi-tag-row.is-on {
+  font-weight: 600;
+  color: #111;
+}
+
+.pi-tag-row:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pi-tag-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pi-check {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #c4c4c4;
+  color: #fff;
+}
+
+.pi-check.is-on {
+  background: #111;
+  box-shadow: none;
+}
+
+/* "Otro": etiqueta propia */
+.pi-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 12px 12px;
+}
+
+.pi-custom-row {
+  display: flex;
+  gap: 8px;
+}
+
+.pi-custom-row .pi-input {
+  height: 40px;
+}
+
+/* ── 6. Email (solo lectura) ───────────────────────────────────────── */
+.pi-readonly {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  min-height: 48px;
+  padding: 8px 16px;
+  background: #00000006;
+}
+
+.pi-readonly-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  color: #555;
+}
+
+.pi-readonly-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pi-readonly-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── 9. Nivel ──────────────────────────────────────────────────────── */
+.pi-levels {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pi-level {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  min-height: 120px;
+  padding: 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pi-level:hover:not(.is-on) {
+  background: #ececec;
+}
+
+.pi-level.is-on {
+  background: #111;
+  color: #fff;
+}
+
+.pi-level:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.pi-level-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pi-level-desc {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #555;
+}
+
+.pi-level.is-on .pi-level-desc {
+  color: #d0d0d0;
+}
+
+.pi-level-tag {
+  margin-top: auto;
+  padding: 4px 8px;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  color: #111;
+}
+
+/* ── Estado de autoguardado en la cabecera (AutosaveStatus) ────────── */
+.ux-autosave-retry {
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+}
+
+.ux-autosave-retry:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Piezas compartidas con CV y Redes ─────────────────────────────── */
+
+/* × para quitar una fila, DENTRO del último campo (ciudad, idioma), como
+   en los créditos del editor de proyecto: ese campo le reserva el hueco a
+   la derecha para que el texto no pase por debajo. */
+.pi-has-remove,
+.pi-input-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.pi-remove-x {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 48px; /* = alto de .pi-input */
+  padding: 0;
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+}
+
+.pi-remove-x:hover,
+.pi-remove-x:focus-visible {
+  color: #111;
+}
+
+/* Ubicación: el × va en la 2.ª columna (ciudad) */
+.pi-has-remove > .pi-input:nth-child(2),
+.pi-input-wrap.pi-has-remove > .pi-input {
+  padding-right: 44px;
+}
+
+/* Ciudad como select: la flecha se aparta para dejar sitio al × */
+.pi-has-remove > .pi-select:nth-child(2) {
+  padding-right: 76px;
+  background-position: right 48px center;
+}
+
+/* × en un bloque gris (huecos de Especialización): 36px, blanco al hover */
+.pi-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #555;
+  cursor: pointer;
+}
+
+.pi-icon-btn:hover,
+.pi-icon-btn:focus-visible {
+  background: #fff;
+  color: #111;
+}
+
+/* Etiqueta con icono de marca (Redes): icono gris a 14px */
+.pi-label--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pi-label--icon svg,
+.pi-label-img {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: #555;
+  object-fit: contain;
+}
+
+/* Campo con prefijo fijo dentro ("instagram.com/@usuario"): la caja gris es
+   el contenedor; el input va transparente detrás del prefijo. */
+.pi-prefixed {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 16px;
+  cursor: text;
+}
+
+.pi-prefixed:focus-within {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+.pi-prefix {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #8a8a8a;
+  white-space: nowrap;
+}
+
+.pi-prefixed-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  font-size: inherit;
+  color: #111;
+}
+
+.pi-prefixed-input::placeholder {
+  color: #8a8a8a;
+}
+
+/* Chips: añadidas (negras, con ×) y sugerencias (grises, con +) */
+.pi-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pi-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  color: #111;
+  cursor: pointer;
+}
+
+button.pi-chip:hover {
+  background: #dcdcdc;
+}
+
+.pi-chip.is-on {
+  padding-right: 4px;
+  background: #111;
+  color: #fff;
+  cursor: default;
+}
+
+.pi-chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.pi-chip-x:hover {
+  opacity: 1;
+}
+
+/* Filas repetibles (idiomas): campos + "Quitar" debajo a la derecha */
+.pi-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pi-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pi-lang {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 8px;
+}
+
+/* Selector segmentado gris (nivel de idioma, ¿buscas trabajo?): la opción
+   activa en negro, como las tarjetas de nivel. */
+.pi-segmented {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  min-height: 48px;
+}
+
+.pi-segmented--half {
+  max-width: 50%;
+}
+
+.pi-segment {
+  min-width: 0;
+  padding: 0 8px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pi-segment:hover:not(.is-on) {
+  background: #ececec;
+}
+
+.pi-segment.is-on {
+  background: #111;
+  color: #fff;
+}
+
+/* Lista de opciones con casilla (contrato, modalidad) */
+.pi-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.pi-option {
+  padding: 0;
+  color: #555;
+}
+
+.pi-option:hover:not(:disabled) {
+  background: none;
+}
+
+/* ── Sheet de Especialización (solo se abre en mobile) ─────────────── */
+.pi-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(17, 17, 17, 0.45);
+}
+
+.pi-sheet {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: min(780px, 92dvh);
+  background: #fff;
+  font-family: 'Inter Tight', sans-serif;
+  color: #111;
+}
+
+.pi-sheet-handle {
+  flex-shrink: 0;
+  width: 36px;
+  height: 4px;
+  margin: 10px auto 0;
+  background: #d0d0d0;
+}
+
+.pi-sheet-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.pi-sheet-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pi-sheet-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.pi-sheet-back {
+  min-height: 44px;
+  padding: 0;
+  color: #111;
+}
+
+.pi-sheet-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pi-sheet-chip {
+  height: 32px;
+  padding: 0 12px;
+  background: #111;
+  border: none;
+  border-radius: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pi-search {
+  position: relative;
+}
+
+.pi-search svg {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: #555;
+  pointer-events: none;
+}
+
+.pi-search-input {
+  padding-left: 44px;
+  font-size: 16px; /* sin zoom en iOS */
+}
+
+.pi-sheet-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.pi-sheet-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 15px;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pi-sheet-group-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pi-sheet-group-count {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pi-sheet-group svg {
+  flex-shrink: 0;
+  color: #8a8a8a;
+}
+
+.pi-tag-row--lg {
+  gap: 14px;
+  height: 52px;
+  padding: 0;
+}
+
+.pi-tag-row--lg .pi-check {
+  width: 20px;
+  height: 20px;
+}
+
+.pi-sheet .pi-custom {
+  padding: 0;
+}
+
+.pi-sheet-footer {
+  flex-shrink: 0;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+}
+
+.pi-sheet-done {
+  width: 100%;
+  height: 48px;
+  background: #111;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ── Tablet (769–992px) ────────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .pi-section {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 32px;
+    padding: 32px 0;
+  }
+
+  .pi-section-title {
+    font-size: 17px;
+  }
+
+  .pi-photo {
+    width: 165px;
+  }
+
+  .pi-picker-box {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+}
+
+/* ── Mobile (≤768px) ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* .nep-main-content ya pone 8px a los lados: +12px = 20px */
+  .pi-root {
+    padding: 0 12px;
+  }
+
+  .pi-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 28px 0;
+  }
+
+  .pi-section-title {
+    font-size: 17px;
+  }
+
+  /* 16px para que iOS no haga zoom al enfocar */
+  .pi-input {
+    font-size: 16px;
+  }
+
+  .pi-textarea {
+    min-height: calc(4 * 1.5em + 28px); /* 4 líneas */
+  }
+
+  .pi-btn {
+    height: 44px;
+  }
+
+  .pi-text-btn {
+    min-height: 44px;
+  }
+
+  .pi-photo {
+    width: 180px;
+  }
+
+  /* Representación: apilado */
+  .pi-grid-2:not(.pi-grid-2--always) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .pi-slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pi-picker {
+    display: none;
+  }
+
+  .pi-mobile-only {
+    display: flex;
+  }
+
+  .pi-levels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pi-level {
+    min-height: 112px;
+    padding: 14px;
+  }
+
+  .pi-level-desc {
+    font-size: 12px;
+  }
+}
+
+/* Mobile: piezas de CV y Redes */
+@media (max-width: 768px) {
+  .pi-lang {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pi-segmented--half {
+    max-width: none;
+  }
+
+  .pi-segment {
+    min-height: 44px;
+  }
+
+  .pi-chip {
+    height: 36px;
+  }
+
+  .pi-prefix {
+    font-size: 15px;
+  }
+}

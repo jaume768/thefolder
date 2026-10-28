@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Post = require('../models/Post');
 const Offer = require('../models/Offer');
 const EducationalOffer = require('../models/EducationalOffer');
+const EditLog = require('../models/EditLog');
 const { uploadFile } = require('../utils/storageService');
 const { processImageIfNeeded } = require('../utils/imageProcessor');
 const bcrypt = require('bcryptjs');
@@ -12,7 +13,7 @@ const mongoose = require('mongoose');
 
 exports.getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password -__v');
+        const user = await User.findById(req.user.id).select('-password -__v -sessions');
         
         // Verificar si el usuario existe
         if (!user) {
@@ -72,7 +73,7 @@ exports.changePassword = async (req, res) => {
         return res.status(400).json({ error: pwCheck.error });
     }
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id).select('+password');
         if (!user) {
             return res.status(404).json({ error: "Usuario no encontrado." });
         }
@@ -103,15 +104,16 @@ exports.updateProfile = async (req, res) => {
       'username', 'fullName', 'role', 'dateOfBirth', 'country', 'city', 'customCountry',
       'referralSource', 'bio', 'biography', 'professionalTitle', 'profileHeadlines',
       'professionalTags', 'languages', 'coverTemplateDesktop', 'coverTemplateMobile',
-      'galleryStyle', 'profileLayout', 'creativeType', 'formationType', 'institution', 'creativeOther',
+      'galleryStyle', 'juneStampGalleryMode', 'profileLayout', 'creativeType', 'formationType', 'institution', 'creativeOther',
       'brandName', 'professionalType', 'companyName', 'foundingYear', 'productServiceType',
       'sector', 'employeeRange', 'institutionName', 'institutionType', 'institutionOwnership',
       'agencyName', 'agencyServices', 'website', 'showNameCompany', 'showFoundingYearCompany',
       'education', 'skills', 'software', 'social', 'professionalMilestones', 'companyTags',
       'offersPractices', 'professionalFormation', 'pressPublications', 'awards',
       'profileCompleted', 'jobSearchActive',
-      'contract', 'locationType', 'availability', 'city2', 'country2',
+      'contract', 'locationType', 'availability', 'city2', 'country2', 'city3', 'country3',
       'featuredHeaderImage', 'featuredHeaderImageDesktop', 'featuredHeaderImageMobile',
+      'featuredHeaderFocusDesktop', 'featuredHeaderFocusMobile',
       'creativeCoverDesktop',
     ];
     const updates = {};
@@ -211,6 +213,21 @@ exports.updateProfile = async (req, res) => {
       else delete updates.coverTemplateMobile;
     }
 
+    // ---------- Punto de enfoque de las portadas ----------
+    // Solo { x, y } numéricos, redondeados y limitados a 0–100, o null
+    // (= encuadre por defecto del hero); cualquier otra cosa se descarta.
+    for (const key of ['featuredHeaderFocusDesktop', 'featuredHeaderFocusMobile']) {
+      if (updates[key] === undefined || updates[key] === null) continue;
+      const x = Number(updates[key]?.x);
+      const y = Number(updates[key]?.y);
+      if (Number.isFinite(x) && Number.isFinite(y)) {
+        const clamp = (n) => Math.min(100, Math.max(0, Math.round(n)));
+        updates[key] = { x: clamp(x), y: clamp(y) };
+      } else {
+        delete updates[key];
+      }
+    }
+
     // ---------- Estilo de galería ----------
     if (updates.galleryStyle !== undefined) {
     const v = String(updates.galleryStyle || "").trim();
@@ -218,10 +235,17 @@ exports.updateProfile = async (req, res) => {
     else delete updates.galleryStyle;
     }
 
+    // ---------- June Stamp: vista del grid de Portfolio ----------
+    if (updates.juneStampGalleryMode !== undefined) {
+      const v = String(updates.juneStampGalleryMode || "").trim();
+      if (["projects", "gallery"].includes(v)) updates.juneStampGalleryMode = v;
+      else delete updates.juneStampGalleryMode;
+    }
+
     // ---------- Layout del perfil público ----------
     if (updates.profileLayout !== undefined) {
       const v = String(updates.profileLayout || "").trim();
-      if (["default", "index-gallery", "studio-gallery"].includes(v)) updates.profileLayout = v;
+      if (["default", "index-gallery", "studio-gallery", "daisy-film"].includes(v)) updates.profileLayout = v;
       else delete updates.profileLayout;
     }
 
@@ -254,6 +278,15 @@ exports.updateProfile = async (req, res) => {
         remoto: Boolean(l.remoto),
         hibrido: Boolean(l.hibrido),
       };
+    }
+
+    // Qué campos se tocaron (nombres, nunca valores) — antes de meter
+    // lastProfileEditAt en el propio objeto, si no saldría como "campo
+    // editado" él mismo. Sin await: no debe poder tumbar ni retrasar el
+    // guardado real del perfil si algo falla aquí.
+    const editedFields = Object.keys(updates);
+    if (editedFields.length > 0) {
+      EditLog.create({ user: req.user.id, fields: editedFields }).catch(() => {});
     }
 
     updates.lastProfileEditAt = new Date();
@@ -340,6 +373,18 @@ exports.updateFeaturedHeaderImage = async (req, res) => {
     }
 };
 
+// Encuadres que se resetean al cambiar/borrar la portada de una variante:
+// el suyo, y si es la de desktop y no hay portada propia de mobile, también
+// el de mobile (en ese caso mobile enseña la de desktop y su encuadre era
+// para esa imagen).
+async function coverFocusResets(userId, variant) {
+  if (variant !== "desktop") return { featuredHeaderFocusMobile: null };
+  const resets = { featuredHeaderFocusDesktop: null };
+  const u = await User.findById(userId).select("featuredHeaderImageMobile").lean();
+  if (!u?.featuredHeaderImageMobile) resets.featuredHeaderFocusMobile = null;
+  return resets;
+}
+
 exports.updateFeaturedHeaderImageVariant = async (req, res) => {
   const { variant } = req.params; // desktop | mobile
   if (!req.file) return res.status(400).json({ error: "No file provided" });
@@ -356,9 +401,10 @@ exports.updateFeaturedHeaderImageVariant = async (req, res) => {
     const field =
       variant === "desktop" ? "featuredHeaderImageDesktop" : "featuredHeaderImageMobile";
 
+    // Imagen nueva: sin punto de enfoque (encuadre por defecto del hero).
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
-      { [field]: _urlPHV },
+      { [field]: _urlPHV, ...(await coverFocusResets(req.user.id, variant)) },
       { new: true }
     );
 
@@ -383,7 +429,7 @@ exports.deleteFeaturedHeaderImageVariant = async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
-      { [field]: "" },
+      { [field]: "", ...(await coverFocusResets(req.user.id, variant)) },
       { new: true }
     );
     return res.status(200).json({ message: "Deleted", user: updatedUser });
@@ -672,6 +718,15 @@ exports.getFavorites = async (req, res) => {
         // Filtrar valores nulos (posts que podrían haber sido eliminados)
         const validFavorites = favorites.filter(fav => fav !== null);
 
+        // @username del autor de cada post (crédito en "Guardados") — una
+        // sola consulta para todos.
+        const creatorIds = [...new Set(validFavorites.map(fav => String(fav.user)).filter(Boolean))];
+        if (creatorIds.length) {
+            const creators = await User.find({ _id: { $in: creatorIds } }).select('username').lean();
+            const usernameById = new Map(creators.map(u => [String(u._id), u.username]));
+            validFavorites.forEach(fav => { fav.creatorUsername = usernameById.get(String(fav.user)) || ''; });
+        }
+
         // Ordenar por fecha de guardado (más reciente primero)
         validFavorites.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
 
@@ -747,7 +802,7 @@ exports.getAppliedOffers = async (req, res) => {
 exports.getProfileByUsername = async (req, res) => {
     try {
         const { username } = req.params;
-        const user = await User.findOne({ username }).select('-password');
+        const user = await User.findOne({ username }).select('-password -sessions');
 
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -859,7 +914,7 @@ exports.getFollowing = async (req, res) => {
             .select('following')
             .populate({
                 path: 'following',
-                select: 'username fullName companyName professionalType professionalTitle professionalTags city country profile role',
+                select: 'username fullName companyName professionalType professionalTitle professionalTags city country city2 country2 city3 country3 profile role',
                 options: {
                     limit: limit,
                     skip: skip
@@ -891,7 +946,7 @@ exports.getFollowers = async (req, res) => {
             .select('followers')
             .populate({
                 path: 'followers',
-                select: 'username fullName companyName professionalType professionalTitle professionalTags city country profile role',
+                select: 'username fullName companyName professionalType professionalTitle professionalTags city country city2 country2 city3 country3 profile role',
                 options: {
                     limit: limit,
                     skip: skip
@@ -932,11 +987,16 @@ exports.searchUsers = async (req, res) => {
             return res.status(400).json({ message: 'El término de búsqueda debe tener al menos 2 caracteres' });
         }
 
+        // Por @usuario o por nombre (persona o empresa): en los créditos de
+        // un proyecto la gente escribe el nombre de quien colaboró, y antes
+        // solo se encontraba por el usuario exacto. Devuelve también el
+        // nombre para mostrarlo y guardarlo bien en el crédito.
+        const rx = { $regex: escapeRegex(String(term).replace(/^@/, '')), $options: 'i' };
         const users = await User.find({
-            username: { $regex: escapeRegex(term), $options: 'i' },
-            isActive: true
+            isActive: true,
+            $or: [{ username: rx }, { fullName: rx }, { companyName: rx }],
         })
-            .select('username profile.profilePicture')
+            .select('username fullName companyName profile.profilePicture')
             .limit(10);
 
         return res.status(200).json({
@@ -1005,6 +1065,7 @@ exports.getCreatives = async (req, res) => {
     let filter = {
       _id: { $in: userIdsWithPosts },
       isActive: true,
+      hiddenFromDirectory: { $ne: true },
       $or: [
         // Sistema viejo: excluir perfiles profesionales por professionalType
         { accountType: null, professionalType: { $nin: [1, 2, 3, 4] } },
@@ -1039,7 +1100,7 @@ exports.getCreatives = async (req, res) => {
     const citiesArr = toArray(city);
     if (citiesArr.length) {
       const rx = toRegexArray(citiesArr);
-      andClauses.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }] });
+      andClauses.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }, { city3: { $in: rx } }] });
     }
 
     // school
@@ -1103,62 +1164,50 @@ exports.getCreatives = async (req, res) => {
     const totalPages = Math.ceil(total / limitNumber);
     const skip = (pageNumber - 1) * limitNumber;
 
-    // 4) RANDOM estable: hash determinista de (ObjectId + seed)
-    // Usamos los últimos 8 hex del _id (32 bits) mezclados con el seed → mismo orden en todas las páginas
-    const seedInt = Math.abs(parseInt(seed, 10)) || 1;
-
-    // new vs random
     const wantRandom = sort === "random";
 
-    const pipeline = [
-      { $match: filter },
+    // 4) Ordenación: random estable (shuffle en Node.js) o por fecha desc
+    const userProjection = {
+      username: 1, fullName: 1, country: 1, professionalTitle: 1,
+      "profile.profilePicture": 1, skills: 1, professionalTags: 1,
+      city: 1, city2: 1, country2: 1, city3: 1, country3: 1, creativeCoverDesktop: 1, updatedAt: 1,
+    };
 
-      ...(wantRandom
-        ? [
-            {
-              $addFields: {
-                _rand: {
-                  $mod: [
-                    {
-                      $multiply: [
-                        { $toLong: { $convert: { input: { $substr: [{ $toString: "$_id" }, 16, 8] }, to: "long", onError: 1, onNull: 1 } } },
-                        seedInt,
-                      ],
-                    },
-                    1000000007,
-                  ],
-                },
-              },
-            },
-            { $sort: { _rand: 1, _id: 1 } },
-          ]
-        : [
-            { $sort: { createdAt: -1 } }
-          ]
-      ),
+    let users;
 
-      { $skip: skip },
-      { $limit: limitNumber },
+    if (wantRandom) {
+      // Obtenemos todos los _id que coinciden con el filtro (proyección mínima)
+      const allDocs = await User.find(filter, { _id: 1 }).lean();
 
-      {
-        $project: {
-          username: 1,
-          fullName: 1,
-          country: 1,
-          professionalTitle: 1,
-          "profile.profilePicture": 1,
-          skills: 1,
-          professionalTags: 1,
-          city: 1,
-          city2: 1,
-          country2: 1,
-          creativeCoverDesktop: 1,
-          updatedAt: 1,
-        }
+      // Fisher-Yates con LCG (Park-Miller) seeded — determinista para la misma sesión
+      const seedInt = Math.abs(parseInt(seed, 10)) % 2147483647 || 1;
+      const shuffled = [...allDocs];
+      let s = seedInt;
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        s = (s * 16807) % 2147483647;
+        const j = s % (i + 1);
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
-    ];
 
-    let users = await User.aggregate(pipeline);
+      // Paginar el array ya ordenado y traer solo los _id de esta página
+      const pageIds = shuffled.slice(skip, skip + limitNumber).map(u => u._id);
+
+      // Fetch de datos completos respetando el orden del array pageIds
+      users = await User.aggregate([
+        { $match: { _id: { $in: pageIds } } },
+        { $addFields: { _sortIdx: { $indexOfArray: [pageIds, "$_id"] } } },
+        { $sort: { _sortIdx: 1 } },
+        { $project: userProjection },
+      ]);
+    } else {
+      users = await User.aggregate([
+        { $match: filter },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limitNumber },
+        { $project: userProjection },
+      ]);
+    }
 
     // 5) Añadir lastPost
     const usersWithLastPost = users.map(user => {
@@ -1175,11 +1224,12 @@ exports.getCreatives = async (req, res) => {
 
     // 8) countries/cities
     const countries = await User.distinct("country", { isActive: true });
-    const [cities1, cities2] = await Promise.all([
+    const [cities1, cities2, cities3] = await Promise.all([
       User.distinct("city", { isActive: true }),
       User.distinct("city2", { isActive: true }),
+      User.distinct("city3", { isActive: true }),
     ]);
-    const cities = [...new Set([...cities1, ...cities2])].filter(Boolean);
+    const cities = [...new Set([...cities1, ...cities2, ...cities3])].filter(Boolean);
 
     return res.status(200).json({
       creatives: usersWithLastPost,
@@ -1239,7 +1289,7 @@ exports.getCreativesFacets = async (req, res) => {
       }
       if (!skipCity && citiesArr.length) {
         const rx = citiesArr.map(v => createNormalizedRegex(v));
-        and.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }] });
+        and.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }, { city3: { $in: rx } }] });
       }
       if (!skipTags && profArr.length) {
         and.push({ professionalTags: { $in: profArr } });
@@ -1253,7 +1303,7 @@ exports.getCreativesFacets = async (req, res) => {
       return f;
     };
 
-    const [tagAgg, cityAgg1, cityAgg2, levelAgg] = await Promise.all([
+    const [tagAgg, cityAgg1, cityAgg2, cityAgg3, levelAgg] = await Promise.all([
       User.aggregate([
         { $match: buildFilter({ skipTags: true }) },
         { $unwind: { path: "$professionalTags", preserveNullAndEmptyArrays: false } },
@@ -1270,15 +1320,35 @@ exports.getCreativesFacets = async (req, res) => {
         { $group: { _id: "$city2", count: { $sum: 1 } } },
       ]),
       User.aggregate([
+        { $match: buildFilter({ skipCity: true }) },
+        { $match: { city3: { $exists: true, $ne: "" } } },
+        { $group: { _id: "$city3", count: { $sum: 1 } } },
+      ]),
+      User.aggregate([
         { $match: buildFilter({ skipLevel: true }) },
         { $match: { creativeLevel: { $in: [1,2,3,4] } } },
         { $group: { _id: "$creativeLevel", count: { $sum: 1 } } },
       ]),
     ]);
 
+    // Normaliza a Title Case para fusionar variantes escritas a mano
+    // ("valencia" → "Valencia", "MADRID" → "Madrid", etc.)
+    const toTitleCase = (str) =>
+      str ? str.trim().replace(/\b\w/gu, l => l.toUpperCase()) : str;
+
     const cityMap = {};
-    for (const c of cityAgg1) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
-    for (const c of cityAgg2) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
+    for (const c of cityAgg1) {
+      const key = toTitleCase(c._id);
+      cityMap[key] = (cityMap[key] || 0) + c.count;
+    }
+    for (const c of cityAgg2) {
+      const key = toTitleCase(c._id);
+      cityMap[key] = (cityMap[key] || 0) + c.count;
+    }
+    for (const c of cityAgg3) {
+      const key = toTitleCase(c._id);
+      cityMap[key] = (cityMap[key] || 0) + c.count;
+    }
 
     return res.json({
       tags:   Object.fromEntries(tagAgg.map(c => [c._id, c.count])),
@@ -1551,7 +1621,7 @@ exports.changeUsername = async (req, res) => {
       req.user.id,
       { $set: { username: newUsername } },
       { new: true }
-    ).select('-password -__v');
+    ).select('-password -__v -sessions');
 
     return res.status(200).json({ message: 'Nombre de usuario actualizado.', user: updated });
   } catch (error) {
@@ -1712,7 +1782,7 @@ exports.changeEmail = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select('+password');
     if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
 
     // Si el usuario tiene contraseña (no es solo Google), verificarla

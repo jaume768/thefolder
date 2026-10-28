@@ -277,6 +277,7 @@
     }
   },
   "myOffers": {
+    "title": "Mis ofertas",
     "loading": "Cargando ofertas...",
     "loginRequired": "Necesitas iniciar sesión para ver tus ofertas",
     "loginRequiredCandidates": "Necesitas iniciar sesión para ver los candidatos",

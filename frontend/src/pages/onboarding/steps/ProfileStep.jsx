@@ -189,7 +189,7 @@ const IndustryProfile = ({ data, onChange }) => {
         </label>
         <textarea
           className="ob-textarea"
-          rows={2}
+          rows={4}
           placeholder={t('profileStep.shortDescPlaceholder')}
           value={data.shortDescription}
           onChange={e => {
@@ -267,6 +267,7 @@ const IndustryProfile = ({ data, onChange }) => {
 
 // ── Componente principal ──────────────────────────────────────────────────
 const ProfileStep = ({ accountType, data, onChange, onNext, onBack, submitting, error }) => {
+  const { t } = useTranslation('onboarding');
   const isCreative = accountType === 'creative';
 
   const isValid = isCreative
@@ -278,7 +279,7 @@ const ProfileStep = ({ accountType, data, onChange, onNext, onBack, submitting, 
       <h1 className="ob-title" style={{ marginTop: 0 }}>
         {isCreative ? 'Cuéntanos sobre ti' : 'Tu empresa'}
       </h1>
-      <p className="ob-subtitle">
+      <p className="ux-helper">
         {isCreative
           ? 'Esto ayuda a que empresas y otras personas encuentren tu perfil.'
           : 'Esta información aparecerá en tu perfil público.'}

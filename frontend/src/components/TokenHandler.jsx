@@ -10,6 +10,7 @@ const TokenHandler = () => {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const token = params.get('token');
+        const refreshToken = params.get('refreshToken');
 
         if (!token) return;
 
@@ -21,13 +22,18 @@ const TokenHandler = () => {
         })
             .then(res => res.ok ? res.json() : null)
             .then(user => {
-                if (user) login(token, user);
-                else localStorage.setItem('authToken', token);
+                if (user) {
+                    login(token, user, refreshToken);
+                } else {
+                    localStorage.setItem('authToken', token);
+                    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+                }
                 const needsWizard = user && !user.accountType && !user.profileCompleted;
                 navigate(needsWizard ? '/complete-registration' : '/explorer', { replace: true });
             })
             .catch(() => {
                 localStorage.setItem('authToken', token);
+                if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
                 navigate('/explorer', { replace: true });
             });
     }, [location, navigate]);

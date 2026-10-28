@@ -1,5 +1,25 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+import { Check } from "lucide-react";
+import { Section } from "../../ui/ProfileFormSection";
+
+// Opción con casilla cuadrada (mismo .pi-check que Especialización en
+// "Info de perfil"): negra con check blanco cuando está marcada.
+function CheckOption({ checked, onToggle, label, type = "checkbox" }) {
+  return (
+    <button
+      type="button"
+      role={type}
+      aria-checked={checked}
+      className={`pi-tag-row pi-option${checked ? " is-on" : ""}`}
+      onClick={onToggle}
+    >
+      <span className={`pi-check${type === "radio" ? " pi-check--round" : ""}${checked ? " is-on" : ""}`} aria-hidden="true">
+        {checked && <Check size={12} strokeWidth={2.4} />}
+      </span>
+      <span className="pi-tag-name">{label}</span>
+    </button>
+  );
+}
 
 export default function AvailabilitySection({
   jobSearchActive,
@@ -9,219 +29,82 @@ export default function AvailabilitySection({
   setJobSearchActive,
 }) {
   const { t } = useTranslation("profile");
-  const safeContract = contract || {
-    practicas: false,
-    convenioPracticas: false,
-    tiempoCompleto: false,
-    parcial: false,
-    freelance: false,
-  };
+  const safeContract = contract || {};
+  const safeLocationType = locationType || {};
 
-  const safeLocationType = locationType || {
-    presencial: false,
-    remoto: false,
-    hibrido: false,
-  };
+  const CONTRACTS = [
+    ["practicas", t("editProfile.internship")],
+    ["convenioPracticas", t("editProfile.internshipAgreement")],
+    ["tiempoCompleto", t("editProfile.fullTime")],
+    ["parcial", t("editProfile.partTime")],
+    ["freelance", "Freelance"],
+  ];
+  const MODES = [
+    ["presencial", t("editProfile.inPerson")],
+    ["remoto", t("editProfile.remote")],
+    ["hibrido", t("editProfile.hybrid")],
+  ];
 
   return (
-    <div id="sec-cv-disponibilidad" className="ux-anchor-target">
-      <div className="ux-card">
-        <label className="ux-form-label separator" htmlFor="jobSearchActive-yes">
-          <img src="/iconos/job-availability.png" className="ux-section-icon" alt="" />
-          {t("sections.availability")}
-        </label>
-
-        <div className="ux-hardskills-subtitle" style={{ marginTop: 6 }}>
-          {t("editProfile.availabilityOptional")}
-        </div>
-
-        <div style={{ marginTop: 18 }}>
-          <div className="ux-popular-title">{t("editProfile.searchingNow")}</div>
-
-          <div className="ux-form-column" style={{ gap: 10 }}>
-            <label
-              className="ux-exp-check"
-              htmlFor="jobSearchActive-yes"
-              style={{ marginTop: 0 }}
-            >
-              <input
-                id="jobSearchActive-yes"
-                name="job-search-active"
-                type="radio"
-                autoComplete="off"
-                checked={!!jobSearchActive}
-                onChange={() => setJobSearchActive(true)}
-              />
-              <span>{t("editProfile.availableYes")}</span>
-            </label>
-
-            <label
-              className="ux-exp-check"
-              htmlFor="jobSearchActive-no"
-              style={{ marginTop: 0 }}
-            >
-              <input
-                id="jobSearchActive-no"
-                name="job-search-active"
-                type="radio"
-                autoComplete="off"
-                checked={!jobSearchActive}
-                onChange={() => setJobSearchActive(false)}
-              />
-              <span>{t("editProfile.availableNo")}</span>
-            </label>
-          </div>
-        </div>
-
-        {jobSearchActive && (
-          <div
-            className="ux-form-row"
-            style={{ marginTop: 22, gap: 40, alignItems: "flex-start" }}
+    <Section
+      id="sec-cv-disponibilidad"
+      title={t("sections.availabilityLabel")}
+      help={t("editProfile.availabilityOptional")}
+    >
+      <div className="pi-field">
+        <span className="pi-label" id="pi-job-search-label">{t("editProfile.cvPage.searchingLabel")}</span>
+        <div className="pi-segmented pi-segmented--half" role="radiogroup" aria-labelledby="pi-job-search-label">
+          <button
+            type="button"
+            role="radio"
+            aria-checked={!!jobSearchActive}
+            className={`pi-segment${jobSearchActive ? " is-on" : ""}`}
+            onClick={() => setJobSearchActive(true)}
           >
-            <div style={{ flex: 1 }}>
-              <div className="ux-popular-title">{t("editProfile.contract")}</div>
+            {t("editProfile.availableYes")}
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={!jobSearchActive}
+            className={`pi-segment${!jobSearchActive ? " is-on" : ""}`}
+            onClick={() => setJobSearchActive(false)}
+          >
+            {t("editProfile.availableNo")}
+          </button>
+        </div>
+      </div>
 
-              <div className="ux-form-column" style={{ gap: 10 }}>
-                <label
-                  className="ux-exp-check"
-                  htmlFor="contract-practicas"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="contract-practicas"
-                    name="contract.practicas"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeContract.practicas}
-                    onChange={() => toggleDraftBool("contract.practicas")}
-                  />
-                  <span>{t("editProfile.internship")}</span>
-                </label>
-
-                <label
-                  className="ux-exp-check"
-                  htmlFor="contract-convenioPracticas"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="contract-convenioPracticas"
-                    name="contract.convenioPracticas"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeContract.convenioPracticas}
-                    onChange={() => toggleDraftBool("contract.convenioPracticas")}
-                  />
-                  <span>{t("editProfile.internshipAgreement")}</span>
-                </label>
-
-                <label
-                  className="ux-exp-check"
-                  htmlFor="contract-tiempoCompleto"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="contract-tiempoCompleto"
-                    name="contract.tiempoCompleto"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeContract.tiempoCompleto}
-                    onChange={() => toggleDraftBool("contract.tiempoCompleto")}
-                  />
-                  <span>{t("editProfile.fullTime")}</span>
-                </label>
-
-                <label
-                  className="ux-exp-check"
-                  htmlFor="contract-parcial"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="contract-parcial"
-                    name="contract.parcial"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeContract.parcial}
-                    onChange={() => toggleDraftBool("contract.parcial")}
-                  />
-                  <span>{t("editProfile.partTime")}</span>
-                </label>
-
-                <label
-                  className="ux-exp-check"
-                  htmlFor="contract-freelance"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="contract-freelance"
-                    name="contract.freelance"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeContract.freelance}
-                    onChange={() => toggleDraftBool("contract.freelance")}
-                  />
-                  <span>Freelance</span>
-                </label>
-              </div>
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <div className="ux-popular-title" style={{ marginBottom: 10 }}>
-                {t("editProfile.mode")}
-              </div>
-
-              <div className="ux-form-column" style={{ gap: 10 }}>
-                <label
-                  className="ux-exp-check"
-                  htmlFor="locationType-presencial"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="locationType-presencial"
-                    name="locationType.presencial"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeLocationType.presencial}
-                    onChange={() => toggleDraftBool("locationType.presencial")}
-                  />
-                  <span>{t("editProfile.inPerson")}</span>
-                </label>
-
-                <label
-                  className="ux-exp-check"
-                  htmlFor="locationType-remoto"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="locationType-remoto"
-                    name="locationType.remoto"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeLocationType.remoto}
-                    onChange={() => toggleDraftBool("locationType.remoto")}
-                  />
-                  <span>{t("editProfile.remote")}</span>
-                </label>
-
-                <label
-                  className="ux-exp-check"
-                  htmlFor="locationType-hibrido"
-                  style={{ marginTop: 0 }}
-                >
-                  <input
-                    id="locationType-hibrido"
-                    name="locationType.hibrido"
-                    type="checkbox"
-                    autoComplete="off"
-                    checked={!!safeLocationType.hibrido}
-                    onChange={() => toggleDraftBool("locationType.hibrido")}
-                  />
-                  <span>{t("editProfile.hybrid")}</span>
-                </label>
-              </div>
+      {jobSearchActive && (
+        <div className="pi-grid-2">
+          <div className="pi-field">
+            <span className="pi-label">{t("editProfile.contract")}</span>
+            <div className="pi-options">
+              {CONTRACTS.map(([key, label]) => (
+                <CheckOption
+                  key={key}
+                  checked={!!safeContract[key]}
+                  onToggle={() => toggleDraftBool(`contract.${key}`)}
+                  label={label}
+                />
+              ))}
             </div>
           </div>
-        )}
-      </div>
-    </div>
+          <div className="pi-field">
+            <span className="pi-label">{t("editProfile.mode")}</span>
+            <div className="pi-options">
+              {MODES.map(([key, label]) => (
+                <CheckOption
+                  key={key}
+                  checked={!!safeLocationType[key]}
+                  onToggle={() => toggleDraftBool(`locationType.${key}`)}
+                  label={label}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </Section>
   );
 }

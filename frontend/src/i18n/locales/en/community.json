@@ -1,6 +1,6 @@
 {
   "title": "My community",
-  "subtitle": "Discover the profiles you follow and your followers. Explore your network, find relevant connections and filter by city or specialty.",
+  "subtitle": "Explore your network, discover your followers and filter the profiles you follow by city or specialty.",
   "tabs": {
     "following": "Following",
     "followers": "Followers"
@@ -24,6 +24,9 @@
     "others": "Others",
     "specialty": "Specialty",
     "noProfilesInCountry": "No profiles in this country",
+    "cityLabel": "City:",
+    "allCities": "All",
+    "specialtyLabel": "Specialty:",
     "clear": "Clear filters",
     "apply": "Filter",
     "remove": "Remove {{label}}"

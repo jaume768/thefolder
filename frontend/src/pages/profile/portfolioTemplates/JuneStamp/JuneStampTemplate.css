@@ -1,0 +1,1481 @@
+/* =============================================================================
+   June Stamp (was EditorialIndexTemplate.css / "ProfileIndexGallery")
+   Layout editorial tipo índice de photobook — referencia: monográficos
+   Juergen Teller / Wolfgang Tillmans. Grid asimétrico de 12 columnas,
+   tipografía pequeña, sin sombras ni bordes.
+
+   Estructura de páginas (Portfolio/About/Contact/Proyecto/páginas
+   organizadas) igual que DaisyFilmTemplate.css — las reglas .js-page* /
+   .js-about__* / .js-contact__* / .js-project__* / .js-cv__* / .js-more-* / .js-modal*
+   son ese mismo layout con la identidad tipográfica de June Stamp en vez
+   del monospace de Daisy Film.
+   ============================================================================= */
+
+/* ── Animación de carga de vista ─────────────────────────────────────────────
+   Portfolio/CV/Contact/Proyecto se montan/desmontan al cambiar (JSX
+   condicional, sin key salvo el proyecto) — cada montaje dispara esta
+   animación sola, sin JS. */
+@keyframes js-view-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-page, .js-grid-wrap { animation: none !important; }
+}
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+.js-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #fdfdfd;
+  color: #222;
+  font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Preview embebido (iframe) en /myprofile/edit/templates — ver isPreview en
+   JuneStampTemplate.jsx/UserProfilePage.jsx. Igual que DaisyFilm: apaga
+   cualquier <a>/<Link> real que quede dentro del contenido, salvo la
+   navegación interna (.js-nav-btn: Portfolio/About/Contact/páginas). */
+.js-layout--preview a:not(.js-nav-btn) {
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .js-layout--preview {
+    margin-top: 12px;
+  }
+}
+
+/* ── Cuerpo (sidebar + escenario en una sola fila en desktop/tablet) ───────── */
+.js-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  /* Ocupa el alto que sobre en .js-layout (min-height:100vh): en páginas
+     cortas (Contact, un CV breve) el footer queda pegado abajo de la
+     pantalla en vez de flotar a media altura. */
+  flex: 1 0 auto;
+}
+
+/* ── Sidebar (identidad + navegación, columna lateral) ──────────────────────
+   25vw de ancho en desktop (ver .js-body); sticky y 100vh de alto, así que
+   no se mueve al hacer scroll vertical — solo en desktop, en mobile
+   .js-body pasa a columna y el sidebar vuelve a estático/100% (ver media
+   query al final del archivo). */
+.js-sidebar {
+  width: 25vw;
+  flex: 0 0 25vw;
+  box-sizing: border-box;
+  padding: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 12px;
+  align-items: flex-start;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  overflow-y: auto;
+}
+
+/* Desktop/tablet: el sidebar va FIJO a la pantalla (no sticky). Con sticky
+   se quedaba dentro de .js-body y, al llegar al final, el footer (que va
+   fuera de .js-body, a todo el ancho) lo empujaba hacia arriba. Fijo, no se
+   mueve nunca; el escenario y el footer empiezan a la derecha de sus 25vw
+   para no quedar debajo. En mobile (≤768px) vuelve a estático, ver abajo. */
+@media (min-width: 769px) {
+  .js-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 5;
+    background: #fdfdfd;
+  }
+
+  .js-body {
+    padding-left: 25vw;
+    box-sizing: border-box;
+  }
+
+  /* Menú (Portfolio / CV / Contact) siempre a media altura, esté donde
+     esté (portfolio, CV, contacto o un proyecto): tres bandas iguales
+     arriba y abajo con el menú en medio. Lo de arriba (info del portfolio
+     o del proyecto) tiene su propio scroll si no cabe en su banda, así
+     nunca empuja el menú. */
+  .js-sidebar {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-content: stretch;
+    overflow: hidden;
+  }
+
+  .js-sidebar-top {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .js-sidebar-top::-webkit-scrollbar {
+    display: none;
+  }
+
+  .js-sidebar .js-nav {
+    grid-row: 2;
+    margin: 24px 0;
+  }
+
+  /* Aire en blanco entre el texto del sidebar y las imágenes: el sidebar
+     ya deja 36px de padding a su derecha; con esto el hueco total ronda
+     los 100px en un portátil (4vw). .js-body delante: la regla base de
+     .js-stage (padding:0) va más abajo y, si no, ganaba. */
+  .js-body .js-stage {
+    padding-left: 4vw;
+  }
+
+  /* .js-layout delante: la regla base de .js-footer (width:100%) va más
+     abajo en este archivo y, con la misma especificidad, ganaba. */
+  .js-layout .js-footer {
+    width: auto;
+    margin-left: 25vw;
+  }
+}
+
+/* Info de arriba del sidebar (portfolio o proyecto): mismo apilado que
+   tenía el sidebar (12px entre bloques). */
+.js-sidebar-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.js-identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+.js-identity-heading {
+  margin: 0;
+}
+
+/* Actúa como el "logo" de la plantilla: lleva al Portfolio principal. */
+.js-name {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-family: Inter, sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+  color: #333;
+}
+
+.js-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+}
+
+.js-role {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #222;
+  line-height: 1;
+  margin: 0;
+}
+
+.js-role__sep {
+  opacity: 1;
+}
+
+/* Varias ubicaciones (Sidebar.jsx): una por <span>, separadas solo por el gap */
+.js-location {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #222;
+  font-weight: 400;
+  margin: 0;
+}
+
+.js-bio {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #222;
+  max-width: 260px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin: 0;
+}
+
+/* Navegación — Portfolio / About / Contact / páginas organizadas, mismo rol
+   que TopBar.jsx en DaisyFilm, aquí dentro del sidebar en vez de una barra
+   propia. */
+.js-nav {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 36px;
+}
+
+.js-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: capitalize;
+  text-decoration: none;
+  padding: 0;
+  color: #222;
+  opacity: 0.6;
+  transition: color 0.18s ease, opacity 0.18s ease;
+}
+
+.js-nav-btn:hover { opacity: 1; }
+
+.js-nav-btn--active {
+  opacity: 1;
+}
+
+/* ── Escenario (contiene la vista activa: grid / about / contact / proyecto)
+   Sin padding-bottom a propósito: el footer (.js-footer, último elemento de
+   cada vista) debe quedar pegado al final real del documento — bottom:0,
+   sin sticky ni hueco detrás, solo se ve al hacer scroll hasta el final. */
+.js-stage {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.js-status {
+  font-size: 11px;
+  color: #c0c0c0;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  padding-top: 8px;
+}
+
+/* ── Grid editorial (Portfolio) ─────────────────────────────────────────────
+   3 fotos por fila en desktop/tablet horizontal: 12 columnas ÷ 4 columnas
+   por tarjeta = 3 tarjetas exactas por fila, sin el margen izquierdo que
+   tenía el grid asimétrico antes (ya no hace falta, el hueco lo da ahora el
+   sidebar lateral). Por debajo de 900px (tablet vertical/mobile) se sigue
+   colapsando a 1 columna, ver media query al final del archivo. */
+.js-grid-wrap {
+  display: flex;
+  flex-direction: column;
+  animation: js-view-fade-in 0.45s ease both;
+}
+
+
+/* Vista "galería": 4 fotos por fila (12 columnas ÷ 3 por foto), cada
+   proyecto arranca en fila nueva — ver buildGalleryItems en
+   PortfolioGrid.jsx, que calcula grid-column/grid-row por imagen. En
+   mobile pasa a una sola columna (ver Responsive). */
+.js-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+
+.js-gallery-item {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  outline: none;
+}
+
+.js-gallery-item__image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+/* Vista "proyectos": una portada por proyecto en 3 columnas (multi-column:
+   cada foto ocupa el hueco real que le sigue en su columna, sin filas
+   compartidas). En mobile pasa a una sola columna (ver Responsive). */
+.js-grid {
+  columns: 3;
+  column-gap: 0;
+}
+
+.js-card {
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  outline: none;
+  break-inside: avoid;
+}
+
+.js-card__image-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.js-card__image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: opacity .18s ease;
+  display: block;
+}
+
+.js-card__placeholder {
+  width: 100%;
+  height: 100%;
+  background: #dedede;
+}
+
+.js-card__caption {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  text-align: center;
+  align-items: flex-start;
+}
+
+.js-card__title {
+  font-size: 12px;
+  font-weight: 400;
+  color: #444;
+  letter-spacing: .015em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 4px;
+}
+
+/* Con ratón: sin texto sobre la foto al pasar por encima (oct 2026, antes
+   aparecía el título en blanco centrado). La parrilla queda solo con las
+   fotos; el título sigue en el alt de la imagen. En táctil (sin hover) se
+   mantiene visible debajo de la imagen. */
+@media (hover: hover) {
+  .js-card__caption {
+    display: none;
+  }
+}
+
+/* ── Páginas internas (About / Contact / Proyecto) ─────────────────────────── */
+.js-page {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row-reverse;
+  animation: js-view-fade-in 0.45s ease both;
+}
+
+/* Solo CV (AboutPage.jsx) y Contact (ContactPage.jsx): .js-stage no lleva
+   padding (el grid y los proyectos van a sangre), así que estas dos páginas
+   de texto ponen el suyo. */
+/* Sin padding abajo: el aire hasta el footer lo pone SOLO el margin-top
+   de .js-footer, igual en todas las pestañas (Portfolio, CV, Contact,
+   proyecto). No añadir aquí ni en las páginas espacio extra abajo. */
+.js-page--inset {
+  padding: 36px 36px 0;
+}
+
+@media (max-width: 768px) {
+  .js-page--inset {
+    padding: 16px 16px 0;
+  }
+}
+
+/* Hero de portada: nombre + avatar + descripción, antes del bloque de CV. */
+.js-about__hero {
+  width: fit-content;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+}
+
+.js-about__title-row,
+.js-about__subtitle-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.js-about__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 11px;
+  color: #777;
+  letter-spacing: 0.02em;
+}
+
+.js-about__avatar-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.js-about__avatar {
+  width: 105px;
+  height: 130px;
+  object-fit: cover;
+}
+
+.js-page--about {
+  flex: 1 0 auto;
+  padding: 8px 0 0;
+}
+
+/* Tablet/desktop: el avatar ocupa su propia columna a la derecha (el
+   row-reverse de .js-page) en vez de ir en absolute encima del CV, y el CV
+   puede encogerse. Antes, en anchos intermedios (p. ej. iPad mini en
+   horizontal, con el sidebar de 25vw) el texto del CV quedaba debajo de la
+   foto. En mobile (≤768px) sigue mandando el bloque de abajo. */
+@media (min-width: 769px) {
+  .js-about__hero {
+    margin-left: 24px;
+  }
+
+  .js-about__avatar-wrapper {
+    position: static;
+  }
+
+  .js-page--about {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .js-about__cv {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Tablet en horizontal (iPad mini 1024–1133px, iPad Air 1180px): no hay
+   ancho para CV + avatar lado a lado, así que el avatar baja debajo de las
+   secciones del CV. */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .js-page:has(> .js-page--about) {
+    flex-direction: column-reverse;
+  }
+
+  .js-about__hero {
+    margin-left: 0;
+    margin-top: 24px;
+    align-items: flex-start;
+  }
+}
+
+/* ── Contacto ──────────────────────────────────────────────────────────────── */
+/* Fila: info de contacto (flexible) + carrusel de fotos (columna fija,
+   sticky) — mismo patrón que .js-about__cv-row/.js-about__cv-slideshow-col
+   más abajo, adaptado a esta página. */
+.js-page--contact {
+  flex: 1 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 60px;
+  padding-top: 24px;
+}
+
+.js-contact__info {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Columna del carrusel — mismo componente/lógica que HeroSlideshow de
+   .js-about__cv-slideshow-col (ver AboutPage.jsx de DaisyFilm para el
+   detalle del loop), solo que aquí vive en Contacto y usa hasta 6 fotos
+   al azar del portfolio (heroImages, ver JuneStampTemplate.jsx). */
+.js-contact__cv-slideshow-col {
+  flex: 0 0 180px;
+  top: 40px;
+  aspect-ratio: 3/4;
+}
+
+.js-contact__cv-slideshow {
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #efefef;
+}
+
+.js-contact__cv-slideshow-track {
+  display: flex;
+  height: 100%;
+}
+
+.js-contact__cv-slideshow-img {
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+
+.js-contact__email-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.js-contact__primary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.js-contact__email,
+.js-contact__website {
+  font-size: 13px;
+  color: #222;
+  text-decoration: underline;
+}
+
+.js-contact__email:hover,
+.js-contact__website:hover { border-bottom-color: #222; }
+
+.js-contact__representation {
+  font-size: 12px;
+  color: #222;
+  margin: 0;
+}
+
+.js-contact__representation-link {
+  color: #222;
+  text-decoration: underline;
+}
+
+.js-contact__representation-link:hover { color: #222; }
+
+.js-contact__socials {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.js-contact__social-link {
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #222;
+  text-decoration: none;
+}
+
+.js-contact__social-link:hover { color: #222; text-decoration: underline; }
+
+/* ── CV (dentro de About) ─────────────────────────────────────────────────── */
+.js-about__cv-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 60px;
+  width: 100%;
+}
+
+.js-about__cv {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 820px;
+}
+
+.js-about__cv-slideshow-col {
+  flex: 0 0 280px;
+  position: sticky;
+  top: 40px;
+  aspect-ratio: 3/4;
+}
+
+.js-about__cv-slideshow {
+  width: 280px;
+  height: 32vh;
+  overflow: hidden;
+  background: #efefef;
+}
+
+.js-about__cv-slideshow-track {
+  display: flex;
+  height: 100%;
+}
+
+.js-about__cv-slideshow-img {
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+
+.js-cv__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 350px;
+}
+
+.js-cv__row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 56px;
+}
+
+.js-cv__row .js-cv__section {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.js-cv__heading {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: #333;
+}
+
+.js-cv__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.js-cv__item--column {
+  flex-direction: column;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+/* El último elemento del CV no suma margen: el aire hasta el footer es solo
+   el margin-top de .js-footer, igual que en Portfolio, Contact y proyecto. */
+.js-cv__row:last-child .js-cv__section > .js-cv__item:last-child {
+  margin-bottom: 0;
+}
+
+.js-cv__item-title {
+  font-size: 12px;
+  font-weight: 400;
+  color: #444;
+}
+
+.js-cv__item-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: #222;
+}
+
+.js-cv__item-date {
+  font-size: 12px;
+  color: #222;
+}
+
+.js-cv__item-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: #222;
+  line-height: 16px;
+  margin: 2px 0 0;
+}
+
+.js-cv__item-link {
+  font-size: 12px;
+  font-weight: 400;
+  color: #222;
+  text-decoration: underline;
+}
+
+.js-cv__item-link:hover { color: #222; }
+
+.js-cv__item-link-arrow {
+  margin-left: 2px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.js-cv__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 300px;
+}
+
+.js-cv__tag {
+  background: #f2f2f2;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  width: fit-content;
+}
+
+.js-cv__empty {
+  font-size: 13px;
+  color: #222;
+  padding: 24px 0;
+  margin: 0;
+}
+
+/* ── Vista de proyecto individual ─────────────────────────────────────────── */
+.js-page--project {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 0 auto;
+  gap: 12px;
+}
+
+.js-project__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+  gap: 0;
+}
+
+/* Todo lo que va debajo de las fotos (ProjectView.jsx, imagesFirst):
+   título, créditos, publicaciones y tags, alineados a la derecha como
+   cuando eran hijos directos de .js-project__hero. Misma tipografía que el
+   resto de la plantilla (sidebar, CV, contacto): 12px, peso 400, #222,
+   interlineado 16px y enlaces subrayados; solo el título va en 500. */
+.js-project__details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  padding-right: 6px;
+  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #222;
+  text-align: right;
+}
+
+/* Proyecto abierto: el sidebar enseña la miga de pan y el texto del
+   proyecto (Sidebar.jsx projectInfo + ProjectView.jsx ProjectInfo) en el
+   sitio de la info del portfolio. Todo a la izquierda, como esa info; en
+   el escenario los mismos bloques iban a la derecha. */
+.js-project-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* = gap de .js-sidebar entre nombre, bio y datos */
+  width: 100%;
+  font-size: 12px;
+  line-height: 16px;
+  color: #222;
+}
+
+.js-project-side [class^="js-project__"],
+.js-project-side [class*=" js-project__"] {
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+  margin-top: 0;
+  text-align: left;
+}
+
+/* Mismos tamaños que la info del portfolio a la que sustituye: el título
+   como el nombre (.js-name) y el resto como la bio (.js-bio, 12/16px). */
+.js-project-side .js-project__title {
+  font-family: Inter, sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+  color: #333;
+}
+
+.js-project-side .js-project__intro {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.js-project-side .js-project__subtitle,
+.js-project-side .js-project__credit-item,
+.js-project-side .js-project__published-heading,
+.js-project-side .js-project__published-item {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #222;
+}
+
+/* Tags del proyecto: más pequeños y en gris claro que el resto del texto,
+   más oscuros al pasar por encima. */
+.js-project-side .js-project__tag {
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 400;
+  color: #999;
+  opacity: 1;
+  transition: color 0.18s ease;
+}
+
+.js-project-side .js-project__tag:hover,
+.js-project-side .js-project__tag:focus-visible {
+  color: #111;
+}
+
+/* Título + descripción en el escenario (base; en el sidebar lo pisan las
+   reglas .js-project-side de arriba). */
+.js-project__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  max-width: 300px;
+  margin-top: 24px;
+}
+
+.js-project__title {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: #222;
+  text-align: right;
+  margin: 0;
+}
+
+.js-project__title.left-text {
+  text-align: left;
+}
+
+.js-project__subtitle {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #222;
+  text-align: right;
+  margin: 0;
+  max-width: 550px;
+}
+
+.js-project__credits {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  max-width: 80%;
+  margin: 0;
+  color: #222;
+}
+
+.js-project__credit-item {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #222;
+  text-align: right;
+  margin: 0;
+}
+
+.js-project__credit-link {
+  color: #222;
+  text-decoration: underline;
+}
+
+.js-project__img-wrap {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.js-project__img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.js-project__img-credit {
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #222;
+  text-align: right;
+  max-width: 90%;
+  margin: 0 0 32px; /* aire antes de la siguiente imagen */
+  white-space: pre-wrap;
+}
+
+.js-project__published {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+}
+
+.js-project__published-heading {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #222;
+  margin: 0;
+}
+
+.js-project__published-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 8px;
+}
+
+.js-project__published-item {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #222;
+  text-decoration: none;
+}
+
+a.js-project__published-item {
+  text-decoration: underline;
+}
+
+a.js-project__published-item:hover {
+  color: #222;
+}
+
+/* Tags como los enlaces del sidebar (.js-nav-btn): mismo texto, apagado
+   a 0.6 y a 1 al pasar por encima. */
+.js-project__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 8px;
+  margin: 0;
+  max-width: 80%;
+}
+
+.js-project__tag {
+  position: relative;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #222;
+  opacity: 0.6;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.18s ease;
+  cursor: pointer;
+}
+
+.js-project__tag:hover,
+.js-project__tag:focus-visible { opacity: 1; }
+
+.js-project__tag .nep-icon-tooltip {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.js-project__tag:hover .nep-icon-tooltip,
+.js-project__tag:focus-visible .nep-icon-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Siguientes proyectos (fin de página de proyecto) ─────────────────────── */
+.js-next-projects__title {
+  width: 100%;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  color: #222;
+  text-align: right;
+  margin: 120px 0 0;
+}
+
+.js-next-projects {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  flex-direction: row;
+}
+
+.js-next-projects__item {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  max-width: 250px;
+  font-family: inherit;
+}
+
+.js-next-projects__img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  background: #efefef;
+}
+
+/* Una sola fila (ProjectView nextRowSize=6): hasta 6 miniaturas del ancho
+   de un décimo de fila (el tamaño de cuando eran 10) con un hueco de 6px,
+   alineadas a la derecha; nunca pasa a una segunda fila
+   (lo que no cabe no se pinta, ver ProjectView.jsx). Con menos de 6 se
+   quedan del mismo tamaño, alineadas a la derecha. */
+.js-next-projects.js-next-projects--row {
+  flex-wrap: nowrap;
+  gap: 6px;
+  padding: 0;
+  margin-top: 120px; /* el aire que daba el título "Next projects" */
+}
+
+.js-next-projects--row .js-next-projects__item {
+  flex: 0 0 calc((100% - 9 * 6px) / 10);
+  width: calc((100% - 9 * 6px) / 10);
+  max-width: none;
+}
+
+/* ── Footer (reutiliza .tf-footer de landing-footer.css) ─────────────────────
+   Sin sticky ni position fija: es simplemente el último elemento de cada
+   vista, en flujo normal — al no haber padding-bottom en .js-stage/.js-layout
+   por debajo, queda pegado al final real del scroll (bottom:0, sin hueco
+   detrás). margin-top da aire respecto al contenido de encima, no afecta a
+   lo de abajo. */
+.js-footer {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 160px; /* más aire entre el contenido y el footer */
+  background: #fdfdfd;
+  border-radius: 0;
+  height: fit-content;
+}
+
+.js-footer .tf-footer__inner {
+  padding: 32px 8px 8px; /* aire solo arriba del texto; abajo como antes */
+  justify-content: center;
+  gap: 32px;
+  font-family: inherit;
+  height: fit-content;
+}
+
+.js-footer__credit {
+  font-family: inherit;
+  font-size: 10px;
+  color: #333;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.js-footer__credit-link {
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+}
+
+.js-footer__credit-link:hover {
+  color: #222;
+}
+
+/* ── Menú "más" (copiar link / descargar / reportar) ───────────────────────
+   Igual patrón que .df-more-wrap/.df-more-menu en DaisyFilm — el botón base
+   (.df-action-btn) viene de shared/QuickActions.css. */
+.js-more-wrap {
+  position: relative;
+}
+
+.js-more-menu {
+  position: absolute;
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 2600;
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  border-radius: 0px;
+  background: #fdfdfdc2;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 13px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+}
+
+.js-more-menu__item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: left;
+  color: #222;
+  padding: 8px 10px;
+  border-radius: 0px;
+  transition: background 0.15s ease;
+}
+
+.js-more-menu__item:hover {
+  background: #f0f0f0;
+}
+
+.js-more-menu__item--danger {
+  color: #c0392b;
+}
+
+/* Estado "guardado" del botón fuerte de quick actions (guardar proyecto). */
+.js-action-btn--strong.is-saved {
+  color: #1e7a34;
+}
+
+/* ── Modales (reportar proyecto / confirmar borrado) ───────────────────────── */
+.js-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.js-modal {
+  width: min(360px, 100%);
+  background: #fdfdfd;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 40px 0px, rgba(0, 0, 0, 0.08) 0px 2px 8px -1px;
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  box-sizing: border-box;
+}
+
+.js-modal__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px;
+}
+
+.js-modal__desc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.js-modal__textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.js-modal__textarea:focus {
+  outline: none;
+  border-color: #999;
+}
+
+.js-modal__notice {
+  font-size: 11px;
+  color: #999;
+  margin: 0 0 4px;
+}
+
+.js-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.js-modal__btn {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.js-modal__btn:hover:not(:disabled) {
+  background: #e4e4e4;
+}
+
+.js-modal__btn--strong {
+  background: #111;
+  color: #fdfdfd;
+}
+
+.js-modal__btn--strong:hover:not(:disabled) {
+  background: #111;
+  opacity: 0.85;
+}
+
+.js-modal__btn--danger {
+  background: #c0392b;
+  color: #fdfdfd;
+}
+
+.js-modal__btn--danger:hover:not(:disabled) {
+  background: #c0392b;
+  opacity: 0.85;
+}
+
+.js-modal__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .js-grid {
+    display: flex;
+    gap: 45px;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .js-card {
+    justify-content: flex-end;
+  }
+
+  /* Una sola columna; el grid-column/grid-row inline por foto (ver
+     PortfolioGrid.jsx) deja de aplicar al pasar el contenedor a flex. */
+  .js-gallery-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .js-about__cv-row {
+    flex-direction: column;
+    align-items: baseline;
+    gap: 32px;
+  }
+
+  .js-about__cv-slideshow-col {
+    position: static;
+    flex: none;
+  }
+
+  .js-page--contact {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .js-contact__cv-slideshow-col {
+    position: static;
+    display: flex;
+    flex: none;
+    width: 100%;
+    justify-content: flex-end;
+    aspect-ratio: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .js-body {
+    flex-direction: column;
+  }
+
+  .js-sidebar {
+    width: 100%;
+    flex: 0 0 auto;
+    padding: 16px;
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    position: static;
+    overflow-y: visible;
+  }
+
+  .js-contact__info {
+    width: 100%;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .js-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-content: flex-end;
+    align-items: center;
+  }
+
+  .js-nav-btn {
+    padding: 4px 12px 4px 12px;
+    font-size: 14px;
+  }
+
+  .js-card__caption {
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+  }
+
+  .js-stage {
+    width: 100%;
+    padding: 0;
+  }
+
+  .js-grid {
+    gap: 24px;
+  }
+
+  .js-about__hero {
+    width: 100%;
+    align-items: flex-end;
+    display: block;
+  }
+
+  .js-about__avatar-wrapper {
+    margin: 0px;
+    position: relative;
+    top: 0px;
+    right: 0px;
+    margin-bottom: 24px;
+  }
+
+  .js-cv__row {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .js-project__img-wrap {
+    width: 100%;
+  }
+
+  .js-next-projects {
+    gap: 12px;
+    padding: 0 16px;
+  }
+
+  .js-next-projects__item {
+    max-width: 260px;
+  }
+
+  .js-footer .tf-footer__inner {
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .js-page {
+    flex-direction: column;
+  }
+
+  .js-cv__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+/* ── Hueco para el botón ← THEFOLDER/ (shared/QuickActions.jsx) ───────────
+   Va fijo arriba a la izquierda (16px + 40px de alto en desktop, 12px + 44px
+   en mobile) y solo existe con sesión iniciada. Mientras se ve, lo de arriba
+   del sidebar (nombre o título del proyecto) baja para no quedar debajo.
+   Sin sesión no hay botón, así que el sidebar queda como siempre. */
+.df-quick-actions--top ~ .js-body .js-sidebar {
+  padding-top: 80px;
+}
+
+/* Desktop con sesión: el menú (Portfolio / CV / Contact) baja al fondo del
+   sidebar en vez de a media altura; la info de arriba ocupa el resto (con
+   su propio scroll si no cabe). Sin sesión sigue centrado (ver arriba). */
+@media (min-width: 769px) {
+  .df-quick-actions--top ~ .js-body .js-sidebar {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .df-quick-actions--top ~ .js-body .js-sidebar .js-nav {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .df-quick-actions--top ~ .js-body .js-sidebar {
+    padding-top: 72px;
+  }
+}

@@ -8,11 +8,11 @@ import React, {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
+import api from "../services/api";
 import "../components/controlPanel/css/MobileTopHeader.css";
-import LoginModal from "../components/landing/LoginModal";
-import RegisterModal from "../components/landing/RegisterModal";
 import SearchFullScreen from "../components/search/SearchFullScreen";
+import { Plus, LayoutPanelLeft, Search, ArrowUpRight, X } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 // Mantén tus rutas
 const topMenuItems = [
@@ -33,10 +33,9 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout: authLogout } = useAuth();
 
   const [open, setOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const btnRef = useRef(null);
   const menuDialogRef = useRef(null);
 
@@ -77,8 +76,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
     }
     try {
       setIsSearching(true);
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.get(`${backendUrl}/api/users/search`, {
+      const response = await api.get('/api/users/search', {
         params: {
           query: term.trim(),
           searchByFullName: true,
@@ -150,11 +148,33 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
     return () => ro.disconnect();
   }, []);
 
-  // Bloquear scroll cuando overlay abierto (como landing)
+  // Bloquear scroll cuando overlay abierto — overflow:hidden solo no basta
+  // en iOS Safari (bug conocido: un touchmove todavía puede arrastrar la
+  // página aunque body tenga overflow:hidden). position:fixed saca a body
+  // del flujo de scroll por completo, así que ahí no hay nada que arrastrar;
+  // top:-scrollY + restaurar scrollTo al cerrar es lo que evita que la
+  // página salte al principio mientras tanto.
   useEffect(() => {
-    if (open) document.body.style.overflow = "hidden";
+    if (!open) return;
+
+    const scrollY = window.scrollY;
+    const { style } = document.body;
+    const prevOverflow = style.overflow;
+    const prevPosition = style.position;
+    const prevTop = style.top;
+    const prevWidth = style.width;
+
+    style.overflow = "hidden";
+    style.position = "fixed";
+    style.top = `-${scrollY}px`;
+    style.width = "100%";
+
     return () => {
-      document.body.style.overflow = "";
+      style.overflow = prevOverflow;
+      style.position = prevPosition;
+      style.top = prevTop;
+      style.width = prevWidth;
+      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
@@ -169,9 +189,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
 
       try {
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const res = await axios.get(`${backendUrl}/api/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get('/api/users/profile');
 
         const data = res.data || {};
 
@@ -253,14 +271,26 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
 
         if (y <= 8 && !hideAtTop) {
           setIsHeaderVisible(true);
+          lastYRef.current = y;
         } else if (y > 8) {
           const delta = y - lastY;
           const threshold = 8;
-          if (delta > threshold) setIsHeaderVisible(false);
-          else if (delta < -threshold) setIsHeaderVisible(true);
+          // lastYRef solo se pone al día cuando de verdad cruza el umbral
+          // (no en cada frame) — si no, un scroll lento (subir con un drag
+          // suave, típico en /explorer mientras se mira el masonry) nunca
+          // acumula más de 8px entre dos frames consecutivos y el header no
+          // vuelve a aparecer aunque llevas rato subiendo. Al dejar el ancla
+          // quieta mientras el movimiento es pequeño, el delta se acumula
+          // frame a frame hasta que cruza el umbral.
+          if (delta > threshold) {
+            setIsHeaderVisible(false);
+            lastYRef.current = y;
+          } else if (delta < -threshold) {
+            setIsHeaderVisible(true);
+            lastYRef.current = y;
+          }
         }
 
-        lastYRef.current = y;
         tickingRef.current = false;
       });
     };
@@ -284,26 +314,8 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
     [navigate, token]
   );
 
-  const goMyPublicProfile = () => {
-    if (!token) {
-      navigate("/", { state: { showRegister: true } });
-      return;
-    }
-
-    setOpen(false);
-
-    let uname = (localStorage.getItem("myUsername") || "").trim();
-    if (!uname) uname = (myUsername || "").trim();
-
-    if (uname && uname.toLowerCase() !== "username") {
-      navigate(`/${uname}`);
-    } else {
-      navigate("/profile"); // fallback
-    }
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    authLogout();
     localStorage.removeItem("myUsername");
     setOpen(false);
     navigate("/");
@@ -311,12 +323,12 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
 
   const goRegister = () => {
     setOpen(false);
-    setShowRegisterModal(true);
+    navigate("/register");
   };
 
   const goLogin = () => {
     setOpen(false);
-    setShowLogin(true);
+    navigate("/login");
   };
 
   // (se mantienen por si luego quieres usar nombre/foto)
@@ -355,7 +367,7 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
           aria-expanded={open}
           aria-haspopup="dialog"
         >
-          {open ? "[ - ]" : "[ + ]"}
+          <LayoutPanelLeft size={15} strokeWidth={1.8} aria-hidden="true" />
         </button>
       </div>
 
@@ -368,155 +380,125 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
           aria-label={t('nav.menu')}
           ref={menuDialogRef}
         >
-          {/* Top: se queda igual */}
-          <div className="tf-menu__top register">
+          {/* Menú en la estética de la landing (oct 2026, decisión del
+              usuario; antes buscador en píldora gris, links en mayúsculas y
+              tarjetas redondeadas): arriba THEFOLDER/ + cerrar, como la
+              barra de la landing; debajo filas grandes con su raya de lado a
+              lado (texto pautado, landing-ruled.css), con flecha las que
+              llevan a otra página. Estilos en MobileTopHeader.css (.mth-menu). */}
+          <div className="tf-menu__top register mth-menu__top">
             <button
               type="button"
-              className="mobile-top-leftlink"
+              className="mth-menu__brand"
               onClick={() => go("/explorer", false)}
             >
-              THEFOLDER
+              THEFOLDER/
             </button>
 
             <button
               type="button"
-              className="mobile-top-leftlink close"
+              className="mth-menu__close"
               onClick={() => setOpen(false)}
               aria-label={t('actions.close')}
             >
-              [  x  ]
+              <X size={24} strokeWidth={1.6} aria-hidden="true" />
             </button>
           </div>
 
-          <div className="tf-menu__content register">
-            {/* Links */}
-            {/* Buscador mobile */}
-
-          <div className="mth-search-container">
-            <div className="mth-search-trigger">
+          <div className="tf-menu__content register mth-menu">
+            {/* Buscador: una fila más (no una píldora aparte); abre el
+                overlay de búsqueda de siempre (mth-search-overlay). */}
+            {location.pathname !== "/myprofile/settings" && (
               <button
                 type="button"
-                className="mth-search-icon-btn"
+                className="mth-row mth-row--search"
                 aria-label={t('actions.search')}
                 onClick={() => {
                   setShowMobileSearch(true);
                   setTimeout(() => mobileSearchInputRef.current?.focus(), 50);
                 }}
               >
-                <img src="/iconos/search.svg" alt={t('actions.search')} className="mth-search-icon" />
+                <span>{t('search.menuLabel')}</span>
+                <Search className="mth-row__icon" aria-hidden="true" />
               </button>
-            </div>
+            )}
 
-            <div className="tf-menu__links register" role="menu">
+            <nav className="mth-rows mth-rows--nav" role="menu">
               {menuItems.map((item) => {
                 const isActive = location.pathname.startsWith(item.to);
-
                 return (
                   <button
                     key={item.to}
                     type="button"
-                    className={`tf-menu__link register ${isActive ? "is-active" : ""}`}
+                    className={`mth-row ${isActive ? "is-active" : ""}`}
                     role="menuitem"
                     onClick={() => go(item.to, item.auth)}
                   >
-                    {t(item.labelKey)}
-                    {isActive && " /"}
+                    <span>{t(item.labelKey)}</span>
+                    <ArrowUpRight className="mth-row__icon" aria-hidden="true" />
                   </button>
                 );
               })}
-          </div>
+            </nav>
 
-          </div>
-
-            {/* ✅ NUEVO: bloque acciones (como preview) */}
             {token ? (
-              <div className="mth-actions" aria-label={t('actions.profileOptions')}>
+              <div className="mth-rows" role="menu" aria-label={t('actions.profileOptions')}>
                 <button
                   type="button"
-                  className="mth-action mth-action--primary"
+                  className="mth-row"
+                  role="menuitem"
                   onClick={() => go("/createPost", true)}
                 >
-                  <img src="/iconos/upload-picture.png" alt="" className="mth-action-icon mth-action-icon--invert" aria-hidden="true" />
-                  {t('actions.publish').toUpperCase()}
+                  <span>{t('actions.publish')}</span>
+                  <Plus className="mth-row__icon" aria-hidden="true" />
                 </button>
-
-                <div className="mth-flex">
-                  <button
-                    type="button"
-                    className="mth-action mth-action--ghost"
-                    onClick={goMyPublicProfile}
-                  >
-                    <img src="/iconos/my-profile.png" alt="" className="mth-action-icon" aria-hidden="true" />
-                    {t('actions.myProfile').toUpperCase()}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="mth-action mth-action--ghost"
-                    onClick={() => go("/myprofile/edit", true)}
-                  >
-                    <img src="/iconos/edit-my-profile.png" alt="" className="mth-action-icon" aria-hidden="true" />
-                    {t('actions.editProfile').toUpperCase()}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="mth-action mth-action--ghost"
-                    onClick={() => go("/community", true)}
-                  >
-                    <img src="/iconos/community.png" alt="" className="mth-action-icon icon-community" aria-hidden="true" />
-                    {t('actions.myCommunity').toUpperCase()}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="mth-action mth-action--ghost"
-                    onClick={() => go("/guardados", true)}
-                  >
-                    <img src="/iconos/saved.png" alt="" className="mth-action-icon" aria-hidden="true" />
-                    {t('actions.saved').toUpperCase()}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="mth-row"
+                  role="menuitem"
+                  onClick={() => go("/myprofile/edit", true)}
+                >
+                  <span>{t('actions.editProfile')}</span>
+                  <ArrowUpRight className="mth-row__icon" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="mth-row"
+                  role="menuitem"
+                  onClick={() => myUsername && go(`/${myUsername}`, true)}
+                >
+                  <span>{t('actions.myProfile')}</span>
+                  <ArrowUpRight className="mth-row__icon" aria-hidden="true" />
+                </button>
               </div>
             ) : (
-              <div className="tf-menu__actions">
-                <button
-                  type="button"
-                  className="tf-btn tf-btn--wide tf-btn--primary"
-                  onClick={goRegister}
-                >
-                  {t('actions.createAccount')}
+              <div className="mth-rows" role="menu">
+                <button type="button" className="mth-row" role="menuitem" onClick={goRegister}>
+                  <span>{t('actions.createAccount')}</span>
+                  <ArrowUpRight className="mth-row__icon" aria-hidden="true" />
                 </button>
-
-                <button
-                  type="button"
-                  className="tf-btn tf-btn--wide tf-btn--ghost"
-                  onClick={goLogin}
-                >
-                  {t('actions.login')}
+                <button type="button" className="mth-row" role="menuitem" onClick={goLogin}>
+                  <span>{t('actions.login')}</span>
+                  <ArrowUpRight className="mth-row__icon" aria-hidden="true" />
                 </button>
               </div>
             )}
 
-            {/* ✅ Footer minimal (como preview) */}
             {token && (
-              <div className="mth-footerlinks" role="contentinfo">
+              <div className="mth-menu__foot" role="contentinfo">
                 <button
                   type="button"
-                  className="mth-footerlink"
-                  onClick={handleLogout}
-                >
-                  {t('actions.logout')}
-                </button>
-
-                <span className="mth-footersep" aria-hidden="true" />
-
-                <button
-                  type="button"
-                  className="mth-footerlink"
+                  className="mth-menu__footlink"
                   onClick={() => go("/myprofile/settings", true)}
                 >
                   {t('actions.settings')}
+                </button>
+                <button
+                  type="button"
+                  className="mth-menu__footlink"
+                  onClick={handleLogout}
+                >
+                  {t('actions.logout')}
                 </button>
               </div>
             )}
@@ -567,20 +549,6 @@ const MobileTopHeader = ({ profilePicture: profilePictureProp, hideAtTop = false
         </div>
       )}
 
-      {showLogin && (
-        <LoginModal
-          onClose={() => setShowLogin(false)}
-          onSwitchToRegister={() => { setShowLogin(false); setShowRegisterModal(true); }}
-          onSwitchToReset={() => setShowLogin(false)}
-        />
-      )}
-
-      {showRegisterModal && (
-        <RegisterModal
-          onClose={() => setShowRegisterModal(false)}
-          onSwitchToLogin={() => { setShowRegisterModal(false); setShowLogin(true); }}
-        />
-      )}
     </>
   );
 };

@@ -23,6 +23,16 @@ const authLimiter = rateLimit({
   message: { error: 'Demasiados intentos, inténtalo de nuevo en 15 minutos.' }
 });
 
+// /refresh tenía el mismo limitador que /login (15 cada 15 min por IP,
+// compartidos): varias pestañas, varias personas tras la misma IP (oficina,
+// universidad) o un login fallido de más agotaban el cupo, el refresh
+// devolvía 429 y la sesión se cerraba. Limitador propio y más holgado.
+const refreshLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: { error: 'Demasiadas renovaciones de sesión, inténtalo de nuevo en unos minutos.' }
+});
+
 const codeLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 5,
@@ -64,8 +74,11 @@ router.post('/verify-code-pre-registration', codeLimiter, authController.verifyC
 // Endpoint para reenviar el código
 router.post('/resend-code-pre-registration', codeLimiter, authController.resendCodePreRegistration);
 
-// Logout
-router.get('/logout', authController.logout);
+// Logout (revoca el refresh token de esta sesión/dispositivo)
+router.post('/logout', authController.logout);
+
+// Renueva el access token usando el refresh token (sliding session)
+router.post('/refresh', refreshLimiter, authController.refresh);
 
 // Completar registro desde el wizard (requiere JWT de fase 1)
 router.post('/complete-registration', ensureAuthenticated, authController.completeRegistration);

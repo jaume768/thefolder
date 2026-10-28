@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import "../css/professionalExperience.css";
 import { clImg } from "../../../utils/optimizeImage";
 import LogoWithFallback from "./LogoWithFallback";
+import { ArrowUpRight } from "lucide-react";
 
 const normalizeUrl = (raw = "") => {
   const v = String(raw).trim();
@@ -99,7 +100,8 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {urlLabel} <span className="experience-website-icon">↗</span>
+                    {urlLabel}
+                    <ArrowUpRight className="experience-website-icon" size={12} strokeWidth={1.6} aria-hidden="true" />
                   </a>
                 )}
 
@@ -108,9 +110,9 @@ const UserProfessionalExperienceSection = ({ professionalFormation }) => {
                 {(exp.startMonth && exp.startYear) && (
                   <p className="experience-period">
                     {formatDate(exp.startMonth, exp.startYear)}
-                    {" · "}
+                    {" - "}
                     {exp.currentlyWorking ? t("sections.current") : formatDate(exp.endMonth, exp.endYear)}
-                    {" · "}
+                    {" | "}
                     <span className="experience-duration">{calculateDuration(exp)}</span>
                   </p>
                 )}

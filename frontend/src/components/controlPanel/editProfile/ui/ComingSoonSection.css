@@ -1,0 +1,71 @@
+/* Mismo patrón visual que .pt-empty-state (ProyectosTab.css), reutilizado
+   por las secciones aún no disponibles (Insights, Application Kit, PDF). */
+
+.cs-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 24px;
+  text-align: center;
+  height: 42vh;
+}
+
+.cs-empty-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cs-empty-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #111;
+  margin: 0;
+}
+
+.cs-empty-sub {
+  font-size: 13px;
+  color: #aaa;
+  max-width: 380px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Mismo hueco/forma que .pt-create-first-btn, pero como el badge "soon"
+   (mismo azul de marca que .nep-soon-badge) en vez de una CTA funcional —
+   tamaño adaptado a un botón, no al pill diminuto del sidebar. */
+.cs-soon-btn {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-brand-turquoise);
+  color: #222;
+  border-radius: 99px;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Misma forma que .cs-soon-btn, pero como CTA real (negro, no el badge
+   "soon" azul) — p.ej. la carpeta vacía de FolderContentPage.jsx. */
+.cs-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.cs-empty-btn:hover {
+  background: #333;
+}

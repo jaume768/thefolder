@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Section } from "../../ui/ProfileFormSection";
 import { clImg } from "../../../../../utils/optimizeImage";
+import { PenLine, Camera, Plus } from "lucide-react";
 
-const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/bin.png";
 
 export default function ExperienceSection({
@@ -69,11 +70,11 @@ export default function ExperienceSection({
             {expDraft.companyLogo ? (
               <img src={clImg.logo(expDraft.companyLogo)} alt={t("editProfile.logoLabel")} />
             ) : (
-              <span className="ux-exp-logo-icon">📷</span>
+              <Camera size={20} strokeWidth={1.5} aria-hidden="true" className="ux-exp-logo-icon" />
             )}
           </button>
 
-          <div className="ux-helper ux-exp-helper">
+          <div className="ux-counter">
             {t("editProfile.logoUploadHint")}
           </div>
         </div>
@@ -123,12 +124,12 @@ export default function ExperienceSection({
                 name="companyWebsite"
                 type="url"
                 autoComplete="url"
-                className="ux-input"
+                className="ux-helper"
                 value={expDraft.companyWebsite || ""}
                 onChange={(e) => updateExperienceField("companyWebsite", e.target.value)}
-                placeholder="empresa.com"
+                placeholder={t("editProfile.companyWebsitePlaceholder")}
               />
-              <div className="ux-helper">{t("editProfile.seMostraraComoLink")}</div>
+              <div className="ux-counter">{t("editProfile.seMostraraComoLink")}</div>
             </div>
 
             <div className="ux-form-field ux-exp-full">
@@ -267,7 +268,7 @@ export default function ExperienceSection({
           <div className="ux-exp-form-actions">
             {list.length > 0 && (
               <button
-                className="ux-btn"
+                className="ux-btn danger"
                 type="button"
                 onClick={cancelExperienceForm}
               >
@@ -295,16 +296,7 @@ export default function ExperienceSection({
   );
 
   return (
-    <div id="sec-cv-experiencia" className="ux-anchor-target">
-      <div className="ux-card">
-        <label className="ux-form-label separator" htmlFor="exp-title">
-          <img src="/iconos/experience-job.png" className="ux-section-icon" alt="" />
-          {t("editProfile.experienceSectionLabel")}
-        </label>
-
-        <div className="ux-helper ux-exp-helper">
-          {t("editProfile.experienceSubtitle")}
-        </div>
+    <Section id="sec-cv-experiencia" title={t("editProfile.experienceSectionLabel")} help={t("editProfile.experienceSubtitle")}>
 
         {/* LISTA con form inline en acordeón */}
         {list.length > 0 && (
@@ -324,11 +316,11 @@ export default function ExperienceSection({
 
                   <div className="ux-exp-content">
                     <div className="ux-exp-title">
-                      {(exp?.title || "").toUpperCase()}
+                      {exp?.title || ""}
                     </div>
 
                     <div className="ux-exp-meta">
-                      {exp?.institution || "—"}
+                      {exp?.institution || "-"}
                     </div>
 
                     {exp?.companyWebsite && (
@@ -356,10 +348,10 @@ export default function ExperienceSection({
                             ? t("editProfile.currentlyWorkingShort")
                             : exp?.endMonth && exp?.endYear
                             ? `${MONTHS_ES[(Number(exp.endMonth) || 1) - 1]?.label}. ${exp.endYear}`
-                            : "—"}
+                            : "-"}
                         </>
                       ) : (
-                        "—"
+                        "-"
                       )}
                     </div>
                   </div>
@@ -369,16 +361,20 @@ export default function ExperienceSection({
                       type="button"
                       className="ux-link-btn"
                       onClick={() => openEditExperienceForm(idx)}
+                      aria-label={t("editProfile.edit")}
                     >
-                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
+                      <PenLine size={14} strokeWidth={1.8} aria-hidden="true" />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.edit")}</span>
                     </button>
 
                     <button
                       type="button"
                       className="ux-link-btn danger"
                       onClick={() => confirmDeleteExperience(idx)}
+                      aria-label={t("editProfile.delete")}
                     >
-                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} />
+                      <img src={trashDelete} className="ux-icon" alt="" style={{width:"12px"}} />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.delete")}</span>
                     </button>
                   </div>
 
@@ -407,6 +403,7 @@ export default function ExperienceSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewExperienceForm}
             >
+              <Plus size={14} strokeWidth={2} aria-hidden="true" />
               {t("editProfile.addExperience")}
             </button>
           </div>
@@ -414,7 +411,6 @@ export default function ExperienceSection({
 
         {/* FORM para nueva entrada o lista vacía (aparece al final) */}
         {(expFormOpen && expEditingIndex === null) || list.length === 0 ? renderForm() : null}
-      </div>
-    </div>
+    </Section>
   );
 }

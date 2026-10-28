@@ -198,7 +198,7 @@ const Terminos = () => {
                 <section>
                     <h2 className="legal-subtitle">13/ Historial de versiones</h2>
                     <ul className="legal-list">
-                        <li><strong>Versión 1.0</strong> — Publicada en abril de 2026. Primera versión de los Términos y Condiciones de THEFOLDER.</li>
+                        <li><strong>Versión 1.0</strong>: publicada en abril de 2026. Primera versión de los Términos y Condiciones de THEFOLDER.</li>
                     </ul>
                 </section>
 

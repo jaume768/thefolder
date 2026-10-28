@@ -46,7 +46,9 @@ export default function PeopleTagsList({
         const role = String(person?.role || "").trim();
 
         const socialUrl = String(person?.socialUrl || "").trim();
-        const isExternalClickable = !isRegistered && !!socialUrl;
+        const instagramHandle = String(person?.instagram || "").trim().replace(/^@/, "");
+        const effectiveUrl = socialUrl || (instagramHandle ? `https://www.instagram.com/${instagramHandle}` : "");
+        const isExternalClickable = !isRegistered && !!effectiveUrl;
 
         const avatarUrl =
           info?.profilePicture ||
@@ -57,8 +59,8 @@ export default function PeopleTagsList({
           null;
 
         const displayUserText = isRegistered
-          ? (rawName || (username ? `@${username}` : "—")).toLowerCase()
-          : (rawName || (username ? `@${username}` : "—"));
+          ? (rawName || (username ? `@${username}` : "-")).toLowerCase()
+          : (rawName || (username ? `@${username}` : "-"));
 
         const clickable = (isRegistered && !!username) || isExternalClickable;
         const clickableClass = [
@@ -77,9 +79,9 @@ export default function PeopleTagsList({
 
           if (isExternalClickable) {
             if (typeof onOpenExternal === "function") {
-              onOpenExternal({ url: socialUrl, name: rawName || "Enlace externo" });
+              onOpenExternal({ url: effectiveUrl, name: rawName || "Enlace externo" });
             } else {
-              window.open(socialUrl, "_blank", "noopener,noreferrer");
+              window.open(effectiveUrl, "_blank", "noopener,noreferrer");
             }
           }
         };
@@ -93,13 +95,11 @@ export default function PeopleTagsList({
             >
 <div className="tagged-person__meta">
                 <div className="tagged-person__role">
-                  {role || "Rol"} <span>/</span>
+                  {role || "Rol"}
                 </div>
 
                 <div className="tagged-person__user">
                   {displayUserText}
-                  {(isRegistered && username) && <span> →</span>}
-                  {(!isRegistered && isExternalClickable) && <span> ↗</span>}
                 </div>
               </div>
             </button>

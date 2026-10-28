@@ -1,0 +1,1216 @@
+/* ── HOME TAB (Panel) ────────────────────────────────────────────
+   Reglas globales del main card: solo Inter Tight, sin letter-spacing ni
+   mayúsculas, jerarquía por tamaño/peso (400/500/600). Bloques gris
+   tenue sobre blanco, esquinas siempre cuadradas, sin bordes ni sombras.
+   Un único botón negro por pantalla. Cabe en 100vh: nada hace scroll. */
+
+@keyframes ht-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.ht-root,
+.ht-m {
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+/* ── Desktop (>1024px) ─────────────────────────────────────────── */
+
+.ht-root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Cabecera y contenido comparten la misma rejilla de 2 columnas: cada
+   borde vertical de la cabecera continúa en un bloque de abajo. */
+.ht-head,
+.ht-body {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 18px;
+}
+
+.ht-head {
+  flex-shrink: 0;
+}
+
+.ht-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.ht-identity {
+  display: flex;
+  gap: 18px;
+  min-width: 0;
+}
+
+.ht-avatar {
+  width: 96px;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 0;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Avatar editable — el overlay aparece al hover/focus (tap en mobile) y
+   el clic abre el selector de archivo (ver renderAvatar en HomeTab.jsx). */
+.ht-avatar-btn {
+  position: relative;
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.ht-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(17, 17, 17, .55);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.ht-avatar-btn:hover .ht-avatar-overlay,
+.ht-avatar-btn:focus-visible .ht-avatar-overlay,
+.ht-avatar-btn.is-uploading .ht-avatar-overlay {
+  opacity: 1;
+}
+
+.ht-avatar-btn:disabled {
+  cursor: default;
+}
+
+@keyframes ht-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ht-avatar-spinner {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid rgba(255, 255, 255, .35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ht-spin 0.8s linear infinite;
+}
+
+.ht-identity-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ht-greeting {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  color: #111;
+}
+
+/* Siempre dos líneas: salto después de la coma. */
+.ht-greeting > span {
+  display: block;
+}
+
+.ht-subline {
+  margin: 0;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #111;
+}
+
+/* Desktop/tablet: la subline es un botón que abre Perfil → Info; el lápiz
+   aparece al hover al final del texto. */
+.ht-subline--editable {
+  display: block;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ht-subline-edit-icon {
+  margin-left: 6px;
+  vertical-align: -2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.ht-subline--editable:hover .ht-subline-edit-icon,
+.ht-subline--editable:focus-visible .ht-subline-edit-icon {
+  opacity: 1;
+}
+
+/* Disciplinas y ciudades: mismo estilo (heredan todo de .ht-subline) */
+.ht-disciplines,
+.ht-cities {
+  display: block;
+}
+
+.ht-head-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  min-width: 0;
+}
+
+/* Botones */
+.ht-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  line-height: 1;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.ht-btn--primary {
+  background: #111;
+  color: #fff;
+}
+.ht-btn--primary:hover {
+  background: #000;
+}
+
+.ht-btn--white {
+  background: #fff;
+  color: #111;
+  padding: 13px 20px;
+}
+.ht-btn--white:hover {
+  background: #f9f9f9;
+}
+.ht-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.ht-btn--tall {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.ht-btn--block {
+  width: 100%;
+  padding-top: 17px;
+  padding-bottom: 17px;
+}
+
+.ht-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ht-text-btn:hover {
+  color: #555;
+}
+
+/* "Cambiar plantilla": subrayado al hover, sin aclarar el color */
+.ht-template-head .ht-text-btn:hover,
+.ht-template-head .ht-text-btn:focus-visible {
+  color: #111;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Métricas */
+.ht-stats {
+  display: flex;
+}
+
+.ht-stats--inline {
+  gap: 40px;
+}
+
+.ht-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  color: #111;
+  cursor: pointer;
+}
+
+.ht-stats--inline .ht-stat {
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* Tooltip "Ver más" al hover (estilo .ht-tooltip, definido más abajo) */
+.ht-stats--inline .ht-stat {
+  position: relative;
+}
+.ht-stats--inline .ht-stat:hover .ht-tooltip,
+.ht-stats--inline .ht-stat:focus-visible .ht-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ht-stat-num {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.ht-stat-label {
+  font-size: 14px;
+  color: #222;
+  letter-spacing: 0.02rem;
+}
+
+.ht-stats--strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ht-stats--strip .ht-stat {
+  align-items: center;
+  text-align: center;
+}
+
+.ht-stats-strip {
+  flex-shrink: 0;
+  padding: 20px;
+}
+
+/* Bloques gris tenue */
+.ht-block {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  background: #00000006;
+  border-radius: 0;
+}
+
+/* Títulos de bloque: mismo estilo para los bloques y la tarjeta de proyectos */
+.ht-block-title,
+.ht-latest-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+/* Último proyecto */
+.ht-latest {
+  overflow: hidden;
+}
+
+.ht-latest-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 35%;
+  display: block;
+}
+
+.ht-latest-card {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  width: 50%;
+  min-width: 260px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 16px;
+  background: #fdfdfd;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  color: #111;
+  text-align: left;
+}
+
+button.ht-latest-card {
+  cursor: pointer;
+}
+
+/* Desktop, tablet y mobile: todo el bloque del último proyecto es clicable */
+.ht-latest--link {
+  cursor: pointer;
+}
+
+/* Desktop: fila inferior con la tarjeta a la izquierda */
+.ht-latest-bottom {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.ht-latest-bottom .ht-latest-card {
+  position: static;
+}
+
+.ht-latest-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ht-latest-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sin proyectos */
+.ht-latest--empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px;
+  color: #111;
+}
+
+.ht-empty-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 420px;
+}
+
+.ht-empty-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.ht-empty-text {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Desktop: 3 columnas — proyectos | carpetas | (métricas, link, plantilla).
+   La central y la derecha miden lo mismo. La cabecera sigue en 2 columnas. */
+.ht-body--3col {
+  grid-template-columns: 1.4fr 1fr 1fr;
+  /* 2 filas: las métricas y el link comparten la fila de arriba, así que
+     miden siempre lo mismo de alto (el más alto marca la fila); plantilla
+     y carpeta llenan la de abajo. */
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.ht-body--3col > .ht-latest {
+  grid-column: 1;
+  grid-row: 1 / -1;
+}
+
+/* Las columnas central y derecha "desaparecen" como caja (display:contents)
+   para que sus bloques se coloquen directamente en la rejilla de 2 filas. */
+.ht-body--3col > .ht-side {
+  display: contents;
+}
+
+.ht-side--mid > :nth-child(1) { grid-column: 2; grid-row: 1; }
+.ht-side--mid > :nth-child(2) { grid-column: 2; grid-row: 2; }
+.ht-side--right > :nth-child(1) { grid-column: 3; grid-row: 1; }
+.ht-side--right > :nth-child(2) { grid-column: 3; grid-row: 2; }
+
+/* Columna central: métricas arriba, la plantilla ocupa el resto */
+.ht-side .ht-template {
+  flex: 1;
+}
+
+/* Columna derecha: la carpeta ocupa el alto que dejan métricas + link */
+.ht-side .ht-folders {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Bloque de carpetas (FolderCard con una sola imagen) + título
+   abajo, mismo orden que el bloque de plantilla. */
+.ht-folders {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.ht-folders-list {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ht-folders-item {
+  display: flex;
+  min-height: 0;
+}
+
+/* La carpeta se ajusta al alto de su fila (no al ancho) para que las 3
+   quepan sin scroll. */
+.ht-folders .gf-folder--peek {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.ht-folders .gf-folder-visual {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.ht-folders .gf-folder--peek .gf-folder-shape {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+}
+
+/* Carpeta un tono más oscura que el bloque gris (sobre blanco, en
+   Guardados, va en #f0f0f0). */
+.ht-folders .gf-folder-shape > path {
+  fill: #dcdcdc;
+}
+
+/* Sin nombre ni nº de imágenes a la vista — solo la carpeta con su imagen.
+   Se ocultan visualmente (no display:none) para que el lector de pantalla
+   siga anunciando el nombre de la carpeta. */
+.ht-folders .gf-folder-label {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0 !important;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ht-folders .gf-folder--peek .gf-folder-label {
+  padding: 8px 0 0;
+  gap: 2px;
+}
+
+.ht-folders .gf-folder-name {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.ht-folders .gf-folder-count {
+  font-size: 12px;
+  letter-spacing: normal;
+  color: #555;
+}
+
+.ht-folders-skel {
+  width: 100%;
+  height: 100%;
+}
+
+.ht-folders-empty {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Columna derecha: link (40%) + plantilla (60%) */
+.ht-side {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+}
+
+/* Alto según contenido (flecha + link); la plantilla ocupa el resto */
+.ht-link {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 20px;
+}
+
+.ht-corner-arrow {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin: -12px -12px 0 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #111;
+  cursor: pointer;
+}
+.ht-corner-arrow svg {
+  transition: transform 0.15s ease;
+}
+.ht-corner-arrow:hover svg {
+  transform: translate(2px, -2px);
+}
+
+.ht-link-url {
+  max-width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #111;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Icono de copiar al final del link: mismo tamaño que el texto (1em) */
+.ht-link-copy {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.25em;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  line-height: 1;
+  vertical-align: -0.1em;
+  cursor: pointer;
+}
+/* La opacidad va en el icono (no en el botón) para no apagar el tooltip */
+.ht-link-copy svg {
+  width: 20px;
+  height: 20px;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+.ht-link-copy:hover svg,
+.ht-link-copy:focus-visible svg {
+  opacity: 1;
+}
+.ht-link-copy:disabled {
+  cursor: default;
+}
+.ht-link-copy:disabled svg {
+  opacity: 0.15;
+}
+
+/* Tooltip — mismo estilo que .nep-icon-tooltip (control-panel.css) */
+.ht-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  white-space: nowrap;
+  background: #111;
+  color: #fdfdfd;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 5px 10px;
+  border-radius: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+.ht-link-copy:hover .ht-tooltip,
+.ht-link-copy:focus-visible .ht-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ht-link-copy:disabled .ht-tooltip {
+  display: none;
+}
+
+.ht-template {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.ht-template-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* Desktop/tablet: la plantilla arriba y su info (nombre + "Ver plantillas")
+   debajo. Mobile (.ht-m) mantiene el orden original. */
+.ht-root .ht-template-head {
+  order: 2;
+}
+
+.ht-template-frame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 12px;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+/* .ux-layout-preview (UserProfileExtern.css) trae aspect-ratio:4/3 + borde
+   pensados para el icono pequeño del picker — aquí ocupa el marco entero.
+   Doble clase para ganar sin depender del orden de carga de los CSS. */
+.ht-template-frame .ux-layout-preview {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border: none;
+}
+
+/* Skeletons */
+.ht-skel {
+  display: block;
+  background: #0000000d;
+  animation: ht-pulse 1.5s ease-in-out infinite;
+}
+
+.ht-skel--num {
+  width: 48px;
+  height: 32px;
+}
+
+.ht-skel--fill {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Tablet (769–1024px) ───────────────────────────────────────── */
+
+.ht-root--tablet .ht-head {
+  grid-template-columns: 1fr auto;
+}
+
+.ht-root--tablet .ht-head-actions {
+  justify-content: flex-start;
+}
+
+.ht-root--tablet .ht-btn--primary {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.ht-root--tablet .ht-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ht-root--tablet .ht-latest {
+  flex: 1.1;
+}
+
+/* 2×2 como las columnas central y derecha de desktop: link y métricas
+   comparten la fila de arriba (mismo alto, el más alto la marca);
+   plantilla y carpeta llenan la de abajo. */
+.ht-bottom {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 24px;
+}
+
+/* Métricas centradas en vertical: su bloque estira hasta el alto del link */
+.ht-root--tablet .ht-bottom > .ht-stats-strip {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ── Mobile (≤768px) ───────────────────────────────────────────── */
+
+.ht-m {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fdfdfd;
+}
+
+.ht-m-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Herramientas + Ajustes: flotan arriba a la derecha, sobre .ht-m-head (ya
+   no hay barra superior). right: 8px → el icono del último queda a 20px del
+   borde, alineado con el contenido (el botón de 44px sobresale 12px). */
+.ht-m-topbar-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.ht-m-head {
+  display: flex;
+  gap: 14px;
+  flex-shrink: 0;
+  padding: 24px 20px 0;
+}
+
+.ht-m-head .ht-avatar {
+  width: 104px;
+  height: 140px;
+}
+
+.ht-m-head .ht-identity-text {
+  flex: 1;
+  gap: 8px;
+}
+
+.ht-m-head .ht-greeting {
+  font-size: 28px;
+  max-width: 90%;
+}
+
+.ht-m-head .ht-subline {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.ht-m-carousel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 0px 20px;
+  scroll-padding: 0 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ht-m-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* El padding derecho de un contenedor flex con overflow no siempre se
+   respeta al final del scroll — este hueco (20px - 12px de gap) lo fuerza. */
+.ht-m-carousel::after {
+  content: "";
+  flex: 0 0 8px;
+}
+
+.ht-m-card {
+  flex: 0 0 calc(100vw - 74px);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ht-m-card > .ht-block {
+  flex: 1;
+}
+
+/* Tarjeta 1: dos mitades iguales — CTA "Nuevo proyecto" arriba, último
+   proyecto (portada + título debajo) abajo. */
+/* Rejilla de 2 filas iguales (no flex): el padding del CTA no descuadra
+   las mitades. Sin proyectos queda un solo hijo (bloque vacío) a todo alto. */
+.ht-m-card--latest {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ht-m-card--latest > :only-child {
+  grid-row: 1 / -1;
+}
+
+.ht-m-card--latest > .ht-m-new,
+.ht-m-card--latest > .ht-m-latest {
+  box-sizing: border-box;
+  min-height: 0;
+  width: 100%;
+}
+
+/* CTA a media tarjeta: icono arriba a la izquierda, texto abajo (mismo
+   esquema que el resto de bloques: icono/acción arriba, contenido abajo). */
+.ht-m-new {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0;
+  padding: 20px;
+}
+
+.ht-m-new-label {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.ht-m-latest {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+  font-family: inherit;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.ht-m-latest-img {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: block;
+  overflow: hidden; /* recorta el zoom de entrada de la portada */
+}
+
+.ht-m-latest-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 40%;
+  display: block;
+}
+
+.ht-m-latest-caption .ht-latest-title {
+  min-width: 0;
+}
+
+.ht-m-latest-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+
+.ht-m .ht-latest--empty {
+  padding: 20px;
+}
+
+.ht-m .ht-empty-body {
+  align-items: stretch;
+}
+
+.ht-m .ht-empty-title {
+  font-size: 26px;
+}
+
+.ht-m .ht-empty-text {
+  font-size: 13px;
+}
+
+/* Tarjeta "Tu portfolio": métricas + plantilla */
+.ht-m-card--portfolio {
+  gap: 12px;
+}
+
+.ht-m-card--portfolio > .ht-link {
+  flex: none;
+}
+
+.ht-m .ht-stats--strip .ht-stat {
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+
+.ht-m .ht-stat-label {
+  font-size: 12px;
+}
+
+/* Tarjeta 3 (métricas + carpeta), como la columna derecha de desktop: las
+   métricas a su alto de contenido y la carpeta ocupa el resto. */
+.ht-m-card--side {
+  gap: 12px;
+}
+
+.ht-m-card--side > .ht-stats-strip {
+  flex: none;
+}
+
+/* Como en desktop: título de bloque + acción debajo del contenido */
+.ht-m .ht-template-head {
+  order: 2;
+}
+
+.ht-m-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  height: 32px;
+}
+
+.ht-m-dot {
+  width: 4px;
+  height: 4px;
+  background: #c4c4c4;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.ht-m-dot.active {
+  width: 18px;
+  background: #111;
+}
+
+
+/* Métricas centradas en vertical: su bloque estira hasta el alto del link */
+.ht-body--3col .ht-stats-strip {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Métricas en la rejilla de desktop: el número grande y en 600 (32px) y
+   la etiqueta con el tamaño/peso de .ht-text-btn (12px, 400). */
+.ht-body--3col .ht-stat-num {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.ht-body--3col .ht-stat-label {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Mobile: link (tarjeta 2) y métricas (tarjeta 3) con el mismo alto — están
+   en tarjetas distintas del carrusel, así que no pueden compartir fila como
+   en desktop: se igualan con el mismo alto mínimo (el natural del link,
+   flecha + una línea de URL) y las métricas centradas en vertical. */
+.ht-m .ht-stats-strip,
+.ht-m-card--portfolio > .ht-link {
+  box-sizing: border-box;
+  min-height: 103px;
+}
+
+.ht-m .ht-stats-strip {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Flecha de "Tus proyectos": misma animación que la flecha del link
+   (.ht-corner-arrow, 0.15s) — aquí hacia la derecha, porque es →. Se activa
+   con el hover de todo el bloque, que es clicable entero. */
+.ht-latest .ht-latest-card svg,
+.ht-m-latest-caption svg {
+  transition: transform 0.15s ease;
+}
+
+.ht-latest--link:hover .ht-latest-card svg,
+.ht-latest--link:focus-within .ht-latest-card svg,
+.ht-m-latest:hover .ht-m-latest-caption svg,
+.ht-m-latest:focus-visible .ht-m-latest-caption svg {
+  transform: translateX(2px);
+}
+
+/* ── Entrada animada ──────────────────────────────────────────────
+   Al montar la pestaña, las piezas entran en cascada (fade + subida
+   corta) en vez de aparecer de golpe: cabecera → columna de proyectos →
+   columna central → columna derecha. fill-mode "backwards" (no "both"):
+   el estado inicial se aplica durante el delay, pero al terminar no se
+   queda ningún transform colgado en los bloques (no interfiere con los
+   hovers ni crea contextos de apilamiento). */
+
+@keyframes ht-enter-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ht-enter-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ht-enter-avatar {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Portada del último proyecto / imágenes que llegan tras el skeleton:
+   ligero zoom-out al aparecer. */
+@keyframes ht-enter-cover {
+  from { opacity: 0; transform: scale(1.06); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.ht-root,
+.ht-m {
+  --ht-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Cabecera */
+.ht-root .ht-avatar-btn,
+.ht-m .ht-avatar-btn {
+  animation: ht-enter-avatar 0.6s var(--ht-ease-out) backwards;
+}
+.ht-root .ht-greeting,
+.ht-m .ht-greeting {
+  animation: ht-enter-up 0.6s var(--ht-ease-out) 0.08s backwards;
+}
+.ht-root .ht-subline,
+.ht-m .ht-subline {
+  animation: ht-enter-up 0.6s var(--ht-ease-out) 0.16s backwards;
+}
+.ht-root .ht-head-actions {
+  animation: ht-enter-fade 0.6s ease-out 0.24s backwards;
+}
+
+/* Desktop: cada columna entra con su propio retraso; dentro de cada
+   columna los bloques se escalonan un poco más. */
+.ht-root--desktop .ht-body > .ht-latest {
+  animation: ht-enter-up 0.7s var(--ht-ease-out) 0.22s backwards;
+}
+.ht-root--desktop .ht-side--mid > .ht-block:nth-child(1) {
+  animation: ht-enter-up 0.7s var(--ht-ease-out) 0.32s backwards;
+}
+.ht-root--desktop .ht-side--mid > .ht-block:nth-child(2) {
+  animation: ht-enter-up 0.7s var(--ht-ease-out) 0.40s backwards;
+}
+.ht-root--desktop .ht-side--right > .ht-block:nth-child(1) {
+  animation: ht-enter-up 0.7s var(--ht-ease-out) 0.42s backwards;
+}
+.ht-root--desktop .ht-side--right > .ht-block:nth-child(2) {
+  animation: ht-enter-up 0.7s var(--ht-ease-out) 0.50s backwards;
+}
+
+/* Tablet: proyecto arriba + rejilla 2×2 */
+.ht-root--tablet .ht-body > .ht-latest {
+  animation: ht-enter-up 0.7s var(--ht-ease-out) 0.22s backwards;
+}
+.ht-root--tablet .ht-bottom > .ht-block:nth-child(1) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.32s backwards; }
+.ht-root--tablet .ht-bottom > .ht-block:nth-child(2) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.38s backwards; }
+.ht-root--tablet .ht-bottom > .ht-block:nth-child(3) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.44s backwards; }
+.ht-root--tablet .ht-bottom > .ht-block:nth-child(4) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.50s backwards; }
+
+/* Mobile: barra, cabecera, tarjetas del carrusel y puntos */
+.ht-m .ht-m-topbar-actions {
+  animation: ht-enter-fade 0.5s ease-out backwards;
+}
+.ht-m .ht-m-card:nth-child(1) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.22s backwards; }
+.ht-m .ht-m-card:nth-child(2) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.30s backwards; }
+.ht-m .ht-m-card:nth-child(3) { animation: ht-enter-up 0.7s var(--ht-ease-out) 0.38s backwards; }
+.ht-m .ht-m-dots {
+  animation: ht-enter-fade 0.5s ease-out 0.45s backwards;
+}
+
+/* Contenido que llega después del skeleton (se monta al terminar la
+   petición): números, portadas, miniatura de plantilla y carpetas. */
+.ht-stat-num {
+  animation: ht-enter-up 0.5s var(--ht-ease-out) backwards;
+}
+.ht-latest-cover,
+.ht-m-latest-img img {
+  animation: ht-enter-cover 0.9s var(--ht-ease-out) backwards;
+}
+.ht-template-frame > :not(.ht-skel),
+.ht-folders-item,
+.ht-folders-empty {
+  animation: ht-enter-fade 0.5s ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ht-root *,
+  .ht-m * {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+  }
+  /* Los skeletons conservan su pulso suave */
+  .ht-root .ht-skel,
+  .ht-m .ht-skel {
+    animation-duration: 1.5s !important;
+  }
+  /* …y el spinner de subida del avatar sigue girando */
+  .ht-root .ht-avatar-spinner,
+  .ht-m .ht-avatar-spinner {
+    animation-duration: 0.8s !important;
+  }
+}

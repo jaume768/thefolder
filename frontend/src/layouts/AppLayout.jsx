@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MobileSideMenu from './MobileSideMenu';
@@ -7,9 +7,10 @@ import CreatePostModal from '../components/modals/CreatePostModal';
 import { CreatePostProvider } from '../contexts/CreatePostContext';
 import ReclassifyModal, { shouldShowReclassify } from '../components/modals/ReclassifyModal';
 import { AuthContext } from '../contexts/AuthContext';
+import { RouteSkeleton } from '../components/skeleton/PageSkeleton';
 
 
-const AppLayout = ({ children, contentClassName, hideAtTop = false }) => {
+const AppLayout = ({ children, contentClassName, hideAtTop = false, hideOwnHeader = false, hideDesktopHeader = false }) => {
   const { user } = useContext(AuthContext);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [profilePicture, setProfilePicture] = useState('/multimedia/usuarioDefault.jpg');
@@ -78,7 +79,17 @@ const AppLayout = ({ children, contentClassName, hideAtTop = false }) => {
         <Sidebar />
 
         <div className="dashboard-main">
-          {!isMobile && (
+          {/* hideOwnHeader: rutas de perfil público sin sesión — la plantilla
+              (LandingHeader) ya pone su propio header, con las mismas clases
+              .dashboard-header que este, ambos fixed en el mismo sitio y
+              mismo z-index (control-panel.css), así que se pisaban entre sí.
+              hideDesktopHeader: panel persistente (/myprofile/edit, settings,
+              guardados, community, proyectos) — PanelSidebar ya renderiza su
+              propio .nep-panel-header (mismo diseño, botón de cerrar panel en
+              vez de abrirlo), así que en desktop solo debe quedar uno. En
+              mobile .nep-panel-header se oculta por CSS y MobileTopHeader
+              cubre esa franja, así que ahí sí debe seguir montándose. */}
+          {!isMobile && !hideOwnHeader && !hideDesktopHeader && (
             <Header
               profilePicture={profilePicture}
               onHamburgerClick={toggleSideMenu}
@@ -87,7 +98,7 @@ const AppLayout = ({ children, contentClassName, hideAtTop = false }) => {
             />
           )}
 
-          {isMobile && (
+          {isMobile && !hideOwnHeader && (
             <MobileTopHeader
               onCreatePost={openCreatePost}
               hideAtTop={hideAtTop}
@@ -95,7 +106,11 @@ const AppLayout = ({ children, contentClassName, hideAtTop = false }) => {
           )}
 
           <main className={`dashboard-content ${contentClassName || ''}`}>
-            {children}
+            {/* Mientras llega el código de la página (lazy), su skeleton
+                dentro del layout: cabecera y sidebar no desaparecen. */}
+            <Suspense fallback={<RouteSkeleton />}>
+              {children}
+            </Suspense>
           </main>
         </div>
 

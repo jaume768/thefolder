@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
+import { ArrowUpRight } from 'lucide-react';
 import { clImg } from '../../../utils/optimizeImage';
 
 const UserPressPublicationsSection = ({ pressPublications }) => {
@@ -62,6 +63,7 @@ const UserPressPublicationsSection = ({ pressPublications }) => {
                   className="ux-exp-link"
                 >
                   {t('sections.viewPublication')}
+                  <ArrowUpRight className="ux-exp-link-icon" size={12} strokeWidth={1.6} aria-hidden="true" />
                 </a>
               )}
             </div>

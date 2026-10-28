@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../components/landing/css/landing-styles.css';
 import '../components/landing/css/modal-overlay.css';
@@ -8,113 +8,117 @@ import LandingLinkSection from "../components/landing/LandingLinkSection";
 import LandingTemplatesParallax from "../components/landing/LandingTemplatesParallax";
 import LandingCreatorsShowcase from "../components/landing/LandingCreatorsShowcase";
 import LandingFiltersShowcase from "../components/landing/LandingFiltersShowcase";
-import LandingHeader from '../components/landing/LandingHeader';
+import LandingHeaderActions from '../components/landing/LandingHeaderActions';
 import LandingFinalCTA from "../components/landing/LandingFinalCTA";
+import LandingMainHero from '../components/landing/LandingMainHero';
+import LandingWhySection from '../components/landing/LandingWhySection';
+import LandingHowSection from '../components/landing/LandingHowSection';
+import LandingForWhoSection from '../components/landing/LandingForWhoSection';
+import LandingClosingCTA from '../components/landing/LandingClosingCTA';
 import LandingFooter from '../components/landing/LandingFooter';
-
-import LoginModal from '../components/landing/LoginModal';
-import RegisterModal from '../components/landing/RegisterModal';
-import PasswordResetModal from '../components/landing/PasswordResetModal';
+import LandingProfilesColumn from '../components/landing/LandingProfilesColumn';
 
 const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-  const [showPasswordReset, setShowPasswordReset] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const isLoggedIn = !!localStorage.getItem('authToken');
 
+  // Muchos sitios de la app siguen pidiendo el registro indirectamente vía
+  // navigate('/', { state: { showRegister: true } }) (patrón antiguo, de
+  // cuando esto abría un modal aquí mismo) — en vez de tocar cada uno de
+  // esos sitios, se reenvían todos a /register desde aquí.
   useEffect(() => {
     if (location.state?.showRegister) {
       if (isLoggedIn) {
         navigate('/explorer', { replace: true });
         return;
       }
-      setShowRegister(true);
-      navigate(location.pathname, { replace: true });
+      navigate('/register', { replace: true });
     }
   }, [location, navigate, isLoggedIn]);
 
-  const handleAuthClick = (openModal) => {
+  // Los botones de la barra se ven siempre; la marca THEFOLDER/ de la barra
+  // entra justo cuando el texto de la primera pantalla ("Hi, we are
+  // THEFOLDER/,...") termina de pasar por debajo de la barra, ni antes (se
+  // repetiría) ni después (quedaría un hueco sin marca).
+  const [pastHero, setPastHero] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      const heroText = document.querySelector('.tf-finalCta__brand');
+      const bar = document.querySelector('.tf-actionsbar');
+      if (!heroText) { setPastHero(window.scrollY > window.innerHeight); return; }
+      const barBottom = bar ? bar.getBoundingClientRect().bottom : 64;
+      setPastHero(heroText.getBoundingClientRect().bottom <= barBottom);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  const handleAuthClick = (path) => {
     if (isLoggedIn) { navigate('/explorer'); return; }
-    openModal();
-  };
-
-  const handleSwitchToRegister = () => {
-    navigate('/');
-    setShowLogin(false);
-    setShowRegister(true);
-  };
-
-  const handleSwitchToReset = () => {
-    setShowLogin(false);
-    setShowPasswordReset(true);
+    navigate(path);
   };
 
   return (
   <div className="page-wrapper">
-    <LandingHeader
-      menuOpen={menuOpen}
-      setMenuOpen={setMenuOpen}
-      onLoginClick={() => handleAuthClick(() => setShowLogin(true))}
-      onRegisterClick={() => handleAuthClick(() => setShowRegister(true))}
+    <LandingHeaderActions
+      onLoginClick={() => handleAuthClick('/login')}
+      onRegisterClick={() => handleAuthClick('/register')}
+      brandHidden={!pastHero}
     />
 
-    {/* Always render the landing page content */}
+    {/* Comentado hasta nuevo aviso — solo navbar + footer + la columna de
+        fotos de abajo mientras tanto. */}
     {/* <LandingHero
-      onRegisterClick={() => setShowRegister(true)}
-      onLoginClick={() => setShowLogin(true)}
+      onRegisterClick={() => navigate('/register')}
+      onLoginClick={() => navigate('/login')}
     /> */}
 
     {/* <LandingLinkSection
-    onCtaClick={() => setShowRegister(true)} /> */}
+    onCtaClick={() => navigate('/register')} /> */}
 
     {/* <LandingTemplatesParallax
-    onCtaClick={() => setShowRegister(true)} /> */}
+    onCtaClick={() => navigate('/register')} /> */}
 
     {/* <LandingCreatorsShowcase
       explorePath="/creatives"
-      onRegisterClick={() => setShowRegister(true)}
+      onRegisterClick={() => navigate('/register')}
     /> */}
 
     {/* <LandingFiltersShowcase /> */}
 
+    {/* Primera pantalla (100vh): la landing anterior, la que sigue en
+        thefolder.es: THEFOLDER/ gigante en el centro, dos columnas de texto y
+        "Crea tu perfil gratis" (LandingFinalCTA), sin su navbar antiguo.
+        Desde ahí hacia abajo, la landing nueva (oct 2026, decisión del
+        usuario). LandingMainHero ("what" + fotos) queda fuera mientras tanto. */}
     <LandingFinalCTA
-      onCtaClick={() => handleAuthClick(() => setShowRegister(true))}
+      onCtaClick={() => handleAuthClick('/register')}
     />
 
-    <LandingFooter />
+    {/* <LandingMainHero /> */}
+    {/* Secciones de texto pautado con una sola columna de fotos de perfiles
+        a la derecha, de (WHY) hasta (FOR WHO). */}
+    <div className="tf-ruled-flow">
+      <LandingWhySection />
+      <LandingHowSection />
+      <LandingForWhoSection />
+      <LandingProfilesColumn />
+    </div>
 
-    {/* Add these modals back */}
-    {showLogin && (
-      <LoginModal
-        onClose={() => setShowLogin(false)}
-        onSwitchToRegister={handleSwitchToRegister}
-        onSwitchToReset={handleSwitchToReset}
-      />
-    )}
-
-    {showRegister && (
-      <RegisterModal
-        onClose={() => setShowRegister(false)}
-        onSwitchToLogin={() => {
-          setShowRegister(false);
-          setShowLogin(true);
-        }}
-      />
-    )}
-
-    {showPasswordReset && (
-      <PasswordResetModal
-        onClose={() => setShowPasswordReset(false)}
-        onSwitchToLogin={() => {
-          setShowPasswordReset(false);
-          setShowLogin(true);
-        }}
-      />
-    )}
+    {/* Cierre aparte (sin la columna de fotos) y footer juntos en una última
+        pantalla: en escritorio los dos van abajo del todo, seguidos (ver
+        .tf-landing-end en landing-ruled.css); en móvil, como antes. */}
+    <div className="tf-landing-end">
+      <LandingClosingCTA onCtaClick={() => handleAuthClick('/register')} />
+      <LandingFooter />
+    </div>
   </div>
   );
 };

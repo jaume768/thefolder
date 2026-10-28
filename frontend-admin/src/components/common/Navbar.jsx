@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaBars, FaUserCircle, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { Menu, CircleUserRound, LogOut, Settings } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import '../../styles/Navbar.css';
 
@@ -10,29 +10,29 @@ const Navbar = ({ toggleMobileSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [pageTitle, setPageTitle] = useState('Dashboard');
+  const [pageTitle, setPageTitle] = useState('Resumen');
   const dropdownRef = useRef(null);
 
-  // Actualizar el título de la página según la ruta actual
+  // Título de la barra según la sección (el primer tramo de la ruta).
   useEffect(() => {
-    const path = location.pathname;
-    if (path === '/') {
-      setPageTitle('Dashboard');
-    } else if (path.includes('/usuarios')) {
-      setPageTitle('Gestión de Usuarios');
-    } else if (path.includes('/ofertas-educativas')) {
-      setPageTitle('Ofertas Educativas');
-    } else if (path.includes('/ofertas')) {
-      setPageTitle('Ofertas de Empleo');
-    } else if (path.includes('/posts')) {
-      setPageTitle('Publicaciones');
-    } else if (path.includes('/escuelas')) {
-      setPageTitle('Escuelas');
-    } else if (path.includes('/blog')) {
-      setPageTitle('Blog');
-    } else if (path.includes('/configuracion')) {
-      setPageTitle('Configuración');
-    }
+    const TITLES = {
+      '': 'Resumen',
+      trafico: 'Tráfico y navegación',
+      actividad: 'Actividad',
+      usuarios: 'Usuarios',
+      validacion: 'Validación',
+      reportes: 'Reportes',
+      posts: 'Proyectos',
+      blog: 'Blog',
+      revistas: 'Revistas',
+      industria: 'Industria',
+      schools: 'Escuelas',
+      ofertas: 'Ofertas de empleo',
+      'ofertas-educativas': 'Ofertas de formación',
+      configuracion: 'Ajustes',
+    };
+    const section = location.pathname.split('/')[1] || '';
+    setPageTitle(TITLES[section] ?? 'Admin');
   }, [location]);
 
   // Cerrar el dropdown al hacer clic fuera de él
@@ -62,7 +62,7 @@ const Navbar = ({ toggleMobileSidebar }) => {
     <nav className="navbar">
       <div className="navbar-left">
         <button className="menu-toggle" onClick={toggleMobileSidebar} aria-label="Toggle menu">
-          <FaBars />
+          <Menu size={20} strokeWidth={1.8} />
         </button>
         <h1 className="page-title">{pageTitle}</h1>
       </div>
@@ -79,7 +79,7 @@ const Navbar = ({ toggleMobileSidebar }) => {
                 className="user-avatar"
               />
             ) : (
-              <FaUserCircle className="user-icon" />
+              <CircleUserRound className="user-icon" size={28} strokeWidth={1.4} />
             )}
             <span className="user-name">{currentUser?.fullName || currentUser?.username}</span>
           </button>
@@ -92,11 +92,11 @@ const Navbar = ({ toggleMobileSidebar }) => {
             </div>
             <div className="dropdown-divider"></div>
             <a href="/configuracion" className="dropdown-item">
-              <FaCog className="dropdown-item-icon" />
+              <Settings className="dropdown-item-icon" size={16} strokeWidth={1.8} />
               <span>Configuración</span>
             </a>
             <button onClick={handleLogout} className="dropdown-item">
-              <FaSignOutAlt className="dropdown-item-icon" />
+              <LogOut className="dropdown-item-icon" size={16} strokeWidth={1.8} />
               <span>Cerrar sesión</span>
             </button>
           </div>

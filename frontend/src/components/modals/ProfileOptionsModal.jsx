@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserRoundPen, Users, Bookmark } from "lucide-react";
 
 const ProfileOptionsModal = ({
   userName,
@@ -54,11 +55,11 @@ const ProfileOptionsModal = ({
     // 2) si no, inferimos por pathname
     const last = location.pathname.split("/").filter(Boolean).pop() || "explorer";
 
-    if (last === "editProfile") setActiveSection("editProfile");
+    if (last === "edit" || last === "editProfile") setActiveSection("editProfile");
     else if (last === "community") setActiveSection("community");
-    else if (last === "guardados") setActiveSection("guardados");
-    else if (last === "misOfertas") setActiveSection("misOfertas");
-    else if (last === "configuracion") setActiveSection("configuracion");
+    else if (last === "saved" || last === "guardados") setActiveSection("guardados");
+    else if (last === "offers" || last === "misOfertas") setActiveSection("misOfertas");
+    else if (last === "settings" || last === "configuracion") setActiveSection("configuracion");
     else setActiveSection(""); // nada activo por defecto
   }, [location.pathname, location.state]);
 
@@ -114,11 +115,8 @@ const ProfileOptionsModal = ({
           <img className="mth-userblock__avatar" src={finalPic} alt="" />
           <div>
             <div className="mth-userblock__name profile">{finalName}</div>
-
             {finalUsername && (
-              <div className="mth-userblock__username">
-                {finalUsername}
-              </div>
+              <div className="mth-userblock__username">@{finalUsername}</div>
             )}
           </div>
         </button>
@@ -133,7 +131,7 @@ const ProfileOptionsModal = ({
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && handleSelect("editProfile")}
         >
-          <img src="/iconos/edit-my-profile.png" alt="" className="pom-icon" aria-hidden="true" />
+          <UserRoundPen size={18} strokeWidth={1.8} aria-hidden="true" className="pom-icon" />
           <span>{t("profileOptions.editProfile")}</span>
         </li>
 
@@ -145,7 +143,7 @@ const ProfileOptionsModal = ({
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && handleSelect("guardados")}
         >
-          <img src="/iconos/saved.png" alt="" className="pom-icon saved-icon" aria-hidden="true" />
+          <Bookmark size={18} strokeWidth={1.8} aria-hidden="true" className="pom-icon saved-icon" />
           <span>{t("profileOptions.saved")}</span>
         </li>
 
@@ -157,30 +155,20 @@ const ProfileOptionsModal = ({
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && handleSelect("community")}
         >
-          <img src="/iconos/community.png" alt="" className="pom-icon community-pom-icon" aria-hidden="true" />
+          <Users size={18} strokeWidth={1.8} aria-hidden="true" className="pom-icon community-pom-icon" />
           <span>{t("profileOptions.myCommunity")}</span>
         </li>
 
-        <li
-          className={activeSection === "configuracion" ? "active" : ""}
-          onClick={() => handleSelect("configuracion")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && handleSelect("configuracion")}
-        >
-          <img src="/iconos/settings.png" alt="" className="pom-icon" aria-hidden="true" />
-          <span>{t("profileOptions.settings")}</span>
-        </li>
       </ul>
+      
 
-      {/* Logout */}
       <div className="profile-options-logout">
         <button
           type="button"
           className="profile-options-logout-btn"
-          onClick={() => handleSelect("logout")}
+          onClick={() => handleSelect("configuracion")}
         >
-          {t("profileOptions.logout")}
+          {t("profileOptions.settings")}
         </button>
       </div>
     </div>

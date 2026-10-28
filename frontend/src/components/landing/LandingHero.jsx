@@ -14,7 +14,11 @@ export default function LandingHero({
   ],
 }) {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  // "landing", no default ("common"): hero.*/cookies.* solo existen en
+  // landing.json — con el namespace por defecto, t() no encontraba la
+  // clave en common.json y mostraba la clave cruda en vez del texto
+  // (p.ej. "cookies.textDesktop" literal en pantalla).
+  const { t } = useTranslation("landing");
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -24,19 +28,6 @@ export default function LandingHero({
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
-
-  const STORAGE_KEY = "thefolder_cookie_basic_ok";
-  const [cookieOpen, setCookieOpen] = useState(false);
-
-  useEffect(() => {
-    const accepted = localStorage.getItem(STORAGE_KEY) === "1";
-    setCookieOpen(!accepted);
-  }, []);
-
-  const acceptCookies = () => {
-    localStorage.setItem(STORAGE_KEY, "1");
-    setCookieOpen(false);
-  };
 
   const navItems = useMemo(
     () => [
@@ -91,41 +82,10 @@ export default function LandingHero({
 
       </div>
 
-      {/* ===== COOKIE CONSENT ===== */}
-      {cookieOpen && (
-        <>
-          <div className="tf-cookie tf-only-desktop" role="dialog" aria-label={t("cookies.ariaLabel")}>
-            <p className="tf-cookie__text">
-              {t("cookies.textDesktop")}
-            </p>
-            <button type="button" className="tf-btn tf-btn--cookie" onClick={acceptCookies}>
-              {t("cookies.accept")}
-            </button>
-            <a className="tf-cookie__link" href="/cookies">
-              {t("cookies.policy")}
-            </a>
-          </div>
-
-          <div className="tf-cookieSheet tf-only-mobile" role="dialog" aria-label={t("cookies.ariaLabel")}>
-            <div className="tf-cookieSheet__overlay" aria-hidden="true" />
-            <div className="tf-cookieSheet__panel">
-              <p className="tf-cookie__text">
-                {t("cookies.textMobile")}
-              </p>
-              <button
-                type="button"
-                className="tf-btn tf-btn--cookie tf-cookieSheet__btn"
-                onClick={acceptCookies}
-              >
-                {t("cookies.acceptUpper")}
-              </button>
-              <a className="tf-cookie__link" href="/cookies">
-                {t("cookies.policy")}
-              </a>
-            </div>
-          </div>
-        </>
-      )}
+      {/* El consentimiento de cookies vive en CookieBanner.jsx (montado una
+          sola vez en App.jsx, para toda la app) — este componente tenía su
+          propia copia duplicada (mismo STORAGE_KEY, mismo markup), así que
+          en la landing salían dos diálogos de cookies superpuestos. */}
     </section>
   );
 }

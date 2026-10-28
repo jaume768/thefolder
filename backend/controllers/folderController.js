@@ -1,5 +1,6 @@
 const Folder = require('../models/Folder');
 const User = require('../models/User');
+const Post = require('../models/Post');
 
 exports.createFolder = async (req, res) => {
     const { name } = req.body;
@@ -12,10 +13,39 @@ exports.createFolder = async (req, res) => {
     }
 };
 
+// Cada item de carpeta se devuelve con el @username de quien creó el post y
+// el título del post (crédito al autor en "Guardados"). Se resuelve en
+// bloque — 1 consulta de posts + 1 de usuarios — en vez de una por imagen.
+const withCreators = async (folders) => {
+    const postIds = [...new Set(
+        folders.flatMap((f) => (f.items || []).map((it) => String(it.postId)))
+    )];
+    if (!postIds.length) return folders;
+
+    const posts = await Post.find({ _id: { $in: postIds } }).select('user title').lean();
+    const userIds = [...new Set(posts.map((p) => String(p.user)).filter(Boolean))];
+    const users = await User.find({ _id: { $in: userIds } }).select('username').lean();
+
+    const usernameById = new Map(users.map((u) => [String(u._id), u.username]));
+    const postById = new Map(posts.map((p) => [String(p._id), p]));
+
+    return folders.map((f) => ({
+        ...f,
+        items: (f.items || []).map((it) => {
+            const post = postById.get(String(it.postId));
+            return {
+                ...it,
+                postTitle: post?.title || '',
+                creatorUsername: post ? (usernameById.get(String(post.user)) || '') : '',
+            };
+        }),
+    }));
+};
+
 exports.getFolders = async (req, res) => {
     try {
-        const folders = await Folder.find({ user: req.user.id });
-        res.status(200).json({ folders });
+        const folders = await Folder.find({ user: req.user.id }).lean();
+        res.status(200).json({ folders: await withCreators(folders) });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

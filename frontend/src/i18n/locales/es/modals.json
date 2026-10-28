@@ -46,5 +46,11 @@
     "myCommunity": "Mi comunidad",
     "settings": "Configuración",
     "logout": "Cerrar sesión"
+  },
+  "sessionExpired": {
+    "title": "Tu sesión ha caducado",
+    "body": "Por tu seguridad, cerramos tu sesión tras un tiempo sin actividad. Inicia sesión de nuevo para continuar.",
+    "cta": "Iniciar sesión",
+    "dismiss": "Seguir navegando"
   }
 }

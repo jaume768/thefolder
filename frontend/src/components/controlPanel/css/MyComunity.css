@@ -1,303 +1,398 @@
-/* =========================
-   MyComunity - CSS limpio
-   (Tabs estilo Guardados)
-   ========================= */
+/* ============================================================
+   /community (CommunityPage.jsx) — vive dentro de .nep-shell / .nep-main.
+   Mismo lenguaje que las páginas de /myprofile (Guardados, Tus proyectos,
+   Info de perfil, Insights):
+   - Solo Inter Tight, sin mayúsculas ni letter-spacing; jerarquía por
+     tamaño/peso (400/500/600).
+   - Texto #111 / #555. Gris tenue #00000006 para pestañas, chips y botones
+     secundarios (hover #ececec). Negro solo para la pestaña activa.
+   - Esquinas rectas, sin bordes ni sombras.
+   - Cabecera común (PanelPageHeader) con "Filtros" a la derecha.
+   - Tarjetas de persona como .pl-card: retrato 4:5 + nombre/rol/ciudad.
+   El modal de filtros sigue usando las clases compartidas de explorer.css.
+   Desktop >992px · tablet 769–992px · mobile ≤768px.
+   ============================================================ */
 
-/* Contenedor principal */
-.mycomunity-container {
-  padding: 20px;
+.cm-page {
   font-family: 'Inter Tight', sans-serif;
-  color: #000;
-  width: 100%;
-  margin: 20vh auto 60px;
-}
-
-/* Header */
-.mycomunity-header{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-/* Center title como Guardados */
-.centerTitle.mycomunity{
-  font-family: Inter Tight, sans-serif;
-  font-size: 10vw;
-  line-height: 10vw;
-  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
   color: #111;
-  text-transform: uppercase;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  text-align: center;
 }
 
-/* Mobile title */
-@media (max-width: 480px){
-  .centerTitle.mycomunity{
-    font-size: 48px !important;
-    line-height: 48px;
-  }
-
-  .mycomunity-card {
-    width: -webkit-fill-available;
-    padding: 0px 24px;
-    gap: 12px;
-    max-width: 80%;
+.cm-page button,
+.cm-page a {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
-.mycomunity-flex {
-    gap: 24px;
+/* ── Marco (= .gd-page de Guardados) ──────────────────────────────── */
+.nep-main-content.cm-scroll {
+  padding: 0;
 }
 
-.mycomunity-profile-img {
-    width: 70px;
-    height: 70px;
-}
-
-h3.mycomunity-user-name, .mycomunity-user-location {
-    font-size: 16px;
-}
-
-.mycomunity-user-info {
-    gap: 4px;
-}
-
-
-
-}
-
-/* Wrapper (debajo del título) */
-.mycomunity-tabs-wrapper{
-  width: 100%;
-  max-width: 2190px;
-  padding: 0 24px;
+.cm-page {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  margin: 0 auto 0 auto;
+  gap: 28px;
+  /* Separación entre columnas: la comparten .cm-grid y .cm-tabs */
+  --cm-col-gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 32px 64px 24px;
 }
 
-/* Tabs estilo Guardados */
-.mycomunity-tabs{
+/* Cabecera: título grande, como Guardados */
+.nep-ph.cm-head {
+  padding-top: 0;
+  padding-bottom: 12px;
+}
+
+.cm-head .nep-ph-text {
+  gap: 10px;
+}
+
+.cm-head .nep-ph-title {
+  font-size: 52px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* "Filtros" arriba a la derecha, a la altura del título (no abajo con el
+   subtítulo, que es lo de .nep-ph por defecto): centrado en la línea del
+   título de 52px → (52 - 40) / 2 = 6px. En mobile la cabecera ya va en
+   columna y el botón sigue debajo del texto. */
+@media (min-width: 769px) {
+  .nep-ph.cm-head {
+    align-items: flex-start;
+  }
+
+  .cm-head .nep-ph-actions {
+    margin-top: 6px;
+  }
+}
+
+.cm-count {
+  opacity: 0.6;
+}
+
+/* ── Pestañas: botones sueltos (= .gd-tab) ────────────────────────── */
+.cm-tabs {
   display: flex;
-  justify-content: center;
-  border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 12px;
+  gap: var(--cm-col-gap);
 }
 
-.mycomunity-tab{
-  padding: 8px 20px;
-  font-size: 14px;
-  cursor: pointer;
-  position: relative;
+.cm-tab {
+  height: 36px;
+  padding: 0 16px;
+  background: #00000006;
   border: none;
-  background: transparent;
-  user-select: none;
-
-  /* inactivo */
-  font-weight: 400;
-  color: #888;
-}
-
-.mycomunity-tab.active{
-  color: #111;
+  border-radius: 0;
+  font-size: 13px;
   font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
 }
 
-.mycomunity-tab.active::after{
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 1.5px;
-  background-color: #111;
+.cm-tab:hover:not(.is-on) {
+  background: #ececec;
 }
 
-/* Buscador debajo de tabs (siempre visible) */
-.mycomunity-search-container{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
+.cm-tab.is-on {
+  background: #111;
+  color: #fff;
 }
 
-.mycomunity-search{
-  width: 100%;
-  max-width: 350px;
-}
-
-.mycomunity-search-input{
-  width: 100%;
-  padding: 10px 12px;
-  border: solid transparent;
-  border-bottom: 1px solid #ddd;
-  border-radius: 0px;
-  font-size: 14px;
-  outline: none;
-  background: transparent;
-}
-
-.mycomunity-search-input:focus{
-  border-color: #111;
-}
-
-/* Contenedor de perfiles (flex) */
-.mycomunity-flex {
+/* ── Filtros activos ──────────────────────────────────────────────── */
+.cm-active-filters {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
+  align-items: center;
+  gap: 6px;
+  margin-top: -12px;
 }
 
-.mycomunity-filters {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 32px 0px 32px 0px;
+.cm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px 0 12px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
 }
 
-/* Tarjeta de perfil */
-.mycomunity-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    padding: 8px;
-    border-radius: 12px;
-    min-width: 250px;
+.cm-chip:hover {
+  background: #ececec;
 }
 
-.mycomunity-card:hover {
+.cm-chip-flag {
+  width: 14px;
+  height: 14px;
+  object-fit: cover;
+}
+
+.cm-text-btn {
+  min-height: 32px;
+  padding: 0 6px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
   cursor: pointer;
 }
 
-.mycomunity-user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+.cm-text-btn:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-/* Imagen de perfil */
-.mycomunity-profile-img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #f0f0f0;
+/* ── Rejilla de personas (= .pl-grid, una columna más) ────────────── */
+.cm-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 32px var(--cm-col-gap);
 }
 
-/* Nombre y rol */
-.mycomunity-user-name {
-    font-size: 12px;
-    font-family: Inter Tight, sans-serif;
-    font-weight: 400;
-    color: #666;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    overflow: hidden;
-    text-decoration: underline;
+.cm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  color: #111;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.mycomunity-user-role {
-  font-size: 11px;
-  color: #555;
-  margin-top: 2px;
-  text-transform: uppercase;
-}
-
-.mycomunity-user-location {
-    color: #666;
-    font-size: 12px;
-    font-weight: 400;
-    font-family: Inter Tight, sans-serif;
-}
-
-/* Estados */
-.mycomunity-loading,
-.mycomunity-error,
-.mycomunity-empty {
-  text-align: center;
-  padding: 30px;
-  font-size: 16px;
-  color: #555;
+.cm-cover {
+  position: relative;
+  display: block;
   width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #f9f9f9;
+  border-radius: 0;
 }
 
-.mycomunity-error {
-  color: #e74c3c;
+.cm-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.mycomunity-empty {
-  color: #7f8c8d;
-  font-style: italic;
+.cm-card:hover .cm-cover img {
+  transform: scale(1.03);
 }
 
-/* Paginación */
-.mycomunity-pagination {
+.cm-card:focus-visible {
+  outline: none;
+}
+
+.cm-card:focus-visible .cm-cover {
+  outline: 2px solid #111;
+  outline-offset: 3px;
+}
+
+/* = .pl-caption / .pl-card-title / .pl-card-meta */
+.cm-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.cm-name,
+.cm-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cm-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+.cm-card:hover .cm-name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Rol y ciudades: un punto más pequeños y compactos que el nombre */
+.cm-meta {
+  font-size: 12px;
+  line-height: 1.3;
+  color: #555;
+}
+
+/* ── Vacío / error (= .gd-empty) ──────────────────────────────────── */
+.cm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 360px;
+  text-align: center;
+}
+
+.cm-empty svg {
+  color: #bdbdbd;
+}
+
+.cm-empty-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+/* ── Cargando ─────────────────────────────────────────────────────── */
+@keyframes cm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.cm-skel {
+  display: block;
+  background: #0000000d;
+  animation: cm-pulse 1.5s ease-in-out infinite;
+}
+
+.cm-skel--line {
+  height: 13px;
+}
+
+.cm-card--skeleton {
+  cursor: default;
+  gap: 8px;
+}
+
+.cm-card--skeleton .cm-cover {
+  margin-bottom: 4px;
+}
+
+/* Scroll infinito: sentinel invisible al fondo de la lista que dispara la
+   siguiente página al entrar en viewport (ver CommunityPage.jsx). Solo
+   muestra el spinner mientras esa página concreta está cargando. */
+.cm-load-sentinel {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  padding: 10px;
+  min-height: 60px;
 }
 
-.pagination-button {
-  background-color: #E7B971;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-weight: 600;
+/* Círculo fino; selector de 2 clases + !important en el radio para ganar a
+   `.dashboard-content.overflow-hidden-desktop *` (control-panel.css), que
+   pone esquinas rectas a todo y lo convertiría en un cuadrado. */
+.cm-load-sentinel .cm-spinner {
+  display: block;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #111;
+  border-radius: 50% !important;
+  animation: cm-spin 0.8s linear infinite;
 }
 
-.pagination-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+@keyframes cm-spin {
+  to { transform: rotate(360deg); }
 }
 
-.pagination-button:hover:not(:disabled) {
-  background-color: #d3a75f;
+@media (prefers-reduced-motion: reduce) {
+  .cm-cover img {
+    transition: none;
+  }
 }
 
-.pagination-info {
-  margin: 0 15px;
-  font-size: 14px;
+/* ── Tablet (769–992px) ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .cm-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
-/* Responsivo */
+/* Tablet horizontal y menos (≤1024px) */
+@media (max-width: 1024px) {
+  .cm-page {
+    gap: 12px;
+  }
+
+  .nep-ph.cm-head {
+    gap: 8px;
+    padding: 0;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .cm-page {
+    padding-left: 16px;
+  }
+
+  .cm-head .nep-ph-title {
+    font-size: 44px;
+  }
+
+  .cm-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ── Mobile (≤768px) ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .mycomunity-container {
-    width: 100%;
-    padding: 10px;
+  .cm-page {
+    --cm-col-gap: 12px;
+    padding: 4px 20px 40px;
   }
 
-  .mycomunity-tabs-wrapper{
-    padding: 0px;
+  .cm-head .nep-ph-title {
+    font-size: 32px;
   }
 
-  .mycomunity-flex {
-    justify-content: center;
-    gap: 15px;
-    width: 100%;
-    margin-top: 12px;
-    margin-bottom: 60px;
+  .cm-head .nep-ph-actions .nep-ph-btn {
+    flex: 1;
   }
 
-  .mycomunity-search {
-    max-width: 350px;
+  .cm-tab {
+    flex: 1;
+    height: 40px;
+    padding: 0 8px;
   }
 
-  .mycomunity-search-input {
+  .cm-active-filters {
+    margin-top: -8px;
+  }
+
+  .cm-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 24px;
+  }
+
+  .cm-name {
     font-size: 13px;
+  }
+
+  .cm-meta {
+    font-size: 11px;
   }
 }

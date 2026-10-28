@@ -106,7 +106,7 @@
     font-family: Inter Tight, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 11px;
     letter-spacing: 0.02em;
-    color: #666;
+    color: #333;
     font-weight: 400;
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -121,7 +121,7 @@
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.02em;
-  color: #666;
+  color: #333;
   font-family: Inter Tight, sans-serif;
 }
 
@@ -244,8 +244,8 @@ img.save-icon.invert-filter {
     position: absolute;
     top: 40px;
     right: -30px;
-    background-color: #4c85ff;
-    color: white;
+    background-color: var(--color-brand-blue);
+    color: #111;
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 0.8rem;
@@ -326,7 +326,7 @@ img.save-icon.invert-filter {
 }
 
 .perfil__miniatura.active {
-    border: solid 2px #1a73e8;
+    border: solid 2px var(--color-brand-blue);
     border-radius: 8px;
     opacity: 1;
 }
@@ -337,17 +337,18 @@ img.save-icon.invert-filter {
     flex-direction: column;
     position: sticky;
     right: auto;
-    width: 370px;
-    flex: 0 0 370px;
+    width: 350px;
+    flex: 0 0 350px;
     align-self: flex-start;
     padding: 24px 18px;
+    padding-right: 60px;
 }
 
 .perfil__publicacion {
     border-radius: 0;
     padding: 0px;
-    border-bottom: solid 1px #88888873;
-    min-width: 350px;
+    min-width: fit-content;
+    text-align: right;
 }
 
 .info-header {
@@ -415,11 +416,11 @@ margin-bottom: 1em;
     font-size: 12px;
     line-height: 16px;
     max-width: 350px;
-    text-align: left;
+    text-align: right;
     font-family: Inter Tight, sans-serif;
     font-weight: 400;
     color: #333;
-    margin: 32px 0;
+    margin: 16px 0;
     word-break: break-word;
     overflow-wrap: break-word;
 }
@@ -455,7 +456,7 @@ margin-bottom: 1em;
 }
 
 .personas__enlace {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
     text-decoration: none;
 }
 
@@ -622,6 +623,10 @@ margin-bottom: 1em;
     align-items: center;
     justify-content: center;
     z-index: 10000;
+    /* El overlay se monta/desmonta por condicional de React (sin cambio de
+       clase que disparar con `transition`), así que la entrada suave va por
+       `animation`: se reproduce sola en cuanto el elemento entra al DOM. */
+    animation: fullscreenOverlayIn 0.28s ease-out;
 }
 
 .fullscreen-preview-content {
@@ -631,6 +636,23 @@ margin-bottom: 1em;
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: fullscreenContentIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fullscreenOverlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fullscreenContentIn {
+    from {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .fullscreen-image {
@@ -638,13 +660,17 @@ margin-bottom: 1em;
     max-height: 90%;
     object-fit: contain;
 }
-/* ── Fullscreen cursor modes (desktop only) ───────────────────────────── */
+/* ── Fullscreen cursor modes (desktop only) ───────────────────────────────
+   Flechas Lucide (arrow-left / arrow-right, viewBox 24x24) incrustadas como
+   data URI: mismo trazo (stroke, fill:none, linecap/linejoin round) que
+   <ArrowLeft>/<ArrowRight> de lucide-react, ya que `cursor: url()` no puede
+   renderizar un componente React — solo una imagen. */
 @media (hover: hover) and (pointer: fine) {
   .fs-cursor-prev {
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><text x='2' y='28' font-size='26' fill='%23111' font-family='Arial, sans-serif'>←</text></svg>") 18 18, auto;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><g transform='translate(6,6)' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 19-7-7 7-7'/><path d='M19 12H5'/></g></svg>") 18 18, auto;
   }
   .fs-cursor-next {
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><text x='2' y='28' font-size='26' fill='%23111' font-family='Arial, sans-serif'>→</text></svg>") 18 18, auto;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'><g transform='translate(6,6)' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14'/><path d='m12 5 7 7-7 7'/></g></svg>") 18 18, auto;
   }
   .fs-cursor-none {
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><text x='3' y='19' font-size='16' fill='%23111' font-family='Arial, sans-serif'>●</text></svg>") 12 12, auto;
@@ -653,7 +679,7 @@ margin-bottom: 1em;
 
 .fullscreen-close-btn {
     position: absolute;
-    top: 20px;
+    top: 12px;
     right: 20px;
     background: rgba(0, 0, 0, 0.5);
     color: white;
@@ -671,6 +697,37 @@ margin-bottom: 1em;
 
 .fullscreen-close-btn:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* Marca "T/" decorativa-clicable (mismo lenguaje visual que .auth-mark en
+   auth-page.css) — esquina opuesta al botón de cerrar; a diferencia de
+   .auth-mark no parte el layout en dos paneles, así que se ajusta a su
+   propio contenido en vez de position:absolute + width:50%. Lleva a
+   /explorer (ver handleContinueExplorer). */
+.fullscreen-mark {
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #222;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    z-index: 10001;
+}
+
+.fullscreen-mark-t {
+    font-size: 14px;
+}
+
+.fullscreen-mark-slash {
+    font-size: 17px;
 }
 
 .fullscreen-prev-btn,
@@ -715,7 +772,7 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
     justify-content: center;
     position: absolute;
     bottom: 0px;
-    left: 0px;
+    left: 16px;
 }
 
 .fullscreen-post-author {    
@@ -797,12 +854,6 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
   }
 }
 
-.post-column-item {
-  width: fit-content;
-  display: flex;
-  justify-content: center; /* centra la imagen cuando no ocupa todo el ancho */
-}
-
 /* La magia: limitar tamaño por viewport, mantener proporción y que se vea “elegante” */
 .post-column-image {
   display: block;
@@ -864,16 +915,16 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
 
 /* Botón ••• */
 .more-button {
+  position: relative;
   border-radius: 999px;
   background: transparent;
   border: 0px solid rgba(0,0,0,0.08);
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: transform .12s ease, background .18s ease;
-  transform: rotate(90deg);
+  transition: background .18s ease;
 }
 
 
@@ -885,13 +936,11 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
   position: absolute;
   width: 220px;
   padding: 8px;
-  border-radius: 14px;
+  border-radius: 0px;
   top: 33px;
   right: 0%;
   z-index: 50;
-  background: #fdfdfdc2;
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  background: #fdfdfd;
 }
 
 .post-actions-left {
@@ -929,8 +978,7 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
 .personas__lista--cards {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .perfil__datos {
@@ -938,6 +986,7 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
     gap: 2px;
     flex-direction: column;
     align-items: flex-end;
+    color: #333;
 }
 
 .personas__item--card {
@@ -1002,12 +1051,12 @@ button.fullscreen-next-btn, button.fullscreen-prev-btn, button.fullscreen-close-
 .tagged-person__role {
   font-family: 'Inter Tight',sans-serif;
   font-size: 11px;
-  font-weight: 500;
   color: #444;
   text-align: left;
   text-transform: uppercase;
   display: flex;
   flex-direction: row;
+  letter-spacing: 0.04em;
   gap: 1px;
 }
 
@@ -1016,24 +1065,35 @@ font-family: 'Inter Tight',sans-serif;
   font-size: 11px;
   color: #444;
   text-align: left;
-  text-decoration: none;
 }
 
-.tagged-person.is-external .tagged-person__user {
-  text-decoration: underline;
+/* Dentro de la columna de info del post (.perfil__publicacion), todo el
+   texto va alineado a la derecha — sobreescribe el text-align:left de
+   arriba, que es el default para .tagged-person en el resto de la app
+   (CreatePost, ArticleDetailsPage). */
+.perfil__publicacion .tagged-person__role,
+.perfil__publicacion .tagged-person__user {
+  text-align: right;
 }
+
 
 h3.personas__titulo, h3.image-tags__titulo {
-    font-family: 'Inter Tight', sans-serif;
-    font-weight: 400;
-    color: #888;
-    font-size: 11px;
-    margin-top: 32px;
-    margin-bottom: 12px;
+  font-family: Inter Tight, sans-serif;
+  font-weight: 400;
+  color: #444;
+  font-size: 10px;
+  margin-top: 12px;
+  margin-bottom: 0px;
+  margin-left: 8px;
+  letter-spacing: .02em;
 }
 
 h3.personas__titulo .post-explorer {
   margin-left: 8px;
+}
+
+.perfil__publicacion h3.personas__titulo {
+  margin-left: 0;
 }
 
 /* ===== Toast global ===== */
@@ -1188,11 +1248,14 @@ h3.personas__titulo .post-explorer {
   text-transform: uppercase;
   letter-spacing: 0.02em;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
 }
 
 .scroll-top-btn:hover{
   transform: translateY(-1px);
+}
+
+body:has(.cp-overlay) .scroll-top-btn {
+  display: none;
 }
 
 .tagged-person {
@@ -1220,10 +1283,10 @@ h3.personas__titulo .post-explorer {
   background: #121212;
   color: #fff;
   border: 0;
-  border-radius: 6px;
+  border-radius: 0px;
   padding: 8px 16px;
-  font-size: 12px;
-  letter-spacing: 0.02em;
+  font-size: 10px;
+  letter-spacing: 0.04em;
   cursor: pointer;
   transition: transform .12s ease, opacity .12s ease;
   font-family: 'Inter Tight', sans-serif;
@@ -1240,18 +1303,22 @@ h3.personas__titulo .post-explorer {
 
 /* Cada item debe ser relativo para posicionar botones encima */
 .post-column-item{
-  position: relative;
   width: fit-content;
   display: flex;
   justify-content: center;
+  flex-direction: column;
 }
 
-/* Contenedor overlay acciones */
-.post-image-actions{
+/* Contenedor overlay acciones — escopado a .editorial-item: sin esto, esta
+   regla (misma especificidad que .post-image-actions--explorer de
+   explorer.css) gana por orden de carga en cuanto UserPost.css entra al
+   documento (visitar /post/:id), y desplaza los botones de /explorer hacia
+   la izquierda hasta recargar la página. */
+.editorial-item .post-image-actions{
   position: absolute;
-  top: 24px;
-  left: 24px;
-  right: 24px;
+  top: 16px;
+  left: 16px;
+  right: 16px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1265,10 +1332,8 @@ h3.personas__titulo .post-explorer {
     pointer-events: auto;
     width: 38px;
     height: 38px;
-    background: #fdfdfdc2;
-    backdrop-filter: blur(1px) saturate(120%);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 8px;
+    background: #fdfdfd;
+    border-radius: 0px;
 }
 
 
@@ -1291,7 +1356,7 @@ h3.personas__titulo .post-explorer {
 
 /* En móvil: un poquito más pegado */
 @media (max-width: 768px){
-  .post-image-actions{
+  .editorial-item .post-image-actions{
     top: 10px !important;
     left: 10px !important;
     right: 10px !important;
@@ -1300,11 +1365,11 @@ h3.personas__titulo .post-explorer {
 }
 
 /* contenedor overlay */
-.post-image-actions{
+.editorial-item .post-image-actions{
   position: absolute;
-  top: 24px;
-  left: 24px;
-  right: 24px;
+  top: 16px;
+  left: 16px;
+  right: 16px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1327,20 +1392,27 @@ h3.personas__titulo .post-explorer {
 }
 
 /* pero los botones sí deben poder clicarse */
-.post-image-actions .save-button-explorer,
-.post-image-actions .more-button,
-.post-image-actions .actions-menu{
+.editorial-item .post-image-actions .save-button-explorer,
+.editorial-item .post-image-actions .more-button,
+.editorial-item .post-image-actions .actions-menu{
   pointer-events: auto;
 }
 
-/* Botón de ••• en foto: no rotar y que flote con fondo */
-.more-button.post-more-button{
-  transform: rotate(90deg);
+/* Guardar arriba derecha */
+.post-save-button{
+  position: relative; /* por si el tooltip necesita ancla */
 }
 
-/* Guardar arriba derecha */
-.save-button-explorer.post-save-button{
-  position: relative; /* por si el tooltip necesita ancla */
+/* Guardar en la grid de "más publicaciones" (masonry, abajo del post) —
+   clase propia para no tocar .post-image-actions--explorer (compartida con
+   /explorer): fuerza que el botón se quede arriba a la derecha, dentro del
+   flex de .post-image-actions, en vez de flotar con position:absolute. */
+.related-save-button{
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
 }
 
 /* Menú: desplegar desde la izquierda */
@@ -1356,15 +1428,15 @@ h3.personas__titulo .post-explorer {
 
 /* En móvil: siempre visible (porque no hay hover) */
 @media (max-width: 768px){
-  .post-image-actions{
+  .editorial-item .post-image-actions{
     opacity: 1;
     transform: none;
     pointer-events: none;
     display: none;
   }
-  .post-image-actions .save-button-explorer,
-  .post-image-actions .more-button,
-  .post-image-actions .actions-menu{
+  .editorial-item .post-image-actions .save-button-explorer,
+  .editorial-item .post-image-actions .more-button,
+  .editorial-item .post-image-actions .actions-menu{
     pointer-events: auto;
   }
 }
@@ -1421,11 +1493,23 @@ h3.personas__titulo .post-explorer {
   position: relative;
 }
 
+/* Envuelve solo la imagen + sus acciones: al ser width:fit-content, las
+   acciones (position:absolute dentro) quedan ancladas al ancho real de la
+   imagen renderizada, no al de .editorial-item/.post-column-item (que
+   puede ser más ancho — p.ej. cuando max-height recorta una imagen
+   vertical, o en los breakpoints que fijan .editorial-item a un ancho fijo). */
+.editorial-image-frame{
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
 /* Imagen: mantiene proporción y look editorial */
 .editorial-image{
   display: block;
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
   max-height: 82vh;
   object-fit: contain;
 }
@@ -1497,6 +1581,10 @@ h3.personas__titulo .post-explorer {
     flex-direction: column;
   }
 
+  .editorial-image-frame{
+    width: 100%;
+  }
+
   .image-credit {
     transform: none !important;
     writing-mode: horizontal-tb !important;
@@ -1552,7 +1640,7 @@ h3.personas__titulo .post-explorer {
   gap: 10px;
   min-width: 220px;
   padding: 10px 12px;
-  border-radius: 14px;
+  border-radius: 12px;
   color: #3c07cf;
   background-color: transparent;
 }
@@ -1642,7 +1730,7 @@ h3.personas__titulo .post-explorer {
   display: flex;
   align-items: center;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
@@ -1674,46 +1762,19 @@ h3.personas__titulo .post-explorer {
 }
 
 
-.delete-post {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    justify-content: flex-end;
-    font-size: 10px;
-    text-transform: uppercase;
-    color: #888;
-    font-weight: 300;
-    background: transparent;
-    border: solid 0px transparent;
-    margin-top: 12px;
-    cursor: pointer;
-}
-
-.delete-post.edit-post:hover {
-  color: #444;
-}
-
-.delete-post:hover {
-  text-decoration: underline;
-  color: #b42318;
-  cursor: pointer;
-}
-
 .perfil__by-user {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  gap: 2px;
+  gap: 4px;
 }
 
 .no-text-decoration {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 400;
     letter-spacing: .02em;
-    color: #666;
+    color: #333;
     font-family: Inter Tight, sans-serif;
-    text-transform: uppercase;
     text-align: right;
 }
 
@@ -1743,17 +1804,13 @@ h3.personas__titulo .post-explorer {
 }
 
 .image-credit {
-    font-size: 9px;
-    line-height: 1.35;
-    opacity: .8;
-    letter-spacing: .2px;
-    white-space: pre-wrap;
-    transform: rotate(180deg);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    margin-left: 8px;
-    margin-right: 8px;
-    color: #666;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: .2px;
+  white-space: pre-wrap;
+  margin-top: 4px;
+  color: #444;
+  text-align: right;
 }
 
 .fullscreen-image-credit {
@@ -1994,21 +2051,27 @@ h3.personas__titulo .post-explorer {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin: 14px 0;
-  text-align: left;
+  margin: 14px 0 60px;
+  text-align: right;
   cursor: pointer;
+  justify-content: flex-end;
 }
 
+/* Tags del proyecto (página de proyecto, plantilla Classic): pequeños y
+   en gris claro; más oscuros al pasar por encima. */
 .project-tag {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
-  color: #999;
-  letter-spacing: 0.02em;
-  font-family: 'Inter Tight', system-ui, sans-serif;
+  color: #aaa;
+  opacity: 1;
+  transition: color 0.18s ease;
+  letter-spacing: .04em;
+  font-family: Inter Tight, system-ui, sans-serif;
   text-decoration: none;
 }
 
 .project-tag:hover {
+  color: #111;
   text-decoration: underline;
 }
 /* ── Report modal ─────────────────────────────────────────── */
@@ -2104,4 +2167,77 @@ h3.personas__titulo .post-explorer {
 .report-modal__submit:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ── Publication card — view (Published in section) ─────────────────────── */
+.people-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 4px;
+  align-items: flex-end;
+}
+
+
+.publication-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+}
+
+.publication-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* .pub-media-name/.pub-format-badge/etc. son nombres de clase compartidos
+   con CreatePost.css (el editor de "Publicado en" reusa los mismos
+   nombres) — CreatePost.css se carga en esta misma página vía
+   EditPostModal, así que sin escopar a .publication-card--view (única de
+   la vista, no del editor) el orden de carga de los dos stylesheets podría
+   pisar estas reglas, igual que pasaba con .post-image-actions. */
+
+/* Mismo patrón que .tagged-person__meta (badges/rol | nombre): fila flex
+   con el separador "|" entre el primer bloque y el segundo. */
+.publication-card--view .publication-card-magazine {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+}
+
+.publication-card--view .pub-media-name {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #444;
+  text-decoration: none;
+}
+
+.publication-card--view .pub-media-name--link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.publication-card--view .pub-media-name--link:hover { color: #444; }
+
+.publication-card--view .publication-card-checks--view {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  color: #444;
+}
+
+.publication-card--view .pub-format-badge {
+  font-family: Inter Tight, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #444;
 }

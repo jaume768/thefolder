@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -13,7 +13,7 @@ const LEVELS = [
 
 const ReclassifyModal = ({ show, onClose, user, onUpdate }) => {
   const { t } = useTranslation('modals');
-  if (!show) return null;
+  // Hooks antes del return (reglas de React); antes useContext ni se importaba.
   const { updateUser } = useContext(AuthContext);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -21,6 +21,8 @@ const ReclassifyModal = ({ show, onClose, user, onUpdate }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [confirmProfessional, setConfirmProfessional] = useState(false);
+
+  if (!show) return null;
 
   const handleConfirm = async () => {
     if (!selected) return;

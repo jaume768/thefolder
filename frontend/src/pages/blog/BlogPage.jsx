@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import '../../components/controlPanel/css/blog.css';
-import { FaSearch, FaSpinner, FaExclamationTriangle, FaCalendarAlt, FaUser, FaArrowRight } from 'react-icons/fa';
+import { FaSearch, FaExclamationTriangle, FaCalendarAlt, FaUser, FaArrowRight } from 'react-icons/fa';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const Blog = () => {
     const { t, i18n } = useTranslation('blog');
@@ -23,11 +24,14 @@ const Blog = () => {
         return keyMap[id] || id;
     };
 
+    // Pestañas de categoría (se usaban sin definir).
+    const categories = ['all', 'designers', 'industry', 'education', 'events'].map((id) => ({ id }));
+
     useEffect(() => {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                const apiUrl = process.env.REACT_APP_API_URL || 'https://backend-studen-station-production.up.railway.app';
+                const apiUrl = import.meta.env.VITE_BACKEND_URL // antes process.env (no existe en Vite: la página se rompía) + un backend antiguo de Railway;
                 
                 // Si hay una categoría seleccionada que no sea 'all', usar el endpoint específico
                 let endpoint = '/api/blog';
@@ -75,16 +79,7 @@ const Blog = () => {
         e.stopPropagation();
     };
 
-    if (loading) {
-        return (
-            <div className="blog-container">
-                <div className="blog-loading">
-                    <FaSpinner className="fa-spin" />
-                    <span className="loading-indicator">{t('loadingArticles')}</span>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <PageSkeleton variant="list" />;
 
     if (error) {
         return (

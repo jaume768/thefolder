@@ -9,20 +9,22 @@
   },
   "nav": {
     "creatives": "Creatives",
-    "profiles": "Profiles",
     "fashion": "Study fashion",
     "industry": "Industry",
     "menu": "Menu",
     "home": "Home",
-    "explorer": "Explorer"
+    "explorer": "Explorer",
+    "about": "About us"
   },
   "actions": {
     "login": "Log in",
     "register": "Create profile",
     "createProfile": "Create your profile",
     "publish": "Publish",
-    "myProfile": "My profile",
+    "myProfile": "View my portfolio",
+    "myPortfolio": "My Portfolio",
     "profileOptions": "Profile options",
+    "myPanel": "My panel",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "close": "Close",
@@ -40,12 +42,14 @@
     "editProfile": "Edit profile",
     "myCommunity": "My community",
     "saved": "Saved",
+    "savedImages": "Saved",
     "logout": "Log out",
     "settings": "Settings",
     "createAccount": "Create account"
   },
   "search": {
     "placeholder": "Search creatives, projects…",
+    "menuLabel": "Search",
     "mobilePlaceholder": "Search creatives, posts...",
     "all": "All",
     "users": "Users",
@@ -58,13 +62,36 @@
     "projectsSection": "Projects /",
     "userFallback": "User"
   },
+  "error": "Something went wrong. Please try again.",
   "footer": {
     "contact": "Contact",
+    "templates": "Templates",
     "legal": "Legal Notice",
     "terms": "Terms",
     "privacy": "Privacy",
     "cookies": "Cookies",
     "linksAriaLabel": "Footer links",
+    "legalLinksAriaLabel": "Legal links",
+    "socialAriaLabel": "Social media",
     "brandAriaLabel": "© {{year}} thefolder"
+  },
+  "notFound": {
+    "text": "This page doesn’t exist or is no longer available.",
+    "back": "Back to THEFOLDER"
+  },
+  "credits": {
+    "searchPlaceholder": "Search their THEFOLDER @username or type their name",
+    "searchLabel": "Credited person",
+    "onTheFolderTitle": "On THEFOLDER",
+    "searching": "Searching…",
+    "noMatches": "Nobody on THEFOLDER with that name or username.",
+    "addExternal": "Add \"{{name}}\"",
+    "addExternalSub": "Not on THEFOLDER",
+    "onTheFolder": "@{{username}} on THEFOLDER",
+    "notOnTheFolder": "Not on THEFOLDER",
+    "change": "Change",
+    "instagramLabel": "{{name}}'s Instagram (optional)",
+    "instagramPlaceholder": "username",
+    "instagramHint": "Just the username. If you paste the link, we'll take it from there."
   }
 }

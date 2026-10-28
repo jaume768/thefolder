@@ -41,27 +41,37 @@ export default function LandingFinalCTA({ onCtaClick }) {
         ))}
       </div>
 
-      {/* ===== THEFOLDER/ — tipografía gigante ===== */}
-      <div className="tf-finalCta__brand tf-reveal" style={{ "--d": "0ms" }}>
-        THEFOLDER/
+      {/* Presentación arriba a la izquierda, como papel pautado: cada frase
+          repartida en cinco filas, con sangría al principio (--in) y la raya de debajo
+          siguiendo vacía un trozo distinto en cada fila (--tail), así las
+          rayas acaban desiguales (oct 2026,
+          decisión del usuario; antes aquí iba THEFOLDER/ gigante). */}
+      <div className="tf-finalCta__brand tf-finalCta__brand--text tf-reveal" style={{ "--d": "0ms" }}>
+        <span className="tf-finalCta__row" style={{ "--in": "0em", "--tail": "5em" }}>Hi, we are THEFOLDER/,</span>
+        <span className="tf-finalCta__row" style={{ "--in": "0em", "--tail": "5em" }}>the portfolio builder</span>
+        <span className="tf-finalCta__row tf-finalCta__row--long" style={{ "--in": "0em", "--tail": "7em" }}>for fashion creatives.</span>
+        <span className="tf-finalCta__row" style={{ "--in": "4.5em", "--tail": "1em" }}>Your work. Your CV.</span>
+        <span className="tf-finalCta__row" style={{ "--in": "2em", "--tail": "4em" }}>All in one link.</span>
       </div>
 
-      {/* ===== GRID 12 cols — texto descriptivo + CTA ===== */}
+      {/* Columnas de texto y "Crea tu perfil gratis": ocultas por ahora
+          (oct 2026, decisión del usuario). Se dejan aquí para recuperarlas.
+      {/ * ===== GRID 12 cols — texto descriptivo + CTA ===== * /}
       <div className="tf-finalCta__grid">
 
-        {/* Texto descriptivo — cols 1-5 */}
+        {/ * Texto descriptivo — cols 1-5 * /}
         <p className="tf-finalCta__desc tf-reveal" style={{ "--d": "120ms", gridColumn: "1 / 4" }}>
           {t("finalCta.descLeft")}
         </p>
 
-        {/* Texto descriptivo — cols 8-10 */}
+        {/ * Texto descriptivo — cols 8-10 * /}
         <p className="tf-finalCta__desc tf-reveal" style={{ "--d": "120ms" }}>
           {t("finalCta.descRight")}
         </p>
 
       </div>
 
-      {/* ===== CTA centrado ===== */}
+      {/ * ===== CTA centrado ===== * /}
       <div className="tf-finalCta__cta">
         <button
           type="button"
@@ -72,6 +82,7 @@ export default function LandingFinalCTA({ onCtaClick }) {
           {t("finalCta.ctaText")} <em className="tf-italic">{t("finalCta.ctaEm")}</em>
         </button>
       </div>
+      */}
 
     </section>
   );

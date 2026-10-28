@@ -213,7 +213,7 @@ const CompleteRegistration = () => {
       <div className="ob-center">
         <h1 className="ob-title">{t("completeRegistration.title")}</h1>
 
-        <p className="ob-subtitle">
+        <p className="ux-helper">
           <Trans i18nKey="completeRegistration.subtitle" ns="onboarding" components={{ br: <br /> }} />
         </p>
 

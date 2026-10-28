@@ -1,0 +1,1155 @@
+/* ── Editor de proyecto (ProjectEditorPage.jsx) ──────────────────────
+   Mismo lenguaje que el home del panel y "Tus proyectos" (los botones
+   .pl-btn, el toast .pl-toast, el sheet .pl-sheet y el modal .pl-dialog
+   vienen de ProjectsLibrary.css): Inter Tight, sin letter-spacing ni
+   mayúsculas, esquinas rectas, sin bordes (los inputs son rellenos gris
+   tenue), sin sombras salvo popovers, un único botón negro.
+   Desktop >992px: 100vh sin scroll de página, solo scrollea el formulario.
+   Tablet 769–992px y mobile ≤768px: scroll de página normal. */
+
+.pe-scroll,
+.pe-topbar,
+.pe-toast {
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.pe-scroll,
+.pe-topbar {
+  color: #111;
+}
+
+/* El toast es negro (.pl-toast): texto blanco. Antes heredaba el #111 de
+   arriba y salía un rectángulo negro sin texto visible. */
+.pe-toast {
+  color: #fff;
+}
+
+.pe-scroll button,
+.pe-scroll input,
+.pe-scroll textarea,
+.pe-scroll select,
+.pe-scroll a {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.pe-scroll input::placeholder,
+.pe-scroll textarea::placeholder {
+  color: #8a8a8a;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.nep-main-content.pe-scroll {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.pe-page {
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 32px 32px 24px;
+}
+
+/* ── Cabecera: PanelPageHeader (editProfile/ui/PanelPageHeader.css) ──
+   Aquí el espacio vertical lo pone el gap de .pe-page (página fija a 100vh). */
+.nep-ph.pe-ph {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* "Ver página ↗": botón gris de cabecera (.nep-ph-btn--grey, como
+   "Eliminar"), solo con todo guardado (ver ProjectEditorPage.jsx). La
+   flecha ↗ se desplaza al hover, como la de "Ver portfolio" del Panel. */
+.pe-link svg:last-child {
+  transition: transform 0.15s ease;
+}
+
+.pe-link:hover svg:last-child,
+.pe-link:focus-visible svg:last-child {
+  transform: translate(2px, -2px);
+}
+
+.pe-save:disabled,
+.pe-savebar-btn:disabled {
+  opacity: 0.4;
+}
+
+/* ── Contenido: misma rejilla que el home del panel ──────────────── */
+.pe-content {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+/* ── Imágenes ────────────────────────────────────────────────────── */
+.pe-media {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  min-width: 0;
+}
+
+.pe-viewer {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #00000006;
+}
+
+.pe-viewer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pe-tag {
+  position: absolute;
+  padding: 6px 10px;
+  background: #fff;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #111;
+}
+
+.pe-tag--cover {
+  top: 16px;
+  left: 16px;
+  font-weight: 500;
+}
+
+.pe-tag--counter {
+  right: 16px;
+  bottom: 16px;
+}
+
+.pe-viewer-actions {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 4px;
+}
+
+.pe-icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  cursor: pointer;
+}
+
+.pe-icon-btn:hover {
+  background: #f9f9f9;
+}
+
+/* Tooltip (estilo .pl-tip) — debajo del botón: arriba lo cortaría el visor */
+.pe-icon-btn .pl-tip {
+  top: calc(100% + 8px);
+  bottom: auto;
+  transform: translate(-50%, -4px);
+}
+
+.pe-icon-btn:hover .pl-tip,
+.pe-icon-btn:focus-visible .pl-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.pe-drop-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* Tira de miniaturas */
+.pe-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.pe-thumbs {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  /* Hueco para la barra del seleccionado (6px + 3px) */
+  padding-bottom: 9px;
+  scrollbar-width: thin;
+}
+
+.pe-thumb {
+  position: relative;
+  flex: none;
+  width: 72px;
+  height: 90px;
+  padding: 0;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.pe-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pe-thumb::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  height: 3px;
+  background: transparent;
+}
+
+.pe-thumb.is-selected::after {
+  background: #111;
+}
+
+.pe-thumb[draggable='true'] {
+  cursor: grab;
+}
+
+.pe-thumb.is-dragging {
+  opacity: 0.4;
+}
+
+.pe-thumb.is-drop-target {
+  box-shadow: inset 0 0 0 2px #111;
+}
+
+.pe-thumb--add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #111;
+}
+
+.pe-thumb--add:hover {
+  background: #ececec;
+}
+
+.pe-strip-hint {
+  align-self: center;
+  margin-left: auto;
+  margin-bottom: 9px;
+  font-size: 13px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.pe-image-credit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Formulario ──────────────────────────────────────────────────── */
+.pe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 2px 4px 2px 2px; /* que el outline de foco no se recorte */
+}
+
+.pe-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pe-label {
+  font-size: 12px;
+  color: #555;
+  letter-spacing: 0.02rem;
+}
+
+.pe-label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pe-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  color: #111;
+  outline: none;
+}
+
+.pe-input:focus {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+.pe-input--sm {
+  height: 44px;
+}
+
+.pe-input--title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.pe-error {
+  font-size: 12px;
+  color: #111;
+}
+
+.pe-textarea {
+  height: auto;
+  padding: 14px 16px;
+  line-height: 1.5;
+  resize: none;
+}
+
+.pe-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.pe-select:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Etiquetas: cuadrados grises; activas en negro */
+.pe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pe-chip {
+  height: 32px;
+  padding: 0 12px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Hover: un gris claramente más oscuro que el reposo (#00000006 ≈ #f9f9f9),
+   y solo en las no seleccionadas — antes el hover también pisaba las
+   seleccionadas (más específico que .is-on): fondo gris claro con texto
+   blanco. */
+.pe-chip:not(.is-on):not(:disabled):hover {
+  background: #dcdcdc;
+}
+
+.pe-chip.is-on {
+  background: #111;
+  color: #fff;
+}
+
+.pe-chip.is-on:hover {
+  background: #000;
+}
+
+.pe-chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Filas de créditos / publicaciones */
+.pe-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pe-credit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* El × (.pe-row-remove) va DENTRO del último campo de la fila (nombre en
+   créditos, URL en publicaciones), a la derecha — no en una columna aparte.
+   Ese campo reserva su hueco con padding-right para que el texto no pase
+   por debajo. Columnas: 40% / 60%. */
+.pe-credit-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.pe-credit-row > .pe-input + .pe-input,
+.pe-credit-row .pe-person > .pe-input {
+  padding-right: 44px;
+}
+
+/* Créditos: rol | quién es (CreditPersonField). El × va DENTRO del primer
+   campo de la persona (el buscador o la tarjeta de la persona elegida), a la
+   derecha, igual que en Publicado en. Ese campo reserva su hueco con
+   padding-right; en la tarjeta, "Cambiar" queda justo a la izquierda del ×. */
+.pe-credit-row--person .cpf-search-input,
+.pe-credit-row--person .cpf-chip {
+  padding-right: 44px;
+}
+
+/* El × comparte celda con la persona (mismo grid-area, encima) en vez de
+   ir en absolute: así sigue al campo esté donde esté (al lado del rol en
+   desktop, debajo en mobile) sin calcular alturas. */
+.pe-credit-row--person > .cpf {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.pe-credit-row--person > .pe-row-remove {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+
+/* La tarjeta mide 48px (el buscador 44px): el × se centra en ella. */
+.pe-credit-row--person:has(.cpf-chip) > .pe-row-remove {
+  height: 48px;
+}
+
+/* Mobile: rol arriba, la persona debajo a todo el ancho; el × baja con ella. */
+@media (max-width: 768px) {
+  .pe-credit-row--person {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pe-credit-row--person > .cpf,
+  .pe-credit-row--person > .pe-row-remove {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+/* Instagram del colaborador externo: "@" fijo delante del usuario */
+.pe-prefixed {
+  position: relative;
+}
+
+.pe-prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #555;
+  pointer-events: none;
+}
+
+.pe-prefixed .pe-input {
+  padding-left: 32px;
+}
+
+.pe-person {
+  position: relative;
+  min-width: 0;
+}
+
+.pe-person-badge {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #555;
+}
+
+.pe-suggest {
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  width: auto;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.pe-suggest-row {
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+}
+
+.pe-suggest-avatar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+.pe-suggest-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+
+.pe-suggest-name {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pe-suggest-user {
+  font-size: 12px;
+  color: #555;
+}
+
+.pe-suggest-msg {
+  margin: 0;
+  padding: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.pe-row-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px; /* = alto de .pe-input--sm: centrado en el campo */
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #555;
+  cursor: pointer;
+}
+
+.pe-row-remove:hover {
+  color: #111;
+}
+
+.pe-toggle-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pe-toggle {
+  height: 36px;
+  padding: 0 12px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+}
+
+.pe-toggle:hover:not(.is-on) {
+  background: #ececec;
+}
+
+.pe-toggle.is-on {
+  background: #111;
+  color: #fff;
+}
+
+/* "+ Añadir crédito / publicación": a todo el ancho, mismo alto que los
+   campos (.pe-input--sm), sin fondo, solo borde discontinuo: se lee como
+   "hueco para una fila más", no como otro campo. Al hover, borde negro. */
+.pe-add-btn {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  margin-top: 2px;
+  padding: 0 16px;
+  background: none;
+  border: 1px dashed #bdbdbd;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.pe-add-btn:hover,
+.pe-add-btn:focus-visible {
+  border-color: #111;
+}
+
+/* Barra de guardar — solo mobile */
+.pe-savebar {
+  display: none;
+}
+
+/* ── Proyecto nuevo (mode="create") ────────────────────────────────── */
+/* Visor vacío = zona para subir las imágenes */
+.pe-empty-drop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  color: #111;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pe-empty-drop:hover,
+.pe-empty-drop:focus-visible {
+  background: #00000006;
+  outline: none;
+}
+
+.pe-empty-drop-title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.pe-empty-drop-sub {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Paso 2: tags + derechos, mismo bloque y chips que en editar */
+.pe-create-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 720px;
+  padding: 8px 0 32px;
+}
+
+.pe-create-tags-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+.pe-create-tags-sub {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.pe-rights {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #00000006;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+  cursor: pointer;
+}
+
+.pe-rights input {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: #111;
+}
+
+.pe-message {
+  padding: 40px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ── Cargando ────────────────────────────────────────────────────── */
+.pe-skel {
+  display: block;
+  background: #f9f9f9;
+}
+
+.pe-viewer.pe-skel {
+  background: #f9f9f9;
+}
+
+.pe-thumb.pe-skel {
+  cursor: default;
+}
+
+.pe-skel-label {
+  width: 30%;
+  height: 12px;
+}
+
+.pe-skel-input {
+  width: 100%;
+  height: 48px;
+}
+
+.pe-skel-input--tall {
+  height: 120px;
+}
+
+/* ── Tablet (769–992px) ──────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .nep-main-content.pe-scroll {
+    overflow-y: auto;
+  }
+
+  .pe-page {
+    flex: none;
+    padding-left: 16px;
+  }
+
+  .pe-content {
+    display: block;
+  }
+
+  .pe-viewer {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    max-height: 60vh;
+  }
+
+  .pe-thumb {
+    width: 64px;
+    height: 80px;
+  }
+
+  .pe-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+    overflow: visible;
+  }
+
+  .pe-field--wide {
+    grid-column: 1 / -1;
+  }
+
+}
+
+/* ── Mobile (≤768px) ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* La barra de guardar sustituye a la tab bar del panel en esta página */
+  .nep-shell:has(.pe-scroll) {
+    --nep-tabbar-h: 0px;
+  }
+
+  .nep-shell:has(.pe-scroll) .nep-tabbar {
+    display: none;
+  }
+
+  .nep-shell[data-mobile-detail] .nep-detail-header.pe-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    box-sizing: border-box;
+    height: 52px;
+    padding: 0 20px;
+    background: #fff;
+  }
+
+  .pe-topbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #111;
+    cursor: pointer;
+  }
+
+  .pe-topbar-back {
+    justify-self: start;
+    margin-left: -12px;
+  }
+
+  .pe-topbar-more {
+    justify-self: end;
+    margin-right: -12px;
+  }
+
+  .pe-topbar-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .nep-main-content.pe-scroll {
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .pe-page {
+    flex: none;
+    gap: 0;
+    padding: 0 20px 120px;
+  }
+
+  /* Botones de la cabecera: en mobile están en "···" y la barra de guardar */
+  .pe-ph .nep-ph-actions {
+    display: none;
+  }
+
+  .pe-content {
+    display: block;
+  }
+
+  .pe-media {
+    gap: 0;
+  }
+
+  .pe-viewer {
+    flex: none;
+    margin: 0 -20px;
+    aspect-ratio: 4 / 5;
+  }
+
+  .pe-tag--cover {
+    top: 12px;
+    left: 12px;
+  }
+
+  .pe-tag--counter {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .pe-viewer-actions {
+    top: 12px;
+    right: 12px;
+  }
+
+  .pe-icon-btn .pl-tip {
+    display: none;
+  }
+
+  .pe-strip {
+    margin-top: 12px;
+  }
+
+  .pe-thumb {
+    width: 56px;
+    height: 70px;
+  }
+
+  .pe-strip-hint {
+    display: none;
+  }
+
+  .pe-image-credit {
+    margin-top: 20px;
+  }
+
+  .pe-form {
+    margin-top: 28px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  /* 16px para que iOS no haga zoom al enfocar */
+  .pe-input,
+  .pe-input--sm {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .pe-textarea {
+    height: auto;
+  }
+
+  .pe-input--title {
+    font-size: 18px;
+  }
+
+  /* Online / Impreso: uno debajo del otro */
+  .pe-toggle-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Mobile: el × también dentro del campo; alto = .pe-input--sm de mobile */
+  .pe-row-remove {
+    height: 48px;
+  }
+
+  .pe-savebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    display: block;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    background: #fff;
+  }
+
+  .pe-savebar-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 14px;
+  }
+
+  /* Crear: "Siguiente" o "Atrás" + "Publicar", a lo ancho */
+  .pe-savebar--create {
+    display: flex;
+    gap: 8px;
+  }
+
+  .pe-savebar--create .nep-ph-btn {
+    flex: 1;
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .pl-toast.pe-toast {
+    position: fixed;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Modal (ProjectEditor variant="modal", desde "Tus proyectos") ──────
+   Mismo contenido que la página; cambia solo el marco: popup blanco sobre
+   el velo de .pl-overlay, esquinas rectas, sin bordes ni sombras. Cabecera
+   propia (título + nombre del proyecto, botones y ×) en lugar de
+   PanelPageHeader, que se registra en el sidebar del panel.
+   Desktop >992px: alto fijo, solo scrollea el formulario (como la página).
+   Tablet: scrollea el cuerpo entero. Mobile: pantalla completa. */
+.pe-modal {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(1200px, 100%);
+  height: min(860px, 100%);
+  background: #fff;
+  outline: none;
+}
+
+.pe-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 20px 20px 20px 24px;
+}
+
+.pe-modal-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.pe-modal-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #111;
+}
+
+.pe-modal-sub {
+  overflow: hidden;
+  font-size: 14px;
+  color: #555;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pe-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pe-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  cursor: pointer;
+}
+
+.pe-modal-icon:hover:not(:disabled) {
+  background: #00000006;
+}
+
+.pe-modal-close {
+  margin-left: 8px;
+}
+
+/* "···" solo en mobile (ahí los botones de la cabecera se ocultan) */
+.pe-modal-more {
+  display: none;
+}
+
+.pe-modal-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pe-page.pe-page--modal {
+  padding: 0 24px 24px;
+}
+
+/* El toast, abajo del popup (no de la página de debajo) */
+.pe-modal .pl-toast.pe-toast {
+  position: absolute;
+}
+
+@media (max-width: 992px) {
+  .pe-modal-body {
+    display: block;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .pe-page.pe-page--modal {
+    padding-left: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pe-modal-overlay {
+    padding: 0;
+  }
+
+  .pe-modal {
+    width: 100%;
+    height: 100%;
+  }
+
+  .pe-modal-head {
+    gap: 4px;
+    padding: 4px 8px 4px 20px;
+    min-height: 52px;
+  }
+
+  .pe-modal-title {
+    font-size: 15px;
+  }
+
+  .pe-modal-sub {
+    font-size: 13px;
+  }
+
+  .pe-modal-actions {
+    display: none;
+  }
+
+  .pe-modal-more {
+    display: flex;
+  }
+
+  .pe-modal-close {
+    margin-left: 0;
+  }
+
+  .pe-page.pe-page--modal {
+    padding: 0 12px 120px;
+  }
+
+  /* El visor sangra hasta el borde: mismo margen que el padding de arriba */
+  .pe-page--modal .pe-viewer {
+    margin: 0 -12px;
+  }
+
+  .pe-modal .pl-toast.pe-toast {
+    position: fixed;
+  }
+}
+
+/* "Eliminar" de la cabecera del editor (modal y página): icono y texto en
+   rojo, mismo rojo que .pl-btn--danger; el fondo sigue gris. */
+.nep-ph-btn.pe-delete {
+  color: #c30f2a;
+}

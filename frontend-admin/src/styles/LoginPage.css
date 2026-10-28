@@ -1,90 +1,179 @@
+/* ── Login del admin ─────────────────────────────────────────────────
+   Foto a pantalla completa (public/login-bg.jpg), un poco desenfocada, y
+   el formulario en un panel blanco encima. Mismo lenguaje que el resto: Inter Tight, recto, negro para el
+   botón principal, sin sombras. */
+
 .login-container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--background-color);
   padding: 20px;
+  overflow: hidden;
+  background: #e9e4dc;
+}
+
+/* Foto desenfocada en su propia capa (un filter en el contenedor
+   desenfocaría también el formulario). inset negativo: el blur deja los
+   bordes transparentes, así se quedan fuera de la pantalla. */
+.login-container::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: url('/login-bg.jpg') center 30% / cover no-repeat;
+  filter: blur(3px);
+}
+
+/* Velo suave para que la foto no compita con el panel */
+.login-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.12);
+}
+
+/* Etiqueta "Admin" + panel, apilados y centrados */
+.login-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* "Admin": etiqueta negra recta encima del panel */
+.login-badge {
+  padding: 7px 14px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .login-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 450px;
-  background-color: var(--card-background);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
+  max-width: 400px;
   padding: 40px;
+  background: #fff;
+  color: #111;
 }
 
 .login-header {
+  margin-bottom: 36px;
+}
+
+/* Marca "THEFOLDER/", centrada en el panel */
+.login-header .login-brand {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  color: #111;
   text-align: center;
-  margin-bottom: 30px;
 }
 
-.login-header h1 {
-  color: var(--text-primary);
-  font-size: 28px;
-  margin-bottom: 8px;
-}
-
-.login-header p {
-  color: var(--text-secondary);
-  font-size: 16px;
-}
-
-.form-group {
+.login-card .form-group {
   margin-bottom: 24px;
 }
 
-.form-group label {
+/* "Email" / "Contraseña": pequeñas y en negro, encima de la línea.
+   Ancladas a .login-card: otras páginas tienen su propio
+   ".form-group label" con el color del tema (casi blanco en modo oscuro)
+   y, al cargarse después, lo pisaban. */
+.login-card .form-group label {
   display: block;
-  font-size: 14px;
-  color: var(--text-primary);
+  margin-bottom: 2px;
+  font-size: 12px;
   font-weight: 500;
-  margin-bottom: 8px;
+  color: #111;
 }
 
-.form-control {
+/* Campos: sin fondo, solo la línea de abajo (gris; negra con foco). */
+.login-card .form-control {
   width: 100%;
-  padding: 12px 15px;
-  font-size: 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  background-color: var(--card-background);
-  color: var(--text-primary);
-  transition: border-color var(--transition-fast);
+  height: 40px;
+  padding: 0;
+  font-size: 15px;
+  color: #111 !important; /* gana al color del tema de minimal.css (blanco en modo oscuro) */
+  caret-color: #111;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.25) !important;
+  transition: border-color 0.12s ease;
 }
 
-.form-control:focus {
+.login-card .form-control::placeholder {
+  color: #8a8a8a;
+}
+
+.login-card .form-control:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  border-bottom-color: #111 !important;
 }
 
-.form-error {
-  color: var(--error-color);
-  font-size: 14px;
-  margin-top: 5px;
+/* Autorrelleno del navegador (Chrome/Edge/Safari): pinta el campo de azul
+   claro/blanco con su propio !important. background-clip:text recorta ese
+   fondo a la forma de las letras, que llevan su propio color, así que el
+   fondo deja de verse; el transition largo es el respaldo para versiones
+   que no lo respetan. (El truco de la sombra interior no sirve aquí:
+   minimal.css quita todas las sombras.) */
+.login-card .form-control:-webkit-autofill,
+.login-card .form-control:-webkit-autofill:hover,
+.login-card .form-control:-webkit-autofill:focus,
+.login-card .form-control:autofill {
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  transition: background-color 600000s 0s, color 600000s 0s;
 }
 
-.btn-block {
+.login-submit {
   display: block;
   width: 100%;
-  padding: 14px;
-  font-size: 16px;
+  height: 44px;
+  margin-top: 26px;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
   font-weight: 500;
-  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
 }
 
-.alert {
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 25px;
-  font-size: 14px;
+.login-submit:hover:not(:disabled) {
+  background: #000;
 }
+
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.login-card .form-error {
+  margin-top: 5px;
+  font-size: 13px;
+  color: var(--error-color);
+}
+
+.login-card .alert {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: rgba(180, 35, 24, 0.08);
+  font-size: 13px;
+  color: #b42318;
+}
+
 
 @media (max-width: 768px) {
   .login-card {
-    padding: 25px;
+    padding: 28px 22px;
   }
 }

@@ -24,6 +24,9 @@
     "others": "Otros",
     "specialty": "Especialidad",
     "noProfilesInCountry": "Sin perfiles en este país",
+    "cityLabel": "Ciudad:",
+    "allCities": "Todas",
+    "specialtyLabel": "Especialidad:",
     "clear": "Borrar filtros",
     "apply": "Filtrar",
     "remove": "Quitar {{label}}"

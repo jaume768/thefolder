@@ -1,14 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Check, Bookmark } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import api from '../../services/api';
 import Masonry from 'react-masonry-css';
+import { masonrySkeletonItems } from '../../components/skeleton/PageSkeleton';
 import '../../components/controlPanel/css/explorer.css';
 import { clImg } from '../../utils/optimizeImage';
 
 const TagFeedPage = () => {
   const { tag } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = `#${tag} | THEFOLDER`;
+  }, [tag]);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { t } = useTranslation('explorer');
 
@@ -28,9 +35,7 @@ const TagFeedPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (!token) return;
-    axios.get(`${backendUrl}/api/users/favorites`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    api.get('/api/users/favorites')
       .then(res => {
         const map = new Map();
         (res.data.favorites || []).forEach(fav => {
@@ -112,15 +117,10 @@ const TagFeedPage = () => {
       const key = `${postId}-${imageUrl}`;
       const isSaved = savedPosts.has(key);
       if (isSaved) {
-        await axios.delete(`${backendUrl}/api/users/favorites/${postId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          data: { imageUrl },
-        });
+        await api.delete(`/api/users/favorites/${postId}`, { data: { imageUrl } });
         setSavedPosts(m => { m.delete(key); return new Map(m); });
       } else {
-        await axios.post(`${backendUrl}/api/users/favorites/${postId}`, { imageUrl }, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await api.post(`/api/users/favorites/${postId}`, { imageUrl });
         setSavedPosts(m => { m.set(key, true); return new Map(m); });
       }
     } catch {}
@@ -138,7 +138,8 @@ const TagFeedPage = () => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {postImages.map((item, idx) => {
+          {/* Primera carga: skeleton en la misma rejilla */}
+          {loading && postImages.length === 0 ? masonrySkeletonItems(9) : postImages.map((item, idx) => {
             const totalImagesInPost = imagesCountByPostId.get(item.postId) || 1;
             const extraImages = Math.max(0, totalImagesInPost - 1);
             const userLabel = item.user?.username
@@ -157,11 +158,11 @@ const TagFeedPage = () => {
                 <div className="user-profile-hover">
                   <div className="user-info-hover">
                     {item.user?.username ? (
-                      <a className="masonry-caption" href={`/profile/${item.user.username}`}>
-                        {userLabel} /
+                      <a className="masonry-caption" href={`/${item.user.username}`}>
+                        {userLabel}
                       </a>
                     ) : (
-                      <span className="masonry-caption">{userLabel} /</span>
+                      <span className="masonry-caption">{userLabel}</span>
                     )}
                     <div className="masonry-caption">{item.postTitle || ' '}</div>
                   </div>
@@ -177,14 +178,9 @@ const TagFeedPage = () => {
                   type="button"
                 >
                   {isSaved ? (
-                    <img
-                      src="/iconos/check-tick.svg"
-                      alt=""
-                      aria-hidden="true"
-                      className="save-icon"
-                    />
+                    <Check size={18} strokeWidth={1.8} aria-hidden="true" className="save-icon" />
                   ) : (
-                    <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
+                    <Bookmark size={18} strokeWidth={1.8} aria-hidden="true" className="save-plus" />
                   )}
                   <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
                     {isSaved ? t('save.tooltipSaved') : t('save.tooltipDefault')}
@@ -203,7 +199,7 @@ const TagFeedPage = () => {
 
         <div ref={sentinelRef} style={{ height: '1px' }} />
 
-        {loading && (
+        {loading && postImages.length > 0 && (
           <div className="loading-spinner">
             <i className="fas fa-spinner fa-spin" />
           </div>

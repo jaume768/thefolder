@@ -42,7 +42,7 @@ const Privacidad = () => {
                         Recogemos únicamente los datos necesarios para prestarte el servicio. A continuación te detallamos qué datos tratamos, con qué finalidad y bajo qué base legal.
                     </p>
 
-                    <h3 className="legal-subtitle-small">Datos de registro — Cuenta Creativa</h3>
+                    <h3 className="legal-subtitle-small">Datos de registro: Cuenta Creativa</h3>
                     <p className="legal-paragraph">Al registrarte como creativo, recogemos:</p>
                     <ul className="legal-list">
                         <li>Nombre completo, nombre de usuario, correo electrónico y contraseña (almacenada encriptada, nunca en texto plano).</li>
@@ -55,7 +55,7 @@ const Privacidad = () => {
                     </ul>
                     <p className="legal-paragraph"><em>Base legal: ejecución de un contrato (art. 6.1.b RGPD).</em></p>
 
-                    <h3 className="legal-subtitle-small">Datos de registro — Cuenta Industria</h3>
+                    <h3 className="legal-subtitle-small">Datos de registro: Cuenta Industria</h3>
                     <p className="legal-paragraph">Al registrarte como empresa, marca o institución, recogemos:</p>
                     <ul className="legal-list">
                         <li>Nombre completo, nombre de usuario, correo electrónico y contraseña encriptada.</li>
@@ -71,7 +71,7 @@ const Privacidad = () => {
                         <li>Biografía profesional y título profesional.</li>
                         <li>Formación académica, habilidades y software.</li>
                         <li>Preferencias laborales: tipo de contrato, modalidad, disponibilidad, estado de búsqueda activa.</li>
-                        <li>Redes sociales adicionales: Behance, TikTok, Tumblr, YouTube, Pinterest, Substack.</li>
+                        <li>Redes sociales adicionales: Behance, TikTok, Tumblr, YouTube, Pinterest, Substack, Are.na.</li>
                         <li>CV y portfolio en formato PDF o imagen (almacenados en Cloudinary).</li>
                         <li>Imagen de cabecera del perfil.</li>
                     </ul>
@@ -99,6 +99,22 @@ const Privacidad = () => {
                     </ul>
                     <p className="legal-paragraph">No enviamos newsletters ni comunicaciones comerciales.</p>
                     <p className="legal-paragraph"><em>Base legal: ejecución del contrato (art. 6.1.b RGPD).</em></p>
+
+                    {/* BORRADOR — pendiente de revisión legal antes de publicar.
+                        Añadido junto con el tracking de sesión/visitas/edición de
+                        perfil (backend: models/Visit.js, EditLog.js, DailyStat.js,
+                        User.lastLoginAt). Revisar redacción y base legal con un
+                        abogado antes de dar esto por definitivo. */}
+                    <h3 className="legal-subtitle-small">Datos de sesión y uso de la plataforma</h3>
+                    <p className="legal-paragraph">Para mantener la plataforma funcionando de forma segura y para entender cómo se usa y poder mejorarla, recogemos:</p>
+                    <ul className="legal-list">
+                        <li>Fecha y hora de tu último inicio de sesión.</li>
+                        <li>Qué campos de tu perfil editas: únicamente el nombre del campo (por ejemplo, "biografía"), nunca el contenido que escribes en él.</li>
+                        <li>Visitas a la plataforma y a perfiles públicos: fecha y, de forma agregada, de dónde vienes (por ejemplo, Instagram, Google, acceso directo). Si no has iniciado sesión, esto se asocia a un identificador temporal que se genera al abrir la pestaña y desaparece al cerrarla, así que no te identifica entre visitas distintas.</li>
+                        <li>Cómo se navega por la plataforma: el tipo de pantalla (móvil, tablet u ordenador, según el ancho de la ventana) y el tipo de página que se abre y en qué orden (por ejemplo, "explorador" y luego "proyecto"), nunca qué perfil o proyecto concreto. Se asocia al mismo identificador temporal de la pestaña, no a tu cuenta, y solo se usa para estadísticas agregadas.</li>
+                        <li>Tiempo de uso de la plataforma, calculado y mostrado únicamente como una media agregada de todas las personas usuarias: nunca almacenamos ni mostramos cuánto tiempo ha pasado una persona concreta.</li>
+                    </ul>
+                    <p className="legal-paragraph"><em>Base legal: interés legítimo (art. 6.1.f RGPD): medir y mejorar el rendimiento del servicio. Puedes ejercer tu derecho de oposición a este tratamiento en cualquier momento (ver sección 6).</em></p>
                 </section>
 
                 <section>
@@ -131,6 +147,7 @@ const Privacidad = () => {
                         <li><strong>Candidaturas:</strong> mientras la oferta esté activa y durante el tiempo necesario para resolver posibles reclamaciones.</li>
                         <li><strong>Emails transaccionales:</strong> según la política de retención de Brevo.</li>
                         <li><strong>Copias de seguridad:</strong> pueden conservarse hasta 90 días adicionales en copias del sistema.</li>
+                        <li><strong>Datos de sesión y analítica agregada</strong> (visitas, procedencia, tiempo de uso, campos de perfil editados): hasta 400 días, tras los cuales se eliminan automáticamente.</li>
                     </ul>
                 </section>
 
@@ -190,8 +207,10 @@ const Privacidad = () => {
 
                 <section>
                     <h2 className="legal-subtitle">10/ Uso de cookies</h2>
+                    {/* BORRADOR — ver nota en la sección 2 ("Datos de sesión y
+                        uso de la plataforma"), pendiente de revisión legal. */}
                     <p className="legal-paragraph">
-                        THEFOLDER utiliza una cookie de sesión estrictamente necesaria para el funcionamiento de la plataforma, junto con datos almacenados en el localStorage de tu navegador para mantener tu sesión activa. No utilizamos cookies de seguimiento, analíticas ni publicidad de terceros. Consulta nuestra <a href="/cookies">Política de Cookies ↗</a> para más información.
+                        THEFOLDER utiliza una cookie de sesión estrictamente necesaria para el funcionamiento de la plataforma, junto con datos almacenados en el localStorage y sessionStorage de tu navegador: para mantener tu sesión activa, y, en el caso de sessionStorage, un identificador temporal para las estadísticas de visitas descritas en la sección 2 (se borra al cerrar la pestaña, no persiste entre visitas). No utilizamos cookies ni tecnologías de seguimiento de terceros, ni con fines publicitarios. Consulta nuestra <a href="/cookies">Política de Cookies ↗</a> para más información.
                     </p>
                 </section>
 
@@ -205,8 +224,8 @@ const Privacidad = () => {
                 <section>
                     <h2 className="legal-subtitle">12/ Historial de versiones</h2>
                     <ul className="legal-list">
-                        <li><strong>Versión 1.0</strong> — Publicada el 20 de mayo de 2025. Versión original.</li>
-                        <li><strong>Versión 2.0</strong> — Publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, eliminación de datos personales innecesarios (DNI, dirección completa), unificación de edad mínima a 16 años, incorporación de información sobre transferencias internacionales de datos (AWS US East), proveedores externos (Cloudinary, Brevo, Google OAuth), bases legales por tipo de tratamiento y adecuación al dominio thefolder.es.</li>
+                        <li><strong>Versión 1.0</strong>: publicada el 20 de mayo de 2025. Versión original.</li>
+                        <li><strong>Versión 2.0</strong>: publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, eliminación de datos personales innecesarios (DNI, dirección completa), unificación de edad mínima a 16 años, incorporación de información sobre transferencias internacionales de datos (AWS US East), proveedores externos (Cloudinary, Brevo, Google OAuth), bases legales por tipo de tratamiento y adecuación al dominio thefolder.es.</li>
                     </ul>
                 </section>
 

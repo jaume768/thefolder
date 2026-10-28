@@ -239,8 +239,9 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
 
       setVerificationSuccess(data.message || t('verify.success'));
 
-      const { token } = data;
+      const { token, refreshToken } = data;
       localStorage.setItem("authToken", token);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
       onClose();
 

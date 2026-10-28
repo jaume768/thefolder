@@ -1,0 +1,38 @@
+.pl-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.pl-word {
+  display: flex;
+  animation: pl-pulse 1.1s ease-in-out 0.75s infinite;
+}
+
+.pl-letter {
+  font-family: "Inter Tight", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #111;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: pl-in 0.35s ease-out forwards;
+  animation-delay: calc(var(--i) * 45ms);
+}
+
+@keyframes pl-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pl-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}

@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const { validateUsername, generateProvisionalUsername } = require('../utils/username');
 const { validatePassword } = require('../utils/passwordValidation');
+const { signAccessToken, issueRefreshToken, rotateRefreshToken, revokeRefreshToken } = require('../utils/tokenService');
 
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 const { getEmailTemplate, resolveLocaleFromReq } = require('../utils/emailTemplates');
@@ -198,13 +199,13 @@ exports.verifyCodePreRegistration = async (req, res) => {
   await newUser.save();
   delete pendingRegistrations[email];
 
-  const token = jwt.sign(
-    { id: newUser._id, email: newUser.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '30d' }
-  );
+  const token = signAccessToken(newUser);
+  const refreshToken = await issueRefreshToken(newUser, req.headers['user-agent'] || '');
 
-  return res.status(200).json({ message: "Usuario registrado exitosamente.", token, user: newUser });
+  const userResponse = newUser.toObject();
+  delete userResponse.sessions;
+  delete userResponse.password;
+  return res.status(200).json({ message: "Usuario registrado exitosamente.", token, refreshToken, user: userResponse });
 };
 
 
@@ -334,13 +335,17 @@ exports.register = async (req, res) => {
 
         await newUser.save();
 
+        const userResponse = newUser.toObject();
+        delete userResponse.sessions;
+        delete userResponse.password;
+
         if (!newUser.isVerified) {
             // Generar un token de verificación (válido, por ejemplo, por 1 día)
             const verificationToken = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
             sendVerificationEmail(newUser.email, verificationToken);
-            res.status(201).json({ message: 'Usuario registrado. Por favor verifica tu email.', user: newUser });
+            res.status(201).json({ message: 'Usuario registrado. Por favor verifica tu email.', user: userResponse });
         } else {
-            res.status(201).json({ message: 'Usuario registrado correctamente', user: newUser });
+            res.status(201).json({ message: 'Usuario registrado correctamente', user: userResponse });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -348,7 +353,7 @@ exports.register = async (req, res) => {
 };
 
 exports.login = (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', async (err, user, info) => {
         if (err) { return next(err); }
         if (!user) {
             return res.status(400).json({ message: info.message });
@@ -357,32 +362,82 @@ exports.login = (req, res, next) => {
         if (!user.isActive) return res.status(403).json({ message: 'Cuenta inactiva.' });
         if (!user.isVerified) return res.status(403).json({ message: 'Cuenta no verificada.' });
 
-        const token = jwt.sign(
-            {
-                id: user._id,
-                email: user.email,
-                professionalType: user.professionalType,
-                accountType: user.accountType ?? null,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '30d' }
-        );
-        return res.status(200).json({ message: 'Login exitoso', token, user });
+        const token = signAccessToken(user);
+        // Se pone al día aquí (no en cada refresh de token) para que
+        // signifique "última vez que entró de verdad", no "última vez que
+        // tuvo la pestaña abierta". issueRefreshToken ya hace user.save()
+        // justo después, así que no es una escritura extra a la BD.
+        user.lastLoginAt = new Date();
+        const refreshToken = await issueRefreshToken(user, req.headers['user-agent'] || '');
+        const userResponse = user.toObject();
+        delete userResponse.sessions;
+        delete userResponse.password;
+        return res.status(200).json({ message: 'Login exitoso', token, refreshToken, user: userResponse });
     })(req, res, next);
 };
 
-exports.googleCallback = (req, res) => {
-    const token = jwt.sign({ id: req.user._id, email: req.user.email, professionalType: req.user.professionalType, accountType: req.user.accountType ?? null }, process.env.JWT_SECRET, { expiresIn: '30d' });
+exports.googleCallback = async (req, res) => {
+    const token = signAccessToken(req.user);
+    req.user.lastLoginAt = new Date();
+    const refreshToken = await issueRefreshToken(req.user, req.headers['user-agent'] || '');
 
     if (req.user.profileCompleted) {
-        return res.redirect(`${process.env.FRONTEND_URL}/token-handler?token=${token}`);
+        return res.redirect(`${process.env.FRONTEND_URL}/token-handler?token=${token}&refreshToken=${refreshToken}`);
     } else {
-        return res.redirect(`${process.env.FRONTEND_URL}/complete-registration?token=${token}`);
+        return res.redirect(`${process.env.FRONTEND_URL}/complete-registration?token=${token}&refreshToken=${refreshToken}`);
     }
 };
 
-exports.logout = (req, res) => {
-    req.logout();
+// Intercambia un refresh token válido por un access token nuevo (y rota el
+// refresh token). Es el mecanismo que mantiene la sesión "viva mientras hay
+// actividad": si no se llama en 30 días, el refresh token ya no es válido.
+exports.refresh = async (req, res) => {
+    const { token, refreshToken } = req.body;
+    if (!token || !refreshToken) {
+        return res.status(400).json({ message: 'Faltan credenciales de sesión.' });
+    }
+
+    let decoded;
+    try {
+        // ignoreExpiration: el access token puede (y suele) estar caducado
+        // aquí — lo normal es llamar a /refresh justo cuando deja de valer.
+        decoded = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
+    } catch (err) {
+        return res.status(401).json({ message: 'Sesión inválida.' });
+    }
+
+    const user = await User.findById(decoded.id).select('+sessions');
+    if (!user || !user.isActive) {
+        return res.status(401).json({ message: 'Sesión inválida.' });
+    }
+
+    const newRefreshToken = await rotateRefreshToken(user, refreshToken, req.headers['user-agent'] || '');
+    if (!newRefreshToken) {
+        return res.status(401).json({ message: 'Tu sesión ha caducado. Inicia sesión de nuevo.' });
+    }
+
+    const newAccessToken = signAccessToken(user);
+    return res.status(200).json({ token: newAccessToken, refreshToken: newRefreshToken });
+};
+
+exports.logout = async (req, res) => {
+    const { refreshToken } = req.body || {};
+    const authHeader = req.headers.authorization;
+    const token = authHeader ? authHeader.split(' ')[1] : null;
+
+    if (refreshToken && token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
+            const user = await User.findById(decoded.id).select('+sessions');
+            if (user) await revokeRefreshToken(user, refreshToken);
+        } catch (err) {
+            // Token ilegible: no hay sesión que revocar server-side, seguimos igual.
+        }
+    }
+
+    // Passport 0.6+ exige un callback; esta ruta no usa sesión de passport
+    // (auth por JWT), así que es un no-op — pero sin el callback, lanza.
+    req.logout?.(() => {});
     res.status(200).json({ message: 'Sesión cerrada' });
 };
 
@@ -400,16 +455,16 @@ exports.adminLogin = async (req, res) => {
         }
         
         // Buscar el usuario por email
-        const user = await User.findOne({ email });
-        
+        const user = await User.findOne({ email }).select('+password');
+
         // Verificar que el usuario existe
         if (!user) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 success: false,
-                message: 'Credenciales incorrectas' 
+                message: 'Credenciales incorrectas'
             });
         }
-        
+
         // Verificar que el usuario es un administrador
         if (user.role !== 'Admin' && !user.isAdmin) {
             return res.status(403).json({ 
@@ -535,7 +590,7 @@ exports.changeEmail = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select('+password');
     if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
 
     // Si el usuario tiene contraseña (no es solo Google), verificarla

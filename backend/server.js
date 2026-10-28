@@ -69,6 +69,7 @@ app.use(passport.session());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/folders', require('./routes/folders'));
+app.use('/api/sections', require('./routes/sections'));
 app.use('/api/posts', require('./routes/posts'));
 app.use('/api/offers', require('./routes/offers'));
 app.use('/api/admin', require('./routes/admin'));
@@ -77,7 +78,9 @@ app.use('/api/blog', require('./routes/blog'));
 app.use('/api/industry', require('./routes/industry'));
 app.use('/api/tags', require('./routes/tags'));
 app.use('/api/reports', require('./routes/reports'));
+app.use('/api/analytics', require('./routes/analytics'));
 app.use('/og', require('./routes/og'));
+app.use('/sitemap.xml', require('./routes/sitemap'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

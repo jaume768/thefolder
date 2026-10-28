@@ -331,7 +331,7 @@ const ROLE_TAGS = [
     label: "Makeup",
     type: "role",
     status: "active",
-    group: "Beauty (MUAH)",
+    group: "Beauty & Hair",
     order: 1,
   },
   {
@@ -339,7 +339,7 @@ const ROLE_TAGS = [
     label: "Hair styling",
     type: "role",
     status: "active",
-    group: "Beauty (MUAH)",
+    group: "Beauty & Hair",
     order: 2,
   },
   {
@@ -347,7 +347,7 @@ const ROLE_TAGS = [
     label: "Colorista",
     type: "role",
     status: "active",
-    group: "Beauty (MUAH)",
+    group: "Beauty & Hair",
     order: 3,
   },
   {
@@ -355,7 +355,7 @@ const ROLE_TAGS = [
     label: "Groomer",
     type: "role",
     status: "active",
-    group: "Beauty (MUAH)",
+    group: "Beauty & Hair",
     order: 4,
   },
   {
@@ -363,7 +363,7 @@ const ROLE_TAGS = [
     label: "Manicurista / Nails",
     type: "role",
     status: "active",
-    group: "Beauty (MUAH)",
+    group: "Beauty & Hair",
     order: 5,
   },
   {
@@ -371,7 +371,7 @@ const ROLE_TAGS = [
     label: "Beauty direction",
     type: "role",
     status: "active",
-    group: "Beauty (MUAH)",
+    group: "Beauty & Hair",
     order: 6,
   },
 
@@ -428,14 +428,14 @@ const ROLE_TAGS = [
   },
 
   // =====================
-  // 7. Digital & 3D
+  // 7. 3D & Producto
   // =====================
   {
     id: "diseno-moda-3d",
     label: "Diseño moda 3D",
     type: "role",
     status: "active",
-    group: "Digital & 3D",
+    group: "3D & Producto",
     order: 1,
   },
   {
@@ -443,7 +443,7 @@ const ROLE_TAGS = [
     label: "Render producto",
     type: "role",
     status: "active",
-    group: "Digital & 3D",
+    group: "3D & Producto",
     order: 2,
   },
   {
@@ -451,36 +451,44 @@ const ROLE_TAGS = [
     label: "Prototipado digital",
     type: "role",
     status: "active",
-    group: "Digital & 3D",
+    group: "3D & Producto",
     order: 3,
   },
+  {
+    id: "ai-artist",
+    label: "Artista IA",
+    type: "role",
+    status: "active",
+    group: "3D & Producto",
+    order: 4,
+  },
+
+  // =====================
+  // 8. Gráfica & Ilustración
+  // =====================
   {
     id: "diseno-grafico",
     label: "Diseño gráfico",
     type: "role",
     status: "active",
-    group: "Digital & 3D",
-    order: 4,
+    group: "Gráfica & Ilustración",
+    order: 1,
   },
-
-  // =====================
-  // 8. Ilustración
-  // =====================
   {
     id: "ilustracion-moda",
     label: "Ilustración de moda",
     type: "role",
     status: "active",
-    group: "Ilustración",
-    order: 1,
+    group: "Gráfica & Ilustración",
+    order: 2,
   },
   {
     id: "ilustracion-tecnica",
     label: "Ilustración técnica",
     type: "role",
     status: "active",
-    group: "Ilustración",
-    order: 2,
+    group: "Gráfica & Ilustración",
+    order: 3,
   },
 
   // =====================
@@ -520,14 +528,14 @@ const ROLE_TAGS = [
   },
 
   // =====================
-  // 10. Digital & Social
+  // 10. Social & Ecommerce
   // =====================
   {
     id: "g-social-media",
     label: "Social Media Manager",
     type: "role",
     status: "active",
-    group: "Digital & Social",
+    group: "Social & Ecommerce",
     order: 1,
   },
   {
@@ -535,7 +543,7 @@ const ROLE_TAGS = [
     label: "Content Creator",
     type: "role",
     status: "active",
-    group: "Digital & Social",
+    group: "Social & Ecommerce",
     order: 2,
   },
   {
@@ -543,7 +551,7 @@ const ROLE_TAGS = [
     label: "Community Manager",
     type: "role",
     status: "active",
-    group: "Digital & Social",
+    group: "Social & Ecommerce",
     order: 3,
   },
   {
@@ -551,7 +559,7 @@ const ROLE_TAGS = [
     label: "Influencer Marketing",
     type: "role",
     status: "active",
-    group: "Digital & Social",
+    group: "Social & Ecommerce",
     order: 4,
   },
   {
@@ -559,7 +567,7 @@ const ROLE_TAGS = [
     label: "E-commerce & SEO",
     type: "role",
     status: "active",
-    group: "Digital & Social",
+    group: "Social & Ecommerce",
     order: 5,
   },
   // =====================

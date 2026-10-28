@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft } from 'lucide-react';
 import { optimizeImage } from '../../../utils/optimizeImage';
 
 const DEFAULT_AVATAR = '/multimedia/usuarioDefault.jpg';
@@ -61,64 +62,64 @@ const PhotoStep = ({ photo, onChange, onNext, onBack, submitting, error, onClear
         {t('photo.subtitle')}
       </p>
 
-      <div className="ob-photo">
-        <div
-          className="ob-photo-box"
-          onClick={handlePickFile}
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handlePickFile(); }}
-        >
-          <img
-            src={currentPreview}
-            alt={t('photo.alt')}
-            className="ob-photo-img"
+      <div className="ob-step-content">
+        <div className="ob-photo">
+          <div
+            className="ob-photo-box"
+            onClick={handlePickFile}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handlePickFile(); }}
+          >
+            <img
+              src={currentPreview}
+              alt={t('photo.alt')}
+              className="ob-photo-img"
+            />
+          </div>
+
+          {photo ? (
+            <div className="ob-photo-actions">
+              <button type="button" className="ob-photo-action" onClick={handlePickFile} disabled={optimizing}>
+                <span>{optimizing ? t('photo.processing') : t('photo.edit')}</span>
+              </button>
+              <span className="ob-photo-sep">|</span>
+              <button
+                type="button"
+                className="ob-photo-action"
+                onClick={handleRemove}
+                disabled={optimizing}
+              >
+               <span>{t('photo.remove')}</span>
+              </button>
+            </div>
+          ) : (
+            <div className="ob-photo-actions">
+              <button type="button" className="ob-photo-action" onClick={handlePickFile} disabled={optimizing}>
+                <span>{optimizing ? t('photo.processing') : t('photo.upload')}</span>
+              </button>
+            </div>
+          )}
+
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            className="ob-hidden-input"
+            onChange={handleFileChange}
           />
         </div>
 
-        <div className="ob-photo-actions">
-          <button type="button" className="ob-photo-action" onClick={handlePickFile} disabled={optimizing}>
-            ✎ <span>{optimizing ? t('photo.processing') : t('photo.edit')}</span>
-          </button>
-          <span className="ob-photo-sep">|</span>
-          <button
-            type="button"
-            className="ob-photo-action"
-            onClick={handleRemove}
-            disabled={!photo || optimizing}
-          >
-            🗑 <span>{t('photo.remove')}</span>
-          </button>
-        </div>
-
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          className="ob-hidden-input"
-          onChange={handleFileChange}
-        />
-
-        <p className="ob-mini-hint ob-mini-hint-center">{t('photo.hint')}</p>
+        {displayError && <p className="ob-error">{displayError}</p>}
       </div>
-
-      {displayError && <p className="ob-error">{displayError}</p>}
 
       <div className="ob-buttons">
-        <button type="button" className="ob-back" onClick={onBack} disabled={submitting || optimizing}>
-          {t('common.back')}
+        <button type="button" className="ob-back" onClick={onBack} disabled={submitting || optimizing} aria-label={t('common.back')}>
+          <ChevronLeft size={18} strokeWidth={1.8} />
         </button>
-        <button className="ob-cta" onClick={onNext} disabled={!photo || submitting || optimizing}>
-          {submitting ? t('common.saving') : t('common.finish')}
+        <button className="ob-cta" onClick={onNext} disabled={submitting || optimizing}>
+          {submitting ? t('common.saving') : t('photo.endRegister')}
         </button>
-      </div>
-
-      <div className="ob-dots" aria-hidden="true">
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot active" />
       </div>
     </div>
   );

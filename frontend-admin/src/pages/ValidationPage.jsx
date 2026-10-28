@@ -83,12 +83,12 @@ const ValidationPage = () => {
                       <span className="val-username">@{u.username}</span>
                     </div>
                   </td>
-                  <td>{u.fullName || '—'}</td>
+                  <td>{u.fullName || '-'}</td>
                   <td className="val-email">{u.email}</td>
-                  <td>{[u.city, u.country].filter(Boolean).join(', ') || '—'}</td>
+                  <td>{[u.city, u.country].filter(Boolean).join(', ') || '-'}</td>
                   <td>
                     <span className="val-level val-level--current">
-                      {LEVEL_NAMES[u.creativeLevel] || '—'}
+                      {LEVEL_NAMES[u.creativeLevel] || '-'}
                     </span>
                   </td>
                   <td>

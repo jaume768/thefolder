@@ -209,19 +209,25 @@ export const translateCity = (city, t) => {
  *   ES: "Valencia, España"
  *   EN: "Valencia, Spain"
  */
-export const formatUserLocation = (city, country, t, { city2, country2 } = {}) => {
-  const cityLabel    = translateCity(city, t);
-  const countryLabel = translateCountry(country, t);
+export const formatUserLocation = (city, country, t, extra = {}) =>
+  userLocationList(city, country, t, extra).join(' · ');
 
-  const main = city && countryLabel
-    ? `${cityLabel}, ${countryLabel}`
-    : (cityLabel || countryLabel || '');
+/**
+ * Las mismas ubicaciones (hasta 3) como lista, para quien pinta su propio
+ * separador (p. ej. el "+" con estilo propio del perfil Classic).
+ */
+export const userLocationList = (city, country, t, { city2, country2, city3, country3 } = {}) => {
+  const formatOne = (c, co) => {
+    const cityLabel    = translateCity(c, t);
+    const countryLabel = translateCountry(co, t);
+    return c && countryLabel
+      ? `${cityLabel}, ${countryLabel}`
+      : (cityLabel || countryLabel || '');
+  };
 
-  if (!city2) return main;
-
-  const city2Label    = translateCity(city2, t);
-  const country2Label = translateCountry(country2, t);
-  const secondary = country2Label ? `${city2Label}, ${country2Label}` : city2Label;
-
-  return main ? `${main} · ${secondary}` : secondary;
+  return [
+    formatOne(city, country),
+    formatOne(city2, country2),
+    formatOne(city3, country3),
+  ].filter(Boolean);
 };

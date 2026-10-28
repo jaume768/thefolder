@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
+import api from "../services/api";
 import { useTranslation } from "react-i18next";
-import { FaTimes } from "react-icons/fa";
+import { X, Users, Tag, Hash, WandSparkles, Newspaper, Plus, UserPlus, FilePlusCorner, BookA, Globe } from "lucide-react";
 import "./controlPanel/css/CreatePost.css";
 import { clImg } from "../utils/optimizeImage";
+import CreditPersonField from "./credits/CreditPersonField";
 
 const PROJECT_TYPES = [
   "Art Direction", "Backstage", "Beauty", "Brand Content",
@@ -62,20 +63,50 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       return String(v || "").trim();
     });
   });
+  // Créditos de las imágenes nuevas (aún no subidas) — alineado por índice
+  // con newFiles. Se concatena detrás de imageCredits al guardar, porque el
+  // backend anexa las imágenes nuevas al final del array `images` existente.
+  const [newFileCredits, setNewFileCredits] = useState([]);
 
   const [peopleTags, setPeopleTags] = useState(
     Array.isArray(post.peopleTags) && post.peopleTags.length > 0
-      ? post.peopleTags.map((p) => ({ ...p }))
-      : [{ name: "", role: "", username: "", socialUrl: "", isRegistered: false, avatar: "" }]
+      ? post.peopleTags.map((p) => ({ instagram: "", ...p }))
+      : [{ name: "", role: "", username: "", socialUrl: "", instagram: "", isRegistered: false, avatar: "" }]
   );
 
-  const [showTeam,    setShowTeam]    = useState(Array.isArray(post.peopleTags) && post.peopleTags.some((p) => p.name));
-  const [showCredits, setShowCredits] = useState(() => {
-    const tags = post.imageTags || {};
-    return Object.values(tags).some((v) => String(v || "").trim());
-  });
   const [projectTypes, setProjectTypes] = useState(Array.isArray(post.projectTypes) ? post.projectTypes : []);
-  const [showTypes,    setShowTypes]    = useState(Array.isArray(post.projectTypes) && post.projectTypes.length > 0);
+
+  const [publishedIn, setPublishedIn] = useState(
+    Array.isArray(post.publishedIn) && post.publishedIn.length > 0
+      ? post.publishedIn.map(e => ({ mediaName: "", articleUrl: "", isOnline: false, isPrinted: false, ...e }))
+      : [{ mediaName: "", articleUrl: "", isOnline: false, isPrinted: false }]
+  );
+
+  // Un solo panel activo a la vez
+  const [activePanel, setActivePanel] = useState(() => {
+    if (Array.isArray(post.peopleTags) && post.peopleTags.some((p) => p.name)) return 'team';
+    if (Array.isArray(post.projectTypes) && post.projectTypes.length > 0) return 'types';
+    if (Array.isArray(post.publishedIn) && post.publishedIn.some(e => String(e?.mediaName || '').trim())) return 'publishedIn';
+    const tags = post.imageTags || {};
+    if (Object.values(tags).some((v) => String(v || "").trim())) return 'credits';
+    return null;
+  });
+  const cpRightRef = useRef(null);
+  const togglePanel = (panel) => {
+    setActivePanel((prev) => {
+      const next = prev === panel ? null : panel;
+      // rAF: espera a que React monte el panel recién abierto antes de medir
+      // scrollHeight, si no mide el alto de antes de que el panel exista.
+      if (next) requestAnimationFrame(() => {
+        cpRightRef.current?.scrollTo({ top: cpRightRef.current.scrollHeight, behavior: 'smooth' });
+      });
+      return next;
+    });
+  };
+  const showTeam        = activePanel === 'team';
+  const showCredits     = activePanel === 'credits';
+  const showTypes       = activePanel === 'types';
+  const showPublishedIn = activePanel === 'publishedIn';
 
   const toggleType = (type) => {
     setProjectTypes(prev =>
@@ -87,10 +118,6 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
   const [error, setError]         = useState("");
 
   /* ── Autocomplete state ─────────────────────────────────────────────────── */
-  const [searchTerm,     setSearchTerm]     = useState("");
-  const [suggestedUsers, setSuggestedUsers] = useState([]);
-  const [activeTagIndex, setActiveTagIndex] = useState(null);
-  const [loadingUsers,   setLoadingUsers]   = useState(false);
 
   /* ── Cleanup object URLs on unmount ────────────────────────────────────── */
   useEffect(() => {
@@ -101,26 +128,6 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
   }, []);
 
   /* ── Autocomplete search effect ─────────────────────────────────────────── */
-  useEffect(() => {
-    const search = async () => {
-      if (searchTerm.length < 2 || activeTagIndex === null) return;
-      setLoadingUsers(true);
-      try {
-        const token = localStorage.getItem("authToken");
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/users/searchUsers?term=${searchTerm}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setSuggestedUsers(res.data.users || []);
-      } catch {
-        setSuggestedUsers([]);
-      } finally {
-        setLoadingUsers(false);
-      }
-    };
-    const t = setTimeout(search, 300);
-    return () => clearTimeout(t);
-  }, [searchTerm, activeTagIndex]);
 
   /* ── Drag & drop (native HTML5, works correctly with CSS Grid) ──────────── */
   const [dragSrcIdx,  setDragSrcIdx]  = useState(null);
@@ -167,6 +174,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       URL.revokeObjectURL(prev[index].preview);
       return prev.filter((_, i) => i !== index);
     });
+    setNewFileCredits((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleAddImages = (e) => {
@@ -178,6 +186,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       preview: URL.createObjectURL(file),
     }));
     setNewFiles((prev) => [...prev, ...toAdd]);
+    setNewFileCredits((prev) => [...prev, ...toAdd.map(() => "")]);
     e.target.value = "";
   };
 
@@ -191,31 +200,9 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
         return { ...item, [name]: value };
       })
     );
-    if (name === "name") { setSearchTerm(value); setActiveTagIndex(index); }
   };
 
-  const selectUser = (user) => {
-    if (activeTagIndex === null) return;
-    const clean    = String(user?.username || "").trim().replace(/^@/, "");
-    const fullName = String(user?.fullName || user?.name || "").trim();
-    setPeopleTags((prev) =>
-      prev.map((item, i) =>
-        i === activeTagIndex
-          ? { ...item, name: fullName || toTitleCase(clean), username: clean, avatar: user?.profile?.profilePicture || null, isRegistered: true, socialUrl: "" }
-          : item
-      )
-    );
-    setSearchTerm(""); setSuggestedUsers([]); setActiveTagIndex(null);
-  };
 
-  const handleExternalNameBlur = (index) =>
-    setPeopleTags((prev) =>
-      prev.map((item, i) => {
-        if (i !== index) return item;
-        if (item.isRegistered) return item;
-        return { ...item, name: toTitleCase(String(item.name || "").trim()) };
-      })
-    );
 
   const handleSocialUrlBlur = (index) =>
     setPeopleTags((prev) =>
@@ -223,20 +210,59 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
     );
 
   const addPeopleTagCard = () => {
-    const last = peopleTags[peopleTags.length - 1];
-    if (String(last?.name || "").trim()) {
-      setPeopleTags((prev) => [
-        ...prev,
-        { name: "", role: "", username: "", socialUrl: "", isRegistered: false, avatar: "" },
-      ]);
-    } else {
-      alert(t('create.errors.fillRequired'));
-    }
+    setPeopleTags((prev) => [
+      ...prev,
+      { name: "", role: "", username: "", socialUrl: "", instagram: "", isRegistered: false, avatar: "" },
+    ]);
   };
 
   const removePeopleTagCard = (idx) => {
-    if (peopleTags.length > 1) setPeopleTags((prev) => prev.filter((_, i) => i !== idx));
+    setPeopleTags((prev) => prev.filter((_, i) => i !== idx));
   };
+
+  /* ── Drag & drop people ─────────────────────────────────────────────────── */
+  const [personDragSrc,  setPersonDragSrc]  = useState(null);
+  const [personDragOver, setPersonDragOver] = useState(null);
+
+  const handlePersonDragStart = (e, idx) => {
+    setPersonDragSrc(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  const handlePersonDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== personDragOver) setPersonDragOver(idx);
+  };
+  const handlePersonDrop = (e, toIdx) => {
+    e.preventDefault();
+    const fromIdx = personDragSrc;
+    setPersonDragSrc(null); setPersonDragOver(null);
+    if (fromIdx === null || fromIdx === toIdx) return;
+    setPeopleTags((prev) => reorder(prev, fromIdx, toIdx));
+  };
+  const handlePersonDragEnd = () => { setPersonDragSrc(null); setPersonDragOver(null); };
+
+  /* ── Drag & drop publicaciones ──────────────────────────────────────────── */
+  const [pubDragSrc,  setPubDragSrc]  = useState(null);
+  const [pubDragOver, setPubDragOver] = useState(null);
+
+  const handlePubDragStart = (e, idx) => {
+    setPubDragSrc(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  const handlePubDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== pubDragOver) setPubDragOver(idx);
+  };
+  const handlePubDrop = (e, toIdx) => {
+    e.preventDefault();
+    const fromIdx = pubDragSrc;
+    setPubDragSrc(null); setPubDragOver(null);
+    if (fromIdx === null || fromIdx === toIdx) return;
+    setPublishedIn((prev) => reorder(prev, fromIdx, toIdx));
+  };
+  const handlePubDragEnd = () => { setPubDragSrc(null); setPubDragOver(null); };
 
   /* ── Save ───────────────────────────────────────────────────────────────── */
   const handleSave = async () => {
@@ -252,8 +278,11 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
     setIsLoading(true);
     setError("");
 
-    const imageTags = imageCredits.reduce((acc, credit, idx) => {
-      const clean = credit.trim();
+    // El backend concatena las imágenes nuevas detrás de las existentes al
+    // guardar (ver postController.updatePost), así que los créditos deben
+    // seguir el mismo orden para que los índices coincidan.
+    const imageTags = [...imageCredits, ...newFileCredits].reduce((acc, credit, idx) => {
+      const clean = String(credit || "").trim();
       if (clean) acc[String(idx)] = clean;
       return acc;
     }, {});
@@ -264,15 +293,13 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
         username:     p.isRegistered ? String(p.username || "").replace(/^@/, "") : "",
         role:         String(p.role || "").trim(),
         socialUrl:    p.isRegistered ? "" : String(p.socialUrl || "").trim(),
+        instagram:    p.isRegistered ? "" : String(p.instagram || "").trim().replace(/^@/, ""),
         isRegistered: !!p.isRegistered,
         avatar:       p.avatar || "",
       }))
-      .filter((p) => p.name !== "");
+      .filter((p) => p.name !== "" || p.role !== "");
 
     try {
-      const token      = localStorage.getItem("authToken");
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
       const formData = new FormData();
       formData.append("title",        title.trim());
       formData.append("description",  description);
@@ -281,11 +308,11 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
       formData.append("imageTags",    JSON.stringify(imageTags));
       formData.append("images",       JSON.stringify(images));
       formData.append("projectTypes", JSON.stringify(projectTypes));
+      const validPublications = publishedIn.filter(e => String(e.mediaName || "").trim());
+      formData.append("publishedIn",  JSON.stringify(validPublications));
       newFiles.forEach(({ file }) => formData.append("newImages", file));
 
-      const res = await axios.put(`${backendUrl}/api/posts/${post._id}`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.put(`/api/posts/${post._id}`, formData);
 
       onSaved(res.data.post);
       onClose();
@@ -300,11 +327,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
     setIsLoading(true);
     setError("");
     try {
-      const token      = localStorage.getItem("authToken");
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      await axios.delete(`${backendUrl}/api/posts/${post._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/api/posts/${post._id}`);
       onSaved(null); // signal post was deleted
       onClose();
     } catch (err) {
@@ -318,9 +341,14 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
   /* ── Render ─────────────────────────────────────────────────────────────── */
   return (
       <div className="cp-overlay" onClick={onClose}>
+        <span className="cp-overlay-mark" aria-hidden="true">
+          <span className="cp-overlay-mark-t">T</span>
+          <span className="cp-overlay-mark-slash">/</span>
+        </span>
         <div className="cp-modal" onClick={(e) => e.stopPropagation()}>
 
           {/* ═══ IZQUIERDA — imágenes con drag & drop ═══════════════════ */}
+          <div className="cp-left-wrap">
           <div className="cp-left">
             <div className="cp-grid">
               {/* Existing images — draggable */}
@@ -337,6 +365,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                     dragSrcIdx === index ? "is-dragging" : "",
                     dragOverIdx === index && dragSrcIdx !== index ? "is-drop-target" : "",
                   ].filter(Boolean).join(" ")}
+                  data-tooltip={t('create.dragToReorder')}
                 >
                   <img
                     src={clImg.post(url)}
@@ -344,16 +373,14 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                     className="cp-grid__img"
                     draggable={false}
                   />
-                  <div className="cp-grid__num">{index + 1}</div>
-                  {index === 0 && <div className="cp-grid__cover">{t('create.cover')}</div>}
-                  {imageCredits[index]?.trim() && <div className="cp-grid__credit-dot" />}
+                  <div className="cp-grid__num">{index === 0 ? t('create.cover') : index + 1}</div>
                   <button
                     type="button"
                     className="cp-grid__remove"
                     onClick={(e) => handleRemoveExisting(e, index)}
                     aria-label={t('create.removeImage')}
                   >
-                    <FaTimes />
+                    <X size={14} strokeWidth={2} aria-hidden="true" />
                   </button>
                 </div>
               ))}
@@ -375,7 +402,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                     onClick={(e) => handleRemoveNew(e, index)}
                     aria-label={t('create.removeImage')}
                   >
-                    <FaTimes />
+                    <X size={14} strokeWidth={2} aria-hidden="true" />
                   </button>
                 </div>
               ))}
@@ -383,7 +410,7 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
               {/* Add slot */}
               {totalImages < 6 && (
                 <label className="cp-grid__add" title={t('create.addImage')}>
-                  +
+                  <Plus size={20} strokeWidth={1.5} aria-hidden="true" />
                   <input
                     type="file"
                     accept="image/*"
@@ -410,14 +437,11 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
               </div>
             )}
           </div>
+          </div>
 
           {/* ═══ DERECHA — formulario ════════════════════════════════════ */}
           <div className="cp-right-div">
-            <div className="cp-right">
-              <button type="button" className="cp-close" onClick={onClose} aria-label={t('edit.cancel')}>
-                <FaTimes />
-              </button>
-
+            <div className="cp-right" ref={cpRightRef}>
               <div className="cp-fields">
 
                 {/* Título */}
@@ -470,227 +494,277 @@ const EditPostModal = ({ post, onClose, onSaved }) => {
                   />
                 </div>
 
-                {/* Panel equipo */}
-                {showTeam && (
-                  <div className="cp-panel">
-                    <p className="cp-panel__desc">{t('edit.team.label')}</p>
-                    <div className="people-cards">
-                      {peopleTags.map((tag, index) => {
-                        const rawName        = String(tag.name || "").trim();
-                        const hasName        = rawName.length > 0;
-                        const query          = activeTagIndex === index ? String(searchTerm || "").trim() : "";
-                        const canShowDropdown = activeTagIndex === index &&
-                          (loadingUsers || suggestedUsers.length > 0 || query.length >= 2);
-
-                        return (
-                          <div key={index} className="person-card">
-                            {peopleTags.length > 1 && (
-                              <button
-                                type="button"
-                                className="person-remove-btn"
-                                onClick={() => removePeopleTagCard(index)}
-                                aria-label={t('create.removeImage')}
-                              >
-                                <FaTimes />
-                              </button>
-                            )}
-                            <div className="person-inline">
-                              <div className="tagged-person__avatar">
-                                {tag.avatar
-                                  ? <img src={clImg.avatar(tag.avatar)} alt="" />
-                                  : <span>{getInitials(rawName)}</span>
-                                }
-                              </div>
-                              <div className="person-inline-fields">
-                                <div className="autocomplete-wrapper">
-                                  <input
-                                    type="text"
-                                    placeholder={t('edit.team.namePlaceholder')}
-                                    name="name"
-                                    value={tag.name}
-                                    onChange={(e) => handlePeopleTagChange(index, e)}
-                                    onFocus={() => { setActiveTagIndex(index); setSearchTerm(tag.name); }}
-                                    onBlur={() => { handleExternalNameBlur(index); setActiveTagIndex(null); setSuggestedUsers([]); setSearchTerm(""); }}
-                                    className="people-input people-input--name ux-input"
-                                  />
-                                  {canShowDropdown && (
-                                    <div className="autocomplete-dropdown">
-                                      {query.length >= 2 && (
-                                        <div
-                                          className="autocomplete-item"
-                                          onMouseDown={(e) => e.preventDefault()}
-                                          onClick={() => {
-                                            setPeopleTags((prev) =>
-                                              prev.map((it, i) =>
-                                                i === index
-                                                  ? { ...it, name: toTitleCase(String(tag.name || "").trim()), avatar: null, isRegistered: false }
-                                                  : it
-                                              )
-                                            );
-                                            setSuggestedUsers([]); setActiveTagIndex(null); setSearchTerm("");
-                                          }}
-                                        >
-                                          <div className="autocomplete-user-info">
-                                            <span className="username">{t('edit.team.unregistered')}</span>
-                                            <span className="registered-badge">{String(tag.name || "").trim()}</span>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {loadingUsers
-                                        ? <div className="loading-users">{t('edit.team.searching')}</div>
-                                        : suggestedUsers.length > 0
-                                          ? suggestedUsers.map((user) => (
-                                              <div
-                                                key={user._id}
-                                                className="autocomplete-item"
-                                                onMouseDown={(e) => e.preventDefault()}
-                                                onClick={() => selectUser(user)}
-                                              >
-                                                <img
-                                                  src={clImg.avatar(user.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"}
-                                                  alt={user.username}
-                                                  className="autocomplete-avatar"
-                                                />
-                                                <div className="autocomplete-user-info">
-                                                  <span className="username">@{user.username}</span>
-                                                  <span className="registered-badge">{t('edit.team.registered')}</span>
-                                                </div>
-                                              </div>
-                                            ))
-                                          : query.length >= 2 && (
-                                              <div className="loading-users">{t('edit.team.noMatches')}</div>
-                                            )
-                                      }
-                                    </div>
-                                  )}
-                                </div>
-                                <input
-                                  type="text"
-                                  placeholder={t('edit.team.rolePlaceholder')}
-                                  name="role"
-                                  value={tag.role}
-                                  onChange={(e) => handlePeopleTagChange(index, e)}
-                                  className="people-input people-input--role ux-input"
-                                />
-                                {!tag.isRegistered && hasName && (
-                                  <input
-                                    type="url"
-                                    placeholder={t('edit.team.linkPlaceholder')}
-                                    name="socialUrl"
-                                    value={tag.socialUrl || ""}
-                                    onChange={(e) => handlePeopleTagChange(index, e)}
-                                    onBlur={() => handleSocialUrlBlur(index)}
-                                    className="people-input people-input--url ux-input"
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <button type="button" onClick={addPeopleTagCard} className="add-card-btn">
-                      {t('edit.team.addCollaborator')}
-                    </button>
-                  </div>
-                )}
-
-                {/* Panel créditos */}
-                {showCredits && (
-                  <div className="cp-panel">
-                    <p className="cp-panel__desc">{t('edit.credits.label')}</p>
-                    <div className="cp-credits-list">
-                      {images.map((url, i) => (
-                        <div key={url} className="cp-credit-item">
-                          <img src={clImg.post(url)} alt="" className="cp-credit-item__img" />
-                          <input
-                            className="cp-credit-item__input ux-input"
-                            placeholder={t('edit.credits.placeholder')}
-                            value={imageCredits[i] || ""}
-                            onChange={(e) =>
-                              setImageCredits((prev) => {
-                                const next = [...prev];
-                                next[i] = e.target.value;
-                                return next;
-                              })
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Panel tags de proyecto */}
-                {showTypes && (
-                  <div className="cp-panel">
-                    <p className="cp-panel__desc">{t('edit.projectTags.label')} <span style={{ fontWeight: 400, opacity: 0.55 }}>{t('edit.projectTags.max')}</span></p>
-                    <div className="cp-type-dropdown--modal">
-                      {PROJECT_TYPES.map((type) => {
-                        const selected = projectTypes.includes(type);
-                        const disabled = !selected && projectTypes.length >= 3;
-                        return (
-                          <div
-                            key={type}
-                            className={`cp-type-option${selected ? " is-selected" : ""}${disabled ? " is-disabled" : ""}`}
-                            role="option"
-                            aria-selected={selected}
-                            onClick={() => { if (!disabled) toggleType(type); }}
-                          >
-                            <span className="cp-type-option__check">{selected ? "/" : ""}</span>
-                            {type}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Botones opcionales */}
+              {/* Botones opcionales — el panel de cada uno se despliega justo
+                  debajo, dentro de la misma barra (antes vivía fuera). */}
                 <div className="cp-optional-bar">
                   <button
                     type="button"
                     className={`cp-optional-btn${showTeam ? " is-active" : ""}`}
-                    onClick={() => setShowTeam((v) => !v)}
+                    onClick={() => togglePanel('team')}
                   >
+                    <Users size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
                     {t('edit.optional.team')}
                   </button>
+
                   <button
                     type="button"
                     className={`cp-optional-btn${showCredits ? " is-active" : ""}`}
-                    onClick={() => setShowCredits((v) => !v)}
+                    onClick={() => togglePanel('credits')}
                   >
+                    <Tag size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
                     {t('edit.optional.credits')}
                   </button>
+
                   <button
                     type="button"
                     className={`cp-optional-btn${showTypes ? " is-active" : ""}`}
-                    onClick={() => setShowTypes((v) => !v)}
+                    onClick={() => togglePanel('types')}
                   >
+                    <Hash size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
                     {t('edit.optional.tags')}{projectTypes.length > 0 ? ` (${projectTypes.length})` : ""}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`cp-optional-btn${showPublishedIn ? " is-active" : ""}`}
+                    onClick={() => togglePanel('publishedIn')}
+                  >
+                    <Newspaper size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
+                    {t('edit.optional.publishedIn')}
                   </button>
                 </div>
 
+                {/* Panel equipo */}
+                {showTeam && (
+                    <div className="cp-panel">
+                      <div className="people-cards">
+                        {peopleTags.map((tag, index) => {
+
+                          return (
+                            <div
+                              key={index}
+                              draggable
+                              onDragStart={(e) => handlePersonDragStart(e, index)}
+                              onDragOver={(e) => handlePersonDragOver(e, index)}
+                              onDrop={(e) => handlePersonDrop(e, index)}
+                              onDragEnd={handlePersonDragEnd}
+                              className={["person-card",
+                                personDragSrc === index ? "is-dragging" : "",
+                                personDragOver === index && personDragSrc !== index ? "is-drop-target" : "",
+                              ].filter(Boolean).join(" ")}
+                            >
+                              <span className="person-drag-handle" aria-hidden="true">⠿</span>
+                              <div className="person-card-body">
+                                <div className="person-card-row">
+                                  {/* Quién es: en THEFOLDER o fuera, y su Instagram solo si está
+                                      fuera (components/credits/CreditPersonField.jsx). */}
+                                  <CreditPersonField
+                                    person={tag}
+                                    onChange={(patch) => setPeopleTags((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)))}
+                                    inputClassName="people-input ux-input"
+                                  />
+
+                                  <div className="people-field">
+                                    <WandSparkles size={14} strokeWidth={1.8} aria-hidden="true" className="people-field__icon" />
+                                    <input
+                                      type="text"
+                                      placeholder={t('edit.team.rolePlaceholder')}
+                                      name="role"
+                                      value={tag.role}
+                                      onChange={(e) => handlePeopleTagChange(index, e)}
+                                      onMouseDown={(e) => e.stopPropagation()}
+                                      className="people-input people-input--role ux-input"
+                                    />
+                                  </div>
+
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                className="person-remove-btn"
+                                onClick={() => removePeopleTagCard(index)}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                aria-label={t('edit.team.remove')}
+                              >
+                                <X size={12} strokeWidth={1.8} aria-hidden="true" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <button type="button" onClick={addPeopleTagCard} className="add-card-btn">
+                        <UserPlus size={14} strokeWidth={1.8} aria-hidden="true" className="add-card-btn__icon" />
+                        {t('edit.team.addCollaborator')}
+                      </button>
+                    </div>
+                  )}
+
+                {/* Panel créditos */}
+                {showCredits && (
+                    <div className="cp-panel">
+                      <div className="cp-credits-list">
+                        {images.map((url, i) => (
+                          <div key={url} className="cp-credit-item">
+                            <img src={clImg.post(url)} alt="" className="cp-credit-item__img" />
+                            <input
+                              className="cp-credit-item__input ux-input"
+                              placeholder={t('edit.credits.placeholder')}
+                              value={imageCredits[i] || ""}
+                              onChange={(e) =>
+                                setImageCredits((prev) => {
+                                  const next = [...prev];
+                                  next[i] = e.target.value;
+                                  return next;
+                                })
+                              }
+                            />
+                          </div>
+                        ))}
+                        {newFiles.map(({ preview }, i) => (
+                          <div key={`new-${i}`} className="cp-credit-item">
+                            <img src={preview} alt="" className="cp-credit-item__img" />
+                            <input
+                              className="cp-credit-item__input ux-input"
+                              placeholder={t('edit.credits.placeholder')}
+                              value={newFileCredits[i] || ""}
+                              onChange={(e) =>
+                                setNewFileCredits((prev) => {
+                                  const next = [...prev];
+                                  next[i] = e.target.value;
+                                  return next;
+                                })
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Panel tags de proyecto */}
+                {showTypes && (
+                    <div className="cp-panel">
+                      <div className="cp-type-dropdown--modal">
+                        {PROJECT_TYPES.map((type) => {
+                          const selected = projectTypes.includes(type);
+                          const disabled = !selected && projectTypes.length >= 3;
+                          return (
+                            <div
+                              key={type}
+                              className={`cp-type-option${selected ? " is-selected" : ""}${disabled ? " is-disabled" : ""}`}
+                              role="option"
+                              aria-selected={selected}
+                              onClick={() => { if (!disabled) toggleType(type); }}
+                            >
+                              <span className="cp-type-option__check">{selected ? "#" : ""}</span>
+                              {type}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Panel Published in */}
+                  {showPublishedIn && (
+                    <div className="cp-panel">
+                      <div className="people-cards">
+                        {publishedIn.map((entry, index) => (
+                          <div
+                            key={index}
+                            draggable
+                            onDragStart={(e) => handlePubDragStart(e, index)}
+                            onDragOver={(e) => handlePubDragOver(e, index)}
+                            onDrop={(e) => handlePubDrop(e, index)}
+                            onDragEnd={handlePubDragEnd}
+                            className={["publication-card",
+                              pubDragSrc === index ? "is-dragging" : "",
+                              pubDragOver === index && pubDragSrc !== index ? "is-drop-target" : "",
+                            ].filter(Boolean).join(" ")}
+                          >
+                            <span className="person-drag-handle" aria-hidden="true">⠿</span>
+                            <div className="publication-card-body">
+                              <div className="people-field">
+                                <BookA size={14} strokeWidth={1.8} aria-hidden="true" className="people-field__icon" />
+                                <input
+                                  type="text"
+                                  className="people-input pub-input ux-input"
+                                  placeholder={t('edit.publishedIn.mediaPlaceholder')}
+                                  value={entry.mediaName}
+                                  onChange={(e) => setPublishedIn((prev) => prev.map((it, i) => i === index ? { ...it, mediaName: e.target.value } : it))}
+                                />
+                              </div>
+                              <div className="people-field">
+                                <Globe size={14} strokeWidth={1.8} aria-hidden="true" className="people-field__icon" />
+                                <input
+                                  type="text"
+                                  className="people-input pub-input pub-input--url ux-input"
+                                  placeholder={t('edit.publishedIn.urlPlaceholder')}
+                                  value={entry.articleUrl}
+                                  onChange={(e) => setPublishedIn((prev) => prev.map((it, i) => i === index ? { ...it, articleUrl: e.target.value } : it))}
+                                />
+                              </div>
+                              <div className="publication-card-checks">
+                                <label className="pub-check-label">
+                                  <input
+                                    type="checkbox"
+                                    checked={entry.isOnline}
+                                    onChange={(e) => setPublishedIn((prev) => prev.map((it, i) => i === index ? { ...it, isOnline: e.target.checked } : it))}
+                                  />
+                                  {t('edit.publishedIn.online')}
+                                </label>
+                                <label className="pub-check-label">
+                                  <input
+                                    type="checkbox"
+                                    checked={entry.isPrinted}
+                                    onChange={(e) => setPublishedIn((prev) => prev.map((it, i) => i === index ? { ...it, isPrinted: e.target.checked } : it))}
+                                  />
+                                  {t('edit.publishedIn.printed')}
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className="person-remove-btn"
+                              onClick={() => setPublishedIn((prev) => prev.filter((_, i) => i !== index))}
+                              aria-label={t('edit.removeImage')}
+                            >
+                              <X size={12} strokeWidth={1.8} aria-hidden="true" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPublishedIn((prev) => [...prev, { mediaName: "", articleUrl: "", isOnline: false, isPrinted: false }])}
+                        className="add-card-btn"
+                      >
+                        <FilePlusCorner size={14} strokeWidth={1.8} aria-hidden="true" />
+                        {t('edit.publishedIn.addEntry')}
+                      </button>
+                    </div>
+                  )}
+
                 {error && <p className="cp-field-error">{error}</p>}
-
-                {/* Footer */}
-                <div className="cp-footer">
-                  <div className="cp-footer__actions">
-                    <button type="button" className="cp-btn cp-btn--ghost" onClick={onClose}>
-                      {t('edit.cancel')}
-                    </button>
-                    <button
-                      type="button"
-                      className="cp-btn cp-btn--primary"
-                      onClick={handleSave}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? t('edit.saving') : t('edit.save')}
-                    </button>
-                  </div>
-                </div>
-
               </div>
+            </div>
+
+            {/* Footer fuera del scroll — siempre visible, ver .cp-right-div/
+                .cp-right en CreatePost.css (el scroll vive en .cp-right). */}
+            <div className="cp-footer">
+                <div className="cp-footer__actions">
+                  <button type="button" className="cp-btn cp-btn--ghost" onClick={onClose}>
+                    {t('edit.cancel')}
+                  </button>
+                  <button
+                    type="button"
+                    className="cp-btn cp-btn--primary"
+                    onClick={handleSave}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? t('edit.saving') : t('edit.save')}
+                  </button>
+                </div>
             </div>
           </div>
 

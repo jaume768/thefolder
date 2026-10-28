@@ -1,0 +1,27 @@
+/* ============================================================
+   Botón "volver" común a las plantillas de portfolio.
+   Mismo diseño que .gf-back-btn (Guardados.css): círculo transparente,
+   32x32, chevron-left, hover gris. Fijo a la esquina del viewport.
+   ============================================================ */
+.gf-back-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 2500;
+
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.gf-back-btn:hover {
+  background: #f0f0f0;
+}

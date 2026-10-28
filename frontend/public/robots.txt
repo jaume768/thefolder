@@ -1,0 +1,43 @@
+User-agent: *
+
+# Rutas públicas indexables
+Allow: /
+Allow: /explorer
+Allow: /creatives
+Allow: /perfiles
+Allow: /offers
+Allow: /blog
+Allow: /magazine
+Allow: /industry
+Allow: /fashion
+Allow: /about
+Allow: /contact
+Allow: /legal
+Allow: /privacy
+Allow: /cookies
+Allow: /terminos
+Allow: /post/
+Allow: /profile/
+Allow: /article/
+Allow: /JobOfferDetail/
+Allow: /EducationalOfferDetail/
+
+# Rutas privadas — no indexar
+Disallow: /myprofile/
+Disallow: /createPost
+Disallow: /createOffer
+Disallow: /createEducationalOffer
+Disallow: /edit-offer/
+Disallow: /edit-educational-offer/
+Disallow: /guardados/
+Disallow: /community
+Disallow: /offer/
+Disallow: /complete-registration
+Disallow: /complete-registration-legacy
+Disallow: /creativo/
+Disallow: /photo/
+Disallow: /profesional/
+Disallow: /token-handler
+Disallow: /login
+
+Sitemap: https://thefolder.es/sitemap.xml

@@ -17,8 +17,19 @@
 
 .dashboard-content {
   flex: 1;
-  padding: 0 52px;
   margin-top: 72px;
+}
+
+@media (min-width: 769px) {
+  .dashboard-content.overflow-hidden-desktop * {
+    border-radius: 0px;
+  }
+
+  /* El punto de notificación es circular por diseño — la regla de arriba
+     igual lo alcanza por ser un "*" y le aplasta el radius a 0px. */
+  .dashboard-content.overflow-hidden-desktop .create-main-btn-dot {
+    border-radius: 999px;
+  }
 }
 
 .no-padding {
@@ -141,7 +152,7 @@
 /* ===== Perfil options modal ===== */
 .profile-options-modal {
   position: absolute;
-  top: 45px;
+  top: 35px;
   right: -25px;
   text-align: left;
   color: #000;
@@ -152,29 +163,40 @@
   transition: opacity .15s ease, transform .15s ease;
 }
 
+.profile-options-logout {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 60px;
+}
+
 .profile-wrapper.open .profile-options-modal {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 2px;
   opacity: 1;
   pointer-events: auto;
-  border: 1px solid #d2d2d2;
+  border: 1px solid transparent;
   border-radius: 12px;
-  width: 250px;
-  padding: 12px 12px 24px;
+  width: fit-content;
+  min-width: 270px;
+  max-width: 300px;
+  padding: 12px;
   background: #fdfdfdcc;
   backdrop-filter: blur(12px) saturate(120%);
   -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border: 0.5px solid #dcdcdcdc;
+  margin-right: 24px;
 }
 
 .profile-options-modal-ul {
   list-style: none;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 8px;
   background: transparent;
-  border-radius: 0;
+  border-radius: 12px;
   padding: 0;
   border: none;
 }
@@ -192,8 +214,7 @@
   gap: 6px;
   min-height: 56px;
   padding: 10px 12px;
-  background: #FDFDFD62;
-  border: 1px solid #D8D8D8;
+  background: #fdfdfd;
   border-radius: 12px;
   color: #333;
   font-size: 10.5px;
@@ -205,54 +226,52 @@
   transition: border-color .2s ease;
   letter-spacing: 0.04rem;
   text-align: left;
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border: 0.5px solid #dcdcdcdc;
 }
 
 .profile-options-modal li:hover {
-  border-color: #aaa;
-}
-
-.profile-options-modal li:first-child {
-  background: #222;
-  color: #fff;
-  border-color: #222;
+  color: #000;
 }
 
 .profile-options-modal li.active {
-  border: solid 1.5px #222;
-  font-weight: 600;
-  color: #222;
-}
-
-.profile-options-modal li:first-child .pom-icon {
-  filter: invert(1) !important;
+  color: #000;
+  filter: invert(1);
+  opacity: 1;
+  background: white;
+  font-weight: 500;
 }
 
 .pom-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
+  opacity: 0.9;
 }
 
 .community-pom-icon {
-  width: 20px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   object-fit: cover;
+  opacity: 0.85;
 }
 
 .saved-icon {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   object-fit: cover;
+  opacity: 0.85;
 }
 
 /* Header user block (nuevo) */
 .profile-options-user{
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 12px;
-  padding: 10px 10px 10px;
+  padding: 8px 8px;
 }
 
 .profile-options-avatar{
@@ -273,10 +292,10 @@
 
 /* Ajustes lista */
 .profile-wrapper.open .profile-options-modal-ul{
-  background: transparent;
-  padding: 0;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 12px;
+  background-color: #00000006;
+  padding: 12px;
 }
 
 /* Pill debajo del nombre */
@@ -301,16 +320,15 @@
   background: #111;
 }
 
-/* Logout */
-
 .profile-options-logout-btn{
   width: 100%;
   border: 0;
   background: transparent;
-  text-align: center;
+  text-align: right;
   cursor: pointer;
+  padding: 4px 6px;
 
-  color: #b42318;
+  color: #333;
   font-family: 'Inter Tight',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
   letter-spacing: .04em;
   font-size: 11px;
@@ -318,7 +336,7 @@
 }
 
 .profile-options-logout-btn:hover{
-  color: #b42318;
+  color: #111;
   text-decoration: underline;
 }
 
@@ -369,8 +387,10 @@
   top: calc(100% + 10px);
   left: 0;
   min-width: 180px;
-  background: #fdfdfd;
-  border-radius: 8px;
+  background: #fdfdfdc2;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border-radius: 0px;
   padding: 8px;
   padding-left: 16px;
   z-index: 9999;
@@ -409,6 +429,11 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  opacity: 0.5;
+}
+
+button.search-clear-btn:hover {
+  opacity: 1;
 }
 
 .search-clear-btn img{
@@ -679,13 +704,13 @@
 .dashboard-header{
   display: flex;
   flex-direction: row;
-  padding: 0 24px;
+  padding: 0 20px;
   position: fixed;
   top: 12px;
   left: 60px;
   right: 60px;
   height: 42px;
-  border-radius: 8px;
+  border-radius: 0px;
   z-index: 2000;
 
   background: transparent;
@@ -698,7 +723,7 @@
   inset: 0;
   border-radius: inherit;
 
-  background: rgba(253,253,253,0.76);
+  background: #fdfdfdc2;
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
 
@@ -714,12 +739,35 @@
   border: solid 1px #d2d2d2;
 }
 
-/* 3 columnas */
+/* 3 columnas — mismo ancho en left/right para que header-center quede centrado */
 .header-left {
-  width: 168px;
+  width: 260px;
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+/* Marca "T/" decorativa (mismo lenguaje visual que .auth-mark en
+   auth-page.css) — aquí no es botón ni link: solo vive en flujo junto al
+   resto de .header-left, así que se ajusta a su propio ancho en vez del
+   position:absolute + width:50% de .auth-mark (pensado para partir el
+   layout de login/register en dos paneles). */
+.dashboard-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: inherit;
+}
+
+.dashboard-mark-t {
+  font-size: 13px;
+}
+
+.dashboard-mark-slash {
+  font-size: 14px;
 }
 
 .header-center {
@@ -730,8 +778,10 @@
 }
 
 .header-right {
+  width: 260px;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 20px;
 }
 
@@ -766,7 +816,6 @@ button.header-left-link {
   align-items: center;
   align-content: center;
   gap: 5px;
-  padding-right: 12px;
   opacity: 0.65;
 }
 
@@ -774,6 +823,12 @@ button.header-left-link.active {
   color: inherit;
   font-weight: 500;
   opacity: 1;
+}
+
+button.button.header-left-link.--text-medium.active {
+  font-weight: 400;
+  color: #000;
+  opacity: 0.75;
 }
 
 button.header-left-link::after {
@@ -784,23 +839,64 @@ button.button.header-left-link.--text-medium {
     font-size: 15px;
     line-height: 17px;
     font-weight: 300;
+    text-transform: lowercase;
+  }
+
+/* Relleno del interior del icono (mismo color que el stroke) solo al
+   hacer hover — el resto del tiempo se ve hueco (fill:none, como lo
+   renderiza lucide-react por defecto). */
+button.button.header-left-link.--text-medium:hover svg {
+  fill: currentColor;
 }
 
-/* Search pill */
-.dashboard-search-pill {
-  width: 100%;
-  max-width: 440px;
+/* SquareX (cerrar panel, PanelHeader.jsx): el fill de arriba rellena su
+   <rect> y la X — dos <path> con stroke del mismo color — queda tragada
+   dentro, un cuadrado negro liso. LayoutPanelLeft no sufre esto porque son
+   rects separados con huecos. Aquí la X se repinta en blanco para que siga
+   leyéndose sobre el cuadrado relleno. */
+button.button.header-left-link.--text-medium.nep-panel-close:hover svg path {
+  fill: none;
+  stroke: #fdfdfd;
+}
+
+/* Search pill — colapsado por defecto dentro del header (icono clicable),
+   se expande a la píldora completa con .expanded. Solo width/opacity para
+   mantener la animación barata (sin filtros ni sombras animándose). */
+.header-center .dashboard-search-pill {
+  width: 32px;
+  max-width: 32px;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px 6px;
+  padding: 8px 9px 6px;
   margin: 0px 12px;
-  transition: box-shadow 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), padding 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
 }
 
-.dashboard-search-pill.expanded {
+.header-center .dashboard-search-pill.expanded {
+  width: 100%;
+  max-width: 440px;
+  padding: 8px 12px 6px;
   background: transparent;
-  border-bottom: solid 1px #d2d2d2;
+}
+
+.dashboard-search-pill .dashboard-search-trigger {
+  flex-shrink: 0;
+}
+
+.dashboard-search-pill .modern-search-input,
+.dashboard-search-pill .search-clear-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.dashboard-search-pill.expanded .modern-search-input,
+.dashboard-search-pill.expanded .search-clear-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.08s;
 }
 
 .modern-search-input {
@@ -838,10 +934,21 @@ button.button.header-left-link.--text-medium {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
 }
 
-.create-main-btn.has-draft::after{
-  content: "";
+/* El punto de "borrador pendiente" es un elemento real hermano del botón
+   (no un ::after) a propósito: un pseudo-elemento nunca puede tener una
+   opacidad efectiva distinta a la de su propio host (se componen como una
+   sola capa), así que dentro de .create-main-btn (que se atenúa a opacity:.65
+   cuando no está activo/hover, ver button.header-left-link) el punto se
+   atenuaba con él. Como hermano fuera del botón, queda inmune a esa opacity. */
+.create-main-btn-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.create-main-btn-dot {
   display: block;
   position: absolute;
   top: -1px;
@@ -849,9 +956,10 @@ button.button.header-left-link.--text-medium {
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: #0002ff;
+  background: var(--color-brand-turquoise-dark);
   z-index: 5;
   pointer-events: none;
+  opacity: 1;
 }
 
 /* Icon button */
@@ -886,6 +994,10 @@ button.button.header-left-link.--text-medium {
 button.dashboard-search-trigger {
   background: transparent;
   border: 0px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button.dashboard-search-trigger:hover {
@@ -896,18 +1008,35 @@ img.search-sparkles-icon:hover {
   opacity: 0.9;
 }
 
-/* Header dot */
 .header-left-link {
   position: relative;
 }
 
-.header-dot {
-  display: block;
-  width: 1px;
-  height: 12px;
-  border-radius: 5%;
-  background: currentColor;
-  transform: rotate(15deg);
+/* Tooltip para botones-icono del header (ej: cerrar panel) */
+.nep-icon-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  white-space: nowrap;
+  background: #111;
+  color: #fdfdfd !important;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border-radius: 0px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+
+.header-left-link:hover .nep-icon-tooltip,
+.header-left-link:focus-visible .nep-icon-tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 button.header-left-link.--text__medium {
@@ -929,7 +1058,7 @@ button.header-left-link.--text__medium:hover {
 }
 
 button.button.header-left-link:hover {
-  color: inherit;
+  opacity: 1;
 }
 
 /* Profile wrapper */
@@ -1003,7 +1132,7 @@ button.button.header-left-link:hover {
 
 .mobile-side-menu .menu-item:hover,
 .mobile-side-menu .menu-item.active {
-  color: #4c85ff;
+  color: var(--color-brand-blue-text);
 }
 
 
@@ -1045,6 +1174,12 @@ button.button.header-left-link:hover {
 /* <= 767px: MOBILE real (antes tenías 768 y te rompía iPad 768) */
 @media (max-width: 767px) {
 
+  /* Fix scroll iOS: el contenedor no puede ser height:100vh fijo en móvil */
+  .dashboard-container {
+    height: fit-content;
+    min-height: 100vh;
+  }
+
   .dashboard-search-pill {
     width: -webkit-fill-available;
     margin-top: 12px;
@@ -1063,7 +1198,7 @@ button.button.header-left-link:hover {
     display: none !important;
   }
 
-  .create-main-btn {
+  .create-main-btn-wrap {
     display: none !important;
   }
 
@@ -1079,10 +1214,8 @@ button.button.header-left-link:hover {
   .dashboard-content {
     margin-top: 0 !important;
     flex: 1;
-    padding: 0px 16px;
     margin-left: 0;
     margin-top: 4rem;
-    padding-top: 64px;
   }
 
   .profile-dropdown-icon {
@@ -1134,20 +1267,6 @@ button.button.header-left-link:hover {
     width: 24px;
     height: 24px;
   }
-
-  .header-dot {
-    width: 1px;
-    height: 12px;
-  }
-
-  .header-dot.thefolder-dot {
-    display: block;
-    width: 1px;
-    height: 12px;
-    border-radius: 5%;
-    background: currentColor;
-    transform: rotate(15deg);
-  }
 }
 
 /* <= 480px */
@@ -1183,3 +1302,23 @@ button.button.header-left-link:hover {
   }
 }
 
+
+.back-error {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 24px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter Tight', sans-serif;
+  text-transform: uppercase;
+  border-radius: 0px;
+  transition: background 0.15s ease;
+}
+
+.back-error:hover {
+  background-color: #333;
+}

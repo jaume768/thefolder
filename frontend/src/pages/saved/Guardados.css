@@ -1,0 +1,1205 @@
+/* ── "Guardados" (GuardadosPage.jsx + GuardadosParts.jsx) ─────────────
+   Mismo lenguaje que el home del panel, "Tus proyectos" e "Info de perfil":
+   - Solo Inter Tight, sin mayúsculas ni letter-spacing; jerarquía por
+     tamaño/peso (400/500/600).
+   - Texto #111 / #555. Gris tenue #00000006 (≈ #f9f9f9) para bloques,
+     campos, chips y botones secundarios (hover #ececec).
+   - Negro: un botón principal por pantalla + lo seleccionado. Rojo
+     (#c30f2a) solo en el botón final de borrar (ConfirmDialog).
+   - Esquinas rectas, sin bordes ni líneas; sombra solo en popovers.
+   Desktop >992px · tablet 769–992px · mobile ≤768px. */
+
+.gd-page,
+.gd-popover,
+.gd-sheet,
+.gd-toast,
+.gd-selbar {
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.gd-page button,
+.gd-page input,
+.gd-page a,
+.gd-popover button,
+.gd-popover input,
+.gd-sheet button,
+.gd-sheet input,
+.gd-sheet a,
+.gd-toast button,
+.gd-selbar button {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* ── Marco ─────────────────────────────────────────────────────────── */
+.nep-main-content.gd-scroll {
+  padding: 0;
+}
+
+.gd-page {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 32px 64px 24px;
+}
+
+.gd-scroll.is-selecting .gd-page {
+  padding-bottom: 120px; /* que la barra de selección no tape la última fila */
+}
+
+/* Cabecera común (PanelPageHeader): título grande, como pide la página */
+.nep-ph.gd-head {
+  padding-top: 0;
+  padding-bottom: 12px;
+}
+
+.gd-head .nep-ph-text {
+  gap: 10px;
+}
+
+.gd-head .nep-ph-title {
+  font-size: 52px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.gd-head .nep-ph-subtitle {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Ancla de popovers (botón + popover debajo) */
+.gd-anchor {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ── Botones ───────────────────────────────────────────────────────── */
+.gd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.gd-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.gd-btn--black {
+  background: #111;
+  color: #fff;
+}
+
+.gd-btn--black:hover:not(:disabled) {
+  background: #000;
+}
+
+.gd-btn--grey {
+  background: #00000006;
+  color: #111;
+}
+
+.gd-btn--grey:hover:not(:disabled) {
+  background: #ececec;
+}
+
+.gd-btn--sm {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.gd-btn--block {
+  width: 100%;
+  height: 48px;
+}
+
+.gd-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.gd-text-btn:hover {
+  color: #111;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.gd-text-btn--dark {
+  color: #111;
+}
+
+/* Cuadrado blanco de acción (sobre portada / imagen) */
+.gd-square {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  cursor: pointer;
+}
+
+.gd-square:hover {
+  background: #f9f9f9;
+}
+
+.gd-square--sm {
+  width: 32px;
+  height: 32px;
+}
+
+/* Tooltip negro sobre el cuadrado */
+.gd-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 4px);
+  padding: 6px 8px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+
+.gd-square:hover .gd-tip,
+.gd-square:focus-visible .gd-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.gd-count {
+  opacity: 0.6;
+}
+
+/* ── Cambio de vista ───────────────────────────────────────────────────
+   Botones sueltos, cada uno con su propio fondo (como .gd-chip), sin
+   un fondo común que los agrupe. */
+.gd-switch {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 6px;
+}
+
+.gd-tab {
+  height: 36px;
+  padding: 0 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.gd-tab:hover:not(.is-on) {
+  background: #ececec;
+}
+
+.gd-tab.is-on {
+  background: #111;
+  color: #fff;
+}
+
+/* ── Carpetas ──────────────────────────────────────────────────────── */
+.gd-folders {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px 24px;
+}
+
+.gd-folder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.gd-folder-cover {
+  position: relative;
+}
+
+.gd-folder-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.gd-folder-open:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+/* Mosaico: 1 grande a la izquierda + 2 apiladas a la derecha */
+.gd-mosaic {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f9f9f9;
+  overflow: hidden;
+}
+
+.gd-mosaic img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.gd-mosaic img:first-child {
+  grid-row: 1 / -1;
+}
+
+.gd-mosaic--2 img:nth-child(2) {
+  grid-row: 1 / -1;
+}
+
+.gd-mosaic--1 {
+  grid-template-columns: 1fr;
+}
+
+.gd-mosaic--0 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gd-mosaic-empty {
+  color: #bdbdbd;
+}
+
+.gd-folder-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gd-folder-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+.gd-folder-meta {
+  font-size: 13px;
+  color: #555;
+}
+
+.gd-rename-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+.gd-rename-input:focus {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+/* Acciones al hover (como las tarjetas de "Tus proyectos") */
+.gd-hover-actions {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 3;
+}
+
+.gd-hover-actions--bottom {
+  right: 10px;
+  bottom: 10px;
+}
+
+.gd-hover-actions--top {
+  top: 8px;
+  right: 8px;
+}
+
+.gd-folder-cover:hover .gd-hover-actions,
+.gd-folder-cover:focus-within .gd-hover-actions,
+.gd-img:hover .gd-hover-actions,
+.gd-img:focus-within .gd-hover-actions,
+.gd-img.is-open .gd-hover-actions {
+  opacity: 1;
+}
+
+/* ··· (mobile en carpetas; tablet y mobile en imágenes) */
+.gd-more {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 3;
+}
+
+/* Tile "Nueva carpeta": cuadrado gris, sin pie */
+.gd-new-tile-wrap {
+  display: block;
+}
+
+.gd-new-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.gd-new-tile:hover {
+  background: #ececec;
+}
+
+/* ── Todas las imágenes ────────────────────────────────────────────── */
+.gd-images {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gd-chips-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.gd-chips {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.gd-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.gd-chip {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.gd-chip:hover:not(.is-on) {
+  background: #ececec;
+}
+
+.gd-chip.is-on {
+  background: #111;
+  color: #fff;
+}
+
+.gd-folder-actions {
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+/* Masonry: columnas CSS, cada imagen en su proporción real */
+.gd-masonry {
+  column-count: 4;
+  column-gap: 16px;
+}
+
+.gd-img {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
+  break-inside: avoid;
+  vertical-align: top;
+}
+
+.gd-img.is-open {
+  z-index: 20;
+}
+
+.gd-img-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: #f9f9f9;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.gd-img-open img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+
+.gd-img-open:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.gd-img.is-selected .gd-img-open {
+  outline: 3px solid #111;
+  outline-offset: 3px;
+}
+
+.gd-tag {
+  position: absolute;
+  z-index: 2;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: #fff;
+  color: #111;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.gd-tag--folder {
+  top: 8px;
+  left: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.gd-tag--creator {
+  left: 8px;
+  bottom: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.gd-img:hover .gd-tag--creator,
+.gd-img:focus-within .gd-tag--creator {
+  opacity: 1;
+}
+
+.gd-tag--creator:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.gd-check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #c4c4c4;
+  color: #fff;
+  pointer-events: none;
+}
+
+.gd-check.is-on {
+  background: #111;
+  box-shadow: none;
+}
+
+/* ── Popovers ──────────────────────────────────────────────────────── */
+.gd-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 60;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  cursor: default;
+  text-align: left;
+}
+
+.gd-popover--right {
+  left: auto;
+  right: 0;
+}
+
+.gd-popover--up {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 0;
+}
+
+.gd-popover--name {
+  width: 280px;
+  padding: 16px;
+}
+
+.gd-popover--move {
+  width: 248px;
+  padding: 8px;
+}
+
+/* En la imagen: bajo el botón "Mover a carpeta" (arriba a la derecha) */
+.gd-img .gd-popover--move {
+  top: 52px;
+  left: auto;
+  right: 8px;
+}
+
+.gd-move-label {
+  margin: 4px 6px 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.gd-move-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.gd-move-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 10px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gd-move-row:hover:not(:disabled) {
+  background: #f9f9f9;
+}
+
+.gd-move-row.is-current {
+  font-weight: 600;
+}
+
+.gd-move-row-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gd-move-create {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.gd-move-input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  font-size: 13px;
+  color: #111;
+}
+
+.gd-move-input:focus {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+/* Nombre de carpeta (crear / renombrar) */
+.gd-name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gd-label {
+  font-size: 13px;
+  color: #555;
+}
+
+.gd-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  font-size: 14px;
+  color: #111;
+}
+
+.gd-input::placeholder,
+.gd-move-input::placeholder {
+  color: #8a8a8a;
+}
+
+.gd-input:focus {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+.gd-name-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.gd-name-form--wide .gd-input {
+  height: 48px;
+  font-size: 16px; /* sin zoom en iOS */
+}
+
+.gd-name-form--wide .gd-name-actions {
+  margin-top: 4px;
+}
+
+/* ── Vacío / cargando ──────────────────────────────────────────────── */
+.gd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 360px;
+  text-align: center;
+}
+
+.gd-empty svg {
+  color: #bdbdbd;
+}
+
+.gd-empty-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+.gd-empty-text {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+@keyframes gd-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.gd-skel {
+  display: block;
+  background: #f9f9f9;
+  animation: gd-pulse 1.5s ease-in-out infinite;
+}
+
+.gd-skel--square {
+  aspect-ratio: 1 / 1;
+}
+
+.gd-skel--line {
+  width: 60%;
+  height: 14px;
+}
+
+.gd-skel--img {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
+  break-inside: avoid;
+}
+
+/* ── Toast ─────────────────────────────────────────────────────────── */
+.gd-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 3100;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 40px);
+  padding: 12px 16px;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  border-radius: 0;
+}
+
+.gd-toast.is-raised {
+  bottom: 100px;
+}
+
+.gd-toast-action {
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+.gd-toast-action:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Barra de selección (negra, abajo al centro) ───────────────────── */
+.gd-selbar {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 3050;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 4px 0 16px;
+  background: #111;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.gd-selbar-count {
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gd-selbar-move {
+  position: relative;
+}
+
+.gd-selbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+.gd-selbar-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.gd-selbar-btn--muted {
+  color: #a8a8a8;
+}
+
+/* ── Sheet (tablet/mobile) ─────────────────────────────────────────── */
+.gd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(17, 17, 17, 0.45);
+}
+
+.gd-sheet {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92dvh;
+  overflow-y: auto;
+  padding: 8px 20px calc(16px + env(safe-area-inset-bottom));
+  background: #fff;
+}
+
+.gd-sheet-handle {
+  flex-shrink: 0;
+  width: 36px;
+  height: 4px;
+  margin: 2px auto 8px;
+  background: #d0d0d0;
+}
+
+.gd-sheet-title {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.gd-sheet-heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gd-sheet-image {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 4px;
+}
+
+.gd-sheet-thumb {
+  flex-shrink: 0;
+  width: 40px;
+  height: 50px;
+  background: #f9f9f9;
+}
+
+.gd-sheet-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gd-sheet-user {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  text-decoration: none;
+}
+
+.gd-sheet-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.gd-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 15px;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gd-sheet-row svg {
+  flex-shrink: 0;
+}
+
+.gd-sheet-row-aside {
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: #555;
+}
+
+.gd-sheet-row--danger {
+  color: #c30f2a;
+}
+
+.gd-sheet-cancel {
+  margin-top: 8px;
+}
+
+.gd-sheet .gd-move-row {
+  height: 48px;
+  padding: 0;
+  font-size: 15px;
+}
+
+.gd-sheet .gd-move-label {
+  margin-left: 0;
+}
+
+.gd-sheet .gd-move-list {
+  max-height: none;
+}
+
+.gd-sheet .gd-move-input {
+  height: 44px;
+  font-size: 16px;
+}
+
+.gd-sheet .gd-move-create .gd-btn {
+  height: 44px;
+}
+
+/* "+" de la barra superior mobile */
+.gd-topbar-plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -12px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #111;
+  cursor: pointer;
+}
+
+/* ── Tablet (769–992px) ────────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .gd-page {
+    padding-left: 16px;
+  }
+
+  .gd-head .nep-ph-title {
+    font-size: 44px;
+  }
+
+  .gd-folders {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gd-masonry {
+    column-count: 3;
+    column-gap: 12px;
+  }
+
+  .gd-img,
+  .gd-skel--img {
+    margin-bottom: 12px;
+  }
+
+  /* Táctil: sin hover → las acciones de carpeta siempre visibles */
+  .gd-folder-cover .gd-hover-actions {
+    opacity: 1;
+  }
+}
+
+/* ── Mobile (≤768px) ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* La top bar (‹ · Imágenes guardadas · +) ya pone el título y el volver;
+     de la cabecera común solo queda la descripción, como en el resto de
+     páginas del panel en mobile (mismo nombre y descripción que desktop). */
+  .gd-head .nep-ph-eyebrow,
+  .gd-head .nep-ph-title,
+  .gd-head .nep-ph-actions {
+    display: none;
+  }
+
+  .nep-ph.gd-head {
+    padding-bottom: 0;
+  }
+
+  .gd-page {
+    gap: 20px;
+    padding: 4px 20px 24px;
+  }
+
+  .gd-scroll.is-selecting .gd-page {
+    padding-bottom: 96px;
+  }
+
+  .gd-switch {
+    display: flex;
+    align-self: stretch;
+  }
+
+  .gd-tab {
+    flex: 1;
+    padding: 0 8px;
+  }
+
+  .gd-folders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 12px;
+  }
+
+  .gd-folder-name {
+    font-size: 13px;
+  }
+
+  .gd-folder-meta {
+    font-size: 12px;
+  }
+
+  /* En mobile el "+" de arriba crea carpetas */
+  .gd-new-tile-wrap {
+    display: none;
+  }
+
+  /* Chips de borde a borde */
+  .gd-chips-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .gd-chips {
+    margin: 0 -20px;
+    padding: 0 20px;
+  }
+
+  .gd-folder-actions {
+    align-self: flex-start;
+  }
+
+  .gd-masonry {
+    column-count: 2;
+    column-gap: 8px;
+  }
+
+  .gd-img,
+  .gd-skel--img {
+    margin-bottom: 8px;
+  }
+
+  .gd-chip,
+  .gd-tab {
+    height: 40px;
+  }
+
+  .gd-text-btn {
+    min-height: 44px;
+  }
+
+  .gd-toast {
+    bottom: 96px;
+  }
+
+  .gd-toast.is-raised {
+    bottom: calc(var(--nep-tabbar-h, 76px) + 76px);
+  }
+
+  .gd-selbar {
+    left: 12px;
+    right: 12px;
+    bottom: calc(var(--nep-tabbar-h, 76px) + 12px);
+    transform: none;
+    justify-content: space-between;
+    padding: 0 4px 0 14px;
+  }
+
+  .gd-selbar-count {
+    font-size: 13px;
+  }
+
+  .gd-selbar-btn {
+    padding: 0 6px;
+    font-size: 12px;
+  }
+}

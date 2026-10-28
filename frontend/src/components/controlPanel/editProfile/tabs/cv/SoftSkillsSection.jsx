@@ -1,7 +1,8 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+import { Section, Field } from "../../ui/ProfileFormSection";
+import TagChips from "./TagChips";
 
-const closeIcon = "/iconos/close.svg";
+const MAX_SOFT_SKILLS = 10;
 
 export default function SoftSkillsSection({
   softSkillsTags,
@@ -15,63 +16,32 @@ export default function SoftSkillsSection({
   const tags = Array.isArray(softSkillsTags) ? softSkillsTags : [];
 
   return (
-    <div id="sec-cv-soft" className="ux-anchor-target">
-      <div className="ux-card">
-        <h3 className="ux-form-label separator">
-          <img src="/iconos/softskills.png" className="ux-section-icon" alt="" />
-          {t("sections.softskills")}
-        </h3>
+    <Section
+      id="sec-cv-soft"
+      title={t("sections.softskills")}
+      help={t("editProfile.softSkillsSubtitle")}
+      aside={<span className="pi-counter">{tags.length} / {MAX_SOFT_SKILLS}</span>}
+    >
+      <TagChips tags={tags} onRemove={removeSoftSkillTag} removeLabel={t("editProfile.cvPage.remove")} />
 
-        <p className="ux-hardskills-subtitle">
-          {t("editProfile.softSkillsSubtitle")}
-        </p>
-
-        {/* ✅ Caja visual con tags dentro */}
-        <div className="ux-tags-input-shell">
-          <div className="ux-tags-box">
-            {tags.map((tag, idx) => (
-              <span key={`${tag}-${idx}`} className="ux-tag-pill">
-                {tag}
-                <button
-                  type="button"
-                  className="ux-tag-x"
-                  onClick={() => removeSoftSkillTag(idx)}
-                  aria-label={t("editProfile.removeLabel")}
-                >
-                  <img src={closeIcon} className="ux-icon-sm" alt={t("editProfile.removeLabel")} />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* ✅ Input (solo si hay hueco) */}
-        {tags.length < 10 && (
-          <div>
-            <input
-              id="softSkillsInput"
-              name="softSkillsInput"
-              type="text"
-              autoComplete="off"
-              className="ux-tags-input"
-              placeholder={t("editProfile.typeHere")}
-              value={softSkillsInput}
-              onChange={(e) => setSoftSkillsInput(e.target.value)}
-              onKeyDown={handleSoftSkillsKeyDown}
-              maxLength={50}
-            />
-          </div>
-        )}
-
-        <p className="ux-helper">
-          {t("editProfile.pressEnterToAdd")}
-        </p>
-
-        <div className="ux-helper">
-          <span>{t("editProfile.max10Tags")}</span>
-          <span>{tags.length}/10</span>
-        </div>
-      </div>
-    </div>
+      {tags.length < MAX_SOFT_SKILLS && (
+        <Field id="softSkillsInput">
+          <input
+            id="softSkillsInput"
+            name="softSkillsInput"
+            type="text"
+            autoComplete="off"
+            className="pi-input"
+            aria-label={t("editProfile.cvPage.softSkillsInputLabel")}
+            placeholder={t("editProfile.cvPage.softSkillsInputLabel")}
+            value={softSkillsInput}
+            onChange={(e) => setSoftSkillsInput(e.target.value)}
+            onKeyDown={handleSoftSkillsKeyDown}
+            maxLength={50}
+          />
+          <span className="pi-help-sm">{t("editProfile.pressEnterToAdd")}</span>
+        </Field>
+      )}
+    </Section>
   );
 }

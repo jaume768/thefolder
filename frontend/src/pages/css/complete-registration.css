@@ -1,4 +1,8 @@
-/* Layout base */
+/* Layout base — COMPARTIDO con las pantallas legacy de registro
+   (CompleteRegistration.jsx [deprecated], CompleteRegistrationCreativo.jsx,
+   CompleteRegistrationCreativo03.jsx): no cambiar estos valores base, son
+   los que siguen usando esas 3 pantallas. El rediseño split-screen de
+   OnboardingWizard.jsx vive aparte, escopeado bajo .ob-wizard más abajo. */
 
 .ob-logo{
   width: 100px;
@@ -25,6 +29,13 @@
   letter-spacing: 0.02em;
 }
 
+button.button.header-left-link.ob-top-logo {
+    width: 100%;
+    justify-content: center;
+    font-weight: 500;
+    color: #666;
+ }
+
 .ob-center{
   width: min(920px, 92vw);
   display: flex;
@@ -33,14 +44,8 @@
   text-align: center;
   justify-content: center;
   min-height: 100dvh;
+  gap: 16px;
 }
-
-button.button.header-left-link.ob-top-logo {
-    width: 100%;
-    justify-content: center;
-    font-weight: 500;
-    color: #666;
- }
 
 .ob-title{
   font-family: Inter Tight, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -50,13 +55,170 @@ button.button.header-left-link.ob-top-logo {
   letter-spacing: 0.04em;
 }
 
+/* =============================================================================
+   ONBOARDING WIZARD (/complete-registration, OnboardingWizard.jsx) —
+   rediseño split-screen: panel de contenido (izquierda, 50%) + panel de
+   imagen (derecha, 50%, ver .ob-image-panel). Escopeado bajo .ob-wizard
+   (clase en la raíz de OnboardingWizard.jsx) para no afectar a las 3
+   pantallas legacy de arriba, que comparten .ob-page/.ob-center/.ob-title
+   con este mismo archivo.
+   ============================================================================= */
+
+.ob-wizard{
+  justify-content: flex-start;
+  align-items: stretch;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.ob-wizard .ob-content-panel{
+  position: relative;
+  width: 50%;
+  flex: 1 1 50%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+
+.ob-wizard .ob-image-panel{
+  position: relative;
+  width: 50%;
+  flex: 0 0 50%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.ob-wizard .ob-image-panel img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Crédito de imagen — mismo estilo que .auth-image-credit en
+   auth-page.css (/register, /login), duplicado aquí porque el wizard no
+   importa ese archivo. */
+.ob-wizard .ob-image-panel .auth-image-credit{
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  margin: 0;
+  font-size: 10px;
+  color: #fdfdfd;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ob-wizard .ob-image-panel .auth-image-credit a{
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Indicador de progreso — línea fina pegada al borde superior del panel de
+   contenido, sin texto ni dots: se ve, pero no compite por la atención con
+   el contenido del paso. */
+.ob-wizard .ob-progress-track{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #eee;
+}
+
+.ob-wizard .ob-progress-fill{
+  height: 100%;
+  background: #111;
+  transition: width 0.3s ease;
+}
+
+/* Marca "T/" (mismo estilo que .ht-ig-mark en HomeTab.css, escalada a
+   tamaño mini) — solo visible en mobile, donde .ob-image-panel se oculta y
+   no queda ninguna referencia visual a la marca. En desktop no se muestra. */
+.ob-wizard .ob-mark{
+  display: none;
+}
+
+.ob-wizard .ob-center{
+  width: min(480px, 100%);
+  margin: 0 auto;
+  height: 100vh;
+  max-height: 100vh;
+  padding: 45px 32px;
+  gap: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ob-wizard .ob-title{
+  font-size: 24px;
+  line-height: 22px;
+}
+
+/* El bloque de contenido propio de cada paso (username, campos, chips de
+   especialización, foto…) se reparte el alto que sobra entre título +
+   subtítulo + botones, en vez de un 40% fijo con scroll interno — ver
+   .ob-step-content (onboarding.css), pensado solo para el wizard. */
+.ob-wizard .ob-cta{
+  margin-top: 12px;
+}
+
+/* Botones de navegación solo-icono (Siguiente): sin el margin-top de arriba
+   para quedar centrados en la misma línea que el .ob-back (icono, sin
+   margen) dentro de .ob-buttons. */
+.ob-wizard .ob-cta--icon{
+  margin-top: 0;
+}
+
+/* Subtítulo — mismo hueco bajo el título en los 6 pasos del wizard
+   (dedicado, no comparte .ux-helper con el resto de la app). */
 .ob-subtitle{
-  margin: 0 0 24px;
-  font-size: 14px;
-  line-height: 18px;
-  color: #666;
-  font-weight: 300;
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  color: #999;
+  letter-spacing: .02em;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 82%;
+  font-weight: 400;
+}
+
+/* Dentro del wizard, estas filas ocupan el ancho completo del panel de
+   contenido (ya acotado por .ob-wizard .ob-center) en vez del ancho fijo
+   min(520px, 92vw) que usan las pantallas legacy. */
+.ob-wizard .ob-form,
+.ob-wizard .ob-buttons,
+.ob-wizard .ob-photo{
+  width: 100%;
+}
+
+.ob-wizard .ob-username {
+  width: 80%;
+}
+
+/* Un solo botón (sin "volver atrás", p.ej. el primer paso): alineado a la
+   derecha en vez de pegado a la izquierda por el space-between de
+   .ob-buttons (que solo funciona con los 2 botones presentes). */
+.ob-buttons--single {
+  justify-content: flex-end;
+}
+
+/* .ob-input trae un ancho fijo (320px, ver más abajo) pensado para el
+   .ob-center ancho (min(920px,92vw)) de las pantallas legacy — dentro del
+   panel angosto del wizard (.ob-center: min(480px,100%)) eso puede
+   desbordar la fila y tapar "thefolder.es/". Aquí .ob-prefix nunca encoge
+   (siempre visible) y .ob-input pasa a ocupar el resto del hueco: si el
+   nombre escrito no cabe, es el propio input el que se desplaza/hace
+   scroll de su texto (comportamiento nativo del <input>), nunca el prefijo. */
+.ob-wizard .ob-prefix{
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ob-wizard .ob-input{
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
 }
 
 /* Username row */
@@ -73,10 +235,10 @@ button.button.header-left-link.ob-top-logo {
 }
 
 .ob-prefix{
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 500;
-  color: #bfbfbf;
-  letter-spacing: -0.01em;
+  color: #888;
+  letter-spacing: 0.02em;
 }
 
 .ob-input{
@@ -85,7 +247,7 @@ button.button.header-left-link.ob-top-logo {
   border: none;
   outline: none;
   background: transparent;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 500;
   color: #111;
   padding: 0;
@@ -118,8 +280,8 @@ button.button.header-left-link.ob-top-logo {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 6px;
-  height: 2px;
+  bottom: 12px;
+  height: 1px;
   background: #e5e5e5;
   border-radius: 999px;
 }
@@ -175,7 +337,10 @@ button.button.header-left-link.ob-top-logo {
   letter-spacing: 0.06em;
   font-weight: 400;
   cursor: pointer;
-  gap: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin-left: auto;
 }
 
@@ -184,7 +349,20 @@ button.button.header-left-link.ob-top-logo {
   cursor: not-allowed;
 }
 
-/* Dots */
+/* Modo "solo icono" del CTA — pasos intermedios del wizard (Siguiente),
+   navegación sin texto para no necesitar traducción. El último paso
+   (PhotoStep) no lleva esta clase: mantiene texto porque termina el
+   registro y merece una confirmación explícita en vez de una flecha. */
+.ob-cta--icon{
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  gap: 0;
+  margin-top: 0;
+}
+
+/* Dots — solo lo usan ya las 3 pantallas legacy (OnboardingWizard.jsx
+   rediseñado ya no las pinta, ver .ob-progress-track/.ob-progress-fill). */
 .ob-dots{
   margin-top: 40px;
   display: flex;
@@ -213,7 +391,12 @@ button.button.header-left-link.ob-top-logo {
     gap: 16px;
   }
   .ob-title{ font-size: 24px; }
-  .ob-subtitle{ font-size: 14px; margin-bottom: 4px; }
+  .ux-helper{
+    font-size: var(--text-body-size);
+    margin-bottom: 4px;
+    max-width: 95%;
+    margin-top: -10px;
+  }
 
   .ob-username{
     width: 92vw;
@@ -234,6 +417,48 @@ button.button.header-left-link.ob-top-logo {
   .ob-buttons .ob-cta {
     margin-top: 0;
   }
+
+  /* ── OnboardingWizard (.ob-wizard) — mobile: mismo panel de contenido
+     que desktop, solo que a ancho completo (la imagen desaparece). ── */
+  .ob-wizard .ob-image-panel{
+    display: none;
+  }
+
+  .ob-wizard .ob-content-panel{
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .ob-wizard .ob-mark{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 14px;
+    left: 0;
+    right: 0;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -.06em;
+    color: #222;
+  }
+
+  .ob-wizard .ob-mark-t{
+    font-size: 14px;
+  }
+
+  .ob-wizard .ob-mark-slash{
+    font-size: 15px;
+  }
+
+  .ob-wizard .ob-center{
+    padding: 62px 24px;
+    gap: 8px;
+  }
+
+  .ob-wizard .ob-username{
+    width: 100%;
+  }
 }
 
 @media (max-width: 420px){
@@ -251,9 +476,9 @@ button.button.header-left-link.ob-top-logo {
 .ob-status{
   position: absolute;
   right: 0;
-  top: 12px;
-  width: 26px;
-  height: 26px;
+  top: 2px;
+  width: 22px;
+  height: 22px;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -267,7 +492,7 @@ button.button.header-left-link.ob-top-logo {
 /* ✅ OK (verde) */
 .ob-status.is-ok{
   opacity: 1;
-  transform: scale(1);
+  transform: scale(0.85);
   background: #1f8b3a;
   color: #fff;
 }
@@ -342,12 +567,41 @@ button.button.header-left-link.ob-top-logo {
 
 .ob-input-box{
   width: 100%;
-  height: 32px;
   border: transparent;
   padding: 0px;
   font-size: 14px;
   outline: none;
   background: transparent;
+}
+
+input.ob-field__input.ux-input {
+  width: 100%;
+  padding-bottom: 2px;
+  font-size: 14px;
+  background: transparent !important;
+}
+
+/* El fondo azul (#e8f0fe o similar) que Chrome/Edge/Safari pintan en los
+   inputs autocompletados no responde a `background`: hay que pisarlo con
+   este box-shadow inset transparente + retrasar la transición de color. */
+input.ob-field__input.ux-input:-webkit-autofill,
+input.ob-field__input.ux-input:-webkit-autofill:hover,
+input.ob-field__input.ux-input:-webkit-autofill:focus,
+input.ob-field__input.ux-input:-webkit-autofill:active,
+.ob-input:-webkit-autofill,
+.ob-input:-webkit-autofill:hover,
+.ob-input:-webkit-autofill:focus,
+.ob-input:-webkit-autofill:active{
+  -webkit-text-fill-color: #111;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: #111;
+}
+
+select.ob-field__input.ux-input {
+  width: 100%;
+  padding-bottom: 2px;
 }
 
 .ob-input-box:focus{
@@ -371,18 +625,27 @@ button.button.header-left-link.ob-top-logo {
 
 /* Botón volver atrás */
 .ob-back{
-  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 6px;
   background: none;
   border: none;
-  padding: 0;
-  font-size: 12px;
   color: #6f6f6f;
   cursor: pointer;
-  text-transform: uppercase;
+  background: #f2f2f2;
 }
 
 .ob-back:hover{
   color: #111;
+}
+
+.ob-back:disabled{
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 

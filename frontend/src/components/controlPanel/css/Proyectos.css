@@ -1,0 +1,900 @@
+/* ============================================================
+   /proyectos/organizar — vista única (Páginas + Sin asignar)
+   Vive dentro de .nep-shell / .nep-main. Reutiliza de Guardados.css:
+   .gf-page, .gf-section, .gf-section-head/-title/-sub, .gf-back-btn,
+   .gf-folders-grid(--full), .confirm-delete-*, .cancel-button/.confirm-button.
+   ============================================================ */
+
+.op-pages-count {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 12px;
+    color: #999;
+    letter-spacing: 0.02em;
+}
+
+/* Contador "1/4" dentro de .op-create-page-sticky (fondo oscuro, ver
+   .organizar-button): el gris #999 de arriba está pensado para fondo claro,
+   aquí necesita un tono claro para leerse sobre #222. Sin gap propio (usa el
+   gap:12px de .organizar-button) para no desalinearse del resto del botón. */
+.op-create-page-sticky .op-pages-count {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Reorder (drag & drop nativo) — páginas y "todos los proyectos". Mismo
+   lenguaje visual que .cp-grid__item en CreatePost.css (opacidad al
+   arrastrar, outline al pasar por encima del destino). */
+.gf-folder--mosaic[draggable="true"] {
+    cursor: grab;
+}
+
+.gf-folder--mosaic[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.gf-folder--mosaic.is-dragging {
+    opacity: 0.3;
+}
+
+.gf-folder--mosaic.is-drop-target {
+    outline: 2px solid var(--color-brand-blue-text);
+    outline-offset: -2px;
+}
+
+.op-project-item.op-draggable {
+    cursor: grab;
+}
+
+.op-project-item.op-draggable:active {
+    cursor: grabbing;
+}
+
+.op-project-item.is-dragging {
+    opacity: 0.3;
+}
+
+.op-project-item.is-drop-target .op-project-visual {
+    outline: 2px solid var(--color-brand-blue-text);
+    outline-offset: -2px;
+}
+
+/* La tarjeta "+ nueva página" (FolderCardCreateForm prop mosaic=true, ver
+   FolderCard.jsx) ya usa el mismo .gf-folder-preview cuadrado que las
+   páginas reales — solo falta igualar el ritmo vertical: mismo gap:10px
+   entre cuadro y contenido que .gf-folder--mosaic, sin el padding-top
+   propio del formulario (si no, queda el doble de separación). */
+.gf-folder--form-mosaic {
+    gap: 10px;
+}
+
+.gf-folder--form-mosaic .gf-folder-form-content {
+    padding-top: 0;
+}
+
+/* Botón "Reordenar"/"Listo" — antes un aviso de solo texto (que casi nadie
+   veía), ahora una acción de verdad: activa/desactiva draggable en las
+   tarjetas. Mismo look que .organizar-button (píldora oscura); "is-active"
+   (reordenando) pasa al mismo verde que .eao-save-btn--saved/--saving, para
+   no inventar un tercer color de estado en la app. */
+.op-reorder-toggle-btn.is-active {
+    background: var(--color-brand-blue);
+    color: #fdfdfd;
+}
+
+/* El drag & drop nativo (HTML5) no funciona con touch — en mobile no hay
+   forma de arrastrar nada, así que el botón que activa ese modo tampoco
+   tiene sentido ahí. Mismo breakpoint que el resto del panel (768px). */
+@media (max-width: 768px) {
+    .op-reorder-toggle-btn {
+        display: none;
+    }
+
+    /* Solo "Páginas" (ProjectsOrganizerPanel.jsx) — 1 columna en vez de las
+       2 que pisa .gf-folders-grid .gf-folder por defecto (Guardados.css),
+       sin tocar esa regla compartida con /guardados. .gf-folder--mosaic ya
+       trae aspect-ratio:1/1 en .gf-folder-preview (FolderCard.css), así que
+       el alto se adapta solo al nuevo ancho: no hace falta fijarlo aparte. */
+    .op-pages-grid .gf-folder {
+        flex: 0 1 100%;
+        width: 100%;
+    }
+}
+
+/* Rejilla de páginas: gap de 24px y 24px de aire arriba y abajo, en todos
+   los tamaños. box-sizing: en desktop (.op-pages-fit) el padding entra
+   dentro del alto disponible en vez de sumarse y provocar scroll. */
+.gf-folders-grid.op-pages-grid {
+    gap: 24px;
+    padding: 24px 0;
+    box-sizing: border-box;
+}
+
+/* ── "Páginas" a página completa (.op-pages-fit, ProjectsOrganizerPanel.jsx)
+   Desktop/tablet: la rejilla ocupa todo el ancho de .nep-main-content y el
+   alto que queda bajo la cabecera, sin pasar nunca de la pantalla — como
+   mucho hay MAX_PAGES (3) tarjetas, así que siempre es una sola fila de 3
+   columnas. Las imágenes rellenan su casilla (object-fit: cover) en vez de
+   ser cuadradas: así el alto lo pone la pantalla, no el ancho. Para eso
+   toda la cadena (página → sección → rejilla → tarjeta → preview) es flex
+   en columna con min-height:0. Mobile se queda en una columna con scroll. */
+@media (min-width: 769px) {
+    .op-pages-fit .gf-page,
+    .op-pages-fit .gf-section {
+        flex: 1;
+        min-height: 0;
+    }
+
+    .op-pages-fit .gf-section {
+        align-items: stretch;
+    }
+
+    .op-pages-fit .gf-folders-grid.op-pages-grid {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: minmax(0, 1fr);
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Páginas reales y la tarjeta "+ nueva página": la portada se estira
+       hasta el alto disponible (en vez del 4/5 de "Tus proyectos") */
+    .op-pages-fit .op-page-card {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .op-pages-fit .op-page-cover {
+        flex: 1;
+        min-height: 0;
+        aspect-ratio: auto;
+    }
+
+    /* Mismo marco que "Tus proyectos" (.pl-page): 24px a la izquierda, 32px
+       a la derecha, y .nep-main sin esquinas redondeadas. */
+    .op-pages-fit.nep-main-content {
+        padding: 0 32px 0 24px;
+    }
+
+    .nep-main:has(.op-pages-fit) {
+        border-radius: 0;
+    }
+}
+
+/* ── Tarjeta de página con el diseño de "Tus proyectos" ──────────────
+   (PageMosaicCard library, ProjectsLibrary.css .pl-*): tipografía Inter
+   Tight, esquinas rectas, portada #f9f9f9, título 14px/600 #111,
+   metadato 13px #555, acciones blancas de 36px al hover con tooltip negro. */
+.op-pages-fit {
+    font-family: 'Inter Tight', sans-serif;
+    letter-spacing: normal;
+    text-transform: none;
+    color: #111;
+}
+
+.op-pages-fit button,
+.op-pages-fit input {
+    font-family: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.op-pages-fit .gf-folders-grid.op-pages-grid {
+    width: 100%;
+}
+
+/* Mosaico: portada a la izquierda + 2 apiladas, separadas por 2px de blanco */
+.op-page-mosaic {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    gap: 2px;
+    background: #fff;
+}
+
+.op-page-mosaic img,
+.op-page-mosaic-empty {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    display: block;
+    background: #f9f9f9;
+}
+
+.op-page-mosaic--1 { grid-template: 1fr / 1fr; }
+.op-page-mosaic--2 { grid-template: 1fr / 1fr 1fr; }
+.op-page-mosaic--3 { grid-template: 1fr 1fr / 1fr 1fr; }
+.op-page-mosaic--3 > :first-child { grid-row: 1 / span 2; }
+
+/* Mosaico de 3: cuadrado, tan grande como permita la portada (el lado
+   menor de .op-page-cover) y centrado en ella. */
+.op-page-cover:has(> .op-page-mosaic--3) {
+    container-type: size;
+}
+
+.op-page-mosaic--3 {
+    width: min(100cqw, 100cqh);
+    height: min(100cqw, 100cqh);
+    margin: auto;
+}
+
+/* "+ nueva página": portada gris con el "+" centrado */
+.op-page-cover--new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8a8a8a;
+}
+
+.op-page-card--form {
+    cursor: default;
+}
+
+/* Campo de nombre (crear / renombrar): gris tenue sin borde, como .pi-input */
+.op-page-rename-input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    background: #00000006;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+}
+
+.op-page-rename-input:focus {
+    outline: 2px solid #111;
+    outline-offset: 0;
+}
+
+.op-page-rename-input::placeholder {
+    font-weight: 400;
+    color: #8a8a8a;
+}
+
+.op-page-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.op-page-form-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.op-page-form-actions .pl-btn {
+    flex: 1;
+}
+
+/* Sin páginas: mismo vacío que "Tus proyectos" (.pl-empty) */
+.op-pages-fit .cs-empty-state {
+    flex: 1;
+    gap: 10px;
+    height: auto;
+    min-height: 360px;
+    padding: 0;
+}
+
+.op-pages-fit .cs-empty-state svg {
+    stroke: #bdbdbd;
+    stroke-width: 1.4;
+}
+
+.op-pages-fit .cs-empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+}
+
+.op-pages-fit .cs-empty-sub {
+    font-size: 13px;
+    color: #555;
+}
+
+/* Reordenar (drag & drop nativo) */
+.op-page-card.is-dragging {
+    opacity: 0.4;
+}
+
+.op-page-card.is-drop-target .op-page-cover {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+    .op-pages-fit.nep-main-content {
+        padding: 0 20px 24px;
+    }
+
+    /* Una columna; la portada vuelve al 4/5 de "Tus proyectos" */
+    .op-pages-grid > .op-page-card {
+        flex: 0 1 100%;
+        width: 100%;
+    }
+
+    /* Sin hover en táctil: renombrar/borrar siempre visibles */
+    .op-page-card .pl-actions {
+        display: flex;
+        opacity: 1;
+    }
+
+    .op-page-card .pl-tip {
+        display: none;
+    }
+}
+
+/* Aviso centrado en pantalla al activar "Reordenar" (solo desktop, ver
+   triggerReorderHint en ProjectsOrganizerPanel.jsx) — deliberadamente
+   distinto de app-toast (Toast.jsx, esquina): esto explica un gesto nuevo,
+   así que se pone donde el ojo ya está mirando (el centro), no en una
+   esquina fácil de no ver. z-index por encima de .eao-overlay (3000) para
+   que también se vea cuando esto se abre desde el quick action de DaisyFilm. */
+@keyframes op-reorder-hint-in {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* left desplazado medio sidebar (280px expandido / 64px colapsado, ver
+   .nep-shell en editProfileShell.css) en vez de un 50% a secas — position:
+   fixed centra sobre el VIEWPORT entero, así que sin este ajuste queda
+   corrido hacia la izquierda del centro real de .nep-main-content (el
+   sidebar se come ese ancho a la izquierda). */
+.op-reorder-hint-toast {
+    position: fixed;
+    top: 50%;
+    left: calc(50% + 140px);
+    transform: translate(-50%, -50%);
+    z-index: 3200;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: min(360px, 80vw);
+    background: rgba(17, 17, 17, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fdfdfd;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    animation: op-reorder-hint-in 0.22s ease;
+}
+
+.op-reorder-hint-toast svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.op-reorder-hint-toast p {
+    margin: 0;
+    font-family: "Inter Tight", sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+/* Rail colapsado (64px, ver .nep-shell:has() en editProfileShell.css):
+   mitad de sidebar más angosta, mismo ajuste de left con el número correcto. */
+.nep-shell:has(.nep-sidebar-inner.nep-collapsed) .op-reorder-hint-toast {
+    left: calc(50% + 32px);
+}
+
+/* Red de seguridad además del check en JS (triggerReorderHint): si la
+   ventana se achica por debajo del breakpoint mobile mientras el aviso
+   todavía está en pantalla, desaparece con ella. */
+@media (max-width: 768px) {
+    .op-reorder-hint-toast {
+        display: none;
+    }
+}
+
+/* Envoltorio de los botones de arriba de cada sección (reorder + "Nueva
+   página" en Páginas; reorder solo en Sin asignar). En /proyectos/organizar
+   (página completa) no pinta nada por sí mismo — sus hijos siguen siendo
+   position:fixed como siempre, así que da igual dónde caiga en el flujo.
+   Solo se vuelve una barra sticky de verdad dentro de eao-overlay (ver
+   abajo), que es donde position:fixed no tenía sentido (ver commit
+   anterior). */
+.op-sticky-actions {
+    display: contents;
+}
+
+/* ---------- En el overlay del quick action de DaisyFilm (eao-overlay) ------
+   El panel es más angosto que /proyectos/organizar a pantalla completa. --- */
+
+/* "Todos los proyectos": las 6 columnas base no caben cómodas en el popup
+   más angosto — 4 en vez de 6 a partir del breakpoint mobile (que ya baja a
+   3/2 columnas por sí solo). También pisa el width:70% base — el overlay ya
+   es estrecho de por sí, así que aquí el grid ocupa el 100% de su ancho. */
+@media (min-width: 769px) {
+    .eao-overlay .op-projects-grid--all {
+        grid-template-columns: repeat(4, 1fr);
+        width: 100%;
+    }
+}
+
+/* .op-sticky-actions pasa de "invisible" (display:contents) a una barra
+   sticky de verdad, pegada arriba a la derecha de .nep-main-content —
+   posición dentro del propio contenido que scrollea (position:sticky), no
+   de la ventana (position:fixed, que se escapaba del popup). Va como primer
+   hijo de su sección en el JSX a propósito: sticky necesita estar antes del
+   contenido que va a sobrevolar para poder "pegarse" arriba mientras ese
+   contenido pasa por debajo. */
+.eao-overlay .op-sticky-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: sticky;
+    top: 12px;
+    z-index: 20;
+    margin: 0 0 12px;
+    padding-right: 12px;
+}
+
+/* Ya no position:fixed (se escapaba del popup) ni centrado abajo — ahora es
+   un hijo normal de la barra sticky de arriba. .op-select-btn ("Seleccionar
+   varios") no vive en esa barra, sigue centrado abajo como antes. */
+.eao-overlay .op-create-page-sticky {
+    position: static;
+    margin: 0;
+    box-shadow: none;
+}
+
+.eao-overlay .op-select-btn {
+    position: static;
+    margin: 8px auto 0;
+    box-shadow: none;
+}
+
+/* ---------- Sección "páginas" ---------- */
+
+/* Entrada a "crear página" — mismo diseño y comportamiento que
+   .gf-create-folder-sticky/.gf-organize-sticky en Guardados.css: fija abajo
+   a la derecha, siempre en el mismo punto de pantalla en /proyectos/organizar
+   (no dentro del grid). Va combinada con .organizar-button (fondo oscuro,
+   padding, radio — también de Guardados.css). */
+.op-create-page-sticky {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 500;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Sección "sin asignar" ---------- */
+
+/* Mismo diseño y comportamiento que .gf-create-folder-sticky/.gf-organize-sticky
+   en Guardados.css: fija abajo a la derecha, siempre en el mismo punto de
+   pantalla en /proyectos/organizar (no dentro de la sección). Va combinada
+   con .organizar-button (fondo oscuro, padding, radio — también de Guardados.css). */
+.op-select-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 500;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Detalle de página (ProjectPagePage.jsx) ---------- */
+
+/* "Add projects" en el empty-state de una página — mismo punto/z-index que
+   .gf-create-folder-sticky/.gf-organize-sticky (Guardados.css) y
+   .op-create-page-sticky/.op-select-btn (arriba): fija abajo a la derecha,
+   no dentro de .cs-empty-state. */
+.op-add-projects-sticky {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 500;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.op-dimmed {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.op-projects-grid {
+    column-count: 4;
+    column-gap: 8px;
+    width: 90%;
+    margin-top: 16px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 992px) {
+    .op-projects-grid {
+        column-count: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    .op-projects-grid {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .op-projects-grid {
+        column-count: 1;
+    }
+}
+
+/* "All your projects" (OrganizeProjectsPage.jsx) y AddProjectsModal.jsx:
+   grid real, no multi-column. column-count "reequilibra" columnas para
+   igualar la altura TOTAL de cada una, así que con un nº de proyectos que no
+   cuadra en múltiplos de 4 podía enseñar solo 3 columnas aunque hubiera
+   ancho de sobra para 4. Ambos consumidores tienen alto prácticamente
+   uniforme (AddProjectsModal: portada única 3:4 vía .op-project-stack;
+   "Sin asignar": abanico + nombre + contador de una línea vía
+   .op-project-visual/-label, ver más abajo), así que column-count no hace
+   falta: pasa a grid, siempre columnas fijas, la fila final se queda con
+   los que sobren alineados a la izquierda, sin reducir nunca el nº de
+   columnas. No toca .op-projects-grid a secas (ProjectPagePage.jsx), que
+   sigue siendo multi-column porque ahí las imágenes son de proporción
+   libre — masonry de verdad.
+   width:90% (pisa el width propio de .op-projects-grid, misma clase
+   combinada en el JSX) + 4 columnas fijas. */
+.op-projects-grid--all {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 16px;
+    row-gap: 16px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .op-projects-grid--all {
+        grid-template-columns: repeat(3, 1fr);
+        width: 90%;
+        margin-left: 24px;
+        margin-right: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .op-projects-grid--all {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* min-width:0 — sin esto, un grid item con contenido que no puede achicarse
+   (aunque .op-project-label ya tenga su propio min-width:0 más abajo) puede
+   forzar SU columna "1fr" más ancha que las demás; con esto las 6 columnas
+   quedan siempre exactamente iguales entre sí, en vez de que la del medio
+   (o cualquier otra) salga más grande que sus vecinas. */
+.op-project-item {
+    position: relative;
+    min-width: 0;
+    break-inside: avoid;
+    cursor: pointer;
+}
+
+.op-project-img {
+    width: 100%;
+    display: block;
+}
+
+/* Portada única — solo AddProjectsModal.jsx (picker "añadir proyectos a
+   página"): recorte 3:4 vertical, sin abanico. "Sin asignar"
+   (OrganizeProjectsPage.jsx) volvió al abanico de hasta 3 imágenes, ver
+   .op-project-visual/.op-project-peek-img más abajo — ya no reutiliza estas
+   clases -stack/-stack-card. */
+.op-project-stack {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #f0efeb;
+    margin-bottom: 6px;
+}
+
+.op-project-stack-card {
+    width: 100%;
+    height: 100%;
+}
+
+.op-project-stack-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* box-shadow en el contenedor (.op-project-stack), no outline en la imagen:
+   un outline con outline-offset negativo sobre un elemento con overflow:hidden
+   + esquinas redondeadas se renderiza de forma inconsistente (a veces
+   recortado/invisible). */
+.op-project-item.op-selectable .op-project-stack {
+    border-radius: 2px;
+    box-shadow: 0 0 0 0 transparent;
+    transition: box-shadow 0.15s ease;
+}
+
+.op-project-item.op-selected .op-project-stack {
+    box-shadow: 0 0 0 3px #111;
+}
+
+.op-project-title {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02rem;
+    color: #444;
+    margin: 6px 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Nº de imágenes — mismo estilo que .gf-folder--peek .gf-folder-label/-count
+   (FolderCard.css), copiado en vez de reutilizar esas clases porque allí van
+   atadas a su propio layout (position:absolute, flex de tarjeta completa),
+   que no aplica aquí. */
+.op-project-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0;
+    min-width: 0;
+    flex: 1;
+}
+
+.op-project-count {
+    font-size: 12px;
+    letter-spacing: normal;
+    color: #999;
+}
+
+/* "All your projects"/AddProjectsModal.jsx: no hace falta el nº de imágenes
+   bajo el nombre — se sigue calculando en el JSX (queda disponible si algún
+   día hace falta en otro sitio), solo se oculta aquí. */
+.op-projects-grid--all .op-project-count {
+    display: none;
+}
+
+.op-project-item.op-selectable {
+    cursor: pointer;
+}
+
+.op-project-item.op-selectable .op-project-img {
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+    transition: outline-color 0.15s ease;
+}
+
+.op-project-item.op-selected .op-project-img {
+    outline-color: #111;
+}
+
+/* Editar (mover a otra página) / borrar por item, en el detalle de
+   una página — mismo diseño que .idea-item-actions (Guardados.css);
+   aquí el trigger de hover es .op-project-item. */
+.op-project-item:hover .idea-item-actions {
+    opacity: 1;
+}
+
+/* ── "Sin asignar" (.op-projects-grid--unassigned): abanico de hasta 3
+   imágenes — mismo espíritu que .gf-folder--peek (FolderCard.jsx:
+   PEEK_ROTATE/PEEK_PAINT_ORDER/PEEK_X_OFFSET), pero sin el gf-folder-shape
+   recortando: las imágenes se ven enteras, solo rotadas/desplazadas con
+   transform. Con menos de 3 imágenes se van descartando por el final del
+   orden de pintado (ver PEEK_PAINT_ORDER en ProjectsOrganizerPanel.jsx), así
+   que 2 imágenes pierden la lateral derecha y 1 imagen se queda solo con la
+   lateral izquierda — igual que ya hace FolderCard.jsx. ── */
+.op-project-visual {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin-bottom: 18px;
+}
+
+/* Caja propia (aspect-ratio 3/4) independiente del 4/3 de .op-project-visual
+   — se puede editar el tamaño/proporción de las fotos sin tocar el
+   contenedor. Ancla en el centro (top/left 50%) y cada variante se desplaza
+   solo con transform. */
+.op-project-peek-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 56%;
+    aspect-ratio: 3 / 4;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 0.25px solid #fff;
+    background: #f0efeb;
+}
+
+.op-project-peek-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Las 2 laterales comparten la misma línea horizontal (mismo translateY,
+   solo cambia el translateX). */
+.op-project-peek-img--0 {
+    transform: translate(-50%, -50%) translateX(-38%) rotate(-9deg);
+    z-index: 1;
+}
+
+.op-project-peek-img--2 {
+    transform: translate(-50%, -50%) translateX(38%) rotate(9deg);
+    z-index: 1;
+}
+
+/* Central — pintada al final (PEEK_PAINT_ORDER), por eso queda encima de
+   las 2 laterales y sin rotar, 6px por encima de la línea horizontal de las
+   laterales, como si "asomara" delante del abanico. */
+.op-project-peek-img--1 {
+    transform: translate(-50%, calc(-50% - 6px));
+    z-index: 2;
+}
+
+/* Mismo box-shadow de selección que .op-project-stack (arriba, para
+   AddProjectsModal), aplicado aquí al abanico en vez de a la portada única. */
+.op-project-item.op-selected .op-project-visual {
+    box-shadow: 0 0 0 3px #111;
+    border-radius: 8px;
+}
+
+/* Nombre + contador centrados debajo del abanico, y acciones en fila
+   centrada debajo de esos — mismo orden/alineación que .gf-folder--peek
+   .gf-folder-label + .gf-folder-hover-actions (FolderCard.css). Reutiliza
+   .idea-item-actions/.idea-edit-button (Guardados.css) en vez de
+   .gf-folder-hover-btn porque aquí son 3 acciones con tooltip, no 2. */
+.op-projects-grid--unassigned .op-project-label {
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+}
+
+.op-projects-grid--unassigned .op-project-title {
+    display: block;
+    max-width: 100%;
+    margin: 0;
+    text-align: center;
+}
+
+.op-projects-grid--unassigned .op-project-count {
+    display: block;
+}
+
+.op-projects-grid--unassigned .idea-item-actions {
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+/* Tooltips de esas acciones: .idea-item-actions (Guardados.css) los abre
+   hacia la izquierda, pensado para una columna vertical pegada a la
+   derecha de la tarjeta — aquí las acciones son una fila centrada, así que
+   se abren hacia arriba, centrados sobre cada botón. */
+.op-projects-grid--unassigned .idea-item-actions .nep-icon-tooltip {
+    top: auto;
+    bottom: calc(100% + 8px);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+}
+
+.op-projects-grid--unassigned .idea-edit-button:hover .nep-icon-tooltip,
+.op-projects-grid--unassigned .idea-trash-button:hover .nep-icon-tooltip {
+    transform: translateX(-50%) translateY(0);
+}
+
+.op-project-checkbox {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    background: #fff;
+    border: 1.5px solid #bbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.op-project-item.op-selected .op-project-checkbox {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+
+/* ── "Añadir proyectos" (AddProjectsModal.jsx) ──────────────────────
+   Base de "Tus proyectos" (ProjectsLibrary.css): .pl-overlay, panel
+   blanco recto como .pl-dialog / .pat-cover-dialog, tarjetas .pl-card con
+   .pl-check y botones .pl-btn. Aquí solo el tamaño del panel, el scroll
+   de la rejilla y la rejilla algo más densa que la de la página. */
+.op-add-dialog {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 960px;
+    max-height: calc(100vh - 40px);
+    padding: 28px;
+    background: #fff;
+    border-radius: 0;
+}
+
+.op-add-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.op-add-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: -10px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #111;
+    cursor: pointer;
+}
+
+.op-add-close:hover {
+    background: #00000006;
+}
+
+/* 6px de aire: el marco negro de la tarjeta elegida (.pl-card.is-selected
+   .pl-cover, 3px + 3px de offset) no se corta contra el scroll. */
+.op-add-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0 -6px;
+    padding: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.op-add-grid {
+    gap: 32px 20px;
+}
+
+.op-add-empty {
+    min-height: 240px;
+}
+
+.op-add-actions {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .op-add-dialog {
+        padding: 20px;
+    }
+
+    .op-add-grid {
+        gap: 24px 12px;
+    }
+
+    .op-add-actions .pl-btn {
+        flex: 1;
+    }
+}

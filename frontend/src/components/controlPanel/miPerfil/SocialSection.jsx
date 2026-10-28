@@ -113,6 +113,17 @@ const SocialSection = ({ social }) => {
                         <SiSubstack size={20} />
                     </a>
                 )}
+                {social?.arena && (
+                    <a
+                        href={buildSocialMediaUrl('arena', social.arena)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="social-icon arena"
+                        aria-label="Are.na"
+                    >
+                        <img src="/iconos/are-na-logo.png" alt="" />
+                    </a>
+                )}
             </div>
         </section>
     );

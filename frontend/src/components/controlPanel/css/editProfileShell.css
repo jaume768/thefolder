@@ -1,0 +1,2188 @@
+/* ──────────────────────────────────────────────────────────────
+   EDIT PROFILE — SHELL / SIDEBAR LAYOUT
+   Scoped to .nep-shell to avoid collisions with other pages
+────────────────────────────────────────────────────────────── */
+
+/* height: calc(100vh - 72px) en vez de 100vh — .dashboard-content ya reserva
+   72px de margin-top para el .dashboard-header fijo (control-panel.css);
+   como aquí fijamos una altura propia (no somos flex:1 dentro de ese hueco),
+   sin este descuento nos saldríamos 72px por debajo del viewport. */
+.nep-shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 280px 1fr;
+  height: calc(100vh - 72px);
+  overflow: hidden;
+  transition: grid-template-columns 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── PANEL HEADER ─────────────────────────────────────────── */
+
+.nep-panel-header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: row;
+  margin: 12px 12px 0;
+  padding: 0 72px;
+  height: 42px;
+  border-radius: 5px;
+  position: relative;
+  isolation: isolate;
+  z-index: 2000;
+  background: #fdfdfd;
+}
+
+/* El botón "Exit panel" no tiene border propio (hereda border:0 de
+   button.header-left-link), así que al hacer click el navegador dibuja su
+   outline de foco por defecto (azul/negro) encima del fondo #fdfdfd del
+   header — recolorearlo para que se funda con ese fondo en vez de quedarse
+   con el color por defecto. */
+.nep-panel-close:focus-visible {
+  outline-color: #fdfdfd;
+}
+/* Cabecera de detalle (chevron + título + cerrar) — vive dentro de .nep-main
+   (no de .nep-panel-header, que desaparece entero en mobile: MobileTopHeader
+   ya cubre el índice). Solo mobile, solo con una sección abierta. */
+.nep-detail-header {
+  display: none;
+}
+
+.nep-detail-header-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #222;
+  cursor: pointer;
+}
+
+.nep-detail-header-back:hover {
+  background: rgba(0, 0, 0, .05);
+}
+
+/* Vacío a propósito (ver NewEditProfileContent.jsx) — solo ocupa el mismo
+   ancho que el botón de volver, para que el título quede centrado. */
+.nep-detail-header-close {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.nep-detail-header-title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+
+.nep-sidebar {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Visible (no hidden): .nep-collapse-toggle vive fuera de .nep-sidebar-inner,
+     centrado en el hueco hacia .nep-main — con overflow:hidden aquí quedaría
+     recortado. El scroll vertical lo gestiona .nep-sidebar-inner aparte. */
+  overflow: visible;
+  z-index: 10;
+  position: relative;
+}
+
+
+.nep-sidebar-inner {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  padding: 12px;
+  flex: 1;
+  margin: 12px 6px;
+  background: #fdfdfd;
+  border-radius: 8px;
+  overflow-y: auto;
+  overflow-y: overlay;
+  min-height: 0;
+  position: relative;
+  transition: padding 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── SIDEBAR COLLAPSE (icon rail) — solo desktop ─────────────────────────
+   .nep-shell:has() / .nep-sidebar:has() leen el estado directamente del DOM
+   (clase puesta por PanelSidebar.jsx en .nep-sidebar-inner), sin prop-drilling
+   entre componentes ni coordinar dos archivos para una sola bandera visual. */
+
+/* Fuera de .nep-sidebar-inner (no se superpone con su contenido al hacer
+   scroll) — centrado verticalmente y anclado al hueco de 12px entre
+   .nep-sidebar y .nep-main (right:-19px = ese hueco, con el botón de 26px
+   centrado en él). Sigue el ancho del rail automáticamente porque está
+   posicionado relativo al borde derecho de .nep-sidebar, no a un valor fijo. */
+.nep-collapse-toggle {
+  position: absolute;
+  top: 50%;
+  right: -19px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 0.8px solid rgba(0, 0, 0, .08);
+  border-radius: 7px;
+  color: #666;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease, color .12s, background .12s, transform .22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nep-sidebar:hover .nep-collapse-toggle {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nep-collapse-toggle:hover {
+  background: #f5f5f2;
+  color: #111;
+}
+
+/* Logo arriba del sidebar (PanelSidebar.jsx) — sustituye a la antigua
+   barra superior .nep-panel-header. Colapsado "T/", expandido
+   "THEFOLDER/": .nep-sidebar-logo-rest encoge/desvanece con el mismo
+   easing que el ancho del rail. */
+.nep-sidebar-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 10px;
+  margin-bottom: 4px;
+  background: none;
+  border: none;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  color: #111;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: padding 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nep-sidebar-logo-rest {
+  display: inline-block;
+  max-width: 120px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
+}
+
+.nep-sidebar-inner.nep-collapsed .nep-sidebar-logo {
+  justify-content: center;
+  width: 100%;
+  padding: 10px 8px;
+}
+
+.nep-sidebar-inner.nep-collapsed .nep-sidebar-logo-rest {
+  max-width: 0;
+  opacity: 0;
+}
+
+/* Desktop: logo arriba, Settings abajo (margin-top:auto en .nep-bottom-group)
+   y el resto de iconos centrados entre ambos — el margin-bottom:auto del
+   logo reparte el hueco libre a partes iguales arriba y abajo. */
+@media (min-width: 769px) {
+  .nep-sidebar-logo {
+    margin-bottom: auto;
+  }
+}
+
+@media (min-width: 769px) {
+  /* .dashboard-header (header general) ya no se monta en esta ruta — ver
+     hideDesktopHeader en App.jsx/AppLayout.jsx — porque .nep-panel-header
+     hace ese trabajo aquí. .dashboard-content sigue reservando 72px de
+     margin-top para ese header (clase compartida con otras rutas que sí lo
+     usan), así que se reclaman aquí para que .nep-panel-header quede en la
+     misma franja donde estaría el header general, en vez de dejar un hueco
+     en blanco arriba. */
+  .nep-shell {
+    height: 100vh;
+    margin-top: -72px;
+  }
+
+  .nep-shell:has(.nep-sidebar-inner.nep-collapsed) {
+    grid-template-columns: 64px 1fr;
+  }
+
+  /* Rail colapsado: la flecha rota para indicar "expandir" en vez de
+     "colapsar" — misma posición (centrada en el hueco), solo cambia el
+     sentido del icono. */
+  .nep-sidebar:has(.nep-sidebar-inner.nep-collapsed) .nep-collapse-toggle {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .nep-sidebar-inner.nep-collapsed {
+    padding: 6px;
+    align-items: center;
+    overflow-x: visible;
+  }
+
+  /* .nep-label-text encoge/desvanece con transition propia (ver regla base)
+     en vez de display:none — así queda sincronizada con el easing del rail
+     en lugar de desaparecer de golpe a mitad de la animación. */
+  .nep-sidebar-inner.nep-collapsed .nep-label-text {
+    max-width: 0;
+    opacity: 0;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-child-chevron,
+  .nep-sidebar-inner.nep-collapsed .nep-folder-header .nep-chevron,
+  .nep-sidebar-inner.nep-collapsed .nep-soon-badge {
+    display: none;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-nav,
+  .nep-sidebar-inner.nep-collapsed .nep-bottom-group,
+  .nep-sidebar-inner.nep-collapsed .nep-folder-group {
+    width: 100%;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-nav-item,
+  .nep-sidebar-inner.nep-collapsed .nep-folder-header {
+    justify-content: center;
+    padding: 7px 6px;
+    gap: 0;
+  }
+
+  /* Items sueltos con icono en caja (Panel/Diseño/Guardados…) — mismo
+     padding de 6px que en el sidebar expandido. */
+  .nep-sidebar-inner.nep-collapsed .nep-nav-item--boxed-icon {
+    padding: 6px;
+  }
+
+  /* Rail colapsado (desktop): iconos sin el cuadro gris claro y 4px más
+     grandes (15px → 19px). */
+  /* Activo = mismo cuadro que el hover (mismo padding de 6px y sin el borde
+     de 0.8px de .nep-nav-item.active), así no cambia de tamaño al activarse. */
+  .nep-sidebar-inner.nep-collapsed .nep-nav-item--boxed-icon.active {
+    border: none;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-nav-item--boxed-icon svg,
+  .nep-sidebar-inner.nep-collapsed .nep-nav-item--boxed-icon.active svg {
+    width: 19px;
+    height: 19px;
+    background: none;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-folder-label {
+    gap: 0;
+  }
+
+  /* Grupo activo (contiene la pestaña actual) en el rail colapsado: mismo
+     fondo oscuro que un .nep-nav-item.active, para que el icono del padre
+     delate en qué sección estás sin tener que abrir el flyout. Solo aplica
+     colapsado — expandido, el hijo activo ya se ve resaltado dentro del
+     acordeón abierto. */
+  .nep-sidebar-inner.nep-collapsed .nep-folder-header.active {
+    background: #111;
+    color: #fff;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-folder-header.active:hover {
+    background: #222;
+    color: #fff;
+  }
+
+  /* Rail colapsado (desktop): los iconos de grupo (Perfil, Herramientas…)
+     tampoco llevan cuadro de fondo, igual que los .nep-nav-item--boxed-icon. */
+  .nep-sidebar-inner.nep-collapsed .nep-folder-label svg,
+  .nep-sidebar-inner.nep-collapsed .nep-folder-header.active .nep-folder-label svg {
+    background: none;
+  }
+
+  /* Mismo cuadro que los .nep-nav-item--boxed-icon (6px de padding + icono
+     de 19px con 4px de padding, esquinas rectas) en hover y activo. */
+  .nep-sidebar-inner.nep-collapsed .nep-folder-header {
+    padding: 6px;
+    border-radius: 0;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-folder-label svg {
+    padding: 4px;
+  }
+
+  /* Ajustes (abajo): mismo cuadro que los iconos de arriba — 6px de
+     padding, icono de 19px con 4px de padding, sin borde al activarse. */
+  .nep-sidebar-inner.nep-collapsed .nep-bottom-group .nep-nav-item {
+    padding: 6px;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-bottom-group .nep-nav-item.active {
+    border: none;
+  }
+
+  .nep-sidebar-inner.nep-collapsed .nep-bottom-group .nep-nav-item svg {
+    box-sizing: content-box;
+    width: 19px;
+    height: 19px;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+
+}
+
+/* Grupos con hijos (Perfil/Proyectos/Diseño/Herramientas) en el rail
+   colapsado: al pasar el ratón por el icono se despliega un flyout con los
+   hijos en texto completo — nada se vuelve inalcanzable. Se porta a
+   document.body (ver PanelSidebar.jsx) en vez de vivir dentro de
+   .nep-sidebar-inner, porque ese contenedor necesita overflow-y:auto para
+   su scroll vertical — y por spec CSS, si overflow-y no es "visible",
+   overflow-x tampoco puede serlo de verdad (se fuerza a "auto"), así que
+   un flyout anidado ahí siempre quedaría recortado / con scroll horizontal
+   en vez de flotar por encima de todo. Fuera del árbol, position:fixed
+   escapa limpio de cualquier overflow o stacking context ancestro. */
+.nep-folder-children--flyout {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 210px;
+  background: #fdfdfd;
+  border: 0.8px solid rgba(0, 0, 0, .08);
+  border-radius: 0px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+  padding: 6px;
+  z-index: 3000;
+  animation: nep-flyout-in .12s ease;
+}
+
+@keyframes nep-flyout-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Tooltip de "Panel"/"Settings" en el rail colapsado — portado a
+   document.body (ver renderNavTooltip en PanelSidebar.jsx), igual que
+   .nep-folder-children--flyout: escapa el overflow-y:auto de
+   .nep-sidebar-inner, que si no recorta el tooltip y activa scroll
+   horizontal. Reutiliza el look de .nep-icon-tooltip (fondo, texto, radio)
+   pero cambia position:absolute por position:fixed — por eso el selector
+   compuesto, para pesar más que la regla base y ganar siempre. */
+.nep-icon-tooltip.nep-icon-tooltip--portal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: auto;
+  opacity: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+  z-index: 3000;
+  animation: nep-tooltip-in .12s ease;
+}
+
+/* Keyframes propios: nep-flyout-in pisa el translateY(-50%) de centrado
+   durante la animación y el tooltip "saltaba" al terminar (parecía salir
+   dos veces). */
+@keyframes nep-tooltip-in {
+  from { opacity: 0; transform: translate(-4px, -50%); }
+  to   { opacity: 1; transform: translate(0, -50%); }
+}
+
+.nep-folder-children--flyout .nep-nav-item {
+  justify-content: flex-start;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.nep-folder-children--flyout .nep-folder-child-item {
+  padding-left: 0;
+}
+
+.nep-folder-children--flyout .nep-folder-child-item::before,
+.nep-folder-children--flyout .nep-folder-child-item::after {
+  display: none;
+}
+
+.nep-section-label {
+  font-size: 11px;
+  color: #aaa;
+  padding: 10px 20px 4px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.nep-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nep-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #555;
+  border-radius: 0px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s,
+              padding 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              gap 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.3;
+  flex: 1;
+  letter-spacing: .04em;
+}
+
+.nep-nav-item:hover {
+  background: #f5f5f2;
+  color: #111;
+}
+
+.nep-nav-item.active {
+  background: #111;
+  color: #fff;
+  font-weight: 500;
+  border: 0.8px solid rgba(0, 0, 0, .08);
+}
+
+.nep-nav-item.active:hover {
+  background: #222;
+  color: #fff;
+}
+
+.nep-nav-item--soon {
+  opacity: 0.4;
+}
+
+.nep-nav-item--soon.active {
+  opacity: 1;
+}
+
+/* Base expandida: ancho suficiente para cualquier label + fade/encogido propio
+   al colapsar (ver .nep-sidebar-inner.nep-collapsed .nep-label-text más abajo)
+   en vez del display:none instantáneo de antes, que desaparecía de golpe
+   mientras el rail todavía se seguía encogiendo con easing. */
+.nep-label-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 160px;
+  opacity: 1;
+  transition: max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.15s ease;
+}
+
+/* Chevron de fila — solo tiene sentido como affordance "toca para entrar"
+   en el patrón índice+push de mobile. En desktop no pinta nada. */
+.nep-child-chevron {
+  display: none;
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: 0.35;
+}
+
+/* Azul de marca (var(--color-brand-blue)) — el mismo que ya usan tags/chips en
+   toda la app (miPerfil.css, UserProfileExtern.css), no un azul suelto
+   inventado aquí. color:#111 (no #fff): la gama es clara, pierde contraste
+   con texto blanco encima. */
+.nep-soon-badge {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #111;
+    margin-left: 2px;
+    background-color: var(--color-brand-turquoise);
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+/* Ver mi portfolio (mobile) + Settings — agrupados y empujados al fondo.
+   En desktop, .nep-mobile-only desaparece y el grupo se comporta exactamente
+   como el <nav> de Settings suelto que había antes (mismo margin-top:auto). */
+.nep-bottom-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.nep-mobile-only {
+  display: none;
+}
+
+/* "Panel" (home dashboard) solo existe como destino en desktop — en mobile
+   se sustituye por el saludo (.nep-mobile-greeting) siempre visible arriba
+   del índice, así que no hace falta como fila navegable. */
+.nep-desktop-only {
+  display: flex;
+}
+
+/* Envuelve los 4 .nep-folder-group (acordeón) — display:none en mobile
+   (ver media query), sustituidos ahí por .nep-mobile-groups. */
+.nep-desktop-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nep-mobile-greeting .dg-heading {
+  padding: 4px 6px 4px;
+  font-size: 1.9rem;
+}
+
+.nep-mobile-greeting .dg-phrase {
+  font-size: 16px;
+  padding-top: 6px;
+}
+
+/* Envuelve "Ver mi portfolio" + índice de grupos + Settings (PanelSidebar.jsx)
+   — en desktop es display:contents: sus 3 hijos siguen comportándose como
+   hijos directos de .nep-sidebar-inner (mismo flex/orden de siempre, cero
+   cambio visual). En mobile pasa a flex real (ver @media abajo), para poder
+   repartir el alto disponible entre saludo + este bloque en un solo 100dvh
+   sin scroll, junto con MobileTopHeader. */
+.nep-mobile-index {
+  display: contents;
+}
+
+/* ── ÍNDICE MOBILE: grid de grupos → columna de subgrupos ────────────────
+   Sustituye al acordeón (.nep-desktop-groups, forzado siempre-abierto en
+   mobile) por un drill-down de 2 pantallas, más táctil: grid 2x2 de
+   tarjetas (icono + nombre) y, al tocar una, columna de sus .nep-nav-item
+   con el mismo look de tarjeta. .nep-mobile-only ya resuelve la visibilidad
+   (none en desktop, flex en <=768px, ver media query); aquí solo fijamos
+   la dirección de esa columna. */
+.nep-mobile-groups {
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Ver mi portfolio (mobile) — misma .nep-nav-item de siempre, pero como
+   tarjeta oscura icono-arriba/texto-abajo (no fila): es la entrada que abre
+   el sitio hacia afuera del editor, así que se distingue a propósito del
+   resto de filas grises. Seleccionado por estructura (nav padre), no por
+   una clase nueva — evita otra clase que solo se usaría una vez. */
+.nep-nav.nep-mobile-only > .nep-nav-item {
+  background: #333;
+  color: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  text-transform: none;
+  padding: 24px 10px;
+  border-radius: 10px;
+}
+
+/* Grid de 4 grupos — ocupa todo el alto que .nep-mobile-groups le deja libre
+   (ver [data-mobile-detail="false"] .nep-mobile-groups en el media query) en
+   vez de un height:24vh fijo que podía dejar hueco muerto o recortar según
+   el viewport. */
+.nep-mobile-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.nep-mobile-group-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  padding: 18px 10px;
+  background: #f9f9f9;
+  border: none;
+  border-radius: 10px;
+  color: #555;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+
+.nep-mobile-group-tile:active {
+  background: #eee;
+}
+
+.nep-mobile-group-tile.active {
+  background: #111;
+  color: #fff;
+}
+
+/* Columna: cabecera de alto fijo + lista que se reparte todo el resto del
+   alto disponible (ver .nep-mobile-groups en el media query, ya es
+   flex:1/min-height:0 — este wrapper hereda ese alto real). */
+.nep-mobile-subgroup {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 12px;
+}
+
+.nep-mobile-subgroup-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #333;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.nep-mobile-subgroup-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #fdfdfd;
+  cursor: pointer;
+}
+
+.nep-mobile-subgroup-back:hover,
+.nep-mobile-subgroup-back:active {
+  background: rgba(255, 255, 255, .1);
+}
+
+.nep-mobile-subgroup-title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #fdfdfd;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mismo ancho que el botón de volver, para que el título quede centrado. */
+.nep-mobile-subgroup-spacer {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+/* Llena el resto del alto de .nep-mobile-subgroup (cabecera aparte) y reparte
+   ese alto por igual entre sus tarjetas — ver .nep-folder-child-item abajo. */
+.nep-mobile-subgroup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Reutiliza .nep-nav-item (mismo componente/click que desktop) pero como
+   tarjeta icono-arriba/texto-abajo en vez de fila icono-texto-chevron. Cada
+   hijo (da igual si hay 1 o 3) crece por igual para llenar el alto de la
+   lista — nunca queda hueco muerto ni tarjetas de alto fijo desperdiciado. */
+.nep-mobile-subgroup-list .nep-folder-child-item {
+  padding-left: 0;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.nep-mobile-subgroup-list .nep-nav-item {
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-height: 84px;
+  padding: 18px 10px;
+  background: #f9f9f9;
+  text-align: center;
+  border-radius: 6px;
+  height: 100%;
+}
+
+.nep-mobile-subgroup-list .nep-nav-item svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.2;
+}
+
+/* "Hay más pasos aquí, esto no es la decisión final" — reutiliza el mismo
+   ChevronRight que ya trae cada botón (.nep-child-chevron, oculto por
+   defecto en fila) en vez de duplicar otro icono: aquí se reposiciona
+   abajo-derecha de la tarjeta, mismo tamaño que el ChevronLeft de "volver"
+   (16px). La regla de tamaño de abajo (svg 28px) es menos específica que
+   esta, así que no lo agranda. */
+.nep-mobile-subgroup-list .nep-nav-item .nep-child-chevron {
+  display: block;
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 18px;
+  height: 18px;
+  margin-left: 0;
+  opacity: .8;
+}
+
+/* ── SIDEBAR FOOTER ───────────────────────────────────────── */
+
+.nep-sidebar-footer {
+  padding: 16px 20px 24px;
+  border-top: 0.5px solid #eee;
+}
+
+.nep-diseno-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: .8px solid rgba(0, 0, 0, .08);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+  line-height: 1;
+}
+
+.nep-diseno-btn:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.nep-diseno-btn.active {
+  background: #444;
+  border-color: #444;
+}
+
+
+/* ── MAIN CONTENT AREA ────────────────────────────────────── */
+
+.nep-main {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+  background: #fdfdfd;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Botón "volver" universal (PanelShellLayout.jsx) — fijo a la esquina de
+   .nep-main, no del viewport: así nunca se solapa con el sidebar y no se
+   mueve con el scroll interno de .nep-main-content. */
+.nep-fixed-back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 30;
+  border-style: none;
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: pointer;
+  background: #fdfdfd;
+}
+
+.nep-fixed-back-btn:hover {
+  background: #e6e6e6;
+}
+
+/* En la vista de detalle mobile de /myprofile/edit ya existe su propio
+   chevron dentro de .nep-detail-header — evita duplicar el control. Solo se
+   oculta ahí (no en cualquier data-mobile-detail="true"): settings,
+   guardados, community y proyectos también son "detalle" en mobile (ver
+   PanelShellLayout.jsx) pero no traen .nep-detail-header propio, así que
+   dependen de este mismo botón universal para volver. */
+.nep-main:has(.nep-detail-header) .nep-fixed-back-btn {
+  display: none;
+}
+
+.nep-topbar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-shrink: 0;
+  padding: 16px 12px;
+  background: #fdfdfd;
+  z-index: 10;
+}
+
+/* En el Panel no hace falta volver a ningún sitio — es la vista raíz del
+   editor — así que el botón fijo universal (PanelShellLayout.jsx) se oculta. */
+.nep-main:has(.nep-main-content--home) .nep-fixed-back-btn {
+  display: none;
+}
+
+/* Apariencia (topTab === "apariencia", .nep-topbar se salta entera para
+   esta pestaña — ver NewEditProfileContent.jsx) tampoco lo necesita: la
+   propia columna de plantillas tiene su botón de colapsar en la misma
+   esquina (.pat-templates-collapse-toggle, profileAppearanceTab.css). */
+.nep-main:has(.nep-main-content--appearance) .nep-fixed-back-btn {
+  display: none;
+}
+
+.nep-main-title {
+  font-size: 2.9rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+  line-height: 1.05;
+  letter-spacing: 0.04rem;
+  text-transform: uppercase;
+}
+
+/* Renombrar/borrar el propio folder/página, en el header de su vista de
+   detalle (FolderContentPage.jsx, ProjectPagePage.jsx) — reutiliza
+   .gf-folder-hover-btn/-actions (FolderCard.css) para el mismo lenguaje
+   visual que las tarjetas del grid, pero ancladas en la esquina de
+   .nep-topbar (position:relative arriba) en vez de apiladas debajo de un
+   nombre de tarjeta, y SIEMPRE visibles (opacity:1 fijo) — no dependen de
+   hover, a diferencia de las tarjetas del grid, porque aquí no hay "el resto
+   de la fila" con quien competir por espacio. */
+.nep-topbar .gf-folder-hover-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  margin-top: 0;
+  opacity: 1;
+}
+
+/* Mismo tamaño/peso que .nep-main-title (que sustituye mientras se edita),
+   con un borde inferior en vez del texto suelto para marcar "esto se edita". */
+.nep-title-input {
+  font-family: inherit;
+  font-size: 2.9rem;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: 0.04rem;
+  border: none;
+  border-bottom: 2px solid #111;
+  background: transparent;
+  outline: none;
+  padding: 0 0 4px;
+  max-width: 60vw;
+}
+
+@media (max-width: 768px) {
+  .nep-title-input {
+    font-size: 1.6rem;
+    max-width: 80vw;
+  }
+
+  .nep-main-title {
+    text-align: center;
+  }
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.nep-main-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-y: overlay;
+  overflow-x: hidden;
+  padding: 0 32px 24px;
+  display: flex;
+  background: #fff;
+  flex-direction: column;
+  /* Sigue siendo scrollable, solo se oculta la barra visual. */
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* Edge/IE viejos */
+}
+
+.nep-main-content::-webkit-scrollbar {
+  display: none;              /* Chrome/Safari/Edge nuevo */
+}
+
+/* Panel (topTab === "home"): HomeTab.css pone su propio padding y cabe
+   entero en el alto disponible — sin scroll. */
+.nep-main-content--home {
+  padding: 18px;
+  overflow: hidden;
+}
+
+/* Barra de pestañas inferior (MobileTabBar.jsx) — solo mobile, ver media
+   query de abajo. */
+.nep-tabbar {
+  display: none;
+}
+
+/* ── TABLET (769–1024px) ─────────────────────────────────────────────────
+   El rail de 64px se queda fijo en la rejilla; si el usuario lo expande,
+   el sidebar de 280px se superpone al main card en vez de empujarlo. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .nep-shell,
+  .nep-shell:has(.nep-sidebar-inner.nep-collapsed) {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .nep-sidebar-inner:not(.nep-collapsed) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 268px;
+    z-index: 50;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+  }
+
+  .nep-sidebar:has(.nep-sidebar-inner:not(.nep-collapsed)) .nep-collapse-toggle {
+    right: auto;
+    left: 273px;
+    z-index: 60;
+  }
+}
+
+/* Subtítulo al inicio de .nep-main-content — solo visible en mobile
+   (--show-mobile), mismo patrón que ya usaba /community. Compartido por
+   todas las páginas del panel, no algo específico de una sola sección. */
+.nep-subtitle {
+  width: 40%;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 24px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: var(--text-label-size);
+  line-height: 17px;
+  color: #666;
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .nep-subtitle {
+    font-size: 13px;
+    width: fit-content;
+  }
+}
+
+@media (max-width: 480px) {
+  .nep-subtitle {
+    display: none;
+  }
+
+  p.nep-subtitle.--show-mobile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 12px;
+    margin-top: 0px;
+    width: 75%;
+    margin-bottom: 12px;
+  }
+}
+
+p.nep-subtitle.--show-mobile.--margin-top {
+  margin-top: 24px;
+}
+
+/* Pestañas del panel (PanelTabs.jsx) — antes .mycomunity-tabs, solo en
+   /community. Compartido por Community/Guardados/Proyectos. */
+.panel-tabs-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.panel-tabs {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  width: fit-content;
+  margin-bottom: 24px;
+}
+
+.panel-tab {
+  padding: 6px 16px;
+  font-family: "Inter Tight", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02rem;
+  color: #888;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.panel-tab:hover:not(.active) {
+  color: #333;
+}
+
+.panel-tab.active {
+  background: #111;
+  color: #fff;
+}
+
+.nep-tab-body {
+  width: 90%;
+  margin: 0 auto;
+  height: 100%;
+}
+
+/* Apariencia/Templates (ProfileAppearanceTab.jsx): 3 columnas + preview real
+   necesitan más ancho que el 80% genérico del resto de pestañas, y sin
+   .nep-topbar (ver NewEditProfileContent.jsx) toda la altura de
+   .nep-main-content queda libre para el shell — display:flex aquí para que
+   .pat-shell (flex:1, profileAppearanceTab.css) la ocupe entera en vez de
+   quedarse a su alto de contenido. */
+.nep-tab-body--appearance {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ── PRE-PAGE DE GRUPO (Perfil/Proyectos/Herramientas) ───────────────────
+   GroupHubTab.jsx — grid de casillas cuadradas con las opciones del grupo,
+   a la que ahora navega el clic en su .nep-folder-header (antes desplegaba
+   un acordeón inline, ver PanelSidebar.jsx). Ningún grupo pasa de 3 hijos,
+   así que siempre es 1 fila x 3 columnas — nunca hace falta wrap. */
+.nep-hub-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* aspect-ratio:1 en vez de height fija: las 3 casillas miden lo mismo de
+   ancho que de alto sea cual sea el ancho real de .nep-tab-body. */
+.nep-hub-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: #f4f4f4;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #555;
+  font-family: inherit;
+  font-size: 11px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.nep-hub-item:hover {
+  background: #ececec;
+  color: #111;
+}
+
+/* Título de cada casilla */
+.nep-hub-item .nep-label-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Descripción corta opcional bajo el nombre (p. ej. pre-page de Perfil) */
+.nep-hub-item-desc {
+  max-width: 85%;
+  margin-top: -4px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #888;
+  text-align: center;
+}
+
+/* Chevron abajo-derecha ("hay más pasos aquí") y badge "soon" arriba-
+   izquierda — mismas esquinas que .nep-mobile-subgroup-list .nep-nav-item
+   .nep-child-chevron, aquí con clase propia porque ya no comparte base con
+   .nep-nav-item. */
+.nep-hub-item-chevron {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  /* Hereda el color del título (#555, #111 al hover) */
+  color: inherit;
+}
+
+/* Misma animación que la flecha de "Tus proyectos" (HomeTab.css): 2px a la
+   derecha en 0.15s al pasar por la casilla. */
+.nep-hub-item-chevron {
+  transition: transform 0.15s ease;
+}
+
+.nep-hub-item:hover .nep-hub-item-chevron,
+.nep-hub-item:focus-visible .nep-hub-item-chevron {
+  transform: translateX(2px);
+}
+
+/* Icono de cada casilla: 40px en desktop, 32px en tablet, 28px en mobile */
+.nep-hub-item-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1025px) {
+  .nep-hub-item-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Pre-pages de grupo (Perfil/Proyectos/Herramientas), todos los tamaños:
+   las casillas llenan el alto libre (debajo del subtítulo) a partes iguales,
+   sin scroll vertical. .nep-tab-body deja de ser height:100% (que, sumado al
+   subtítulo, desbordaba) y pasa a ocupar el resto; las casillas dejan de ser
+   cuadradas y estiran hasta ese alto. Desktop/tablet: 3 columnas en una
+   fila; mobile: una columna de 3 filas (ver media query de abajo). */
+.nep-main-content:has(> .nep-tab-body > .nep-hub-list) {
+  overflow-y: hidden;
+}
+
+.nep-tab-body:has(> .nep-hub-list) {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tantas columnas iguales como casillas haya (2 → 50/50, 3 → tercios), en
+   vez de 3 fijas que dejaban un hueco vacío con 2 hijos (p. ej. Proyectos). */
+.nep-hub-list {
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+}
+
+.nep-hub-list .nep-hub-item {
+  aspect-ratio: auto;
+  min-height: 0;
+}
+
+/* Mobile: 3 casillas cuadradas de ~100px no caben con título + descripción
+   — pasan a una columna, sin cuadrado forzado. */
+@media (max-width: 768px) {
+  .nep-hub-list {
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  /* Columna en mobile (icono → título → descripción, centrados). Cada
+     casilla es un container de tamaño: si se queda baja (pantallas pequeñas,
+     ~100px), se oculta la descripción y se compacta, para que icono y título
+     sigan cabiendo sin scroll. */
+  .nep-hub-item {
+    aspect-ratio: auto;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px;
+    text-align: center;
+    container-type: size;
+  }
+
+  /* Alto de contenido (sin el padding): icono + título + descripción de 2
+     líneas necesitan ~91px; por debajo, fuera la descripción. */
+  @container (max-height: 95px) {
+    .nep-hub-item-desc {
+      display: none;
+    }
+  }
+
+  .nep-hub-item-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.nep-hub-item .nep-soon-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  margin-left: 0;
+}
+
+/* Sin scroll en el contenedor general en esta pestaña: la galería y las
+   columnas del paso 2 gestionan su propio overflow-y, así no hay dos
+   barras de scroll compitiendo. Fondo blanco liso y el mismo marco que
+   "Tus proyectos" / Páginas (24px izquierda, 32px derecha, panel recto). */
+.nep-main-content--appearance {
+  overflow-y: hidden;
+  background: #fff;
+}
+
+@media (min-width: 769px) {
+  .nep-main-content--appearance {
+    padding: 0 32px 0 24px;
+  }
+
+  .nep-main:has(.nep-main-content--appearance) {
+    border-radius: 0;
+  }
+}
+
+/* ── CARD OVERRIDES (scoped) ──────────────────────────────── */
+
+.nep-shell .ux-card,
+.nep-shell .ux-card-main {
+  background: #fff;
+  border-radius: 12px;
+  border: none;
+  padding: 0px;
+  margin-bottom: 14px;
+}
+
+.nep-shell .ux-card-title,
+.nep-shell .ux-card-title-h2 {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+/* ── FORM OVERRIDES (scoped) ──────────────────────────────── */
+
+.nep-shell .ux-input,
+.nep-shell .ux-textarea {
+  border-radius: 0;
+  border: none;
+  border-bottom: 0.8px solid rgba(0, 0, 0, .08);
+  background: transparent;
+}
+
+/* ── UBICACIÓN: botón "Añadir ubicación" ──────────────────── */
+
+#sec-ubicacion.ux-location-section {
+  position: relative;
+}
+
+#sec-ubicacion .ux-location-label {
+  margin-bottom: 16px;
+}
+
+#sec-ubicacion .ux-location-add-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: auto;
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-size: 14px;
+  color: #444;
+  font-family: Inter Tight, sans-serif;
+  font-weight: 400;
+  padding: 6px 10px;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#sec-ubicacion .ux-location-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#sec-ubicacion .ux-location-remove-btn {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  padding: 8px;
+}
+
+/* ── AUTOSAVE INDICATOR ───────────────────────────────────── */
+
+.nep-shell .ux-autosave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nep-shell .ux-autosave p {
+  margin: 0;
+  font-size: 12px;
+  color: #333;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+/* Icono por estado (AutosaveStatus.jsx) — sustituye al antiguo punto
+   negro ::before. */
+.nep-shell .ux-autosave-icon {
+  flex-shrink: 0;
+  color: #333;
+}
+
+.nep-shell .ux-autosave--saving .ux-autosave-icon {
+  animation: ux-autosave-spin 0.9s linear infinite;
+}
+
+.nep-shell .ux-autosave--error .ux-autosave-icon {
+  color: #c0392b;
+}
+
+@keyframes ux-autosave-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── COLLAPSIBLE FOLDER NAV ───────────────────────────────── */
+
+.nep-folder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  font-size: 14px;
+  color: #555;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background .12s, color .12s,
+              padding 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              gap 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.3;
+  margin-bottom: 2px;
+  width: 100%;
+}
+
+.nep-folder-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 17px;
+  letter-spacing: .04em;
+}
+
+.nep-folder-label svg {
+  box-sizing: content-box;
+  padding: 2px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Panel/Diseño/Proyectos (sin páginas)/Imágenes guardadas son .nep-nav-item
+   sueltos (no un .nep-folder-header con hijos), pero viven pegados a los
+   grupos de arriba/abajo — sin este fondo gris sus iconos se veían "planos"
+   al lado de los de Perfil/Herramientas. Misma receta que .nep-folder-label
+   svg, pero el icono (15px, ver PanelSidebar.jsx) es más chico que el de
+   los grupos (19px) — padding:4px en vez de 2px para que el área gris
+   resultante siga siendo 23x23, igual que sus vecinos. */
+.nep-nav-item--boxed-icon {
+  padding: 6px;
+}
+
+.nep-nav-item--boxed-icon svg {
+  box-sizing: content-box;
+  padding: 4px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Activo (fondo oscuro #111 vía .nep-nav-item.active): el cuadro gris claro
+   del icono desentonaba contra ese fondo — mismo tratamiento que ya usa
+   .nep-folder-header.active .nep-folder-label svg (rail colapsado), pero
+   sin escopar a colapsado: aquí aplica igual en expandido, porque el fondo
+   oscuro del row es el mismo en ambos casos. */
+.nep-nav-item--boxed-icon.active svg {
+  background: rgba(255, 255, 255, .16);
+}
+
+.nep-folder-header:hover {
+  background: #efefef;
+  color: #111;
+}
+
+.nep-folder-header .nep-chevron {
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+
+.nep-folder-child-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+/* Los ítems de nivel raíz (Panel/Diseño/Imágenes guardadas/Ajustes) van en
+   mayúscula (.nep-nav-item, arriba) — los "hijos" de un grupo (Info/CV/
+   Redes... dentro del flyout de hover, del índice mobile o de la pre-page
+   de GroupHubTab.jsx) no. */
+.nep-folder-child-item .nep-nav-item,
+.nep-hub-item {
+  text-transform: none;
+}
+
+.nep-folder-child-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: calc(50% + 6px);
+  width: 14px;
+  border-left: 1.5px solid #d2d2d2;
+  border-bottom: 1.5px solid #d2d2d2;
+  border-bottom-left-radius: 4px;
+}
+
+.nep-folder-child-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(50% + 0px);
+  bottom: 0;
+  width: 0;
+  border-left: 1.5px solid #d2d2d2;
+}
+
+/* Aviso "mejor en desktop" sobre Plantillas (editor drag-and-drop) — oculto
+   por defecto, solo aparece <=768px (ver media query mobile más abajo).
+   pointer-events:none: no bloquea el tap, solo avisa antes de entrar. */
+.nep-desktop-hint-overlay {
+  display: none;
+}
+
+/* ── RESPONSIVE: MOBILE — ÍNDICE + PUSH (tipo Ajustes iOS) ─────────────────
+   Patrón: pantalla 1 = índice (sustituye al sidebar), pantalla 2 = detalle
+   (reemplaza al índice, navegación push). [data-mobile-detail] en .nep-shell
+   decide cuál de las dos se ve — lo pone NewEditProfileContent.jsx desde
+   React state, pero fuera de este breakpoint el atributo no tiene ningún
+   efecto, así que un resize/rotación a desktop siempre cae limpio en el
+   layout de siempre sin que haga falta JS que lo "arregle".
+   ────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Por defecto (sin [data-mobile-detail], ej. ProfileSettingsPage.jsx):
+     mismo comportamiento estructural que había antes — la página crece y
+     hace scroll natural, sidebar y main apilados. Nada de "viewport fijo",
+     porque aquí no hay un índice/detalle que se turnen y necesitar clip
+     recortaría contenido sin forma de verlo. */
+  .nep-shell {
+    grid-template-rows: auto auto 1fr;
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - 4rem);
+    overflow: visible;
+  }
+
+  .nep-tab-body {
+    width: 100%;
+  }
+
+  /* No hace falta en mobile: MobileTopHeader (layout general) ya cubre esa
+     franja superior — logo, menú, buscador. Tenerlo también aquí era
+     cabecera duplicada. El chevron/título/cerrar de la pantalla de detalle
+     se han movido dentro de .nep-main (ver .nep-detail-header más abajo). */
+  .nep-panel-header {
+    display: none;
+  }
+
+  /* El botón "volver" universal (PanelShellLayout.jsx) es cosa de desktop —
+     en mobile, cada pantalla del panel (índice, detalle con
+     .nep-detail-header, Settings/Guardados/Community/Proyectos) ya trae su
+     propia forma de volver (MobileTopHeader, header de detalle, etc.), así
+     que aquí se apaga sin condiciones — antes solo se ocultaba en casos
+     puntuales de desktop (Panel, Apariencia, vista de detalle) y se colaba
+     flotando encima de cualquier otra pantalla mobile. */
+  .nep-fixed-back-btn {
+    display: none;
+  }
+
+  .nep-sidebar {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+  }
+
+  .nep-main {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+  }
+
+  .nep-detail-header-title {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  /* Volver: más ancho (36 → 44px) para que el toque sea fácil. El hueco de la derecha (.nep-detail-header-close) mide
+     lo mismo para que el título siga centrado. */
+  .nep-detail-header-back,
+  .nep-detail-header-close {
+    width: 44px;
+  }
+
+  /* Índice ↔ Detalle, nunca los dos a la vez — SOLO donde exista de verdad
+     el atributo [data-mobile-detail] (hoy: NewEditProfileContent.jsx, la
+     página /myprofile/edit). Aquí sí fijamos el viewport: cada pantalla
+     (índice o detalle) ocupa el alto disponible y hace scroll interno,
+     como una app — es lo que permite que "cambiar de pantalla" no sea
+     literalmente hacer scroll de la página. ProfileSettingsPage.jsx no
+     pone este atributo, así que nada de este bloque le afecta. */
+  /* -4rem: mismo hueco que .dashboard-content ya reserva arriba en mobile
+     (margin-top:4rem, control-panel.css) — MobileTopHeader flota encima con
+     position:fixed, así que ese margin (no esto) es lo único que de verdad
+     le hace sitio. padding-top se queda en un respiro pequeño (antes 36px,
+     redundante con esos 4rem ya reservados: le quitaba a .nep-main casi
+     40px de alto real de los 100dvh disponibles sin necesidad). dvh en vez
+     de vh — vh no descuenta la barra de direcciones móvil, así que el
+     cálculo se quedaba corto en la mayoría de navegadores. */
+  /* margin-top 60px: .dashboard-content NO reserva hueco en mobile (su
+     margin-top:4rem lo pisa un "margin-top:0 !important" en
+     control-panel.css), así que el panel tiene que apartarse él solo de
+     MobileTopHeader (fijo: 12+42 = 54px; editando el perfil 6+54 = 60px).
+     Con 32px, .nep-detail-header (‹ + título) quedaba medio tapado por la
+     barra. 60 + los 8px de padding-top = la cabecera de detalle justo
+     debajo de la barra. La altura no cambia: 60px < los 4rem que ya resta. */
+  .nep-shell[data-mobile-detail] {
+    grid-template-rows: auto 1fr;
+    height: calc(100dvh - 4rem);
+    min-height: 0;
+    overflow: hidden;
+    padding-top: 8px;
+    background-color: transparent;
+    margin-top: 60px;
+  }
+
+  .nep-shell[data-mobile-detail] .nep-sidebar,
+  .nep-shell[data-mobile-detail] .nep-main {
+    grid-row: 2;
+    height: 100%;
+  }
+
+  .nep-shell[data-mobile-detail="true"] .nep-sidebar {
+    display: none;
+  }
+
+  .nep-shell[data-mobile-detail="false"] .nep-main {
+    display: none;
+  }
+
+  /* ── Cabecera de detalle (dentro de .nep-main, ver arriba) — compacta ── */
+  .nep-shell[data-mobile-detail="true"] .nep-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 4px;
+    padding: 16px 2px 6px;
+    flex-shrink: 0;
+  }
+
+  /* MobileTopHeader (layout general) más compacto mientras se edita el
+     perfil — aquí convive con .nep-detail-header y entre los dos no puede
+     comerse media pantalla. Solo aplica en /myprofile/edit (body.nep-editing),
+     el resto de la app mantiene el tamaño normal.
+
+     Solo la barra cerrada (.mobile-top-header--editorial) se compacta —
+     .tf-menu__top.register (overlay del menú abierto) se queda con su
+     padding de siempre: forzarle el mismo alto/padding de la píldora
+     cerrada la dejaba apretada, sin aire, rota. */
+  body.nep-editing .mobile-top-header--editorial {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    height: 54px;
+    padding: 0 22px;
+    border-radius: 10px;
+  }
+
+  /* MobileTopHeader no debe esconderse al hacer scroll en ningún punto de
+     /myprofile/edit (índice o detalle) — son formularios largos y perderlo
+     de vista ahí es más molesto que en una página de scroll tipo perfil
+     público. body.nep-editing cubre toda la página mientras está montada. */
+  body.nep-editing .mobile-top-header.is-hidden {
+    transform: none !important;
+    top: 6px !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* ── Índice: sustituye por completo al sidebar de desktop ────────────── */
+  .nep-sidebar {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .nep-sidebar-inner {
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: hidden;
+    padding: 12px;
+    padding-top: 80px;
+    margin: 0;
+    border-radius: 0;
+    flex: 1;
+    gap: 12px;
+  }
+
+  span.nep-label-text {
+    font-size: 14px;
+    text-transform: initial;
+  }
+
+  .nep-mobile-greeting .dg-phrase {
+    font-size: 18px;
+    padding-top: 0px;
+  }
+
+  /* En /myprofile/edit el hueco para MobileTopHeader ya lo reserva
+     .nep-shell[data-mobile-detail] (padding-top) — sin este reset, aquí se
+     sumaban los dos y el índice arrancaba ~126px más abajo de lo necesario.
+     ProfileSettingsPage.jsx no tiene ese atributo, así que sigue usando los
+     80px de arriba tal cual. */
+  .nep-shell[data-mobile-detail] .nep-sidebar-inner {
+    padding-top: 12px;
+  }
+
+  /* Índice (data-mobile-detail="false"): saludo + .nep-mobile-index deben
+     caber junto con MobileTopHeader en un solo 100dvh, sin scroll — como
+     una pantalla nativa. Solo aquí: Settings/Guardados/Community/Proyectos
+     no traen [data-mobile-detail], así que siguen siendo página larga con
+     scroll normal (ver bloque "Por defecto" arriba). */
+  .nep-shell[data-mobile-detail="false"] .nep-sidebar-inner {
+    overflow: hidden;
+  }
+
+  .nep-shell[data-mobile-detail="false"] .nep-mobile-index {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .nep-mobile-subgroup-title {
+    font-size: 16px;
+    text-transform: initial;
+  }
+
+  .nep-mobile-subgroup-header {
+    padding: 16px 12px;
+  }
+
+  .nep-shell[data-mobile-detail="false"] .nep-mobile-groups {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .nep-nav {
+    flex-direction: column;
+  }
+
+  .nep-nav-item {
+    white-space: normal;
+    margin: 0;
+    min-height: 44px;
+  }
+
+  /* Grupos (Perfil/Proyectos/Diseño/Herramientas): cabeceras de texto fijas,
+     nunca colapsables — se anula el acordeón entero sin tocar el JS. */
+  .nep-folder-header {
+    pointer-events: none;
+    cursor: default;
+    background: transparent !important;
+    padding: 16px 10px 6px;
+  }
+
+  .nep-folder-header .nep-chevron {
+    display: none;
+  }
+
+  .nep-folder-label {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #666;
+  }
+
+  .nep-folder-child-item {
+    padding-left: 32px;
+  }
+
+  .nep-folder-child-item::before,
+  .nep-folder-child-item::after {
+    display: none;
+  }
+
+  .nep-desktop-hint-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 16px;
+    text-align: center;
+    background: rgba(253, 253, 253, .78);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 8px;
+    font-size: 10.5px;
+    line-height: 1.3;
+    color: #555;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Fila activa: fondo negro sólido, como pide el patrón iOS */
+  .nep-nav-item.active {
+    background: #111;
+    color: #fff;
+  }
+
+  .nep-child-chevron {
+    display: block;
+  }
+
+  /* "Ver mi portfolio" + Settings, agrupados y separados por un divisor */
+  .nep-mobile-only {
+    display: flex;
+  }
+
+  /* "Panel" — solo desktop, aquí lo sustituye el saludo de arriba */
+  .nep-desktop-only {
+    display: none;
+  }
+
+  .nep-desktop-groups {
+    display: none;
+  }
+
+  .nep-bottom-group {
+    padding-top: 0px;
+    margin-top: 0px;
+  }
+
+  /* Ajustes: misma fila de siempre, pero centrada (ya no hay chevron que
+     empujar hacia la derecha — se borra en el JSX). */
+  .nep-bottom-group .nep-nav-item {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    background: #f9f9f9;
+  }
+
+  .nep-bottom-group .nep-nav-item svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Mismo grosor de trazo que .nep-mobile-group-tile, solo en mobile — cubre
+     Ver mi portfolio, Ajustes y las tarjetas de subgrupo (incluida la
+     flecha reutilizada) en una sola regla en vez de repetirla por cada una. */
+  .nep-nav-item svg {
+    stroke-width: 1.2;
+  }
+
+  /* Viendo la columna de subgrupos (.nep-mobile-subgroup dentro de
+     .nep-mobile-groups): "Ver mi portfolio", Ajustes Y el saludo
+     (.nep-mobile-greeting, DynamicGreeting — vive fuera de .nep-mobile-index,
+     hermano suyo dentro de .nep-sidebar-inner, así que necesita su propio
+     :has() desde ahí) se ocultan — solo interesa la lista que se está
+     mirando, nada de relleno alrededor. */
+  .nep-sidebar-inner:has(.nep-mobile-subgroup) .nep-mobile-greeting,
+  .nep-mobile-index:has(.nep-mobile-subgroup) > .nep-nav.nep-mobile-only,
+  .nep-mobile-index:has(.nep-mobile-subgroup) > .nep-bottom-group {
+    display: none;
+  }
+
+  .nep-sidebar-footer {
+    display: none;
+  }
+
+  /* ── Detalle: contenido a ancho completo ─────────────────────────────── */
+  .nep-main {
+    flex-direction: column;
+  }
+
+  /* .nep-topbar entero (no solo el <h1>) es redundante con
+     .nep-detail-header-title donde ese header existe de verdad (los tabs de
+     /myprofile/edit: info/cv/redes/analiticas/kit/pdf) — un solo título por
+     pantalla en vez de dos apilados. "home" también matchea (nep-detail-header
+     está siempre en el DOM, aunque oculto), pero ahí .nep-main entero ya
+     está display:none en mobile (ver [data-mobile-detail="false"] arriba),
+     así que no hay drama con perder su <DynamicGreeting> — nunca se ve, el
+     saludo real de home en mobile vive en PanelSidebar.jsx. Settings/
+     guardados/community/proyectos no traen .nep-detail-header propio, así
+     que su .nep-topbar sigue siendo el único título — no se oculta. */
+  .nep-main:has(.nep-detail-header) .nep-topbar {
+    display: none;
+  }
+
+  .nep-main-content {
+    padding: 8px;
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 0;
+  }
+
+  /* ── Barra de pestañas inferior (MobileTabBar.jsx) ─────────────────────
+     Flotante, como la de Instagram: una barra translúcida (mismo vidrio que
+     .mobile-top-header--editorial) separada 12px de los bordes, con el
+     contenido pasando por debajo. --nep-tabbar-h es todo el hueco que ocupa
+     abajo (56px de barra + 12px de margen + 8px de aire encima + safe
+     area): lo usan el espaciador final de .nep-main-content (ver más abajo)
+     y las barras/toasts que se colocan encima. */
+  .nep-shell {
+    --nep-tabbar-h: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  .nep-tabbar {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    height: 56px;
+    /* Sin gap: el hueco lo reparte space-between. 13px + los 12px de
+       margen = los mismos 25px desde el borde de la pantalla que antes. */
+    padding: 0 13px;
+    border-radius: 12px;
+    background: #fdfdfdcc;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+
+  /* El contenido llega hasta abajo del todo (pasa por debajo de la barra);
+     este espaciador al final de cada scroll deja que lo último suba por
+     encima de ella. En el editor de proyecto --nep-tabbar-h es 0 (no hay
+     barra). */
+  .nep-main-content::after {
+    content: "";
+    display: block;
+    flex: none;
+    height: var(--nep-tabbar-h, 0px);
+  }
+
+  .nep-tabbar-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: #111;
+    cursor: pointer;
+  }
+
+  /* 7 huecos: que puedan encogerse en pantallas estrechas (320px) */
+  .nep-tabbar-item {
+    flex: 0 1 44px;
+    min-width: 0;
+  }
+
+  /* "T/" → explorador (Inter Tight 600, el trazo del logo) */
+  .nep-tabbar-item--mark {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: normal;
+    color: #333;
+  }
+
+  .nep-tabbar-item.active {
+    background: #111;
+    color: #fff;
+  }
+
+  .nep-shell[data-mobile-detail] {
+    height: calc(100dvh - 4rem - var(--nep-tabbar-h));
+  }
+
+  .nep-shell:not([data-mobile-detail]) {
+    padding-bottom: var(--nep-tabbar-h);
+  }
+
+  /* ── Panel home (HomeTab.jsx, body.nep-panel-home) ─────────────────────
+     Sin MobileTopHeader: HomeTab pone su propia barra superior (T/ +
+     Ajustes), así que el frame ocupa todo el 100dvh menos la tab bar. */
+  body.nep-panel-home .mobile-top-header {
+    display: none !important;
+  }
+
+  body.nep-panel-home .nep-shell[data-mobile-detail] {
+    height: 100dvh; /* la barra flota encima (ver .nep-tabbar) */
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .nep-main:has(.nep-main-content--home) {
+    border-radius: 0;
+  }
+
+  .nep-main-content--home {
+    padding: 0;
+    margin-bottom: 0;
+  }
+
+}
+
+/* ── Sub-páginas en el sidebar (PanelSidebar.jsx, subPage) ─────────────
+   Con una sub-página abierta (carpeta, página de portfolio, editor de
+   proyecto, plantilla abierta) su sección padre es el "volver": clic =
+   vuelve, y al hover la ← sustituye a su icono (mismo cuadro, así que
+   funciona igual en el rail colapsado). La ← encima del título solo queda
+   en tablet/mobile (ver PanelPageHeader.css). */
+.nep-subparent-back-icon {
+  display: none;
+}
+
+.nep-is-subparent:hover .nep-subparent-back-icon,
+.nep-is-subparent:focus-visible .nep-subparent-back-icon {
+  display: block;
+}
+
+.nep-is-subparent:hover .nep-item-icon,
+.nep-is-subparent:focus-visible .nep-item-icon {
+  display: none;
+}
+
+/* Sub-página colgada de su sección (solo sidebar expandido): ↳ + nombre.
+   El display lo pone .nep-desktop-only (flex; none en mobile). */
+.nep-subpage-row {
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 2px 10px 8px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  line-height: 17px;
+  color: #111;
+}
+
+.nep-subpage-row svg {
+  flex-shrink: 0;
+  color: #8a8a8a;
+}
+
+.nep-subpage-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nep-sidebar-inner.nep-collapsed .nep-subpage-row {
+  display: none;
+}
+
+/* ── Entrada animada de las páginas del panel ──────────────────────
+   Mismo lenguaje que el Home (ver "Entrada animada" en HomeTab.css):
+   cabecera común (título → subtítulo → acciones) y después los bloques de
+   la página en cascada (fade + subida corta). Activo en todo el panel
+   salvo Comunidad: .nep-main--enter lo pone PanelShellLayout.jsx.
+   Se dispara al montar cada elemento, así que se repite al navegar entre
+   páginas (cada página monta su propia cabecera y sus bloques).
+   fill-mode "backwards": al terminar no queda ningún transform puesto
+   (no interfiere con hovers, drag & drop ni popovers anclados). */
+
+@keyframes nep-enter-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nep-enter-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.nep-main--enter {
+  --nep-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Cabecera común (PanelPageHeader) */
+.nep-main--enter .nep-ph-eyebrow,
+.nep-main--enter .nep-ph-title {
+  animation: nep-enter-up 0.6s var(--nep-ease-out) backwards;
+}
+.nep-main--enter .nep-ph-subtitle {
+  animation: nep-enter-up 0.6s var(--nep-ease-out) 0.08s backwards;
+}
+.nep-main--enter .nep-ph-actions {
+  animation: nep-enter-fade 0.6s ease-out 0.16s backwards;
+}
+
+/* Bloques de cada página:
+   - Perfil / Proyectos / Herramientas (hubs): casillas .nep-hub-item
+   - Info, CV, Redes, Configuración: secciones .pi-section
+   - Tus proyectos: tarjetas .pl-card; Páginas: .op-pages-grid / .op-projects-grid
+   - Editor de proyecto: .pe-media + .pe-form
+   - Plantillas: tarjetas de la galería y columnas del paso 2
+   - Guardados: pestañas, carpetas e imágenes
+   - Analíticas: hero, tarjetas y gráficas; Kit / PDF: "Próximamente"
+   Los skeletons (clase *skel*) quedan fuera: ya tienen su propio pulso. */
+.nep-main--enter :is(
+  .nep-hub-item,
+  .pi-section,
+  .pl-card,
+  .op-pages-grid > *,
+  .op-projects-grid > *,
+  .pe-media,
+  .pe-form,
+  .pat-empty-notice,
+  .pat-picker-card,
+  .pat-col,
+  .gd-switch,
+  .gd-folders > *,
+  .gd-masonry > *,
+  .ins-hero,
+  .ins-grid > *,
+  .ins-chart,
+  .cs-empty-state,
+  .gd-empty,
+  .pl-empty
+):not([class*="skel"]) {
+  animation: nep-enter-up 0.7s var(--nep-ease-out) 0.62s backwards;
+}
+
+/* Cascada: cada hermano un poco más tarde; a partir del 7º comparten
+   retraso — en páginas o rejillas largas lo de abajo no tiene que esperar. */
+.nep-main--enter :is(.nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *, .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch, .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart, .cs-empty-state, .gd-empty, .pl-empty):nth-child(1) { animation-delay: 0.16s; }
+.nep-main--enter :is(.nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *, .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch, .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart, .cs-empty-state, .gd-empty, .pl-empty):nth-child(2) { animation-delay: 0.24s; }
+.nep-main--enter :is(.nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *, .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch, .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart, .cs-empty-state, .gd-empty, .pl-empty):nth-child(3) { animation-delay: 0.32s; }
+.nep-main--enter :is(.nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *, .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch, .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart, .cs-empty-state, .gd-empty, .pl-empty):nth-child(4) { animation-delay: 0.40s; }
+.nep-main--enter :is(.nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *, .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch, .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart, .cs-empty-state, .gd-empty, .pl-empty):nth-child(5) { animation-delay: 0.48s; }
+.nep-main--enter :is(.nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *, .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch, .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart, .cs-empty-state, .gd-empty, .pl-empty):nth-child(6) { animation-delay: 0.55s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nep-main--enter :is(
+    .nep-ph-eyebrow, .nep-ph-title, .nep-ph-subtitle, .nep-ph-actions,
+    .nep-hub-item, .pi-section, .pl-card, .op-pages-grid > *, .op-projects-grid > *,
+    .pe-media, .pe-form, .pat-empty-notice, .pat-picker-card, .pat-col, .gd-switch,
+    .gd-folders > *, .gd-masonry > *, .ins-hero, .ins-grid > *, .ins-chart,
+    .cs-empty-state, .gd-empty, .pl-empty
+  ):not([class*="skel"]) {
+    animation: none;
+  }
+}
+
+/* ── Cabecera de detalle mobile: se esconde al bajar, vuelve al subir ──
+   Mismo comportamiento que MobileTopHeader (.mobile-top-header.is-hidden).
+   PanelShellLayout.jsx pone [data-detail-hidden] en .nep-main y mide su alto
+   en --nep-dh-h. Va en el flujo (no flota), así que se pliega con margin-top
+   negativo: el contenido sube y ocupa su hueco. */
+@media (max-width: 768px) {
+  .nep-main .nep-detail-header {
+    transition: margin-top 220ms ease, opacity 220ms ease;
+  }
+
+  .nep-main[data-detail-hidden="true"] .nep-detail-header {
+    margin-top: calc(-1 * var(--nep-dh-h, 52px));
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .nep-main .nep-detail-header {
+    transition: none;
+  }
+}
+
+/* ── Panel en mobile: sin MobileTopHeader ni su hueco ─────────────────
+   body.nep-in-panel lo pone PanelShellLayout.jsx en todas las páginas del
+   panel. El header flotante (.mobile-top-header--editorial) sobra: al
+   explorador se vuelve con el "T/" de la barra de pestañas y cada página
+   trae su cabecera (.nep-detail-header). Así que fuera el header y fuera
+   los 60px que .nep-shell[data-mobile-detail] le reservaba arriba: el
+   panel ocupa todo el alto de la pantalla (la barra de pestañas flota
+   encima, ver .nep-tabbar), igual que el home (body.nep-panel-home). */
+@media (max-width: 768px) {
+  body.nep-in-panel .mobile-top-header {
+    display: none !important;
+  }
+
+  body.nep-in-panel .nep-shell[data-mobile-detail] {
+    margin-top: 0;
+    padding-top: 0;
+    height: 100dvh; /* la barra de pestañas flota encima */
+  }
+}

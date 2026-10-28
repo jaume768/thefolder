@@ -74,14 +74,14 @@
 }
 
 .article-category {
-    color: #4c85ff;
+    color: var(--color-brand-blue-text);
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     text-transform: uppercase;
     width: fit-content;
-    border: solid 1px #4c85ff;
+    border: solid 1px var(--color-brand-blue);
 }
 
 .article-meta-info {
@@ -101,7 +101,7 @@
 }
 
 .article-author-name {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
     margin: 0px;
 }
 
@@ -338,14 +338,14 @@
 }
 
 .related-article-category {
-    color: #4c85ff;   
-    padding: 4px 10px;  
-    border-radius: 6px; 
+    color: var(--color-brand-blue-text);
+    padding: 4px 10px;
+    border-radius: 6px;
     font-size: 10px;
     font-weight: 500;
     text-transform: uppercase;
     width: fit-content;
-    border: solid 1px #4c85ff;
+    border: solid 1px var(--color-brand-blue);
 }
 
 .related-article-title {

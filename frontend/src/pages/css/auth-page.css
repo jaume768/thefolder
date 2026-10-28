@@ -1,0 +1,185 @@
+/* Login (/login) y Register (/register) — mismo lenguaje visual que el
+   wizard de registro (.ob-wizard, complete-registration.css): panel de
+   contenido a la izquierda (50%) + panel de imagen a la derecha (50%,
+   misma imagen que el wizard). Clases propias (.auth-*) en vez de
+   reutilizar .ob-wizard tal cual: a diferencia de los pasos del wizard
+   (sizeados a mano para caber siempre en 100vh sin scroll), el formulario
+   de registro puede crecer (errores, checkbox de términos…), así que aquí
+   se permite scroll natural de página en vez de forzar overflow:hidden. */
+
+.auth-shell {
+  position: relative;
+  max-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+
+.auth-content-panel {
+  position: relative;
+  width: 50%;
+  flex: 1 1 50%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  box-sizing: border-box;
+}
+
+/* Marca "T/" (mismo estilo mini que .ob-mark en complete-registration.css)
+   — aquí además funciona como botón de vuelta a la landing. Visible en
+   desktop y mobile (a diferencia de .ob-mark, que solo se ve en mobile).
+   Hijo directo de .auth-shell (no de .auth-content-panel): así puede
+   reordenarse en mobile por encima de .auth-image-panel vía `order` sin
+   quedar atado al flujo del panel de contenido. En desktop se ancla sobre
+   el ancho del panel izquierdo (50%, ver .auth-content-panel). */
+.auth-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 14px;
+  left: 0;
+  width: 50%;
+  z-index: 2;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #222;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.auth-mark-t {
+  font-size: 14px;
+}
+
+.auth-mark-slash {
+  font-size: 17px;
+}
+
+.auth-image-panel {
+  width: 50%;
+  flex: 0 0 50%;
+  min-height: 100vh;
+  position: relative;
+}
+
+.auth-image-credit {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  margin: 0;
+  font-size: 10px;
+  color: #fdfdfd;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.auth-image-credit a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.auth-image-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: sticky;
+  top: 0;
+}
+
+.auth-center {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Aviso de "sesión caducada" al llegar a /login redirigido desde
+   SessionExpiredGate (App.jsx) — neutro, no es un error del usuario. */
+.auth-notice {
+  background: #f5f5f5;
+  color: #444;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 0 0 16px;
+}
+
+.auth-title {
+  font-family: 'Inter Tight', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+/* .login-card-register (register-modal.css) trae box-shadow/border-radius
+   pensados para vivir dentro de .register-shell — aquí el panel ya no es
+   una tarjeta flotante, así que se anulan. */
+.auth-center .login-card-register {
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 860px) {
+  /* Sin split-screen ni fondo: el formulario ocupa todo el ancho y la
+     imagen queda como una miniatura fija (120x250) encima de .auth-center
+     — .auth-shell pasa a columna y se reordena vía `order` (orden visual
+     deseado: marca "T/" → imagen → formulario), aunque en el DOM sigan
+     yendo mark, content-panel, image-panel en ese orden. */
+  .auth-shell {
+    flex-direction: column;
+    height: 100dvh;
+  }
+
+  .auth-mark {
+    position: static;
+    width: 100%;
+    order: -2;
+    margin-top: 20px;
+  }
+
+  .auth-content-panel {
+    width: 100%;
+    flex: 1 1 auto;
+    padding: 40px 24px;
+    min-height: auto;
+  }
+
+  .auth-image-panel {
+    order: -1;
+    position: static;
+    width: 60px;
+    height: 90px;
+    flex: 0 0 auto;
+    min-height: 0;
+    margin: 24px auto 0;
+  }
+
+  .auth-image-panel img {
+    position: static;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: none;
+    transform: rotate(90deg);
+  }
+
+  .auth-image-credit {
+    display: none;
+  }
+}

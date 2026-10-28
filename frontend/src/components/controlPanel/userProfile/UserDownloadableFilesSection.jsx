@@ -1,9 +1,9 @@
 // UserDownloadableFilesSection.jsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import api from '../../../services/api';
 import { printUserProfile } from '../miPerfil/printProfile';
-import downloadPdfIcon from '../../../../public/iconos/download-pdf.svg';
+import { ArrowDownToLine } from "lucide-react";
 
 const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username }) => {
   const { t } = useTranslation('profile');
@@ -22,10 +22,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
             return;
           }
 
-          const backendUrl = import.meta.env.VITE_BACKEND_URL;
-          const headers = { Authorization: `Bearer ${token}` };
-
-          const res = await axios.get(`${backendUrl}/api/users/profile/${username}`, { headers });
+          const res = await api.get(`/api/users/profile/${username}`);
           setProfileData(res.data);
           setIsLoading(false);
         } catch (error) {
@@ -61,7 +58,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
             className="pdf-button"
           >
             {t('sections.viewPdf')}
-            <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
+            <ArrowDownToLine size={12} strokeWidth={1.6} aria-hidden="true" className="pdf-icon" />
           </a>
         </div>
 
@@ -74,7 +71,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
             onClick={(e) => !portfolioUrl && e.preventDefault()}
           >
             Portfolio PDF
-            <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
+            <ArrowDownToLine size={12} strokeWidth={1.6} aria-hidden="true" className="pdf-icon" />
           </a>
 
           <a
@@ -85,7 +82,7 @@ const UserDownloadableFilesSection = ({ cvUrl, portfolioUrl, userId, username })
             onClick={(e) => !cvUrl && e.preventDefault()}
           >
             CV PDF
-            <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
+            <ArrowDownToLine size={12} strokeWidth={1.6} aria-hidden="true" className="pdf-icon" />
           </a>
         </div>
       </div>

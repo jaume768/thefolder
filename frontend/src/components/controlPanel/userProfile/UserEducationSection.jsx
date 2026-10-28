@@ -81,7 +81,7 @@ const UserEducationSection = ({ education }) => {
 
             <div className="experience-content">
               {edu.educationType && (
-                <p className="experience-company" style={{ color: '#555' }}>
+                <p className="experience-company experience-kicker">
                   {edu.educationType === 'OTRO'
                     ? edu.educationOtherType
                     : edu.educationType === 'FP'
@@ -100,7 +100,7 @@ const UserEducationSection = ({ education }) => {
                 {edu.currentlyEnrolled
                   ? t('sections.current')
                   : formatDate(edu.formationEndMonth, edu.formationEndYear)}
-                {' · '}
+                {' | '}
                 <span className="experience-duration">{calculateDuration(edu)}</span>
               </p>
             </div>

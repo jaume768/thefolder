@@ -85,6 +85,12 @@
   gap: 0px 6px;
 }
 
+/* Texto de las etiquetas (el .creative-type global va a 300, miPerfil.css).
+   Las de la cabecera (.header-tags, más abajo) siguen con su peso. */
+.user-extern-tags-profile .creative-type {
+  font-weight: 400;
+}
+
 .user-extern-tags-profile.header-tags {
     gap: 40px;
 }
@@ -126,6 +132,7 @@
 .user-extern-social-links{
     display: flex;
     gap: 18px;
+    margin-top: 12px;
 }
 
 /* Navegación y botón de volver */
@@ -316,7 +323,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
 }
 
 .user-extern-follow-button {
@@ -365,7 +372,7 @@
 }
 
 .user-extern-notification-button.active {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
 }
 
 /* Iconos de contacto y compartir */
@@ -541,9 +548,8 @@ button.user-extern-tab-portfolio:hover {
 }
 
 .user-extern-view-button.active {
-    background-color: #e8f0fe;
-    color: #1a73e8;
-    border: solid .5px #1a73e8;
+    color: var(--color-brand-blue-text);
+    border: solid .5px var(--color-brand-blue);
     border-radius: 8px;
 }
 
@@ -553,7 +559,7 @@ button.user-extern-tab-portfolio:hover {
 
 .user-extern-projects.gallery-view {
   display: flex;
-  gap: 32px;
+  gap: 8px;
   width: 100%;
   align-items: flex-start;
 }
@@ -561,7 +567,7 @@ button.user-extern-tab-portfolio:hover {
 .masonry-gallery__col {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 8px;
 }
 
 .user-extern-projects.gallery-view.gallery--nogap {
@@ -583,7 +589,7 @@ button.user-extern-tab-portfolio:hover {
 .ux-gallery-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -593,7 +599,6 @@ button.user-extern-tab-portfolio:hover {
   line-height: 17px;
   font-weight: 400;
   letter-spacing: 0.04em;
-  margin-top: 12px;
   color: #222;
 }
 
@@ -610,15 +615,349 @@ button.user-extern-tab-portfolio:hover {
 .ux-layout-preview {
   width: 100%;
   aspect-ratio: 4 / 3;
-  background: #f4f4f4;
+  background: #fff;
   border: 1px solid #e0e0e0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.ux-layout-preview--index .ulp-content {
+/* ── Rebeca's Gallery (studio-gallery) — CSS propia para este thumbnail,
+   sin reutilizar .ulp-* / .pat-thumb-daisy-nav (esas están pensadas para las
+   otras 3 plantillas y no encajan con esta). Fiel a
+   RebecasGalleryTemplate.css: .rg-tabs arriba a la derecha, .rg-header
+   alineado a la izquierda con nombre grande en mayúscula, .rg-grid de 4
+   columnas sin gap con tarjetas retrato 3.5:4. */
+.ux-layout-preview--studio {
+  background: #fdfdfd;
+}
+
+.rgt-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.rgt-tabs {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8%;
+  padding: 10% 6% 6%;
+  flex-shrink: 0;
+}
+
+.rgt-tab {
+  height: 2px;
+  border-radius: 1px;
+  background: #ccc;
+}
+
+.rgt-tab--active {
+  background: #111;
+}
+
+.rgt-header {
+  padding: 0 6%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 8%;
+  flex-shrink: 0;
+}
+
+.rgt-name {
+  height: 7px;
+  width: 58%;
+  background: #111;
+  border-radius: 1px;
+}
+
+.rgt-role {
+  height: 3px;
+  width: 30%;
+  background: #ccc;
+  border-radius: 1px;
+}
+
+.rgt-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
   flex: 1;
+}
+
+.rgt-card {
+  width: 100%;
+  aspect-ratio: 3.5 / 4;
+  background: #ececec;
+  overflow: hidden;
+}
+
+.rgt-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── June Stamp (index-gallery) — CSS propia para este thumbnail, sin
+   reutilizar .ulp-* (esas quedan para Classic/Daisy Film). Fiel a
+   JuneStampTemplate.css: .js-sidebar a la izquierda (nombre + nav
+   vertical) + .js-stage a la derecha, aquí como grid de 3 columnas x 2
+   filas con tarjetas todas del mismo tamaño (cuadradas). */
+.jst-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  gap: 6%;
+  padding: 8%;
+  box-sizing: border-box;
+}
+
+.jst-sidebar {
+  flex: 0 0 25%;
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.jst-name {
+  height: 6px;
+  width: 100%;
+  background: #333;
+  border-radius: 1px;
+}
+
+.jst-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14%;
+}
+
+.jst-nav-item {
+  height: 3px;
+  border-radius: 1px;
+  background: #ccc;
+}
+
+.jst-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.jst-card {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: #ececec;
+  overflow: hidden;
+}
+
+.jst-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Miniaturas a escala (TemplateThumbnail.jsx, MiniPage) ────────────────
+   Rebeca's Gallery y Daisy Film se maquetan a 1440 × 900 con los px reales
+   de cada plantilla y se escalan al ancho de la tarjeta. */
+.ux-layout-preview.tpm {
+  position: relative;
+  display: block;
+  background: #fdfdfd;
+}
+
+.tpm-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background: #fdfdfd;
+  color: #111;
+  transform-origin: 0 0;
+}
+
+.tpm-page img {
+  display: block;
+}
+
+/* Rebeca's Gallery */
+.tpm--rg .tpm-page {
+  font-family: 'Inter Tight', system-ui, sans-serif;
+}
+
+.tpm-rg-tabs {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+}
+
+.tpm-rg-tab {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.tpm-rg-tab.is-active {
+  color: #111;
+}
+
+.tpm-rg-header {
+  margin-top: 280px; /* 24vh de 900px + 64px de padding, como .rg-layout */
+  padding: 12px;
+}
+
+.tpm-rg-name {
+  font-size: 52px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #111;
+}
+
+.tpm-rg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.tpm-rg-img {
+  aspect-ratio: 3.5 / 4;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.tpm-rg-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tpm-rg-title {
+  display: block;
+  min-height: 15px;
+  padding: 6px 6px 32px;
+  overflow: hidden;
+  font-size: 12px;
+  color: #444;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Daisy Film */
+.tpm--df .tpm-page {
+  display: flex;
+  flex-direction: column;
+  font-family: "Google Sans Code", monospace;
+  color: #222;
+}
+
+.tpm-df-top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 8px 8px;
+  box-sizing: border-box;
+}
+
+.tpm-df-nav {
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.tpm-df-nav.is-active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.tpm-df-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 64px;
+  padding-top: 64px;
+}
+
+.tpm-df-item {
+  display: flex;
+  justify-content: center;
+  height: 350px;
+}
+
+.tpm-df-item img {
+  height: 350px;
+  width: auto;
+  max-width: 700px;
+  object-fit: contain;
+}
+
+/* Sin imágenes del usuario: un hueco gris 3:4 en su sitio. */
+.tpm-df-item:empty {
+  width: 262px;
+  background: #efefef;
+}
+
+/* Fondo claro (#fdfdfd, igual que .df-layout real) — DaisyFilm no es una
+   portada oscura a sangre, es una galería en columna sobre fondo casi
+   blanco. Sin position:relative: ya no hay hijos position:absolute (el
+   viejo hero+overlay), ahora es flujo normal igual que las otras 3
+   miniaturas. */
+.ux-layout-preview--daisy {
+  background: #fdfdfd;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10%;
+}
+
+.pat-thumb-daisy-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10%;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.pat-thumb-daisy-nav span {
+  height: 2px;
+  width: 18%;
+  background: #222;
+  border-radius: 1px;
+}
+
+/* Columna única de fotos grandes apiladas, con aire entre ellas — así se ve
+   .df-individual real, no un grid ni una sola foto a sangre. */
+.pat-thumb-daisy-stack {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.pat-thumb-daisy-slot {
+  flex: 1;
+  max-width: 50px;
+  min-height: 55px;
+  border-radius: 1px;
 }
 
 .ulp-hero {
@@ -638,7 +977,7 @@ button.user-extern-tab-portfolio:hover {
 .ulp-content--full {
   padding: 4px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .ulp-sidebar {
@@ -657,13 +996,8 @@ button.user-extern-tab-portfolio:hover {
   align-items: center;
 }
 
-.ulp-sidebar--narrow {
-  width: 50%;
-  margin-left: 20%;
-}
-
 .ulp-line {
-  width: 40%;
+  width: 80%;
   height: 4px;
   background: #bbb;
   border-radius: 2px;
@@ -682,29 +1016,11 @@ button.user-extern-tab-portfolio:hover {
   grid-template-rows: repeat(1, 1fr);
 }
 
-.ulp-grid--asymmetric {
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  grid-auto-flow: dense;
-  margin-left: 20%;
-}
-
-/* Patrón asimétrico — filas: 3+2+3+2+2 / 2+3+2+3+2 / 3+2+3+2+2 = 12 */
-.ulp-grid--asymmetric .ulp-thumb                        { grid-column: span 2; }
-.ulp-grid--asymmetric .ulp-thumb:nth-child(1),
-.ulp-grid--asymmetric .ulp-thumb:nth-child(3),
-.ulp-grid--asymmetric .ulp-thumb:nth-child(7),
-.ulp-grid--asymmetric .ulp-thumb:nth-child(9),
-.ulp-grid--asymmetric .ulp-thumb:nth-child(11),
-.ulp-grid--asymmetric .ulp-thumb:nth-child(13)          { grid-column: span 3; }
-
 .ulp-thumb {
   background: #c8c8c8;
 }
 
-.ulp-thumb--tall { grid-row: span 2; }
-.ulp-thumb--wide { grid-column: span 2; }
-.ulp-thumb--sq   { aspect-ratio: 1; }
+.ulp-thumb--tall { grid-row: span 1; }
 
 p.user-extern-project-title {
     font-family: 'Inter Tight', sans-serif;
@@ -734,6 +1050,11 @@ p.user-extern-project-title {
 }
 
 /* Estados de carga y sin contenido */
+@keyframes user-extern-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .user-extern-loading,
 .user-extern-no-content {
     padding: 30px;
@@ -741,6 +1062,7 @@ p.user-extern-project-title {
     color: #666;
     border-radius: 8px;
     margin-top: 20px;
+    animation: user-extern-fade-in 0.2s ease;
 }
 
 p.user-extern-no-content {
@@ -801,14 +1123,16 @@ p.user-extern-no-content {
     color: #555;
 }
 
-/* Etiqueta de prácticas */
+/* Etiqueta de prácticas — tinte derivado de --color-brand-blue-rgb (no un hex
+   pálido suelto): la gama nueva es clara, el texto en var(--color-brand-blue)
+   directo sobre un fondo pálido tipo #e8f4ff perdía casi todo el contraste. */
 .user-extern-practice-badge {
-    background-color: #e8f4ff;
+    background-color: rgba(var(--color-brand-blue-rgb), 0.12);
     border-radius: 6px;
     padding: 8px 12px;
     display: inline-block;
     margin-top: 15px;
-    color: #1a73e8;
+    color: #111;
     font-size: 14px;
     font-weight: 500;
 }
@@ -875,7 +1199,7 @@ p.user-extern-no-content {
 }
 
 .user-extern-offer-practices {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
     font-weight: 500;
 }
 
@@ -931,7 +1255,8 @@ p.user-extern-no-content {
 }
 
 .user-extern-offer-button:hover {
-    background-color: #1557b0;
+    background-color: var(--color-brand-blue-dark);
+    color: #111;
 }
 
 .user-extern-offer-status {
@@ -960,22 +1285,18 @@ p.user-extern-no-content {
 }
 
 .user-extern-filter-icon {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
 }
 
 .user-extern-clear-filter {
     background-color: transparent;
-    color: #1a73e8;
-    border: 1px solid #1a73e8;
+    color: var(--color-brand-blue-text);
+    border: 1px solid var(--color-brand-blue);
     border-radius: 4px;
     padding: 6px 12px;
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.2s;
-}
-
-.user-extern-clear-filter:hover {
-    background-color: #e8f0fe;
 }
 
 .user-extern-offers-filter-buttons {
@@ -1010,8 +1331,8 @@ p.user-extern-no-content {
 }
 
 .user-extern-filter-button.active {
-    background-color: #1a73e8;
-    color: white;
+    background-color: var(--color-brand-blue);
+    color: #111;
 }
 
 /* Mensaje cuando no hay ofertas */
@@ -1224,7 +1545,7 @@ p.user-extern-no-content {
 }
 
 .user-extern-social-item:hover {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
 }
 
 .user-extern-social-icon {
@@ -1266,40 +1587,6 @@ p.user-extern-no-content {
     padding: 10px;
 }
 
-/* Notificaciones */
-.user-extern-notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: white;
-    border-radius: 8px;
-    padding: 12px 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 1000;
-    max-width: 300px;
-    animation: user-extern-notification-slide-in 0.3s ease-out forwards;
-}
-
-.user-extern-notification.success {
-    border-left: 4px solid #4caf50;
-}
-
-.user-extern-notification.error {
-    border-left: 4px solid #f44336;
-}
-
-.user-extern-notification-icon {
-    color: #4caf50;
-}
-
-.user-extern-notification.error .user-extern-notification-icon {
-    color: #f44336;
-}
-
-
 .user-extern-project-card{
   width: 100%;
   cursor: pointer;
@@ -1315,27 +1602,11 @@ p.user-extern-no-content {
 
 
 
-@keyframes user-extern-notification-slide-in {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .user-extern-content {
         flex-direction: column;
         margin-top: 80px;
-    }
-
-    button.tab {
-        padding: 24px !important;
-        font-size: 14px !important;
     }
 
     .user-extern-about-content {
@@ -1359,7 +1630,7 @@ p.user-extern-no-content {
     .user-extern-profile-info {
         padding: 0px 24px;
         text-align: center;
-        gap: 24px;
+        gap: 16px;
         margin-bottom: 0px;
     }
     
@@ -1446,7 +1717,7 @@ p.user-extern-no-content {
 .user-extern-education-item {
     display: flex;
     flex-direction: column;
-    background-color: #f6f6f6;
+    background-color: #f9f9f9;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -1523,11 +1794,19 @@ p.user-extern-no-content {
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    cursor: pointer;
 }
 
 .success-popup {
     background: white;
-    border-radius: 12px;
+    /* !important: /myprofile/edit/* vive bajo .dashboard-content.overflow-
+       hidden-desktop, cuyo reset a esquinas rectas (control-panel.css)
+       alcanza a este popup por ser un "*" — sin esto se ve con radius:0. */
+    border-radius: 12px !important;
+    /* .success-popup-overlay pone cursor:pointer (clic fuera para cerrar) —
+       se hereda hacia dentro de la tarjeta si no se corta aquí, dando a
+       entender que todo el contenido es clicable cuando no lo es. */
+    cursor: default;
     padding: 24px;
     max-width: 400px;
     width: 90%;
@@ -1559,7 +1838,7 @@ p.user-extern-no-content {
     color: #666;
     font-size: 18px;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: 4px !important;
     transition: all 0.2s;
 }
 
@@ -1581,7 +1860,6 @@ p.user-extern-no-content {
     padding: 12px;
     background-color: transparent;
     border-radius: 0px;
-    border-bottom: 1px solid #e9ecef;
 }
 
 .email-text {
@@ -1598,7 +1876,7 @@ p.user-extern-no-content {
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 6px !important;
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
@@ -1650,6 +1928,7 @@ p.user-extern-no-content {
     right: 100%;
     width: fit-content;
     padding-right: 32px;
+    display: none;
 }
 
 /* Col 1 (info estática de perfil) */
@@ -1718,9 +1997,15 @@ p.user-extern-no-content {
     overflow-wrap: break-word;
 }
 
+/* Varias ubicaciones (IdentityPanel.jsx): una por <span>, separadas solo
+   por el gap, sin carácter entre medias. */
 .resume-location {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
     font-family: 'Inter Tight', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 16px;
     font-weight: 300;
     letter-spacing: 0.02rem;
@@ -1731,7 +2016,7 @@ p.user-extern-no-content {
 .resume-contact-btn {
     background-color: #f2f2f2;
     border: none;
-    border-radius: 4px;
+    border-radius: 0px;
     padding: 6px 12px;
     font-size: 10px;
     letter-spacing: 0.02rem;
@@ -1750,23 +2035,31 @@ p.user-extern-no-content {
 .resume-website {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 2px;
     font-size: 12px;
     line-height: 18px;
     font-weight: 300;
-    color: #555;
+    color: #111;
     letter-spacing: 0.04em;
 }
 
 .resume-website a {
     text-decoration: underline;
-    color: #555;
+    color: #111;
     white-space: nowrap;
     overflow: hidden;
 }
 
+/* Flecha ↗ (lucide ArrowUpRight) tras la web / representación: centrada
+   en la línea de texto, mismo color que el texto. */
+.resume-website-arrow {
+    flex: none;
+    align-self: center;
+    color: #111;
+}
+
 .resume-representation__label {
-    color: #555;
+    color: #111;
     font-weight: 300;
 }
 
@@ -1776,7 +2069,7 @@ p.user-extern-no-content {
     padding: 0;
     margin: 0;
     font: inherit;
-    color: #555;
+    color: #111;
     text-decoration: underline;
     cursor: pointer;
     white-space: nowrap;
@@ -1881,7 +2174,8 @@ p.user-extern-no-content {
 
 
 .separator {
-    color: #999;
+    color: #111;
+    font-weight: 400;
     margin-top: 4px;
 }
 
@@ -2353,8 +2647,36 @@ img.pdf-icon {
 .social-icon {
     color: #333;
     transition: all 0.2s ease;
-    opacity: 0.9;
-    width: 18px;
+    opacity: 0.85;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Fuerza 20x20 en el propio icono (svg de react-icons u <img> de Are.na),
+   no solo en el <a> que lo envuelve — así todos miden igual sin depender
+   del tamaño que traiga cada uno por su cuenta (props size=24/20 en JSX). */
+.social-icon svg,
+.social-icon img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* Icono de Are.na (PNG) algo más suave */
+.social-icon img[src*="are-na-logo"] {
+    opacity: 0.8;
+}
+
+/* Columna del perfil (.user-extern-action-buttons): web, representación e
+   iconos de redes, todo en #111. Más específico que .social-icon y que
+   .miPerfil-website a (azul de marca, miPerfil.css), que si no lo pisan en
+   tu propio perfil. */
+.user-extern-action-buttons .social-icon,
+.user-extern-action-buttons .resume-website a {
+    color: #111;
 }
 
 .social-icon.instagram:hover {
@@ -2508,20 +2830,13 @@ img.pdf-icon {
 }
  
 /* ===== EDIT HUB (tabs + cards + index) ===== */
-.ux-edit-hub{
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 48px 80px;
-  flex-direction: column;
-  align-items: center;
-}
 
 .ux-editprofile-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 32px;
-  gap: 62px;
+  margin: 0 auto 32px;
+  max-width: 650px;
+  gap: 32px;
 }
 
 
@@ -2578,15 +2893,11 @@ img.pdf-icon {
 .ux-card{
   background:#fff;
   border: 1px solid rgba(0,0,0,.08);
-  border-radius: 18px;
-  padding: 32px;
+  border-radius: 8px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.ux-card.sub-tabs {
-  margin-top: 12px;
 }
 
 .ux-card-title{
@@ -2706,154 +3017,18 @@ aside.ux-card.ux-index{
 @media (max-width: 980px){
   .ux-edit-grid{ grid-template-columns: 1fr; }
   .ux-index{ position: static; }
-  .ux-edit-hub{ padding: 0 16px 80px; }
 }
 
 .ux-card {
   padding: 24px;
 }
 
-.ux-edit-shell{
-  overflow: visible !important;
-  transform: none !important;
-}
-
-/* Sidebar fija */
-.ux-left-sidebar{
-    position: fixed;
-    top: 70px;
-    height: fit-content;
-    align-self: start;
-    width: 35vh;
-    min-width: 250px;
-    padding: 24px;
-    border: solid 1px #00000014;
-    border-radius: 18px;
-    background-color: #fff;
-    margin-left: 3%;
-    margin-bottom: 2%;
-}
-
-/* Bloque perfil */
-.ux-left-profile{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 18px;
-  gap: 4px;
-}
-
-.ux-left-avatar{
-  width: 150px;
-  height: 195px;
-  border-radius: 2px;
-  overflow: hidden;
-  border: 0.5px solid rgba(0,0,0,.10);
-  background: #f6f6f6;
-  margin-bottom: 18px;
-}
-
-.ux-left-avatar img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.ux-left-name{
-  margin: 0;
-  font-family: Inter, sans-serif;
-  font-weight: 400;
-  font-size: 22px;
-  line-height: 22px;
-  color: #111;
-}
-
-.ux-left-username{
-  margin: 6px 0 0;
-  color: #777;
-  font-size: 14px;
-}
-
-.ux-left-location{
-  margin: 6px 0 0;
-  color: #777;
-  font-size: 13px;
-}
-
-.ux-left-divider{
-  height: 1px;
-  background: rgba(0,0,0,.08);
-  margin-bottom: 18px;
-}
-
-/* Nav izquierda */
-.ux-left-nav{
-  width: -webkit-fill-available;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.ux-left-nav-item{
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-family: 'Inter Tight', sans-serif;
-  font-size: 14px;
-  color: #111;
-  letter-spacing: 0.02em;
-  font-weight: 400;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-  opacity: 0.6;
-}
-
-.ux-left-nav-item:hover{
-  background: #f8f8f8;
-  color: #111;
-}
-
-.ux-left-nav-item.active{
-  color: #111;
-  font-weight: 500;
-  opacity: 1;
-  background: #f8f8f8;
-}
-
-/* Derecha: quitamos el “max-width/padding” del hub para que lo controle el shell */
-.ux-edit-main .ux-edit-hub{
-    width: 100%;
-    display: flex;
-    margin: 0;
-    padding: 0;
-    justify-content: center;
-    margin-top: 60px;
-}
-
-.ux-edit-div{
-    width: 60%;
-}
-
-/* Ajustes responsive */
-@media (max-width: 1100px){
-  .ux-edit-shell{
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-}
 
 /* ===== Inline form dentro de ux-card (como screenshot) ===== */
 .ux-form-block { 
     display: flex; 
-    flex-direction: column; 
+    flex-direction: column;
+    gap: 2px; 
 }
 
 .ux-form-label{
@@ -2872,8 +3047,8 @@ aside.ux-card.ux-index{
 
 .ux-form-label.separator {
     display: flex;
+    align-items: center;
     padding-bottom: 10px;
-    margin-bottom: 4px;
     border-bottom: 1px solid rgba(0, 0, 0, .08);
 }
 
@@ -2884,6 +3059,7 @@ aside.ux-card.ux-index{
   margin-right: 12px;
   flex-shrink: 0;
   margin-bottom: 1px;
+  opacity: 0.85;
 }
 
 .formlabel-small {
@@ -2917,7 +3093,7 @@ aside.ux-card.ux-index{
   font-size: 12px;
   line-height: 17px;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   outline: none;
   font-family: "Inter Tight", sans-serif;
   background: transparent;
@@ -2969,40 +3145,44 @@ input.ux-input {
     background: #fff;
 }
 
-.ux-counter{
+.ux-counter {
   display:flex;
   justify-content: space-between;
   font-family: 'Inter Tight', sans-serif;
   font-size: 10px;
   font-weight: 300;
-  letter-spacing: 0.02em;
   color:#8a8a8a;
   margin-top: 4px;
 }
 
-.ux-helper{
+.ux-helper {
   font-family: 'Inter Tight', sans-serif;
-  font-size: 11.5px;
+  font-size: 14px
   line-height: 17px;
   font-weight: 300;
-  letter-spacing: 0.02em;
-  color:#8a8a8a;
+  color:#888;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px; 
+  margin-bottom: 16px;
+  padding: padding: 6px 4px;
+}
+
+/* Combinar con .ux-helper (className="ux-helper ux-helper-label") — hereda
+   color/letter-spacing/layout de .ux-helper, solo cambia el tamaño a
+   --text-label para textos que ya no encajan en --text-body (contadores,
+   hints cortos). */
+.ux-helper-label{
+  font-size: 12px;
 }
 
 /* Foto perfil */
 .ux-photo-box{
   position: relative;
-  border: 1px solid rgba(0,0,0,.08);
-  border-radius: 14px;
-  padding: 24px;
+  border-radius: 12px;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap: 16px;
-  margin-bottom: 32px;
 }
 
 .ux-photo-preview img{
@@ -3034,7 +3214,7 @@ input.ux-input {
     justify-content: center;
     gap: 12px;
     font-family: 'Inter Tight', sans-serif;
-    font-size: 12px;
+    font-size: var(--text-label-size);
     line-height: 17px;
     font-weight: 300;
     letter-spacing: 0.02em;
@@ -3043,6 +3223,7 @@ input.ux-input {
 
 
 .ux-link-btn{
+  position: relative;
   border:0;
   background:none;
   cursor:pointer;
@@ -3056,15 +3237,47 @@ input.ux-input {
   display: flex;
   align-items: center;
   gap: 12px;
+  letter-spacing: 0.02em;
 }
 
-.ux-link-btn:hover{ 
+.ux-link-btn:hover{
   background-color: #f1f1f1;
   color: #333;
 }
 
 button.ux-link-btn.danger {
-  color: #b42318;
+  color: var(--danger);
+}
+
+/* Tooltip de botones-icono (.ux-link-btn con un único icono, sin texto).
+   Solo en desktop de verdad (mouse/trackpad): en touch no hay :hover fiable,
+   así que @media (hover:hover) evita que quede "pegado" tras un tap. */
+.ux-link-btn-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  white-space: nowrap;
+  background: #111;
+  color: #fdfdfd;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 20;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ux-link-btn:hover .ux-link-btn-tooltip,
+  .ux-link-btn:focus-visible .ux-link-btn-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .ux-sep{ color:#bbb; font-size: 12px; line-height: 24px; }
@@ -3119,6 +3332,10 @@ button.ux-link-btn.danger {
 /* Por si alguna parte sigue usando scrollIntoView start o # */
 .ux-anchor-target {
   scroll-margin-top: 120px; /* ajusta aprox al header */
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, .08);
+  background-color: #fff;
 }
 
 .ux-textarea::placeholder {
@@ -3141,7 +3358,7 @@ button.ux-link-btn.danger {
 .ux-exp-logo{
   width: 76px;
   height: 76px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid rgba(0,0,0,.08);
   overflow: hidden;
 
@@ -3161,15 +3378,6 @@ button.ux-link-btn.danger {
   color: #222;
 }
 
-.ux-exp-title{
-  font-family: 'Inter Tight', sans-serif;
-  font-weight: 400;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #222;
-  text-align: left;
-}
 
 .ux-exp-meta{
   font-family: 'Inter Tight', sans-serif;
@@ -3212,10 +3420,16 @@ font-weight: 400;
   font-weight: 500;
   width: -webkit-fill-available;
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,.10);
+  border: 1px solid #111;
   padding: 14px 24px;
   letter-spacing: 0.04em;
-  color: #333;
+  background: #111;
+  color: #fff;
+}
+
+.ux-exp-add .ux-btn:hover {
+  background: #222;
+  border-color: #222;
 }
 
 .ux-btn {
@@ -3227,11 +3441,14 @@ font-weight: 400;
     border-radius: 6px;
     cursor: pointer;
     letter-spacing: .04em;
+    background-color: #f8f8f8;
 }
 
 .ux-btn.primary{ background:#111; color:#fff; }
 .ux-btn.ghost{ background: #f8f8f8; }
+.ux-btn.danger { color: #b42318; }
 
+.danger { color: #b42318; }
 
 .ux-exp-form-wrap{
   margin-top: 14px;
@@ -3239,7 +3456,6 @@ font-weight: 400;
   border-radius: 18px;
   padding: 24px;
   background: #fff;
-  margin-left: 24px;
 }
 
 .ux-exp-form-title{
@@ -3256,7 +3472,7 @@ font-weight: 400;
 
 .ux-exp-form-row {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     flex-direction: column;
 }
 
@@ -3276,7 +3492,7 @@ font-weight: 400;
 
 .ux-exp-card{
   border: 1px solid rgba(0,0,0,.08);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 14px;
   background: #fff;
 
@@ -3290,7 +3506,7 @@ font-weight: 400;
 .ux-exp-logo{
   width: 76px;
   height: 76px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid rgba(0,0,0,.08);
   background: #fafafa;
   overflow: hidden;
@@ -3325,7 +3541,6 @@ font-weight: 400;
   font-family: 'Inter Tight', sans-serif;
   font-weight: 600;
   font-size: 14px;
-  letter-spacing: 0.06rem;
   text-transform: uppercase;
   color: #222;
 }
@@ -3373,13 +3588,16 @@ font-weight: 400;
 
 .ux-exp-add-btn{
   width: 100%;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 12px;
   background: #fff;
   padding: 14px 16px;
   font-weight: 400;
   font-family: "Inter Tight", sans-serif;
   letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* Layout: logo izquierda + campos derecha */
@@ -3396,7 +3614,6 @@ font-weight: 400;
 
 .ux-form-label-sm{
   font-size: 14px;
-  margin-bottom: 6px;
 }
 
 /* ── Nivel creativo (edit profile) ───────────────────────────────────────── */
@@ -3544,7 +3761,6 @@ font-weight: 400;
 }
 
 .ux-exp-logo-icon{
-  font-size: 26px;
   color: #999;
 }
 
@@ -3690,10 +3906,6 @@ font-weight: 400;
 }
 
 /* Botón de peligro coherente con tu UI */
-.ux-btn-danger{
-  background: #111 !important;
-  color: #fff !important;
-}
 .ux-btn-danger:hover{
   opacity: .9;
 }
@@ -3743,7 +3955,7 @@ img.ux-icon-sm {
   align-items: center;
   gap: 10px;
 
-  background: #f6f6f6;
+  background: #f9f9f9;
   border-radius: 6px;
   padding: 4px 10px;
 
@@ -3889,51 +4101,53 @@ p.user-languae-text {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 18px;
 }
 
 .ux-social-label{
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: var(--text-body-size);
   color: #222;
   text-align: left;
 }
 
-/* contenedor del input (icono + prefix + input) */
+.ux-social-label svg{
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.ux-social-label-icon{
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.9;
+  object-fit: contain;
+  display: block;
+}
+
+/* contenedor del input (prefix + input) */
 .ux-social-input{
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: #fff;
+  gap: 5px;
   border: solid transparent;
   border-bottom: 1px solid rgba(0, 0, 0, .12);
   border-radius: 0px;
 }
 
-/* cajita del icono */
-.ux-social-iconbox{
-  width: 34px;
-  height: 34px;
-  border-radius: 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 34px;
-}
-
-.ux-social-iconbox svg{
-  width: 16px;
-  height: 16px;
-  opacity: 0.95;
-}
-
 /* el prefix gris */
 .ux-social-prefix{
   font-size: 14px;
+  line-height: 2;
   font-weight: 400;
   color: #333;
   white-space: nowrap;
   letter-spacing: 0.02rem;
+  margin-right: 2px;
 }
 
 /* input “limpio” */
@@ -3942,6 +4156,7 @@ p.user-languae-text {
   border: 0;
   outline: none;
   font-size: 14px;
+  line-height: 16px;
   font-weight: 500;
   background: transparent;
   margin-left: -4px;
@@ -3966,23 +4181,19 @@ p.user-languae-text {
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  margin-bottom: 12px;
-  margin-top: 12px;
 }
 
 .ux-iv-title{
   font-family: 'Inter Tight', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: #222;
-  letter-spacing: 0.02em;
 }
 
 .ux-iv-subtitle{
-  font-size: 14px;
-  line-height: 17px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 300;
-  letter-spacing: 0.02em;
   color: #777;
 }
 
@@ -3992,7 +4203,7 @@ p.user-languae-text {
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid rgba(0,0,0,.08);
-  background: #f6f6f6;
+  background: #f9f9f9;
 
   display: grid;
   place-items: center;
@@ -4046,10 +4257,17 @@ p.user-languae-text {
 }
 
 button.new-tablero-button.new-profile {
-    width: fit-content;
+    width: 100%;
     border-radius: 6px;
     align-self: flex-end;
-    margin-top: 16px;
+}
+
+button.new-tablero-button.new-profile.pat-cover-upload-btn {
+  position: absolute;
+  bottom: 8px;
+  z-index: 198;
+  margin-right: 8px;
+  width: 226px;
 }
 
 /* Desktop: apaisado */
@@ -4058,7 +4276,7 @@ button.new-tablero-button.new-profile {
   max-width: 200px;
 }
 
-/* Mobile: vertical */º
+/* Mobile: vertical */
 .ux-iv-preview--mobile{
   max-width: 140px;
   margin: 0 auto;
@@ -4076,7 +4294,6 @@ button.new-tablero-button.new-profile {
 }
 
 .ux-iv-camera{
-  font-size: 34px;
   opacity: 0.5;
 }
 
@@ -4306,10 +4523,10 @@ button.new-tablero-button.new-profile {
 .ux-template-card {
   position: relative;
   text-align: left;
-  background: #fff;
+  background: #f5f5f5;
   border: 1px solid #e6e6e6;
-  border-radius: 14px;
-  padding: 6px;
+  border-radius: 6px;
+  padding: 4px;
   cursor: pointer;
   transition: border-color 0.15s ease, transform 0.15s ease;
   display: flex;
@@ -4318,14 +4535,56 @@ button.new-tablero-button.new-profile {
 }
 
 .ux-template-card.is-selected {
-  border-color: #111 !important;
-  border: 3px solid;
+  background: #111 !important;
+}
+
+.ux-template-card.is-selected .pat-thumb-name {
+  color: #fdfdfd;
+}
+
+/* La plantilla "En uso" de verdad (isActivated en ProfileAppearanceTab.jsx)
+   se queda en negro SIEMPRE, esté o no seleccionada en este momento — así
+   se identifica de un vistazo cuál está en uso aunque el usuario esté
+   previsualizando otra distinta (esa otra ahora también queda en negro vía
+   .is-selected de arriba, con el mismo !important para ganarle a esta
+   regla si algún día dejan de coincidir). */
+.ux-template-card.is-activated {
+  background: #111;
+}
+
+.ux-template-card.is-activated .pat-thumb-name {
+  color: #fdfdfd;
+}
+
+/* Overlay "En uso" — cubre toda la tarjeta (thumbnail + label) con un
+   cristal esmerilado, encima del fondo negro de .is-activated. pointer-
+   events:none: es puramente informativo, el clic sigue cayendo en el
+   <button> de debajo (setPreviewLayoutId). */
+.ux-template-active-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.ux-template-active-overlay span {
+  color: #fdfdfd;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .ux-template-preview {
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .ux-template-preview--mobile {
@@ -4349,20 +4608,6 @@ button.new-tablero-button.new-profile {
   line-height: 1.35;
 }
 
-.ux-template-check {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: #111;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  z-index: 20;
-}
 
 /* =========================
    Tabs: Vista ordenador / móvil
@@ -4376,10 +4621,6 @@ button.new-tablero-button.new-profile {
     top: 0;
     z-index: 150;
   margin: 0px 0 22px;
-}
-
-.ux-card.sub-tabs {
-  margin-top: 32px;
 }
 
 .ux-edit-template {
@@ -4444,7 +4685,7 @@ button.new-tablero-button.new-profile {
 .ux-minihero {
   width: 100%;
   height: 100%;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   position: relative;
 }
@@ -4536,6 +4777,7 @@ button.new-tablero-button.new-profile {
   height: 100%;
   padding: 0px 14px 0px;
   gap: 10px;
+  background: #fdfdfd;
 }
 
 
@@ -4576,17 +4818,50 @@ button.new-tablero-button.new-profile {
 }
 
 /* marco vertical de la imagen (la “foto centrada”) */
+/* = .dc__media de la portada real: marco vertical 4:5 que llena su
+   columna; la imagen se recorta dentro igual que en la real. */
 .ux-minihero-frame {
-  height: 60%;
+  width: 100%;
+  aspect-ratio: 4 / 5;
   margin: 0 auto;
   overflow: hidden;
+}
+
+/* Centered en desktop = la portada real a escala: nombre pegado a la
+   izquierda, imagen al 29% del ancho (420 de 1440px), etiquetas pegadas a
+   la derecha; márgenes y separación en la misma proporción (64 y 48px). */
+.ux-minihero--centered:not(.is-mobile) {
+  display: flex;
+  align-items: center;
+  padding: 0 4.5%;
+  gap: 3.3%;
+}
+
+.ux-minihero--centered:not(.is-mobile) .ux-minihero-col--left {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.ux-minihero--centered:not(.is-mobile) .ux-minihero-col--center {
+  flex: 0 0 29%;
+  width: 29%;
+  height: auto;
+  display: flex;
+  align-items: center;
+}
+
+.ux-minihero--centered:not(.is-mobile) .ux-minihero-col--right {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
 }
 
 /* imagen dentro del marco */
 .ux-minihero-img-centered {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
@@ -4646,13 +4921,15 @@ button.new-tablero-button.new-profile {
   justify-content: center;
   align-items: center;
   width: 70%;
+  height: 100%;
 }
 
 /* Marco vertical grande */
+/* Toda la columna, como la portada real (70% de ancho, todo el alto):
+   antes era un marco vertical 4:5 y el encuadre no coincidía. */
 .ux-ve-frame {
   width: 100%;
-  object-fit: cover;
-  aspect-ratio: 4 / 5;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -4684,6 +4961,46 @@ button.new-tablero-button.new-profile {
   align-content: center;
 }
 
+/* ── Footer (reutiliza .tf-footer de landing-footer.css) ──────────────────────
+   Mismo tratamiento que .js-footer (JuneStamp) / .rg-footer (Rebeca's
+   Gallery): fondo #fdfdfd, texto discreto, 10px. height:fit-content anula
+   el height:100vh de .tf-footer base (pensado para el footer grande de la
+   landing). */
+.cl-footer {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 160px; /* más aire entre el contenido y el footer */
+  background: #fdfdfd;
+  border-radius: 0;
+  height: fit-content;
+}
+
+.cl-footer .tf-footer__inner {
+  padding: 32px 8px 8px; /* aire solo arriba del texto; abajo como antes */
+  justify-content: center;
+  gap: 32px;
+  font-family: inherit;
+  height: fit-content;
+}
+
+.cl-footer__credit {
+  font-family: inherit;
+  font-size: 10px;
+  color: #333;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.cl-footer__credit-link {
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+}
+
+.cl-footer__credit-link:hover {
+  opacity: 0.6;
+}
+
 /* =========================
    MiniHero - Vertical centrada
 ========================= */
@@ -4696,6 +5013,7 @@ button.new-tablero-button.new-profile {
   padding: 8px 0px 0px 8px;
   text-align: center;
   justify-content: space-between;
+  background: #fdfdfd;
 }
 
 /* parte superior */
@@ -4735,8 +5053,12 @@ button.new-tablero-button.new-profile {
   justify-content: flex-end;
 }
 
+/* Recorta como la portada real (70% del alto, ancho completo del marco)
+   para que se mueva con el encuadre. */
 .ux-vc-img {
   width: 100%;
+  height: 70%;
+  object-fit: cover;
   display: block;
 }
 
@@ -4852,14 +5174,23 @@ button.new-tablero-button.new-profile {
 }
 
 
-.tab.portfolio.active::after{
-  content: " /";
-  opacity: 0.8;
+nav.guardados-tabs {
+  display: flex;
+  gap: 32px;
 }
 
-button.tab.portfolio.active:after {
-    height: 0px;
-    margin-left: -4px;
+button.tab.portfolio {
+  background: transparent;
+  border: transparent;
+  opacity: 0.4;
+  transition: opacity 0.18s ease;
+  padding: 4px 8px;
+  cursor: pointer;
+  letter-spacing: -0.12px;
+}
+
+button.tab.portfolio.active {
+  opacity: 1;
 }
 
 
@@ -4923,7 +5254,7 @@ button.tab.portfolio.active:after {
   text-align: center;
   align-self: center;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   gap: 6px;
   padding: 0;
   flex-direction: row;
@@ -4961,8 +5292,8 @@ button.tab.portfolio.active:after {
 }
 
 @media (max-width: 900px){
-  .user-extern-projects.gallery-view { gap: 24px; }
-  .masonry-gallery__col              { gap: 24px; }
+  .user-extern-projects.gallery-view { gap: 8px; }
+  .masonry-gallery__col              { gap: 8px; }
   .ux-exp-form-wrap {
     margin-left: 0px;
   }
@@ -4981,16 +5312,22 @@ button.tab.portfolio.active:after {
 }
 
 /* Franja superior — texto alineado a la derecha */
+/* = .st__header de la portada real: franja blanca abajo (97px de una
+   pantalla ≈ 11% del alto), nombre a la izquierda y etiquetas a la
+   derecha, con el texto pegado arriba de la franja (16px arriba, 60px
+   abajo en la real). */
 .ux-st-header {
   flex-shrink: 0;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   text-align: right;
-  padding: 8px;
+  height: 11%;
+  padding: 4px 8px 0;
   gap: 4px;
   position: absolute;
   bottom: 0px;
+  z-index: 1;
   background: #fdfdfd;
   width: 100%;
   justify-content: space-between;
@@ -5001,13 +5338,23 @@ button.tab.portfolio.active:after {
 }
 
 /* Imagen ocupa el resto */
+/* min-height:0 + imagen absoluta: sin esto la zona crecía hasta el alto
+   natural de la imagen, no recortaba nada y el encuadre de "Imagen de
+   portada" no la movía. */
 .ux-st-media {
   flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
+/* La imagen acaba donde empieza la franja (como height: calc(100% -
+   97px) en la real), así el encuadre recorta igual. */
 .ux-st-img {
+  position: absolute;
+  inset: 0 0 11% 0;
   width: 100%;
-  height: 100%;
+  height: 89%;
   object-fit: cover;
   display: block;
 }
@@ -5024,8 +5371,9 @@ button.tab.portfolio.active:after {
   height: 100%;
 }
 
+/* = .si__media de la portada real: 40% del alto */
 .ux-si-media {
-  flex: 0 0 42%;
+  flex: 0 0 40%;
   overflow: hidden;
 }
 
@@ -5071,12 +5419,13 @@ button.tab.portfolio.active:after {
   gap: 0;
 }
 
-/* Imagen vertical centrada */
+/* Imagen: llena el alto entre nombre y etiquetas, como .vcard__media de
+   la portada real (flex:1), en vez de ir a su alto natural. */
 .ux-vcard-media {
   width: 82%;
-  height: auto;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .ux-vcard-img {
@@ -5117,6 +5466,55 @@ button.tab.portfolio.active:after {
   justify-content: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+/* =========================
+   Miniaturas mobile = portada real (hero.*.css, is-mobile)
+   La referencia es la web, no la miniatura: medidas en % del alto/ancho
+   de una pantalla de móvil (~390 × 800px).
+========================= */
+
+/* Fullscreen: nombre y etiquetas girados (vertical-rl + 180°, se leen de
+   abajo arriba) en una línea vertical centrada, del 10% al 90% del alto
+   (.fs__content: top/bottom 80px). */
+.ux-minihero--fullscreen.is-mobile .ux-minihero-fullscreen-alt-desktop {
+  top: 10%;
+  bottom: 10%;
+  left: 12%;
+  right: 12%;
+  width: auto;
+  height: auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.ux-minihero--fullscreen.is-mobile .ux-minihero-tags {
+  flex-direction: row;
+  gap: 4px;
+}
+
+/* Fullscreen Alt: la franja blanca vertical va a la derecha empezando
+   arriba (margin 80px 18px, ~10% del alto y ~4.6% del ancho), de 70% de
+   alto y ~38px (~10%) de ancho, no pegada abajo. */
+.ux-minihero--fullscreen-alt.is-mobile .ux-minihero-content {
+  top: 10%;
+  bottom: auto;
+  right: 4.6%;
+  height: 70%;
+  width: 10%;
+  min-width: 18px;
+  margin: 0;
+  padding: 6% 0;
+}
+
+/* Vertical Card: espacio arriba del nombre como en la real (76px ≈ 9.5%,
+   donde va el recuadro ← THEFOLDER/). */
+.ux-vcard-footer--top {
+  padding-top: 9.5%;
 }
 
 
@@ -5254,46 +5652,23 @@ button.tab.portfolio.active:after {
   margin: 0;
 }
 
-/* Tabs secundarias un poco más compactas */
-.tab-save.tab-save--small {
-  font-size: 14px;
-  padding: 10px 16px;
-}
-
-/* Separación entre tabs principales y secundarias */
-.miPerfil-tabs-wrapper {
-  margin-top: 16px;
-}
-
-/* Ocultar sidebar porque ahora es navegación superior */
-.ux-left-sidebar {
-  display: none;
-}
-
-/* El shell ahora puede ocupar todo */
-.ux-edit-shell {
-  grid-template-columns: 1fr; /* si era grid 2 columnas */
-}
-
-/* Si tu main tenía margen por el sidebar, neutralízalo */
-.ux-edit-main {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    align-items: center;
-}
-
-
 .user-extern-error {
     display: flex;
-    /* width: fit-content; */
+    width: 100%;
     height: 100vh;
     flex-direction: column;
     align-content: center;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 24px;
+}
+
+.user-extern-error-code {
+    font-size: 7rem;
+    font-weight: 500;
+    color: #222;
+    line-height: 1;
+    margin: 0;
 }
 
 button.filter-tag.role-by-group.is-active::after {
@@ -5356,7 +5731,8 @@ span.role-group-label {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-top: 4px;
+  margin-top: 12px;
+  justify-content: space-between;
 }
 
 /* Separador entre secciones */
@@ -5385,11 +5761,11 @@ span.role-group-label {
   padding: 8px 20px;
   background: transparent;
   color: var(--color-black, #000);
-  border: 1px solid currentColor;
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
+  border: 1px solid #515151;
+  font-size: .8125rem;
+  letter-spacing: .04em;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity .15s;
   border-radius: 6px;
 }
 
@@ -5398,13 +5774,13 @@ span.role-group-label {
 /* Botón peligro (eliminar cuenta) */
 .ux-btn-danger {
   padding: 8px 20px;
-  background: #c0392b;
-  color: #fff;
+  color: #c0392b;
   border: none;
   font-size: 0.8125rem;
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: opacity 0.15s;
+  border-radius: 6px;
 }
 .ux-btn-danger:hover { opacity: 0.8; }
 .ux-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -5468,6 +5844,8 @@ span.role-group-label {
 /* Modal de eliminación */
 .ux-delete-modal {
   max-width: 460px !important;
+  background-color: #fff;
+  border-radius: 6px;
 }
 
 .ux-delete-modal-body {
@@ -5508,4 +5886,145 @@ section#card-settings {
     flex-wrap: nowrap; /* evita que los tabs salten de línea */
     width: max-content; /* permite que el contenido se extienda */
   }
+}
+/* =============================================================================
+   CV del perfil Classic (CvTab.jsx → .resume-two-col) — un solo sistema
+   Minimalista y coherente con la columna de identidad (.resume-website):
+   - Todo Inter Tight 12/17, color #111. La jerarquía va solo por peso y
+     mayúsculas, sin grises distintos por línea.
+   - Títulos (de sección y de cada entrada): 400, MAYÚSCULAS, 0.04em.
+   - Texto (empresa, lugar, fechas, descripción, enlaces, etiquetas,
+     idiomas, descargas): 300, 0.02em.
+   - Iconos: lucide a 12px, trazo 1.6, a 2px del texto (= .resume-website-arrow).
+   - Esquinas rectas, sin bordes; rellenos #00000006 (logos, etiquetas).
+   Scopeado aquí porque las mismas secciones las usa Rebeca's Gallery con
+   su propio estilo (.rg-cv, RebecasGalleryTemplate.css).
+   ============================================================================= */
+
+.resume-two-col .user-extern-section h2,
+.resume-two-col .experience-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #111;
+    margin: 0;
+}
+
+.resume-two-col .user-extern-section h2 {
+    padding-bottom: 12px;
+}
+
+.resume-two-col :is(
+    .user-extern-p, .experience-company, .experience-location,
+    .experience-period, .experience-duration, .experience-description,
+    .experience-website, .ux-exp-link, .user-extern-skill-tag,
+    .user-languae-text, .pdf-button
+) {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: #111;
+}
+
+.resume-two-col :is(
+    .user-extern-p, .experience-company, .experience-location, .experience-period
+) {
+    margin: 0;
+    padding: 0;
+}
+
+/* Entradas (experiencia, formación, prensa, premios) */
+.resume-two-col .experience-list {
+    gap: 24px;
+}
+
+.resume-two-col .experience-item {
+    gap: 16px;
+    padding-bottom: 0;
+}
+
+.resume-two-col .experience-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.resume-two-col .experience-description {
+    margin: 12px 0 0;
+}
+
+.resume-two-col .experience-logo {
+    flex: 0 0 80px;
+    height: 80px;
+    border: none;
+    background: #00000006;
+}
+
+.resume-two-col .experience-logo-placeholder {
+    background: none;
+    color: #111;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+}
+
+/* Enlaces: subrayado fino + flecha lucide, como la web de la columna de
+   identidad. */
+.resume-two-col :is(.experience-website, .ux-exp-link, .pdf-button) {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s ease;
+}
+
+.resume-two-col :is(.experience-website, .ux-exp-link, .pdf-button):hover {
+    background: none;
+    opacity: 0.6;
+}
+
+.resume-two-col :is(.experience-website-icon, .ux-exp-link-icon, .pdf-icon) {
+    flex: none;
+    margin: 0;
+    opacity: 1;
+    color: currentColor;
+}
+
+/* Etiquetas (habilidades, software) */
+.resume-two-col :is(.user-extern-skills-tags, .user-extern-chips) {
+    gap: 6px;
+}
+
+.resume-two-col .user-extern-skill-tag {
+    padding: 4px 8px;
+    border-radius: 0;
+    background: #00000006;
+}
+
+/* Idiomas: idioma y nivel en la misma línea, separados por el gap */
+.resume-two-col .user-extern-languages {
+    gap: 4px;
+}
+
+/* Descargas */
+.resume-two-col .pdf-row {
+    gap: 4px;
+}
+
+.resume-two-col .pdf-button.disabled {
+    opacity: 0.4;
+    text-decoration: none;
 }

@@ -1,0 +1,423 @@
+/* ── Carpeta (SVG) ────────────────────────────────────────────────
+   Path de esquinas casi rectas + pestaña arriba-izq. Sin sombras,
+   solo stroke fino. Hasta 3 imágenes asomando por detrás/arriba.
+   ─────────────────────────────────────────────────────────────── */
+
+.gf-folder {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1000 / 670;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  text-align: left;
+}
+
+.gf-folder-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gf-folder-shape path {
+  fill: #f0f0f0;
+  stroke-width: 4px;
+}
+
+.gf-folder-label {
+  position: absolute;
+  left: 6%;
+  bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gf-folder-name {
+  font-size: clamp(11px, 1.6vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.04rem;
+  text-transform: uppercase;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gf-folder-count {
+  font-size: clamp(10px, 1.3vw, 11px);
+  letter-spacing: 0.04rem;
+  color: #999;
+}
+
+.gf-folder-rename-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #111;
+  background: transparent;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(11px, 1.6vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.04rem;
+  color: #111;
+  padding: 0 0 2px;
+  outline: none;
+}
+
+/* ── Editar / borrar — solo visibles al hover, justo debajo del nombre ── */
+
+.gf-folder-hover-actions {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+
+.gf-folder:hover .gf-folder-hover-actions,
+.gf-folder:focus-within .gf-folder-hover-actions {
+  opacity: 1;
+}
+
+.gf-folder-hover-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 2px;
+  background: #f8f8f8;
+  color: #333;
+  cursor: pointer;
+}
+
+.gf-folder-hover-btn:hover {
+  background: #fff;
+  color: #111;
+}
+
+/* Tooltip (.nep-icon-tooltip, ver control-panel.css) — solo lo renderiza
+   PageMosaicCard.jsx (variante --mosaic); FolderCard.jsx (--peek) reutiliza
+   el mismo .gf-folder-hover-btn sin ese span, así que esta regla no le
+   afecta aunque viva en el CSS compartido. */
+.gf-folder-hover-btn:hover .nep-icon-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Variante "peek": icono de carpeta arriba con hasta 3 imágenes en
+   abanico recortadas a su silueta exacta (clipPath, ver FolderCard.jsx) y
+   nombre + contador debajo, centrados. ── */
+
+.gf-folder--peek {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  aspect-ratio: unset;
+}
+
+.gf-folder-visual {
+  position: relative;
+  width: 100%;
+}
+
+.gf-folder--peek .gf-folder-shape {
+  position: static;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gf-folder--peek .gf-folder-label {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px 6% 2px;
+  gap: 0;
+}
+
+.gf-folder--peek .gf-folder-name {
+  font-size: var(--text-body-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gf-folder--peek .gf-folder-count {
+  font-size: 12px;
+  letter-spacing: normal;
+  color: #999;
+}
+
+.gf-folder--peek .gf-folder-rename-input {
+  text-align: center;
+  max-width: 80%;
+}
+
+/* ── Variante "mosaic": preview en mosaico real (CSS Grid) + footer en fila
+   (PageMosaicCard.jsx, /proyectos/organizar) — mismo .gf-folder de base y
+   mismos estilos de texto que --peek, pero sin el icono SVG de carpeta y con
+   el label en flujo normal a la izquierda (comparte fila con el hueco de
+   acciones reservado, así que no puede ir centrado como en --peek). ── */
+
+.gf-folder--mosaic {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  aspect-ratio: unset;
+  gap: 8px;
+}
+
+.gf-folder-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  display: grid;
+  gap: 3px;
+}
+
+.gf-folder-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gf-folder-preview--1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.gf-folder-preview--2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.gf-folder-preview--3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+/* La primera imagen (portada) ocupa toda la columna izquierda; la 2ª y 3ª
+   se apilan en la columna derecha, una encima de otra. Selector genérico
+   (no ":first-child" de img) porque una página sin proyectos rellena estas
+   mismas casillas con .gf-folder-preview-placeholder en vez de <img>. */
+.gf-folder-preview--3 > :first-child {
+  grid-row: 1 / span 2;
+}
+
+/* Página sin proyectos con imagen todavía: 3 casillas vacías en vez de
+   fotos, para que se note la cuadrícula (portada + 2 apiladas) aunque no
+   haya nada dentro — mismo fondo que .gf-folder-preview, un tono más claro
+   para que el gap:3px entre casillas se vea como línea divisoria. */
+.gf-folder-preview-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #d2d2d2;
+}
+
+.gf-folder-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.gf-folder--mosaic .gf-folder-label {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0;
+  gap: 0;
+  min-width: 0;
+}
+
+.gf-folder--mosaic .gf-folder-name {
+  font-size: var(--text-body-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gf-folder--mosaic .gf-folder-count {
+  font-size: 12px;
+  letter-spacing: normal;
+  color: #999;
+}
+
+/* Editar/borrar viven en el footer (fila), no centrados debajo del nombre
+   como en --peek — se anula ese posicionamiento, el resto (opacity 0→1 al
+   hover de .gf-folder) se hereda tal cual de la regla base. */
+.gf-folder--mosaic .gf-folder-hover-actions {
+  flex-shrink: 0;
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+/* Trigger "+ nueva página" (PageMosaicCardCreate): no tiene botones propios,
+   solo reserva el mismo hueco para que su footer alinee con las tarjetas reales. */
+.gf-folder--mosaic-dashed .gf-folder-hover-actions {
+  width: 24px;
+  height: 24px;
+}
+
+/* Trigger "+ nueva página" (PageMosaicCardCreate) — mismo preview cuadrado,
+   con la silueta de carpeta punteada centrada dentro en vez de un mosaico. */
+.gf-folder-preview--dashed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  border: 1px dashed #ccc;
+  color: #999;
+}
+
+.gf-folder-preview--dashed .gf-folder-shape {
+  position: absolute;
+  inset: 12%;
+  width: auto;
+  height: auto;
+}
+
+.gf-folder-preview--dashed .gf-folder-shape path {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 10;
+  stroke-dasharray: 20 16;
+}
+
+.gf-folder--mosaic-dashed:hover .gf-folder-preview--dashed {
+  border-color: #999;
+  color: #555;
+}
+
+.gf-folder--mosaic-dashed:hover .gf-folder-preview--dashed .gf-folder-shape path {
+  stroke: #999;
+}
+
+/* ── Variante punteada: crear carpeta ─────────────────────────────
+   Mismo esqueleto que la carpeta real (--peek): icono arriba a su alto
+   natural, contenido debajo en flujo normal — no superpuesto dentro del
+   SVG, para que el resultado final y el estado de creación se parezcan. */
+
+.gf-folder--dashed {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  aspect-ratio: unset;
+}
+
+.gf-folder--dashed .gf-folder-shape {
+  position: static;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gf-folder--dashed .gf-folder-shape rect {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 6;
+  stroke-dasharray: 14 12;
+}
+
+.gf-folder--dashed:hover .gf-folder-shape rect {
+  stroke: #999;
+}
+
+/* ── Variante formulario: crear carpeta (inline) ──────────────── */
+
+.gf-folder--form {
+  cursor: default;
+}
+
+.gf-folder-form-content {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10% 2px;
+}
+
+.gf-folder-form-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  text-align: center;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.02rem;
+  color: #111;
+  padding: 4px 0;
+  outline: none;
+}
+
+.gf-folder-form-input:focus {
+  border-bottom-color: #111;
+}
+
+.gf-folder-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.gf-folder-form-cancel,
+.gf-folder-form-confirm {
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.02rem;
+  cursor: pointer;
+}
+
+.gf-folder-form-cancel {
+  background: transparent;
+  color: #888;
+}
+
+.gf-folder-form-cancel:hover {
+  color: #111;
+}
+
+.gf-folder-form-confirm {
+  background: #111;
+  color: #fff;
+}
+
+.gf-folder-form-confirm:hover {
+  background: #333;
+}
+
+.gf-folder-form-confirm:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

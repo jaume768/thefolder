@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const BASE_LEVELS = [
   { value: 1, key: 'newcomer', icon: 'newcomer.png' },
@@ -15,37 +16,33 @@ const CreativeLevelStep = ({ creativeLevel, onChange, onNext, onBack }) => {
     <h1 className="ob-title">{t('creativeLevel.title')}</h1>
     <p className="ob-subtitle">{t('creativeLevel.subtitle')}</p>
 
-    <div className="ob-level-options">
-      {BASE_LEVELS.map(lvl => (
-        <button
-          key={lvl.value}
-          type="button"
-          className={`ob-level-btn ${creativeLevel === lvl.value ? 'selected' : ''}`}
-          onClick={() => onChange(lvl.value)}
-        >
-          <img className="ob-level-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
-          <span className="ob-level-btn__name">{t(`creativeLevel.levels.${lvl.key}.name`)}</span>
-          <span className="ob-level-btn__desc">
-            {t(`creativeLevel.levels.${lvl.key}.main`)}
-            {lvl.hasSub && <>{' '}{t(`creativeLevel.levels.${lvl.key}.sub`)}</>}
-          </span>
-        </button>
-      ))}
+    <div className="ob-step-content">
+      <div className="ob-level-options">
+        {BASE_LEVELS.map(lvl => (
+          <button
+            key={lvl.value}
+            type="button"
+            className={`ob-level-btn ${creativeLevel === lvl.value ? 'selected' : ''}`}
+            onClick={() => onChange(lvl.value)}
+          >
+            <img className="ob-level-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
+            <span className="ob-level-btn__name">{t(`creativeLevel.levels.${lvl.key}.name`)}</span>
+            <span className="ob-level-btn__desc">
+              {t(`creativeLevel.levels.${lvl.key}.main`)}
+              {lvl.hasSub && <>{' '}{t(`creativeLevel.levels.${lvl.key}.sub`)}</>}
+            </span>
+          </button>
+        ))}
+      </div>
     </div>
 
     <div className="ob-buttons">
-      <button type="button" className="ob-back" onClick={onBack}>{t('common.back')}</button>
-      <button className="ob-cta" disabled={!creativeLevel} onClick={onNext}>
-        {t('common.continue')}
+      <button type="button" className="ob-back" onClick={onBack} aria-label={t('common.back')}>
+        <ChevronLeft size={18} strokeWidth={1.8} />
       </button>
-    </div>
-
-    <div className="ob-dots" aria-hidden="true">
-      <span className="dot" />
-      <span className="dot" />
-      <span className="dot" />
-      <span className="dot active" />
-      <span className="dot" />
+      <button className="ob-cta ob-cta--icon" disabled={!creativeLevel} onClick={onNext} aria-label={t('common.continue')}>
+        <ChevronRight size={18} strokeWidth={1.8} />
+      </button>
     </div>
   </div>
   );

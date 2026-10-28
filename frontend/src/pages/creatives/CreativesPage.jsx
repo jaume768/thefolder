@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X, SlidersHorizontal } from "lucide-react";
 import axios from 'axios';
+import api from '../../services/api';
 import Masonry from "react-masonry-css";
+import { Skel } from '../../components/skeleton/PageSkeleton';
 import { useNavigate } from 'react-router-dom';
 import '../../components/controlPanel/css/explorer.css';
 import '../../components/controlPanel/css/Creatives.css';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES, formatUserLocation } from "../../utils/locations";
 import { AuthContext } from '../../contexts/AuthContext';
 import { useCreatePost } from '../../contexts/CreatePostContext';
-import RegisterModal from '../../components/landing/RegisterModal';
 
 const FLAG_IMAGES = {
   AD: '/iconos/flag/andorra.png',
@@ -34,17 +36,47 @@ const normalize = str => String(str).normalize('NFD').replace(/[\u0300-\u036f]/g
 
 const GROUP_ICONS = {
   'Accesorios':          '/iconos/specialty/accesories.png',
-  'Beauty (MUAH)':       '/iconos/specialty/beauty.png',
+  'Beauty & Hair':       '/iconos/specialty/beauty.png',
   'Fotografía & Vídeo':  '/iconos/specialty/camera-photo.png',
   'Dirección Creativa':  '/iconos/specialty/creative-direction.png',
   'Diseño':              '/iconos/specialty/fashion-design.png',
-  'Digital & 3D':        '/iconos/specialty/graphic-design.png',
-  'Ilustración':         '/iconos/specialty/illustration.png',
+  '3D & Producto':       '/iconos/specialty/graphic-design.png',
+  'Gráfica & Ilustración': '/iconos/specialty/illustration.png',
   'Styling':             '/iconos/specialty/styling.png',
   'Marketing & PR':           '/iconos/specialty/marketing.png',
-  'Digital & Social':         '/iconos/specialty/content-creator.png',
+  'Social & Ecommerce':       '/iconos/specialty/content-creator.png',
   'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
   'Otro':                     '/iconos/specialty/clue.png',
+};
+
+const GROUP_I18N_KEY = {
+  'Accesorios':               'accesorios',
+  'Beauty & Hair':            'beautymuah',
+  'Fotografía & Vídeo':       'fotografiavideo',
+  'Dirección Creativa':       'direccioncreativa',
+  'Diseño':                   'diseno',
+  '3D & Producto':            'digital3d',
+  'Gráfica & Ilustración':    'ilustracion',
+  'Styling':                  'styling',
+  'Marketing & PR':           'marketingpr',
+  'Social & Ecommerce':       'digitalsocial',
+  'Comunicación & Editorial': 'comunicacioneditorial',
+  'Otro':                     'otro',
+};
+
+const GROUP_BG = {
+  'Accesorios':               '/multimedia/specialty-filters/accesories.jpg',
+  'Beauty & Hair':            '/multimedia/specialty-filters/beauty.jpg',
+  'Fotografía & Vídeo':       '/multimedia/specialty-filters/photography.jpg',
+  'Dirección Creativa':       '/multimedia/specialty-filters/creative-direction.jpg',
+  'Diseño':                   '/multimedia/specialty-filters/design.jpg',
+  '3D & Producto':            '/multimedia/specialty-filters/digital.jpg',
+  'Gráfica & Ilustración':    '/multimedia/specialty-filters/illustration.jpg',
+  'Styling':                  '/multimedia/specialty-filters/styling.jpg',
+  'Marketing & PR':           '/multimedia/specialty-filters/marketing-pr.jpg',
+  'Social & Ecommerce':       '/multimedia/specialty-filters/social.jpg',
+  'Comunicación & Editorial': '/multimedia/specialty-filters/editorial.jpg',
+  'Otro':                     '/multimedia/specialty-filters/other.jpg',
 };
 
 const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
@@ -70,13 +102,13 @@ const GROUP_ORDER = [
   "Dirección Creativa",
   "Fotografía & Vídeo",
   "Styling",
-  "Beauty (MUAH)",
-  "Digital & 3D",
+  "Beauty & Hair",
+  "3D & Producto",
   "Accesorios",
   "Comunicación & Editorial",
   "Marketing & PR",
-  "Digital & Social",
-  "Ilustración",
+  "Social & Ecommerce",
+  "Gráfica & Ilustración",
   "Otro",
 ];
 
@@ -107,7 +139,7 @@ const GUEST_ROLES_BY_GROUP = {
     { id: 'g-editorial-styling', label: 'Editorial Styling' },
     { id: 'g-prop-styling',      label: 'Prop Styling' },
   ],
-  'Beauty (MUAH)': [
+  'Beauty & Hair': [
     { id: 'g-makeup',            label: 'Maquillaje' },
     { id: 'g-hair',              label: 'Peluquería' },
     { id: 'g-sfx',               label: 'Efectos Especiales' },
@@ -117,13 +149,13 @@ const GUEST_ROLES_BY_GROUP = {
     { id: 'g-shoes',             label: 'Calzado' },
     { id: 'g-hats',              label: 'Sombrerería' },
   ],
-  'Digital & 3D': [
+  '3D & Producto': [
     { id: 'g-3d',                label: 'Diseño 3D' },
     { id: 'g-motion',            label: 'Motion Graphics' },
     { id: 'g-cgi',               label: 'CGI & Visual Effects' },
-    { id: 'g-graphic',           label: 'Diseño Gráfico' },
   ],
-  'Ilustración': [
+  'Gráfica & Ilustración': [
+    { id: 'g-graphic',           label: 'Diseño Gráfico' },
     { id: 'g-fashion-illus',     label: 'Ilustración de Moda' },
     { id: 'g-digital-illus',     label: 'Ilustración Digital' },
     { id: 'g-traditional',       label: 'Técnicas Tradicionales' },
@@ -139,6 +171,7 @@ const cloudinaryOptimize = (url) => url || '';
 
 const Creatives = () => {
   const { t } = useTranslation('creatives');
+  const { t: tFilters } = useTranslation('filters');
   const [creatives, setCreatives] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tagOptions, setTagOptions] = useState([]);
@@ -156,6 +189,7 @@ const Creatives = () => {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const [isModalClosing, setIsModalClosing] = useState(false);
   const [activeRoleGroup, setActiveRoleGroup] = useState(null);
   const [randomSeed, setRandomSeed] = useState(() => String(Date.now()));
 
@@ -199,11 +233,13 @@ const Creatives = () => {
     clearTimeout(hoverTimer.current);
   }, []);
 
-  const { user } = useContext(AuthContext);
+  const { user, loading: authLoading } = useContext(AuthContext);
   const { openCreatePost } = useCreatePost() || {};
+  // isLoggedIn se usa en efectos y fetch — se actualiza en cuanto AuthContext carga
   const isLoggedIn = !!user;
-
-  const [showRegisterPopup, setShowRegisterPopup] = useState(false);
+  // isConfirmedGuest solo es true cuando SABEMOS que no hay sesión (auth ya terminó de cargar)
+  // Evita que el guest wall aparezca brevemente mientras localStorage se rehidrata
+  const isConfirmedGuest = !authLoading && !user;
 
   // ── Primer proyecto CTA ──────────────────────────────────────────────────
   const [showFirstPostCta, setShowFirstPostCta] = useState(false);
@@ -218,11 +254,7 @@ const Creatives = () => {
 
     const checkPosts = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const res = await axios.get(`${backendUrl}/api/posts/user/${user.username}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get(`/api/posts/user/${user.username}`);
         const posts = res.data?.posts || [];
         if (posts.length === 0) {
           setShowFirstPostCta(true);
@@ -329,16 +361,14 @@ const Creatives = () => {
     const controller = new AbortController();
     const t = setTimeout(async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         const params = new URLSearchParams();
         if (filters.search) params.append("search", filters.search);
         (filters.city || []).forEach(v => params.append("city", v));
         (filters.professionalProfile || []).forEach(v => params.append("professionalProfile", v));
         (filters.creativeLevel || []).forEach(v => params.append("creativeLevel", v));
-        const token = localStorage.getItem("authToken");
-        const res = await axios.get(
-          `${backendUrl}/api/users/creatives/facets?${params.toString()}`,
-          { signal: controller.signal, headers: token ? { Authorization: `Bearer ${token}` } : {} }
+        const res = await api.get(
+          `/api/users/creatives/facets?${params.toString()}`,
+          { signal: controller.signal }
         );
         setFacets(res.data);
       } catch {
@@ -348,10 +378,15 @@ const Creatives = () => {
     return () => { clearTimeout(t); controller.abort(); };
   }, [filters, isLoggedIn]);
 
+  const closeFiltersModal = () => {
+    setIsModalClosing(true);
+    setTimeout(() => { setShowFiltersModal(false); setIsModalClosing(false); }, 220);
+  };
+
   // ── Cerrar modal con Escape ──────────────────────────────────────────────
   useEffect(() => {
     if (!showFiltersModal) return;
-    const onKey = e => { if (e.key === 'Escape') setShowFiltersModal(false); };
+    const onKey = e => { if (e.key === 'Escape') closeFiltersModal(); };
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
@@ -365,17 +400,13 @@ const Creatives = () => {
     ...(appliedFilters.city || []).map(v => {
       const country = ALL_COUNTRIES.find(c => (LOCATIONS[c] || []).includes(v));
       const code = country ? COUNTRY_CODES[country] : null;
-      return { key: 'city', label: code ? `${v} (${code})` : v, value: v };
+      return { key: 'city', label: v, value: v, flagSrc: code && FLAG_IMAGES[code] ? FLAG_IMAGES[code] : null };
     }),
     ...(appliedFilters.professionalProfile || []).map(id => ({
-      key: 'professionalProfile',
-      label: tagLabelById[id] || id,
-      value: id,
+      key: 'professionalProfile', label: tFilters(`tags.${id}`) || tagLabelById[id] || id, value: id,
     })),
     ...(appliedFilters.creativeLevel || []).map(v => ({
-      key: 'creativeLevel',
-      label: t(CREATIVE_LEVELS.find(l => l.value === v)?.label) || v,
-      value: v,
+      key: 'creativeLevel', label: t(CREATIVE_LEVELS.find(l => l.value === v)?.label) || v, value: v,
     })),
   ], [appliedFilters, tagLabelById, t]);
 
@@ -400,7 +431,6 @@ const Creatives = () => {
       setError(null);
 
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         let params = new URLSearchParams();
         params.append('page', page);
         params.append('limit', 9);
@@ -423,13 +453,9 @@ const Creatives = () => {
         appendMulti("professionalProfile", appliedFilters.professionalProfile);
         appendMulti("creativeLevel", appliedFilters.creativeLevel);
 
-        const token = localStorage.getItem("authToken");
-        const response = await axios.get(
-          `${backendUrl}/api/users/creatives?${params.toString()}`,
-          {
-            signal: controller.signal,
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          }
+        const response = await api.get(
+          `/api/users/creatives?${params.toString()}`,
+          { signal: controller.signal }
         );
 
         const newCreatives = response.data.creatives || [];
@@ -487,19 +513,131 @@ const Creatives = () => {
     setHasMore(true);
     setPage(1);
     setRandomSeed(String(Date.now()));
-    setShowFiltersModal(false);
+    closeFiltersModal();
     setActiveRoleGroup(null);
     setActiveCountryPanel(null);
   }, []);
 
   // ── Modal de filtros (igual que Explorer) ────────────────────────────────
   const renderAllFiltersModal = () => (
-    <div className="filters-modal-overlay" onClick={() => setShowFiltersModal(false)}>
-      <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
+    <div className={`filters-modal-overlay${isModalClosing ? ' is-closing' : ''}`} onClick={closeFiltersModal}>
+      <div className={`filters-modal-panel filters-modal-panel--all${isModalClosing ? ' is-closing' : ''}`} onClick={e => e.stopPropagation()}>
 
         <div className="filters-modal-header">
           <span className="filters-modal-title">{t('filters.title')}</span>
-          <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
+          <button type="button" className="filters-modal-close" onClick={closeFiltersModal}><X size={18} strokeWidth={1.8} aria-hidden="true" /></button>
+        </div>
+
+        {/* ── ESPECIALIDAD ──────────────────────────────────── */}
+        <div className="filters-modal-section filters-modal-section--specialty">
+          <p className="filters-col-title">{t('filters.specialty')}</p>
+          <div className="filters-tags filters-tags--level">
+            {orderedGroups.map(group => {
+              const isActive = activeRoleGroup === group;
+              const groupTags = group === 'Otro' ? customTags : (rolesByGroup[group] || []);
+              const selectedInGroup = groupTags.filter(t => (filters.professionalProfile || []).includes(t.id));
+              const hasSelection = selectedInGroup.length > 0;
+              const icon = GROUP_ICONS[group];
+              const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+              const groupFacetTotal = groupTags.reduce((sum, t) => sum + (facets.tags[t.id] ?? 0), 0);
+              const dimmed = hasActiveFilter && !hasSelection && groupFacetTotal === 0;
+              return (
+                <button
+                  key={group}
+                  type="button"
+                  className={`filter-tag filter-country-tag filter-tag--specialty-bg ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                  style={{
+                    ...(dimmed ? { opacity: 0.35, pointerEvents: 'none' } : {}),
+                    backgroundImage: GROUP_BG[group] ? `url(${GROUP_BG[group]})` : undefined,
+                  }}
+                  onClick={() => setActiveRoleGroup(prev => (prev === group ? null : group))}
+                >
+                  <span>{tFilters(`groups.${GROUP_I18N_KEY[group]}`) || group}{hasSelection && !isActive ? ` (${selectedInGroup.length})` : ''}</span>
+                </button>
+              );
+            })}
+          </div>
+          {activeRoleGroup && activeRoleGroup !== 'Otro' && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                <button
+                  type="button"
+                  className={`filter-tag filter-tag--all ${(rolesByGroup[activeRoleGroup] || []).length > 0 && (rolesByGroup[activeRoleGroup] || []).every(tag => (filters.professionalProfile || []).includes(tag.id)) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const ids = (rolesByGroup[activeRoleGroup] || []).map(tag => tag.id);
+                    const allSelected = ids.length > 0 && ids.every(id => (filters.professionalProfile || []).includes(id));
+                    setFilters(prev => ({
+                      ...prev,
+                      professionalProfile: allSelected
+                        ? (prev.professionalProfile || []).filter(id => !ids.includes(id))
+                        : [...new Set([...(prev.professionalProfile || []).filter(id => !ids.includes(id)), ...ids])],
+                    }));
+                  }}
+                >
+                  {t('filters.allCities')}
+                </button>
+                {(rolesByGroup[activeRoleGroup] || []).filter(t => t.count > 0).map(t => {
+                    const sel = (filters.professionalProfile || []).includes(t.id);
+                    const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+                    const facetCount = facets.tags[t.id];
+                    const displayCount = facetCount !== undefined ? facetCount : t.count;
+                    const dimmed = hasActiveFilter && !sel && facetCount === 0;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className={`filter-tag ${sel ? 'selected' : ''}`}
+                        style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
+                        onClick={() => { const groupIds = (rolesByGroup[activeRoleGroup] || []).map(tg => tg.id); const allSelected = groupIds.every(id => (filters.professionalProfile || []).includes(id)); if (allSelected) { setFilters(prev => ({ ...prev, professionalProfile: [...(prev.professionalProfile || []).filter(id => !groupIds.includes(id)), t.id] })); } else { toggleTag('professionalProfile', t.id); } }}
+                      >
+                        {tFilters(`tags.${t.id}`) || t.label}{isLoggedIn ? ` (${displayCount})` : ''}
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+          {activeRoleGroup === 'Otro' && customTags.length > 0 && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                <button
+                  type="button"
+                  className={`filter-tag filter-tag--all ${customTags.length > 0 && customTags.every(tag => (filters.professionalProfile || []).includes(tag.id)) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const ids = customTags.map(tag => tag.id);
+                    const allSelected = ids.length > 0 && ids.every(id => (filters.professionalProfile || []).includes(id));
+                    setFilters(prev => ({
+                      ...prev,
+                      professionalProfile: allSelected
+                        ? (prev.professionalProfile || []).filter(id => !ids.includes(id))
+                        : [...new Set([...(prev.professionalProfile || []).filter(id => !ids.includes(id)), ...ids])],
+                    }));
+                  }}
+                >
+                  {t('filters.allCities')}
+                </button>
+                {customTags.map(t => {
+                  const sel = (filters.professionalProfile || []).includes(t.id);
+                  const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
+                  const facetCount = facets.tags[t.id];
+                  const displayCount = facetCount !== undefined ? facetCount : t.count;
+                  const dimmed = hasActiveFilter && !sel && facetCount === 0;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`filter-tag ${sel ? 'selected' : ''}`}
+                      style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
+                      onClick={() => { const groupIds = customTags.map(tg => tg.id); const allSelected = groupIds.every(id => (filters.professionalProfile || []).includes(id)); if (allSelected) { setFilters(prev => ({ ...prev, professionalProfile: [...(prev.professionalProfile || []).filter(id => !groupIds.includes(id)), t.id] })); } else { toggleTag('professionalProfile', t.id); } }}
+                    >
+                      {t.label}{isLoggedIn ? ` (${displayCount})` : ''}
+                    </button>
+                  );
+                })}
+
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── EXPERIENCIA ───────────────────────────────────── */}
@@ -528,87 +666,7 @@ const Creatives = () => {
           </div>
         </div>
 
-        {/* ── ESPECIALIDAD ──────────────────────────────────── */}
-        <div className="filters-modal-section filters-modal-section--specialty">
-          <p className="filters-col-title">{t('filters.specialty')}</p>
-          <div className="filters-tags filters-tags--level">
-            {orderedGroups.map(group => {
-              const isActive = activeRoleGroup === group;
-              const groupTags = group === 'Otro' ? customTags : (rolesByGroup[group] || []);
-              const selectedInGroup = groupTags.filter(t => (filters.professionalProfile || []).includes(t.id));
-              const hasSelection = selectedInGroup.length > 0;
-              const icon = GROUP_ICONS[group];
-              const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
-              const groupFacetTotal = groupTags.reduce((sum, t) => sum + (facets.tags[t.id] ?? 0), 0);
-              const dimmed = hasActiveFilter && !hasSelection && groupFacetTotal === 0;
-              return (
-                <button
-                  key={group}
-                  type="button"
-                  className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
-                  style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                  onClick={() => setActiveRoleGroup(prev => prev === group ? null : group)}
-                >
-                  {icon && (
-                    <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />
-                  )}
-                  {group}{hasSelection && !isActive ? ` (${selectedInGroup.length})` : ''}
-                </button>
-              );
-            })}
-          </div>
-          {activeRoleGroup && activeRoleGroup !== 'Otro' && (
-            <div className="filters-country-cities">
-              <div className="filters-tags filters-tags--level">
-                {(rolesByGroup[activeRoleGroup] || []).filter(t => t.count > 0).map(t => {
-                    const sel = (filters.professionalProfile || []).includes(t.id);
-                    const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
-                    const facetCount = facets.tags[t.id];
-                    const displayCount = facetCount !== undefined ? facetCount : t.count;
-                    const dimmed = hasActiveFilter && !sel && facetCount === 0;
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className={`filter-tag ${sel ? 'selected' : ''}`}
-                        style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                        onClick={() => toggleTag('professionalProfile', t.id)}
-                      >
-                        {t.label}{isLoggedIn ? ` (${displayCount})` : ''}
-                      </button>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-          {activeRoleGroup === 'Otro' && customTags.length > 0 && (
-            <div className="filters-country-cities">
-              <div className="filters-tags filters-tags--level">
-                {customTags.map(t => {
-                  const sel = (filters.professionalProfile || []).includes(t.id);
-                  const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
-                  const facetCount = facets.tags[t.id];
-                  const displayCount = facetCount !== undefined ? facetCount : t.count;
-                  const dimmed = hasActiveFilter && !sel && facetCount === 0;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`filter-tag ${sel ? 'selected' : ''}`}
-                      style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                      onClick={() => toggleTag('professionalProfile', t.id)}
-                    >
-                      {t.label}{isLoggedIn ? ` (${displayCount})` : ''}
-                    </button>
-                  );
-                })}
-
-              </div>
-            </div>
-          )}
-        </div>
-
-                {/* ── UBICACIÓN ─────────────────────────────────────── */}
+        {/* ── UBICACIÓN ─────────────────────────────────────── */}
         <div className="filters-modal-section">
           <p className="filters-col-title">{t('filters.location')}</p>
           <div className="filters-tags filters-tags--level">
@@ -633,7 +691,7 @@ const Creatives = () => {
                     type="button"
                     className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
                     style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                    onClick={() => setActiveCountryPanel(prev => prev === country ? null : country)}
+                    onClick={() => setActiveCountryPanel(prev => (prev === country ? null : country))}
                   >
                     <span className="country-flag-circle">
                       {FLAG_IMAGES[code]
@@ -648,7 +706,7 @@ const Creatives = () => {
               <button
                 type="button"
                 className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
-                onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
+                onClick={() => setActiveCountryPanel(prev => (prev === '__otros__' ? null : '__otros__'))}
               >
                 <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt="" /></span>
                 {t('others')}
@@ -668,6 +726,21 @@ const Creatives = () => {
                   <p className="filters-empty">{t('noCreativesInCountry')}</p>
                 ) : (
                   <div className="filters-tags filters-tags--level">
+                    <button
+                      type="button"
+                      className={`filter-tag filter-tag--all ${cities.length > 0 && cities.every(c => (filters.city || []).includes(c)) ? 'selected' : ''}`}
+                      onClick={() => {
+                        const allSelected = cities.length > 0 && cities.every(c => (filters.city || []).includes(c));
+                        setFilters(prev => ({
+                          ...prev,
+                          city: allSelected
+                            ? (prev.city || []).filter(c => !cities.includes(c))
+                            : [...new Set([...(prev.city || []), ...cities])],
+                        }));
+                      }}
+                    >
+                      {t('filters.allCities')}
+                    </button>
                     {cities.map(city => {
                       const sel = (filters.city || []).includes(city);
                       const hasActiveFilter = (filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0);
@@ -680,7 +753,7 @@ const Creatives = () => {
                           type="button"
                           className={`filter-tag ${sel ? 'selected' : ''}`}
                           style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                          onClick={() => toggleTag('city', city)}
+                          onClick={() => { const allSelected = cities.every(c => (filters.city || []).includes(c)); if (allSelected) { setFilters(prev => ({ ...prev, city: [...(prev.city || []).filter(c => !cities.includes(c)), city] })); } else { toggleTag('city', city); } }}
                         >
                           {city}{isLoggedIn && displayCount > 0 ? ` (${displayCount})` : ''}
                         </button>
@@ -702,11 +775,13 @@ const Creatives = () => {
           ) : <span />}
           <button type="button" className="filters-modal-apply" onClick={() => {
             if (!isLoggedIn) {
-              setShowFiltersModal(false);
-              setShowRegisterPopup(true);
+              closeFiltersModal();
+              // Sin sesión, filtrar lleva al registro (antes llamaba a
+              // setShowRegisterPopup, que no existe: la página se rompía).
+              navigate('/register');
               return;
             }
-            setShowFiltersModal(false);
+            closeFiltersModal();
           }}>
             {t('filters.apply')}
           </button>
@@ -719,17 +794,33 @@ const Creatives = () => {
   // ── Galería ───────────────────────────────────────────────────────────────
   const renderCreativesGallery = () => {
     if (error) return <div className="error-message">{error}</div>;
-    if (loading && page === 1) {
-      return <div className="loading-indicator">{hasActiveFilters ? t('filtering') : t('loading')}</div>;
+    // Primera carga (o filtrando): skeleton con la misma rejilla y tarjetas.
+    if ((loading && page === 1) || !hasFetchedOnce) {
+      return (
+        <Masonry
+          breakpointCols={{ default: 4, 1024: 3, 768: 2 }}
+          className="my-masonry-grid --big-gap"
+          columnClassName="my-masonry-grid_column"
+        >
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="creative-card sk-static" aria-hidden="true">
+              <Skel w="100%" ratio={i % 3 === 1 ? "3 / 4" : "4 / 5"} />
+              <Skel className="sk-line" w="60%" style={{ marginTop: 10 }} />
+              <Skel className="sk-line sk-line--sm" w="40%" style={{ marginTop: 8 }} />
+            </div>
+          ))}
+        </Masonry>
+      );
     }
-    if (!hasFetchedOnce) return null;
     if (creatives.length === 0 && !loading) {
       return <div className="no-results">{t('noResults')}</div>;
     }
 
     return (
       <Masonry
-        breakpointCols={{ default: 4, 1200: 3, 768: 2 }}
+        // 4 columnas en desktop (>1024px), 3 hasta 1024px (ventanas ~1000px
+        // y tablet), 2 en mobile
+        breakpointCols={{ default: 4, 1024: 3, 768: 2 }}
         className="my-masonry-grid --big-gap"
         columnClassName="my-masonry-grid_column"
       >
@@ -754,6 +845,7 @@ const Creatives = () => {
                     alt={creative.fullName || creative.username}
                     className="creative-card-image"
                     loading="lazy"
+                    onLoad={(e) => { e.currentTarget.style.opacity = '1'; }}
                     onError={(e) => {
                       const fallback = cloudinaryOptimize(creative.lastPost?.mainImage);
                       if (fallback && e.currentTarget.src !== fallback) {
@@ -798,22 +890,26 @@ const Creatives = () => {
 
               <div className="creative-card-meta">
                 <h3 className="creative-name">
-                  {creative.fullName || creative.username}<span> /</span>
+                  {creative.fullName || creative.username}
                 </h3>
+                {/* Mismo sistema que /community: roles con ", " y ciudades
+                    con " + " (formatUserLocation, compartido, usa " · "). */}
                 <div className="creative-role">
                   {creative.professionalTags && creative.professionalTags.length > 0
                     ? creative.professionalTags
                         .slice(0, 2)
-                        .map((id) => tagLabelById[id] || id)
-                        .join(" | ")
+                        .map((id) => tFilters(`tags.${id}`) || tagLabelById[id] || id)
+                        .join(", ")
                     : creative.skills && creative.skills.length > 0
-                      ? creative.skills.slice(0, 2).join(" / ")
+                      ? creative.skills.slice(0, 2).join(", ")
                       : "Creative"}
                 </div>
 
-                {(creative.city || creative.city2) && (
+                {(creative.city || creative.city2 || creative.city3) && (
                   <div className="creative-location">
-                    {formatUserLocation(creative.city, creative.country, t, { city2: creative.city2, country2: creative.country2 })}
+                    {formatUserLocation(creative.city, creative.country, t, { city2: creative.city2, country2: creative.country2, city3: creative.city3, country3: creative.country3 })
+                      .split(" · ")
+                      .join(" + ")}
                   </div>
                 )}
               </div>
@@ -862,7 +958,7 @@ const Creatives = () => {
                 setShowFiltersModal(true);
               }}
             >
-              <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
+              <SlidersHorizontal size={14} strokeWidth={1.8} aria-hidden="true" />
               {t('filters.title')}
               {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
             </button>
@@ -871,27 +967,42 @@ const Creatives = () => {
           {hasActiveFilters && (
             <div className="filters-open-area">
               <div className="filters-open-tags">
-                {activeChips.map(chip => (
-                  <button
-                    key={`${chip.key}-${chip.value}`}
-                    type="button"
-                    className="filters-sticky-chip"
-                    onClick={() => removeChip(chip.key, chip.value)}
-                  >
-                    {chip.label}
-                    <span className="chip-x">×</span>
-                  </button>
-                ))}
+                {[
+                  { key: 'city', label: t('filters.location') },
+                  { key: 'professionalProfile', label: t('filters.specialtyGroup') },
+                  { key: 'creativeLevel', label: t('filters.experience') },
+                ].map(({ key, label }) => {
+                  const chips = activeChips.filter(c => c.key === key);
+                  if (!chips.length) return null;
+                  return (
+                    <div key={key} className="filters-open-group">
+                      <span className="filters-open-group-label">{label}:</span>
+                      <div className="filters-open-group-chips">
+                        {chips.map(chip => (
+                          <button
+                            key={`${chip.key}-${chip.value}`}
+                            type="button"
+                            className="filters-sticky-chip"
+                            onClick={() => removeChip(chip.key, chip.value)}
+                          >
+                            {chip.flagSrc && <img src={chip.flagSrc} alt="" style={{ width: 14, height: 14 }} />}
+                            {chip.label}
+                            <span className="chip-x">×</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
               <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
-                <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
                 {t('filters.clear')}
               </button>
             </div>
           )}
         </div>
 
-        {showFiltersModal && renderAllFiltersModal()}
+        {(showFiltersModal || isModalClosing) && renderAllFiltersModal()}
 
       <div className="creatives-hero-inner">
           <h1 className="centerTitle">
@@ -903,7 +1014,7 @@ const Creatives = () => {
 
       <div
         className="creatives-content"
-        style={!isLoggedIn ? { position: 'relative', maxHeight: '300vh', overflow: 'hidden' } : undefined}
+        style={isConfirmedGuest ? { position: 'relative', maxHeight: '300vh', overflow: 'hidden' } : undefined}
       >
         <main className="creatives-main">
           {renderCreativesGallery()}
@@ -915,26 +1026,19 @@ const Creatives = () => {
           {!hasMore && creatives.length > 0 && <div className="end-message"></div>}
         </main>
 
-        {!isLoggedIn && (
+        {isConfirmedGuest && (
           <div className="creatives-guest-wall">
             <p className="creatives-guest-wall__text">{t('guest.text')}</p>
             <button
               type="button"
               className="new-tablero-button"
-              onClick={() => setShowRegisterPopup(true)}
+              onClick={() => navigate('/register')}
             >
               {t('guest.register')}
             </button>
           </div>
         )}
       </div>
-
-      {showRegisterPopup && (
-        <RegisterModal
-          onClose={() => { setShowRegisterPopup(false); setFilters(EMPTY_FILTERS); }}
-          onSwitchToLogin={() => { setShowRegisterPopup(false); setFilters(EMPTY_FILTERS); }}
-        />
-      )}
     </div>
   );
 };

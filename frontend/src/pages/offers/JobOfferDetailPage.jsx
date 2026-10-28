@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import api from '../../services/api';
 import '../../components/controlPanel/css/jobOfferDetail.css';
 import ApplyOfferModal from '../../components/modals/ApplyOfferModal';
 import { clImg } from '../../utils/optimizeImage';
 import { FaBookmark, FaRegBookmark, FaTimes } from 'react-icons/fa';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const JobOfferDetail = () => {
     const { t, i18n } = useTranslation('offers');
@@ -15,6 +17,11 @@ const JobOfferDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (!offer?.title) return;
+        document.title = `${offer.title} | THEFOLDER`;
+    }, [offer?.title]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userApplied, setUserApplied] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
@@ -51,14 +58,8 @@ const JobOfferDetail = () => {
             if (!isAuthenticated || !offer) return;
             
             try {
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const token = localStorage.getItem('authToken');
-                
-                const response = await axios.get(
-                    `${backendUrl}/api/offers/${offerId}/check-application`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                
+                const response = await api.get(`/api/offers/${offerId}/check-application`);
+
                 setUserApplied(response.data.hasApplied);
             } catch (error) {
             }
@@ -73,14 +74,8 @@ const JobOfferDetail = () => {
             if (!isAuthenticated || !offer) return;
             
             try {
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const token = localStorage.getItem('authToken');
-                
-                const response = await axios.get(
-                    `${backendUrl}/api/users/saved-offers`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                
+                const response = await api.get('/api/users/saved-offers');
+
                 const isSavedOffer = response.data.savedOffers.some(
                     savedOfferId => savedOfferId === offerId || 
                     (typeof savedOfferId === 'object' && savedOfferId._id === offerId)
@@ -118,14 +113,7 @@ const JobOfferDetail = () => {
 
     const handleSubmitApplication = async (answers) => {
         try {
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem('authToken');
-
-            await axios.post(
-                `${backendUrl}/api/offers/${offerId}/apply`,
-                { answers },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await api.post(`/api/offers/${offerId}/apply`, { answers });
 
             // Actualizar estado de aplicación
             setUserApplied(true);
@@ -143,24 +131,15 @@ const JobOfferDetail = () => {
 
         try {
             setSavingOffer(true);
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem('authToken');
-            
+
             if (isSaved) {
                 // Quitar de guardados
-                await axios.delete(
-                    `${backendUrl}/api/users/saved-offers/${offerId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                await api.delete(`/api/users/saved-offers/${offerId}`);
                 setIsSaved(false);
                 setSaveFeedback({ show: true, text: t('view.removedFromSaved') });
             } else {
                 // Añadir a guardados
-                await axios.post(
-                    `${backendUrl}/api/users/saved-offers/${offerId}`,
-                    {},
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                await api.post(`/api/users/saved-offers/${offerId}`, {});
                 setIsSaved(true);
                 setSaveFeedback({ show: true, text: t('view.savedFeedback') });
             }
@@ -175,17 +154,10 @@ const JobOfferDetail = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="job-offer-loading-jobdetail">
-                <i className="fas fa-spinner fa-spin"></i>
-                <span className="loading-indicator">{t('view.loading')}</span>
-            </div>
-        );
-    }
+    if (loading) return <PageSkeleton variant="article" />;
 
     if (error || !offer) {
-        return <div className="job-offer-error-jobdetail">{error || t('view.notFoundTitle')}</div>;
+        return <Navigate to="/404" replace />;
     }
 
     return (

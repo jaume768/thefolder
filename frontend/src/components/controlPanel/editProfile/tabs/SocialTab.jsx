@@ -1,9 +1,50 @@
 // src/components/controlPanel/editProfile/tabs/SocialTab.jsx
-import React from "react";
+// "Redes" — mismo diseño que "Info de perfil" (InfoTab.jsx, ProfileInfo.css):
+// secciones título+ayuda | campos, campos gris tenue sin borde. Las redes
+// con usuario llevan el dominio fijo delante dentro del propio campo
+// (.pi-prefixed); las de enlace completo (Tumblr, Substack, Are.na) van
+// aparte. Mismos valores y mismo onChange que antes (RedesPage.jsx).
 import { useTranslation } from "react-i18next";
 import { FaInstagram, FaLinkedinIn, FaBehance, FaTumblr, FaYoutube, FaPinterest } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 import { SiSubstack } from "react-icons/si";
+import { Section } from "../ui/ProfileFormSection";
+import "./ProfileInfo.css";
+
+const ARENA_ICON = "/iconos/are-na-logo.png";
+
+const youtubeUsername = (url) => (url || "")
+  .replace(/^https?:\/\/(?:www\.)?youtube\.com\/@?/, "")
+  .replace(/\/$/, "")
+  .replace(/^@/, "");
+
+const tumblrValue = (url) => (/^https?:\/\/(?:www\.)?tumblr\.com\//.test(url || "") ? "" : (url || ""));
+
+function SocialField({ id, network, label, icon, prefix, value, placeholder, type = "text", onChange }) {
+  return (
+    <div className="pi-field">
+      <div className="pi-label-row">
+        <label className="pi-label pi-label--icon" htmlFor={id}>
+          {icon}
+          {label}
+        </label>
+      </div>
+      <div className={`pi-input pi-prefixed${prefix ? "" : " pi-prefixed--none"}`}>
+        {prefix && <span className="pi-prefix" aria-hidden="true">{prefix}</span>}
+        <input
+          id={id}
+          name={`social.${network}`}
+          type={type}
+          autoComplete="off"
+          className="pi-prefixed-input"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function SocialTab({
   draft,
@@ -11,229 +52,70 @@ export default function SocialTab({
   handleSocialUsernameChange,
 }) {
   const { t } = useTranslation("profile");
+  const social = draft?.social || {};
+  const usernamePh = t("editProfile.placeholderUsername");
+
+  const field = (network, props) => (
+    <SocialField
+      key={network}
+      id={`social-${network}`}
+      network={network}
+      onChange={(e) => handleSocialUsernameChange(e, network)}
+      {...props}
+    />
+  );
+
   return (
-    <div>
-      <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">{t("editProfile.socialTitle")}</h2>
-        <p className="ux-card-subtitle">
-          {t("editProfile.socialSubtitle").split("\\n").map((line, i) => (
-            <React.Fragment key={i}>
-              {line}
-              {i < t("editProfile.socialSubtitle").split("\\n").length - 1 && <br />}
-            </React.Fragment>
-          ))}
-        </p>
-      </div>
+    <div className="pi-root">
+      <Section
+        id="sec-redes-perfiles"
+        title={t("editProfile.socialPage.networksTitle")}
+        help={t("editProfile.socialPage.networksHelp")}
+      >
+        {field("instagram", {
+          label: "Instagram", icon: <FaInstagram aria-hidden="true" />, prefix: "instagram.com/@",
+          placeholder: usernamePh, value: extractUsername(social.instagram, "instagram.com/"),
+        })}
+        {field("linkedin", {
+          label: "LinkedIn", icon: <FaLinkedinIn aria-hidden="true" />, prefix: "linkedin.com/in/",
+          placeholder: usernamePh, value: extractUsername(social.linkedin, "linkedin.com/in/"),
+        })}
+        {field("behance", {
+          label: "Behance", icon: <FaBehance aria-hidden="true" />, prefix: "behance.net/",
+          placeholder: usernamePh, value: extractUsername(social.behance, "behance.net/"),
+        })}
+        {field("tiktok", {
+          label: "TikTok", icon: <FaTiktok aria-hidden="true" />, prefix: "tiktok.com/@",
+          placeholder: usernamePh, value: extractUsername(social.tiktok, "tiktok.com/"),
+        })}
+        {field("youtube", {
+          label: "YouTube", icon: <FaYoutube aria-hidden="true" />, prefix: "youtube.com/@",
+          placeholder: usernamePh, value: youtubeUsername(social.youtube),
+        })}
+        {field("pinterest", {
+          label: "Pinterest", icon: <FaPinterest aria-hidden="true" />, prefix: "pinterest.com/",
+          placeholder: usernamePh, value: extractUsername(social.pinterest, "pinterest.com/"),
+        })}
+      </Section>
 
-      <section id="card-redes" className="ux-card">
-        <div id="sec-redes-links" className="ux-anchor-target">
-          {/* Instagram */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-instagram">
-              Instagram
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaInstagram />
-              </div>
-
-              <span className="ux-social-prefix">instagram.com/</span>
-
-              <input
-                id="social-instagram"
-                name="social.instagram"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.instagram, "instagram.com/")}
-                onChange={(e) => handleSocialUsernameChange(e, "instagram")}
-              />
-            </div>
-          </div>
-
-          {/* LinkedIn */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-linkedin">
-              Linkedin
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaLinkedinIn />
-              </div>
-
-              <span className="ux-social-prefix">linkedin.com/in/</span>
-
-              <input
-                id="social-linkedin"
-                name="social.linkedin"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.linkedin, "linkedin.com/in/")}
-                onChange={(e) => handleSocialUsernameChange(e, "linkedin")}
-              />
-            </div>
-          </div>
-
-          {/* Behance */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-behance">
-              Behance
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaBehance />
-              </div>
-
-              <span className="ux-social-prefix">behance.net/</span>
-
-              <input
-                id="social-behance"
-                name="social.behance"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.behance, "behance.net/")}
-                onChange={(e) => handleSocialUsernameChange(e, "behance")}
-              />
-            </div>
-          </div>
-
-          {/* TikTok */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-tiktok">
-              TikTok
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaTiktok />
-              </div>
-
-              <span className="ux-social-prefix">tiktok.com/@</span>
-
-              <input
-                id="social-tiktok"
-                name="social.tiktok"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.tiktok, "tiktok.com/")}
-                onChange={(e) => handleSocialUsernameChange(e, "tiktok")}
-              />
-            </div>
-          </div>
-
-          {/* Tumblr */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-tumblr">
-              Tumblr
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaTumblr />
-              </div>
-
-              <span className="ux-social-prefix">tumblr.com/</span>
-
-              <input
-                id="social-tumblr"
-                name="social.tumblr"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.tumblr, "tumblr.com/")}
-                onChange={(e) => handleSocialUsernameChange(e, "tumblr")}
-              />
-            </div>
-          </div>
-
-          {/* YouTube */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-youtube">
-              Youtube
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaYoutube />
-              </div>
-
-              <span className="ux-social-prefix">youtube.com/</span>
-
-              <input
-                id="social-youtube"
-                name="social.youtube"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.youtube, "youtube.com/")}
-                onChange={(e) => handleSocialUsernameChange(e, "youtube")}
-              />
-            </div>
-          </div>
-
-          {/* Pinterest */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-pinterest">
-              Pinterest
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <FaPinterest />
-              </div>
-
-              <span className="ux-social-prefix">pinterest.com/</span>
-
-              <input
-                id="social-pinterest"
-                name="social.pinterest"
-                className="ux-social-field"
-                type="text"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderUsername")}
-                value={extractUsername(draft?.social?.pinterest, "pinterest.com/")}
-                onChange={(e) => handleSocialUsernameChange(e, "pinterest")}
-              />
-            </div>
-          </div>
-          {/* Substack */}
-          <div className="ux-social-row">
-            <label className="ux-social-label" htmlFor="social-substack">
-              Substack
-            </label>
-
-            <div className="ux-social-input">
-              <div className="ux-social-iconbox">
-                <SiSubstack />
-              </div>
-
-              <input
-                id="social-substack"
-                name="social.substack"
-                className="ux-social-field"
-                type="url"
-                autoComplete="off"
-                placeholder={t("editProfile.placeholderSubstack")}
-                value={draft?.social?.substack || ""}
-                onChange={(e) => handleSocialUsernameChange(e, "substack")}
-              />
-            </div>
-          </div>
-
-        </div>
-      </section>
+      <Section
+        id="sec-redes-webs"
+        title={t("editProfile.socialPage.webTitle")}
+        help={t("editProfile.socialPage.webHelp")}
+      >
+        {field("tumblr", {
+          label: "Tumblr", icon: <FaTumblr aria-hidden="true" />, type: "url",
+          placeholder: "https://username.tumblr.com", value: tumblrValue(social.tumblr),
+        })}
+        {field("substack", {
+          label: "Substack", icon: <SiSubstack aria-hidden="true" />, type: "url",
+          placeholder: t("editProfile.placeholderSubstack"), value: social.substack || "",
+        })}
+        {field("arena", {
+          label: "Are.na", icon: <img src={ARENA_ICON} alt="" aria-hidden="true" className="pi-label-img" />, type: "url",
+          placeholder: t("editProfile.placeholderArena"), value: social.arena || "",
+        })}
+      </Section>
     </div>
   );
 }

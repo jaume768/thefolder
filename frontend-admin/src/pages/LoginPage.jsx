@@ -40,12 +40,17 @@ const LoginPage = () => {
     }
   }
 
+  // Foto de fondo a pantalla completa (public/login-bg.jpg: la de la web
+  // login-thefolderby-MaríaGonzalez-2.jpg, girada a horizontal) y el formulario en un panel con
+  // desenfoque para que se lea encima de la imagen.
   return (
     <div className="login-container">
+      <div className="login-stack">
+      {/* Aviso de que es el panel interno, encima del formulario */}
+      <div className="login-badge">Admin</div>
       <div className="login-card">
         <div className="login-header">
-          <h1>Administración</h1>
-          <p>Panel de control para gestionar la plataforma</p>
+          <h1 className="login-brand">THEFOLDER/</h1>
         </div>
         
         {error && (
@@ -83,12 +88,13 @@ const LoginPage = () => {
           
           <button 
             type="submit" 
-            className="btn btn-primary btn-block"
+            className="login-submit"
             disabled={loading}
           >
             {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
+      </div>
       </div>
     </div>
   )

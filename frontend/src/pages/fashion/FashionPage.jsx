@@ -7,6 +7,7 @@ import { MdTune } from 'react-icons/md';
 import Draggable from 'react-draggable';
 import '../../components/controlPanel/css/fashion.css';
 import '../../components/controlPanel/css/explorer.css';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const Fashion = () => {
     const { t } = useTranslation('fashion');
@@ -408,7 +409,7 @@ const filteredInstitutions = institutions.filter((inst) => {
         return true;
     });
 
-    if (loading) return <div className="loading-indicator">{t('loading')}</div>;
+    if (loading) return <PageSkeleton variant="list" />;
     if (error) return <div className="error">{error}</div>;
 
     return (
@@ -691,7 +692,7 @@ const filteredInstitutions = institutions.filter((inst) => {
                                     className="institution-card"
                                     onClick={() =>
                                         inst.username &&
-                                        navigate(`/profile/${inst.username}`)
+                                        navigate(`/${inst.username}`)
                                     }
                                 >
                                     <img

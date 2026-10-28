@@ -12,9 +12,13 @@
     "title": "Filtros",
     "experience": "Experiencia",
     "specialty": "Especialidad del creativo",
+    "specialtyGroup": "Especialidad",
     "location": "Ubicación",
     "clear": "Borrar filtros",
-    "apply": "Filtrar"
+    "apply": "Filtrar",
+    "cityLabel": "Ciudad:",
+    "allCities": "Todas",
+    "specialtyLabel": "Especialidad:"
   },
   "levels": {
     "1": "Estudiante",

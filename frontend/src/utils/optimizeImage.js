@@ -1,5 +1,15 @@
-const MAX_DIMENSION = 1200;
-const JPEG_QUALITY = 0.85;
+const MAX_DIMENSION = 1600;
+const JPEG_QUALITY = 0.92;
+
+/** Inserta una transformación de Cloudinary justo después de "/upload/".
+ *  Si la URL no es de Cloudinary (no tiene ese segmento), se devuelve tal cual. */
+function withCloudinaryTransform(url, transform) {
+  if (!url) return url || '';
+  const marker = '/upload/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  return `${url.slice(0, idx + marker.length)}${transform}/${url.slice(idx + marker.length)}`;
+}
 
 /** Cloudinary image helpers — serve the original file, no transforms. */
 export const clImg = {
@@ -8,6 +18,10 @@ export const clImg = {
   cover:  (url) => url || '',
   thumb:  (url) => url || '',
   logo:   (url) => url || '',
+  // Miniatura pequeña (slideshow de portada /about): las fotos originales
+  // pesan varios MB y ahí solo se ven a ~280px, así que pedimos a Cloudinary
+  // una versión ya redimensionada y comprimida en vez del original.
+  heroSlide: (url) => withCloudinaryTransform(url, 'w_600,h_800,c_fill,g_auto,q_auto,f_auto'),
 };
 
 /**

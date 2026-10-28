@@ -1,1103 +1,730 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { FaTimes, FaCheck, FaFolder } from 'react-icons/fa';
-import '../../components/controlPanel/css/Guardados.css';
-import { clImg } from '../../utils/optimizeImage';
+// pages/saved/GuardadosPage.jsx
+// "Guardados" — las imágenes que el usuario guarda de otros creativos,
+// ordenadas en carpetas. Una sola página con dos vistas:
+//   · Carpetas            (/myprofile/saved)
+//   · Todas las imágenes  (/myprofile/saved?vista=imagenes), filtrable por carpeta
+//     (/myprofile/saved?carpeta=<id>, o ?carpeta=sin para "Sin carpeta").
+// /myprofile/saved/folder/:id (enlaces antiguos) redirige a ?carpeta=<id>.
+//
+// Modelo de datos (backend): una imagen guardada está en UN sitio —
+// User.favorites (= "Sin carpeta") o en los items de UNA carpeta.
+// /api/folders/add la saca de favorites; /api/folders/remove la devuelve;
+// borrar una carpeta devuelve sus imágenes a favorites. Por eso quitar de
+// Guardados una imagen que está en carpeta son 2 llamadas (sacar de la
+// carpeta + borrar de favorites), y deshacer, las inversas.
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Bookmark, ChevronLeft, ExternalLink, FolderInput, Plus } from "lucide-react";
+import api from "../../services/api";
+import PanelPageHeader from "../../components/controlPanel/editProfile/ui/PanelPageHeader";
+import ConfirmDialog from "../../components/controlPanel/proyectos/ConfirmDialog";
+import {
+  useBreakpoint, FolderCard, folderActionIcons, ImageItem, MoveOptions, MovePopover,
+  FolderNameForm, NamePopover, Sheet, Toast, SelectionBar,
+} from "../../components/controlPanel/saved/GuardadosParts";
+import "./Guardados.css";
 
-const Guardados = () => {
-  const { t } = useTranslation('saved');
-  const [savedPosts, setSavedPosts] = useState([]);
-  const [folders, setFolders] = useState([]);
-  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [folderToDelete, setFolderToDelete] = useState(null);
-  const [editingFolderName, setEditingFolderName] = useState({ id: null, name: '' });
-  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [hoveredPost, setHoveredPost] = useState(null);
-  const [ideasSinOrganizar, setIdeasSinOrganizar] = useState([]);
-  const [loadingData, setLoadingData] = useState(false);
+const UNSORTED = "sin";
+const TOAST_MS = 3000;
+const UNDO_MS = 5000;
 
-  // Tabs
-  const [activeTab, setActiveTab] = useState('carpetas'); // 'carpetas' | 'imagenes'
+const keyOf = (postId, imageUrl) => `${postId}::${imageUrl}`;
+const byDateDesc = (a, b) => new Date(b.date || 0) - new Date(a.date || 0);
 
-  // Multiselección robusta con Set (evita errores por _id undefined)
-  const [selectedKeys, setSelectedKeys] = useState(() => new Set()); // keys: `${pid}::${imageUrl}`
-  const [showOrganizeModal, setShowOrganizeModal] = useState(false);
-  const [showSelectFolderModal, setShowSelectFolderModal] = useState(false);
+const normalizeFavorite = (fav) => {
+  const postId = String(fav.postId || fav._id || "");
+  const imageUrl = fav.savedImage || fav.mainImage || fav.imageUrl || "";
+  return {
+    key: keyOf(postId, imageUrl), postId, imageUrl, folderId: null,
+    title: fav.title || "", creatorUsername: fav.creatorUsername || "", date: fav.savedAt,
+  };
+};
 
-  // Pinterest-like: marcar como "ya movida/guardada" SIN quitar del grid
-  const [movedKeys, setMovedKeys] = useState(() => new Set()); // keys: `${pid}::${imageUrl}`
-  const [savingKeys, setSavingKeys] = useState(() => new Set()); // opcional: feedback "guardando..."
+const normalizeFolder = (f) => ({
+  _id: String(f._id),
+  name: f.name,
+  items: (f.items || []).map((it) => {
+    const postId = String(it.postId || "");
+    return {
+      key: keyOf(postId, it.imageUrl), postId, imageUrl: it.imageUrl, folderId: String(f._id),
+      title: it.postTitle || "", creatorUsername: it.creatorUsername || "", date: it.addedAt,
+    };
+  }).filter((it) => it.postId && it.imageUrl),
+});
 
-  // Inline picker (Pinterest-like) para 1 imagen
-  const [inlinePickerFor, setInlinePickerFor] = useState(null); // pid
-  const [movingInline, setMovingInline] = useState(false);
+// Enlaces antiguos /myprofile/saved/folder/:folderId → /myprofile/saved?carpeta=<id>
+export function GuardadosFolderRedirect() {
+  const { folderId } = useParams();
+  return <Navigate to={`/myprofile/saved?carpeta=${encodeURIComponent(folderId || "")}`} replace />;
+}
 
-  // Crear carpeta rápida cuando no hay ninguna (inline picker + bulk modal)
-  const [quickFolderName, setQuickFolderName] = useState('');
-  const [isQuickCreating, setIsQuickCreating] = useState(false);
-  const [showCreateInModal, setShowCreateInModal] = useState(false);
-
+export default function GuardadosPage() {
+  const { t } = useTranslation("saved");
   const navigate = useNavigate();
+  const bp = useBreakpoint();
+  const isMobile = bp === "mobile";
+  const touch = bp !== "desktop"; // tablet y mobile: sin hover → botón ···
 
-  const folderSelectRef = useRef(null);        // (legacy) modal editar 1 imagen
-  const folderBulkSelectRef = useRef(null);    // modal mover en grupo
+  // ── Datos ──
+  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState([]); // "Sin carpeta"
+  const [folders, setFolders] = useState([]);     // más reciente primero
 
-  const getPostId = (post) => post?.postId || post?._id || null;
-  const getImageUrl = (post) => post?.imageUrl || post?.savedImage || post?.mainImage || null;
-  const getKey = (post) => {
-    const pid = getPostId(post);
-    const url = getImageUrl(post);
-    if (!pid || !url) return null;
-    return `${pid}::${url}`;
-  };
-
-  const addMovedKey = (key) => {
-    if (!key) return;
-    setMovedKeys(prev => {
-      const next = new Set(prev);
-      next.add(key);
-      return next;
-    });
-  };
-
-  const addSavingKey = (key) => {
-    if (!key) return;
-    setSavingKeys(prev => {
-      const next = new Set(prev);
-      next.add(key);
-      return next;
-    });
-  };
-
-  const removeSavingKey = (key) => {
-    if (!key) return;
-    setSavingKeys(prev => {
-      const next = new Set(prev);
-      next.delete(key);
-      return next;
-    });
-  };
-
-  // Cierra el picker inline al clicar fuera
-  useEffect(() => {
-    const onDocClick = (e) => {
-      if (!inlinePickerFor) return;
-      const insidePicker = e.target.closest('.inline-folder-picker');
-      const insideButton = e.target.closest('.idea-edit-button');
-      if (!insidePicker && !insideButton) {
-        setInlinePickerFor(null);
-      }
-    };
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, [inlinePickerFor]);
-
-  const handleEditPost = (post, e) => {
-    e.stopPropagation();
-    const pid = getPostId(post);
-    if (!pid) return;
-    setInlinePickerFor(prev => (prev === pid ? null : pid));
-  };
-
-  const handleUnsaveImage = async (post, e) => {
-    e.stopPropagation();
-    const pid = getPostId(post);
-    const imageUrl = getImageUrl(post);
-    if (!pid) return;
-    const token = localStorage.getItem('authToken');
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    // Quitar optimísticamente de la lista
-    setIdeasSinOrganizar(prev => prev.filter(p => getKey(p) !== getKey(post)));
+  const fetchAll = useCallback(async () => {
     try {
-      await axios.delete(`${backendUrl}/api/users/favorites/${pid}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        data: { imageUrl },
-      });
+      const [favRes, folderRes] = await Promise.all([
+        api.get("/api/users/favorites"),
+        api.get("/api/folders"),
+      ]);
+      setFavorites((favRes.data?.favorites || []).map(normalizeFavorite).filter((it) => it.postId && it.imageUrl));
+      setFolders([...(folderRes.data?.folders || [])].reverse().map(normalizeFolder));
     } catch {
-      // Si falla, restaurar
-      setIdeasSinOrganizar(prev => [post, ...prev]);
-    }
-  };
-
-  const navigateToPost = (post) => {
-    if (!post) return;
-    const pid = getPostId(post);
-    const clickedImageUrl = getImageUrl(post);
-    if (!pid) return;
-    navigate(`/post/${pid}`, { state: { clickedImageUrl } });
-  };
-
-  // Toggle multiselección con key robusta
-  const toggleImageSelection = (post) => {
-    const key = getKey(post);
-    if (!key) return;
-
-    // si ya está movida, no la dejamos seleccionar (opcional pero recomendado)
-    if (movedKeys.has(key) || savingKeys.has(key)) return;
-
-    setSelectedKeys(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
-  const openOrganizeModal = () => {
-    setSelectedKeys(new Set());
-    setShowOrganizeModal(true);
-  };
-
-  const closeOrganizeModal = () => {
-    setShowOrganizeModal(false);
-    setShowSelectFolderModal(false); // por si estaba abierto detrás
-    setSelectedKeys(new Set());      // aquí sí limpiamos porque ya cerramos todo
-  };
-
-  const openSelectFolderModal = () => {
-    if (selectedImages.length > 0) {
-      setShowSelectFolderModal(true);
-      setShowOrganizeModal(false); // clave: ocultar el modal de selección
-    } else {
-      setNotification({ show: true, message: t('selectAtLeastOne'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    }
-  };
-
-  const backToOrganizeModal = () => {
-    setShowSelectFolderModal(false);
-    setShowOrganizeModal(true);
-    setShowCreateInModal(false);
-    setQuickFolderName('');
-  };
-
-  // Derivar selectedImages desde selectedKeys + ideasSinOrganizar (siempre consistente)
-  const selectedImages = useMemo(() => {
-    if (!ideasSinOrganizar?.length) return [];
-    return ideasSinOrganizar.filter(p => {
-      const key = getKey(p);
-      return key && selectedKeys.has(key);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ideasSinOrganizar, selectedKeys]);
-
-  const moveSelectedImagesToFolder = async (folderId) => {
-    if (!folderId || selectedImages.length === 0) return;
-
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      setNotification({ show: true, message: t('moving'), type: 'info' });
-
-      // marcamos como "guardando" para overlay instantáneo (UX)
-      const keysToSave = selectedImages.map(p => getKey(p)).filter(Boolean);
-      keysToSave.forEach(addSavingKey);
-
-      // guardado batch con Promise.all (rápido y sin errores de estado)
-      await Promise.all(
-        selectedImages.map((image) => {
-          const pid = getPostId(image);
-          const imageUrl = getImageUrl(image);
-          return axios.post(
-            `${backendUrl}/api/folders/add`,
-            { folderId, postId: pid, imageUrl },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-        })
-      );
-
-      // Pinterest-like: NO refrescamos datos, NO quitamos del grid.
-      // Solo marcamos como "movidas"
-      keysToSave.forEach((k) => {
-        removeSavingKey(k);
-        addMovedKey(k);
-      });
-
-      setNotification({
-        show: true,
-        message: selectedImages.length === 1 ? t('singleImageMoved', { count: selectedImages.length }) : t('imagesMoved', { count: selectedImages.length }),
-        type: 'success'
-      });
-
-      setShowSelectFolderModal(false);
-      setShowOrganizeModal(false);
-      setSelectedKeys(new Set());
-
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    } catch (error) {
-      // quitamos "guardando" de las que estuvieran marcadas
-      selectedImages.map(p => getKey(p)).filter(Boolean).forEach(removeSavingKey);
-
-      setNotification({ show: true, message: t('moveError'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    }
-  };
-
-  // mover 1 imagen (inline picker) - Pinterest-like
-  const moveSingleImageToFolderInline = async (post, folderId) => {
-    if (!post || !folderId) return;
-
-    const key = getKey(post);
-    if (!key) return;
-
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      setInlinePickerFor(null);
-      setMovingInline(true);
-
-      // overlay inmediato
-      addSavingKey(key);
-
-      const pid = getPostId(post);
-      const imageUrl = getImageUrl(post);
-
-      await axios.post(
-        `${backendUrl}/api/folders/add`,
-        { folderId, postId: pid, imageUrl },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // NO refrescamos y NO quitamos del grid
-      removeSavingKey(key);
-      addMovedKey(key);
-
-      setNotification({ show: true, message: t('imageMoved'), type: 'success' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-
-    } catch (error) {
-      removeSavingKey(key);
-      setNotification({ show: true, message: t('singleMoveError'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
+      showToast(t("page.loadError"));
     } finally {
-      setMovingInline(false);
+      setLoading(false);
     }
-  };
-
-  const openFolderContent = (folderId) => {
-    navigate(`/guardados/folder/${folderId}`);
-  };
-
-  const filterOrganizedImages = (allSavedImages, allFolders) => {
-    const organizedImageUrls = new Set();
-
-    allFolders.forEach(folder => {
-      if (folder.items && folder.items.length > 0) {
-        folder.items.forEach(item => {
-          if (item.imageUrl) organizedImageUrls.add(item.imageUrl);
-        });
-      }
-    });
-
-    return allSavedImages.filter(image => {
-      const imageUrl = image.savedImage || image.mainImage || (image.imageUrl ? image.imageUrl : null);
-      return imageUrl && !organizedImageUrls.has(imageUrl);
-    });
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoadingData(true);
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-        const savedImagesRes = await axios.get(`${backendUrl}/api/users/favorites`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const foldersRes = await axios.get(`${backendUrl}/api/folders`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (savedImagesRes.data.favorites && foldersRes.data.folders) {
-          const allSavedImages = savedImagesRes.data.favorites;
-          const allFolders = foldersRes.data.folders;
-
-          const processedImages = allSavedImages.map(item => {
-            if (!item.imageUrl && (item.savedImage || item.mainImage)) {
-              return { ...item, imageUrl: item.savedImage || item.mainImage };
-            }
-            return item;
-          });
-
-          setSavedPosts(processedImages);
-
-          // Pinterest order: newest first
-          setFolders([...allFolders].reverse());
-
-          const unorganizedImages = filterOrganizedImages(processedImages, allFolders);
-          setIdeasSinOrganizar(unorganizedImages);
-          setActiveTab(unorganizedImages.length > 0 ? 'imagenes' : 'carpetas');
-        }
-      } catch (error) {
-        setNotification({ show: true, message: t('errorLoadingData'), type: 'error' });
-        setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-      }
-      setLoadingData(false);
-    };
-
-    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCreateFolder = async () => {
-    if (!newFolderName.trim()) return;
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
+  // ── Vista y filtro (en la URL, para poder enlazar una carpeta) ──
+  const [params, setParams] = useSearchParams();
+  const carpeta = params.get("carpeta");
+  const view = carpeta || params.get("vista") === "imagenes" ? "images" : "folders";
+  const filter = carpeta || "all";
+
+  const goFolders = () => setParams({});
+  const goImages = (f = "all") => setParams(f === "all" ? { vista: "imagenes" } : { carpeta: f });
+
+  // Carpeta del enlace que ya no existe → "Todas"
+  useEffect(() => {
+    if (loading || !carpeta || carpeta === UNSORTED) return;
+    if (!folders.some((f) => f._id === carpeta)) goImages("all");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, carpeta, folders]);
+
+  // ── Derivados ──
+  const folderNameById = useMemo(() => new Map(folders.map((f) => [f._id, f.name])), [folders]);
+
+  const allImages = useMemo(() => (
+    [...favorites, ...folders.flatMap((f) => f.items)]
+      .map((it) => ({ ...it, folderName: it.folderId ? folderNameById.get(it.folderId) || "" : "" }))
+      .sort(byDateDesc)
+  ), [favorites, folders, folderNameById]);
+
+  const visibleImages = useMemo(() => {
+    if (filter === "all") return allImages;
+    if (filter === UNSORTED) return allImages.filter((it) => !it.folderId);
+    return allImages.filter((it) => it.folderId === filter);
+  }, [allImages, filter]);
+
+  const activeFolder = filter !== "all" && filter !== UNSORTED ? folders.find((f) => f._id === filter) : null;
+  // Dentro de una carpeta (o "Sin carpeta"): sub-página de Guardados con su
+  // "volver a todas las carpetas" (sidebar en desktop, top bar en mobile).
+  const inFolder = view === "images" && filter !== "all";
+  const folderTitle = activeFolder ? activeFolder.name : t("page.unsorted");
+  const imagesLabel = (n) => t("page.images", { count: n });
+  const coverOf = (items) => [...items].sort(byDateDesc).map((it) => it.imageUrl);
+
+  // ── Toast ──
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+  function showToast(message, action, ms = action ? UNDO_MS : TOAST_MS) {
+    clearTimeout(toastTimer.current);
+    setToast({ message, action });
+    toastTimer.current = setTimeout(() => setToast(null), ms);
+  }
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+  // ── UI abierta ──
+  const [namePopover, setNamePopover] = useState(null); // 'header' | 'tile' | 'rename'
+  const [movePopoverKey, setMovePopoverKey] = useState(null);
+  const [renaming, setRenaming] = useState({ id: null, value: "" });
+  const [sheet, setSheet] = useState(null); // {type:'newFolder'|'folder'|'renameFolder'|'image', ...}
+  const [confirm, setConfirm] = useState(null); // {type:'deleteFolder', folder} | {type:'removeMany', items}
+  const [busy, setBusy] = useState(false);
+
+  // ── Selección múltiple ──
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selected, setSelected] = useState(() => new Set());
+  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
+
+  const exitSelection = () => { setSelectionMode(false); setSelected(new Set()); setBulkMoveOpen(false); };
+  const toggleSelected = (key) => setSelected((prev) => {
+    const next = new Set(prev);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    return next;
+  });
+  const selectedItems = allImages.filter((it) => selected.has(it.key));
+
+  // Salir de la selección al cambiar de vista
+  useEffect(() => { if (view !== "images") exitSelection(); }, [view]);
+
+  // ── Acciones: carpetas ──
+  const createFolder = async (name) => {
+    setBusy(true);
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      setNotification({ show: true, message: t('creatingFolder'), type: 'info' });
-
-      const res = await axios.post(
-        `${backendUrl}/api/folders`,
-        { name: newFolderName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.data.folder) {
-        // Pinterest order: new first
-        setFolders(prev => [res.data.folder, ...prev]);
-
-        setNewFolderName('');
-        setIsCreatingFolder(false);
-
-        setNotification({ show: true, message: t('folderCreated'), type: 'success' });
-        setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-      }
-    } catch (error) {
-      setNotification({ show: true, message: t('errorCreatingFolder'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
+      const res = await api.post("/api/folders", { name });
+      const folder = normalizeFolder(res.data.folder);
+      setFolders((prev) => [folder, ...prev]);
+      showToast(t("page.folderCreated"));
+      return folder;
+    } catch {
+      showToast(t("page.error"));
+      return null;
+    } finally {
+      setBusy(false);
     }
   };
 
-  // Crea una carpeta en el momento y llama a onCreated(newFolder) cuando termina
-  const createFolderQuick = async (onCreated) => {
-    const name = quickFolderName.trim();
-    if (!name) return;
+  const renameFolder = async (id, name) => {
+    const prevName = folderNameById.get(id);
+    if (!name || name === prevName) return;
+    setFolders((prev) => prev.map((f) => (f._id === id ? { ...f, name } : f)));
     try {
-      setIsQuickCreating(true);
-      const token = localStorage.getItem('authToken');
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      const res = await axios.post(
-        `${backendUrl}/api/folders`,
-        { name },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.data.folder) {
-        setFolders(prev => [res.data.folder, ...prev]);
-        setQuickFolderName('');
-        onCreated(res.data.folder);
+      await api.put(`/api/folders/${id}`, { name });
+      showToast(t("page.folderRenamed"));
+    } catch {
+      setFolders((prev) => prev.map((f) => (f._id === id ? { ...f, name: prevName } : f)));
+      showToast(t("page.error"));
+    }
+  };
+
+  const deleteFolder = async (folder) => {
+    setBusy(true);
+    try {
+      await api.delete(`/api/folders/${folder._id}`);
+      // Sus imágenes vuelven a "Sin carpeta" (igual que hace el backend)
+      const freed = folder.items.map((it) => ({ ...it, folderId: null, date: new Date().toISOString() }));
+      setFavorites((prev) => [...freed, ...prev.filter((p) => !freed.some((f) => f.key === p.key))]);
+      setFolders((prev) => prev.filter((f) => f._id !== folder._id));
+      if (filter === folder._id) goImages("all");
+      setConfirm(null);
+      showToast(t("page.folderDeleted"));
+    } catch {
+      showToast(t("page.error"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // ── Acciones: imágenes ──
+  // Refleja un movimiento en el estado local (sin recargar).
+  const applyMove = (items, targetId) => {
+    const keys = new Set(items.map((it) => it.key));
+    const now = new Date().toISOString();
+    const moved = items.map((it) => ({ ...it, folderId: targetId, date: now }));
+    setFavorites((prev) => {
+      const rest = prev.filter((it) => !keys.has(it.key));
+      return targetId ? rest : [...moved, ...rest];
+    });
+    setFolders((prev) => prev.map((f) => {
+      const rest = f.items.filter((it) => !keys.has(it.key));
+      return f._id === targetId ? { ...f, items: [...moved, ...rest] } : (rest.length === f.items.length ? f : { ...f, items: rest });
+    }));
+  };
+
+  const moveItems = async (items, targetId) => {
+    const toMove = items.filter((it) => (it.folderId ?? null) !== (targetId ?? null));
+    setMovePopoverKey(null);
+    setBulkMoveOpen(false);
+    setSheet(null);
+    if (!toMove.length) return;
+    setBusy(true);
+    applyMove(toMove, targetId);
+    const targetName = targetId ? folderNameById.get(targetId) || "" : t("page.unsorted");
+    try {
+      await Promise.all(toMove.map(async (it) => {
+        if (it.folderId) await api.post("/api/folders/remove", { folderId: it.folderId, postId: it.postId, imageUrl: it.imageUrl });
+        if (targetId) await api.post("/api/folders/add", { folderId: targetId, postId: it.postId, imageUrl: it.imageUrl });
+      }));
+      showToast(toMove.length === 1
+        ? t("page.movedTo", { name: targetName })
+        : t("page.movedManyTo", { count: toMove.length, name: targetName }));
+      if (selectionMode) exitSelection();
+    } catch {
+      showToast(t("page.error"));
+      fetchAll(); // vuelve al estado real del servidor
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const createAndMove = async (items, name) => {
+    const folder = await createFolder(name);
+    if (folder) await moveItems(items, folder._id);
+  };
+
+  // Quitar de Guardados, con "Deshacer" durante 5 s.
+  const pendingRemoval = useRef(Promise.resolve());
+
+  const restoreItems = async (items) => {
+    clearTimeout(toastTimer.current);
+    setToast(null);
+    await pendingRemoval.current.catch(() => {});
+    setFavorites((prev) => [...items.filter((it) => !it.folderId), ...prev].sort(byDateDesc));
+    setFolders((prev) => prev.map((f) => {
+      const back = items.filter((it) => it.folderId === f._id);
+      return back.length ? { ...f, items: [...back, ...f.items].sort(byDateDesc) } : f;
+    }));
+    try {
+      for (const it of items) {
+        await api.post(`/api/users/favorites/${it.postId}`, { imageUrl: it.imageUrl });
+        if (it.folderId) await api.post("/api/folders/add", { folderId: it.folderId, postId: it.postId, imageUrl: it.imageUrl });
       }
     } catch {
-      setNotification({ show: true, message: t('errorCreatingFolder'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    } finally {
-      setIsQuickCreating(false);
+      showToast(t("page.error"));
+      fetchAll();
     }
   };
 
-  const handleDeleteFolder = async (folderId) => {
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const removeItems = (items) => {
+    if (!items.length) return;
+    const keys = new Set(items.map((it) => it.key));
+    setSheet(null);
+    setConfirm(null);
+    setMovePopoverKey(null);
+    setFavorites((prev) => prev.filter((it) => !keys.has(it.key)));
+    setFolders((prev) => prev.map((f) => (f.items.some((it) => keys.has(it.key)) ? { ...f, items: f.items.filter((it) => !keys.has(it.key)) } : f)));
+    if (selectionMode) exitSelection();
 
-      await axios.delete(`${backendUrl}/api/folders/${folderId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    pendingRemoval.current = Promise.all(items.map(async (it) => {
+      if (it.folderId) await api.post("/api/folders/remove", { folderId: it.folderId, postId: it.postId, imageUrl: it.imageUrl });
+      await api.delete(`/api/users/favorites/${it.postId}`, { data: { imageUrl: it.imageUrl } });
+    }));
+    pendingRemoval.current.catch(() => { showToast(t("page.error")); fetchAll(); });
 
-      setFolders(prev => prev.filter(folder => folder._id !== folderId));
-      setShowDeleteConfirm(false);
-      setFolderToDelete(null);
-
-      setNotification({ show: true, message: t('folderDeleted'), type: 'success' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    } catch (error) {
-      setNotification({ show: true, message: t('errorDeletingFolder'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    }
+    showToast(
+      items.length === 1 ? t("page.removed") : t("page.removedMany", { count: items.length }),
+      { label: t("page.undo"), onClick: () => restoreItems(items) },
+    );
   };
 
-  const confirmDeleteFolder = (folderId, e) => {
-    e.stopPropagation();
-    setFolderToDelete(folderId);
-    setShowDeleteConfirm(true);
-  };
+  const openPost = (item) => navigate(`/post/${item.postId}`, { state: { clickedImageUrl: item.imageUrl } });
 
-  const cancelDeleteFolder = () => {
-    setFolderToDelete(null);
-    setShowDeleteConfirm(false);
-  };
+  // ── Render: piezas ──
+  const newFolderButton = (anchor, className = "") => (
+    <span className="gd-anchor">
+      <button
+        type="button"
+        className={className || "nep-ph-btn nep-ph-btn--black"}
+        onClick={() => (isMobile ? setSheet({ type: "newFolder" }) : setNamePopover((v) => (v === anchor ? null : anchor)))}
+        aria-haspopup="dialog"
+        data-gd-trigger
+        aria-expanded={namePopover === anchor}
+      >
+        <Plus size={14} strokeWidth={1.6} aria-hidden="true" />
+        {t("page.newFolder")}
+      </button>
+      {namePopover === anchor && (
+        <NamePopover
+          t={t}
+          className={anchor === "header" ? "gd-popover--right" : ""}
+          submitLabel={t("page.create")}
+          onSubmit={async (name) => { const f = await createFolder(name); if (f) setNamePopover(null); }}
+          onClose={() => setNamePopover(null)}
+          busy={busy}
+        />
+      )}
+    </span>
+  );
 
-  const startEditFolderName = (folder, e) => {
-    e.stopPropagation();
-    setEditingFolderName({ id: folder._id, name: folder.name });
-  };
+  const headerActions = !loading && (
+    <>
+      {view === "images" && !selectionMode && allImages.length > 0 && (
+        <button type="button" className="nep-ph-btn nep-ph-btn--grey" onClick={() => setSelectionMode(true)}>
+          {t("page.select")}
+        </button>
+      )}
+      {newFolderButton("header")}
+    </>
+  );
 
-  const updateFolderName = async (e) => {
-    if (e) e.preventDefault();
+  const folderCards = folders.map((f) => {
+    const isRenaming = renaming.id === f._id;
+    return (
+      <FolderCard
+        key={f._id}
+        name={f.name}
+        meta={imagesLabel(f.items.length)}
+        images={coverOf(f.items)}
+        onOpen={() => goImages(f._id)}
+        openLabel={t("page.openFolder", { name: f.name })}
+        actions={isMobile ? null : [
+          { key: "rename", label: t("page.rename"), icon: folderActionIcons.rename, onClick: () => setRenaming({ id: f._id, value: f.name }) },
+          { key: "delete", label: t("page.deleteFolder"), icon: folderActionIcons.delete, onClick: () => setConfirm({ type: "deleteFolder", folder: f }) },
+        ]}
+        onMore={isMobile ? () => setSheet({ type: "folder", folder: f }) : null}
+        moreLabel={t("page.more")}
+        renaming={isRenaming}
+        renameValue={renaming.value}
+        renameLabel={t("page.folderName")}
+        onRenameChange={(e) => setRenaming((r) => ({ ...r, value: e.target.value }))}
+        onRenameSubmit={() => {
+          if (!isRenaming) return;
+          const name = renaming.value.trim();
+          setRenaming({ id: null, value: "" });
+          if (name) renameFolder(f._id, name);
+        }}
+        onRenameCancel={() => setRenaming({ id: null, value: "" })}
+      />
+    );
+  });
 
-    const nextName = (editingFolderName.name || '').trim();
-    if (!editingFolderName.id || !nextName) return;
-
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      const res = await axios.put(
-        `${backendUrl}/api/folders/${editingFolderName.id}`,
-        { name: nextName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.data.folder) {
-        setFolders(prev => prev.map(folder =>
-          folder._id === editingFolderName.id ? { ...folder, name: nextName } : folder
-        ));
-
-        setEditingFolderName({ id: null, name: '' });
-
-        setNotification({ show: true, message: t('folderNameUpdated'), type: 'success' });
-        setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-      }
-    } catch (error) {
-      setNotification({ show: true, message: t('errorUpdatingName'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    }
-  };
-
-  const cancelEditFolderName = () => {
-    setEditingFolderName({ id: null, name: '' });
-  };
-
-  const handleSelectFolder = async () => {
-    if (!selectedPost || !folderSelectRef.current) return;
-
-    const selectedFolderId = folderSelectRef.current.value;
-    if (!selectedFolderId) return;
-
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      setShowEditModal(false);
-      setNotification({ show: true, message: t('movingImage'), type: 'info' });
-
-      const pid = getPostId(selectedPost);
-      const imageUrl = getImageUrl(selectedPost);
-
-      await axios.post(
-        `${backendUrl}/api/folders/add`,
-        { folderId: selectedFolderId, postId: pid, imageUrl },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setNotification({ show: true, message: t('imageMoved'), type: 'success' });
-      setShowEditModal(false);
-      setSelectedPost(null);
-
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    } catch (error) {
-      setNotification({ show: true, message: t('singleMoveError'), type: 'error' });
-      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-    }
-  };
-
-  // (Opcional) Small helper: si cambias a pestaña imágenes, cierra el form de crear carpeta
-  useEffect(() => {
-    if (activeTab === 'imagenes') {
-      setIsCreatingFolder(false);
-      setNewFolderName('');
-    }
-  }, [activeTab]);
-
-  if (loadingData) return <div className="loading">{t('loading')}</div>;
-
-  return (
-    <div>
-      <p className="creatives-subtitle --show-mobile">
-        {t('subtitle')}
-      </p>
-
-      <div className="creatives-hero-inner">
-        <div className="guardados-header">
-          <h1 className="centerTitle guardados">{t('title')}</h1>
-        </div>
-
-        {/* Tabs debajo del título */}
-        <div className="guardados-tabs-wrapper">
-          <div className="guardados-tabs">
-            <div
-              className={`tab-save ${activeTab === 'imagenes' ? 'active' : ''}`}
-              onClick={() => setActiveTab('imagenes')}
-            >
-              {t('organize')}
-            </div>
-            <div
-              className={`tab-save ${activeTab === 'carpetas' ? 'active' : ''}`}
-              onClick={() => setActiveTab('carpetas')}
-            >
-              {t('folders')}
-            </div>
-          </div>
-
-          {/* Acciones contextuales (UX) */}
-          <div className="guardados-header-actions">
-            {activeTab === 'carpetas' ? (
-              <button
-                className="new-tablero-button"
-                onClick={() => setIsCreatingFolder(true)}
-              >
-                <img src="/iconos/more.svg" alt="" className="button-icon invert" />
-                {t('createFolder')}
-              </button>
-            ) : (
-              <button
-                className="organizar-button"
-                onClick={openOrganizeModal}
-                disabled={ideasSinOrganizar.length === 0}
-                title={ideasSinOrganizar.length === 0 ? t('noPendingImages') : ''}
-              >
-                <img src="/iconos/edit-card.svg" alt="" className="button-icon invert" />
-                {t('organizeButton')}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* TAB: CARPETAS */}
-        {activeTab === 'carpetas' && (
-          <div className="tableros-container">
-            <div className="tableros-grid">
-              {/* Form como PRIMERA tarjeta del grid, con estilo de carpeta */}
-              {isCreatingFolder && (
-                <div className="tablero-item tablero-create-card">
-                  <div className="tablero-preview tablero-create-preview">
-                    <div className="empty-tablero">
-                      <FaFolder size={30} />
-                      <p>{t('createFolder')}</p>
-                    </div>
-                  </div>
-
-                  <div className="tablero-info tablero-create-info" onClick={(e) => e.stopPropagation()}>
-                    <div className="tablero-create-form">
-                      <input
-                        type="text"
-                        value={newFolderName}
-                        onChange={(e) => setNewFolderName(e.target.value)}
-                        placeholder="Nombre de la carpeta"
-                        className="tablero-name-input"
-                        autoFocus
-                      />
-                      <div className="form-actions">
-                        <button
-                          className="cancel-button"
-                          onClick={() => {
-                            setIsCreatingFolder(false);
-                            setNewFolderName('');
-                          }}
-                        >
-                          {t('cancel')}
-                        </button>
-                        <button
-                          className="confirm-button"
-                          onClick={handleCreateFolder}
-                          disabled={!newFolderName.trim()}
-                        >
-                          {t('createFolder')}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {folders.map(folder => (
-                <div
-                  key={folder._id}
-                  className="tablero-item"
-                  onClick={() => {
-                    if (editingFolderName.id === folder._id) return;
-                    openFolderContent(folder._id);
-                  }}
-                >
-                  <div className="tablero-preview">
-                    {folder.items && folder.items.length > 0 ? (
-                      <div className="tablero-images tablero-images--three">
-                        {folder.items.slice(0, Math.min(3, folder.items.length)).map((item, index) => (
-                          <div
-                            key={index}
-                            className={`tablero-image-container ${index === 0 ? 'is-large' : 'is-small'}`}
-                          >
-                            <img
-                              src={item.imageUrl}
-                              alt=""
-                              className="tablero-image"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="empty-tablero">
-                        <FaFolder size={30} />
-                        <p>{t('folder.emptyFolder')}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="tablero-info">
-                    {editingFolderName.id === folder._id ? (
-                      <form
-                        onSubmit={updateFolderName}
-                        className="edit-folder-form"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <input
-                          type="text"
-                          value={editingFolderName.name}
-                          onChange={(e) => setEditingFolderName(prev => ({ ...prev, name: e.target.value }))}
-                          className="edit-folder-input"
-                          autoFocus
-                          onBlur={() => updateFolderName()}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Escape') {
-                              e.preventDefault();
-                              cancelEditFolderName();
-                            }
-                          }}
-                        />
-                      </form>
-                    ) : (
-                      <h3>{folder.name}</h3>
-                    )}
-
-                    <p>
-                      {folder.items ? folder.items.length : 0} {folder.items && folder.items.length === 1 ? t('folder.image') : t('folder.images')}
-                    </p>
-
-                    <div className="tablero-actions">
-                      <button
-                        className="edit-tablero-button"
-                        onClick={(e) => startEditFolderName(folder, e)}
-                      >
-                        <img src="/iconos/edit-card.svg" alt="" className="button-icon" />
-                      </button>
-                      <button
-                        className="delete-tablero-button"
-                        onClick={(e) => confirmDeleteFolder(folder._id, e)}
-                      >
-                        <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {(!isCreatingFolder && folders.length === 0) && (
-                <div className="guardados-empty-state">
-                  <p>{t('emptyFolders')}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ✅ TAB: IMÁGENES */}
-        {activeTab === 'imagenes' && (
-          <div className="ideas-sin-organizar">
-            {ideasSinOrganizar.length > 0 ? (
-              <div className="ideas-grid">
-                {ideasSinOrganizar.map(post => {
-                  const pid = getPostId(post);
-                  const imageUrl = getImageUrl(post);
-                  const key = pid && imageUrl ? `${pid}::${imageUrl}` : null;
-
-                  const isOpen = inlinePickerFor === pid;
-                  const isMoved = key ? movedKeys.has(key) : false;
-                  const isSaving = key ? savingKeys.has(key) : false;
-
-                  return (
-                    <div
-                      key={post._id || `${pid}::${imageUrl}`}
-                      className={`idea-item ${isMoved ? 'is-moved' : ''} ${isSaving ? 'is-saving' : ''}`}
-                      onClick={() => navigateToPost(post)}
-                      onMouseEnter={() => setHoveredPost(`unorganized-${key || pid}`)}
-                      onMouseLeave={() => setHoveredPost(null)}
-                      style={{ position: 'relative' }}
-                    >
-                      <img
-                        src={imageUrl}
-                        alt=""
-                        className="idea-image"
-                        loading="lazy"
-                        decoding="async"
-                      />
-
-                      {/* ✅ Overlay Pinterest-like: NO se elimina, solo se marca */}
-                      {(isMoved || isSaving) && (
-                        <div className="idea-saved-overlay" aria-hidden="true">
-                          <div className="idea-saved-badge">
-                            {isSaving ? t('saving') : t('saved')}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* ✅ Botón editar -> abre selector inline (1 paso)
-                          Si ya está movida/guardando, lo ocultamos */}
-                      {!isOpen && !isMoved && !isSaving && (
-                        <>
-                          <button
-                            className="idea-edit-button"
-                            onClick={(e) => handleEditPost(post, e)}
-                          >
-                            <img src="/iconos/edit-card.svg" alt="" className="button-icon invert" />
-                          </button>
-                          <button
-                            className="idea-trash-button"
-                            onClick={(e) => handleUnsaveImage(post, e)}
-                            title={t('removeFromSaved')}
-                          >
-                            <img src="/iconos/bin.png" alt="" className="button-icon invert" style={{ width: '14px' }} />
-                          </button>
-                        </>
-                      )}
-
-                      {/* ✅ Selector inline elegante (Pinterest-like) */}
-                      {isOpen && !isMoved && !isSaving && (
-                        <div
-                          className="inline-folder-picker"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {folders.length === 0 ? (
-                            <div className="inline-no-folders">
-                              <p className="inline-no-folders-msg">
-                                {t('noFoldersYet')}
-                              </p>
-                              <input
-                                className="inline-folder-name-input"
-                                value={quickFolderName}
-                                onChange={(e) => setQuickFolderName(e.target.value)}
-                                placeholder={t('createFolder')}
-                                autoFocus
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    createFolderQuick((f) => moveSingleImageToFolderInline(post, f._id));
-                                  }
-                                }}
-                              />
-                              <button
-                                className="inline-folder-create-btn"
-                                disabled={!quickFolderName.trim() || isQuickCreating}
-                                onClick={() => createFolderQuick((f) => moveSingleImageToFolderInline(post, f._id))}
-                              >
-                                {isQuickCreating ? t('creating') : t('createAndSave')}
-                              </button>
-                            </div>
-                          ) : (
-                            <div>
-                              <select
-                                className="folder-select"
-                                defaultValue=""
-                                disabled={movingInline}
-                                onChange={(e) => {
-                                  const folderId = e.target.value;
-                                  if (folderId) moveSingleImageToFolderInline(post, folderId);
-                                }}
-                                style={{
-                                  marginBottom: 0,
-                                  borderRadius: 10,
-                                  border: '1px solid rgba(0,0,0,0.12)',
-                                  padding: '10px 12px',
-                                  fontSize: 14,
-                                  background: '#fff'
-                                }}
-                              >
-                                <option value="" disabled>
-                                  {t('selectFolder')}
-                                </option>
-                                {folders.map(folder => (
-                                  <option key={folder._id} value={folder._id}>
-                                    {folder.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="guardados-empty-state">
-                <p>{t('noPendingImages')}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Confirmar eliminación */}
-        {showDeleteConfirm && (
-          <div className="confirm-delete-overlay">
-            <div className="confirm-delete-modal">
-              <h3>{t('deleteFolderTitle')}</h3>
-              <p>{t('deleteFolderDesc')}</p>
-              <div className="confirm-actions">
-                <button
-                  className="confirm-delete-button"
-                  onClick={() => handleDeleteFolder(folderToDelete)}
-                >
-                  {t('folder.delete')}
-                </button>
-                <button className="cancel-delete-button" onClick={cancelDeleteFolder}>
-                  {t('cancel')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Modal de organización */}
-        {showOrganizeModal && (
-          <div className="organize-modal-overlay">
-            <div className="organize-modal">
-              <div className="organize-modal-header">
-                <div className="organize-div">
-                  <h2>{t('organizeImages')}</h2>
-                  <p className="organize-instructions">{t('selectImagesToOrganize')}</p>
-                </div>
-                <button className="close-modal-button" onClick={closeOrganizeModal}>
-                  <img src="/iconos/close.svg" alt="" className="button-icon" />
-                </button>
-              </div>
-
-              <div className="organize-modal-content">
-                <div className="organize-images-grid">
-                  {ideasSinOrganizar.map(post => {
-                    const pid = getPostId(post);
-                    const imageUrl = getImageUrl(post);
-                    const key = pid && imageUrl ? `${pid}::${imageUrl}` : null;
-
-                    const isSelected = key ? selectedKeys.has(key) : false;
-                    const isMoved = key ? movedKeys.has(key) : false;
-                    const isSaving = key ? savingKeys.has(key) : false;
-
-                    return (
-                      <div
-                        key={post._id || `${pid}::${imageUrl}`}
-                        className={`organize-image-item ${isSelected ? 'selected' : ''} ${(isMoved || isSaving) ? 'disabled' : ''}`}
-                        onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleImageSelection(post);
-                        }}
-                        title={(isMoved || isSaving) ? t('imageAlreadySaved') : ''}
-                      >
-                        <img
-                          src={imageUrl}
-                          alt=""
-                          className="organize-image"
-                          loading="lazy"
-                          decoding="async"
-                        />
-
-                        {(isMoved || isSaving) && (
-                          <div className="organize-saved-overlay">
-                            <span>{isSaving ? t('saving') : t('saved')}</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="organize-modal-footer">
-                <div className="selected-count">
-                {selectedImages.length} {selectedImages.length === 1 ? t('selected') : t('selected_plural')}
-                </div>
-                  <div className="organize-modal-actions">
-                    <button className="cancel-button" onClick={closeOrganizeModal}>
-                      {t('cancel')}
-                    </button>
-                    <button
-                    className="next-button"
-                    onClick={openSelectFolderModal}
-                    disabled={selectedImages.length === 0}
-                    >
-                    {t('next')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Modal de selección de tablero */}
-        {showSelectFolderModal && (
-          <div className="folder-select-modal-overlay">
-            <div className="folder-select-modal">
-              <div className="folder-select-modal-header">
-                <h2>{selectedImages.length} {selectedImages.length === 1 ? t('selected') : t('selected_plural')}</h2>
-                <button className="close-modal-button" onClick={backToOrganizeModal}>             <img src="/iconos/close.svg" alt="" className="button-icon" />
-                </button>
-              </div>
-
-              <div className="selected-images-preview">
-                {selectedImages.map(image => {
-                  const url = getImageUrl(image);
-                  const key = getKey(image);
-                  return (
-                    <div key={image._id || key} className="selected-image-preview">
-                      <img src={clImg.post(url)} alt="" loading="lazy" decoding="async" />
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="folder-selection">
-                <h3>{t('saveToFolder')}</h3>
-
-                {folders.length === 0 ? (
-                  <div className="no-folders-inline">
-                    <p className="no-folders-inline-msg">
-                      {t('noFoldersCreateOne')}
-                    </p>
-                    <input
-                      className="tablero-name-input"
-                      value={quickFolderName}
-                      onChange={(e) => setQuickFolderName(e.target.value)}
-                      placeholder={t('createFolder')}
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          createFolderQuick(() => {});
-                        }
-                      }}
-                    />
-                    <div className="folder-select-modal-actions">
-                      <button className="cancel-button" onClick={backToOrganizeModal}>
-                        {t('cancel')}
-                      </button>
-                      <button
-                        className="confirm-button"
-                        disabled={!quickFolderName.trim() || isQuickCreating}
-                        onClick={() => createFolderQuick(() => {})}
-                      >
-                        {isQuickCreating ? t('creating') : t('createFolder')}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {!showCreateInModal ? (
-                      <>
-                        <select className="folder-select" defaultValue="" ref={folderBulkSelectRef}>
-                          <option value="" disabled>
-                            {t('selectFolder')}
-                          </option>
-                          {folders.map(folder => (
-                            <option key={folder._id} value={folder._id}>
-                              {folder.name}
-                            </option>
-                          ))}
-                        </select>
-
-                        <button
-                          className="nueva-carpeta-toggle"
-                          onClick={() => setShowCreateInModal(true)}
-                        >
-                          {t('newFolder')}
-                        </button>
-
-                        <div className="folder-select-modal-actions">
-                          <button className="cancel-button" onClick={backToOrganizeModal}>
-                            {t('cancel')}
-                          </button>
-                          <button
-                            className="confirm-button"
-                            onClick={() => {
-                              const folderId = folderBulkSelectRef.current?.value;
-                              if (folderId) {
-                                moveSelectedImagesToFolder(folderId);
-                              } else {
-                                setNotification({ show: true, message: t('selectFolder'), type: 'error' });
-                                setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
-                              }
-                            }}
-                          >
-                            {t('save')}
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <input
-                          className="tablero-name-input"
-                          value={quickFolderName}
-                          onChange={(e) => setQuickFolderName(e.target.value)}
-                          placeholder={t('createFolder')}
-                          autoFocus
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              createFolderQuick((f) => moveSelectedImagesToFolder(f._id));
-                            }
-                          }}
-                        />
-                        <div className="folder-select-modal-actions">
-                          <button className="cancel-button" onClick={() => { setShowCreateInModal(false); setQuickFolderName(''); }}>
-                            {t('back')}
-                          </button>
-                          <button
-                            className="confirm-button"
-                            disabled={!quickFolderName.trim() || isQuickCreating}
-                            onClick={() => createFolderQuick((f) => moveSelectedImagesToFolder(f._id))}
-                          >
-                            {isQuickCreating ? t('creating') : t('createAndSave')}
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Notificación */}
-        {notification.show && (
-          <div className={`guardados-notification ${notification.type}`}>
-            <div className="guardados-notification-icon">
-              {notification.type === 'success' ? <FaCheck /> : notification.type === 'error' ? <FaTimes /> : <FaFolder />}
-            </div>
-            <p className="guardados-notification-message">{notification.message}</p>
-          </div>
+  const renderFoldersView = () => (
+    <div className="gd-folders">
+      {folderCards}
+      {favorites.length > 0 && (
+        <FolderCard
+          name={t("page.unsorted")}
+          meta={t("page.unsortedImages", { count: favorites.length })}
+          images={coverOf(favorites)}
+          onOpen={() => goImages(UNSORTED)}
+          openLabel={t("page.openFolder", { name: t("page.unsorted") })}
+        />
+      )}
+      {/* "Nueva carpeta": siempre la última (en mobile está el "+" de arriba) */}
+      <div className="gd-new-tile-wrap gd-anchor">
+        <button
+          type="button"
+          className="gd-new-tile"
+          onClick={() => setNamePopover((v) => (v === "tile" ? null : "tile"))}
+          aria-haspopup="dialog"
+        data-gd-trigger
+          aria-expanded={namePopover === "tile"}
+        >
+          <Plus size={22} strokeWidth={1.6} aria-hidden="true" />
+          <span>{t("page.newFolder")}</span>
+        </button>
+        {namePopover === "tile" && (
+          <NamePopover
+            t={t}
+            submitLabel={t("page.create")}
+            onSubmit={async (name) => { const f = await createFolder(name); if (f) setNamePopover(null); }}
+            onClose={() => setNamePopover(null)}
+            busy={busy}
+          />
         )}
       </div>
     </div>
   );
-};
 
-export default Guardados;
+  const chip = (id, label, count) => (
+    <button
+      key={id}
+      type="button"
+      className={`gd-chip${filter === id ? " is-on" : ""}`}
+      aria-pressed={filter === id}
+      onClick={() => goImages(id)}
+    >
+      {label} <span className="gd-count">{count}</span>
+    </button>
+  );
+
+  const renderImagesView = () => (
+    <div className="gd-images">
+      {/* "Todas las carpetas": ya no es un botón aquí, es el `back` de la
+          cabecera (icono de Guardados en el sidebar → flecha al hover). */}
+      <div className="gd-chips-row">
+        <div className="gd-chips" role="group" aria-label={t("page.filters")}>
+          {chip("all", t("page.all"), allImages.length)}
+          {folders.map((f) => chip(f._id, f.name, f.items.length))}
+          {favorites.length > 0 && chip(UNSORTED, t("page.unsorted"), favorites.length)}
+        </div>
+        {activeFolder && (
+          <div className="gd-folder-actions gd-anchor">
+            <button
+              type="button"
+              className="gd-text-btn gd-text-btn--dark"
+              data-gd-trigger
+              onClick={() => (isMobile ? setSheet({ type: "renameFolder", folder: activeFolder }) : setNamePopover((v) => (v === "rename" ? null : "rename")))}
+            >
+              {t("page.rename")}
+            </button>
+            <button type="button" className="gd-text-btn gd-text-btn--dark" onClick={() => setConfirm({ type: "deleteFolder", folder: activeFolder })}>
+              {t("page.deleteFolder")}
+            </button>
+            {namePopover === "rename" && (
+              <NamePopover
+                t={t}
+                className="gd-popover--right"
+                initialValue={activeFolder.name}
+                submitLabel={t("page.save")}
+                onSubmit={(name) => { setNamePopover(null); renameFolder(activeFolder._id, name); }}
+                onClose={() => setNamePopover(null)}
+                busy={busy}
+              />
+            )}
+          </div>
+        )}
+      </div>
+
+      {visibleImages.length === 0 ? (
+        <div className="gd-empty">
+          <Bookmark size={32} strokeWidth={1.6} aria-hidden="true" />
+          <p className="gd-empty-title">{t("page.emptyFolderTitle")}</p>
+          <p className="gd-empty-text">{t("page.emptyFolderText")}</p>
+        </div>
+      ) : (
+        <div className="gd-masonry">
+          {visibleImages.map((item) => (
+            <ImageItem
+              key={item.key}
+              item={item}
+              t={t}
+              touch={touch}
+              showFolderTag={filter === "all" && !isMobile}
+              selectionMode={selectionMode}
+              selected={selected.has(item.key)}
+              moveOpen={movePopoverKey === item.key}
+              onOpen={() => openPost(item)}
+              onToggleSelect={() => toggleSelected(item.key)}
+              onMove={() => setMovePopoverKey((k) => (k === item.key ? null : item.key))}
+              onRemove={() => removeItems([item])}
+              onMore={() => setSheet({ type: "image", item, step: "actions" })}
+              onLongPress={() => { setSelectionMode(true); setSelected(new Set([item.key])); }}
+            >
+              {movePopoverKey === item.key && (
+                <MovePopover
+                  t={t}
+                  folders={folders}
+                  currentFolderId={item.folderId}
+                  onSelect={(id) => moveItems([item], id)}
+                  onCreate={(name) => createAndMove([item], name)}
+                  onClose={() => setMovePopoverKey(null)}
+                  busy={busy}
+                />
+              )}
+            </ImageItem>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderSkeleton = () => (
+    <div className={view === "images" ? "gd-masonry" : "gd-folders"} aria-hidden="true">
+      {Array.from({ length: 8 }).map((_, i) => (
+        view === "images"
+          ? <span key={i} className="gd-skel gd-skel--img" style={{ height: [220, 300, 260, 340][i % 4] }} />
+          : (
+            <span key={i} className="gd-folder">
+              <span className="gd-skel gd-skel--square" />
+              <span className="gd-skel gd-skel--line" />
+            </span>
+          )
+      ))}
+    </div>
+  );
+
+  const isEmpty = !loading && allImages.length === 0 && folders.length === 0;
+
+  // ── Sheets (mobile; las de imagen también en tablet) ──
+  const renderSheet = () => {
+    if (!sheet) return null;
+    const close = () => setSheet(null);
+
+    if (sheet.type === "newFolder" || sheet.type === "renameFolder") {
+      const renamingFolder = sheet.type === "renameFolder" ? sheet.folder : null;
+      return (
+        <Sheet label={renamingFolder ? t("page.renameFolder") : t("page.newFolder")} onClose={close}>
+          <h2 className="gd-sheet-title">{renamingFolder ? t("page.renameFolder") : t("page.newFolder")}</h2>
+          <FolderNameForm
+            t={t}
+            wide
+            initialValue={renamingFolder?.name || ""}
+            submitLabel={renamingFolder ? t("page.save") : t("page.create")}
+            onSubmit={async (name) => {
+              if (renamingFolder) { close(); renameFolder(renamingFolder._id, name); return; }
+              const f = await createFolder(name);
+              if (f) close();
+            }}
+            onCancel={close}
+            busy={busy}
+          />
+        </Sheet>
+      );
+    }
+
+    if (sheet.type === "folder") {
+      return (
+        <Sheet label={sheet.folder.name} onClose={close}>
+          <p className="gd-sheet-heading">{sheet.folder.name}</p>
+          <div className="gd-sheet-actions">
+            <button type="button" className="gd-sheet-row" onClick={() => setSheet({ type: "renameFolder", folder: sheet.folder })}>
+              {folderActionIcons.rename}
+              <span>{t("page.renameFolder")}</span>
+            </button>
+            <button type="button" className="gd-sheet-row gd-sheet-row--danger" onClick={() => { close(); setConfirm({ type: "deleteFolder", folder: sheet.folder }); }}>
+              {folderActionIcons.delete}
+              <span>{t("page.deleteFolder")}</span>
+            </button>
+          </div>
+          <button type="button" className="gd-btn gd-btn--grey gd-btn--block gd-sheet-cancel" onClick={close}>{t("page.cancel")}</button>
+        </Sheet>
+      );
+    }
+
+    // Imagen
+    const { item } = sheet;
+    const live = allImages.find((it) => it.key === item.key) || item;
+    return (
+      <Sheet label={live.title || t("page.moveToFolder")} onClose={close}>
+        <div className="gd-sheet-image">
+          <span className="gd-sheet-thumb"><img src={live.imageUrl} alt="" /></span>
+          {live.creatorUsername
+            ? <a className="gd-sheet-user" href={`/${live.creatorUsername}`}>@{live.creatorUsername}</a>
+            : <span className="gd-sheet-user">{live.title}</span>}
+        </div>
+
+        {sheet.step === "move" ? (
+          <MoveOptions
+            t={t}
+            folders={folders}
+            currentFolderId={live.folderId}
+            onSelect={(id) => moveItems([live], id)}
+            onCreate={(name) => createAndMove([live], name)}
+            busy={busy}
+          />
+        ) : (
+          <div className="gd-sheet-actions">
+            <button type="button" className="gd-sheet-row" onClick={() => setSheet({ ...sheet, step: "move" })}>
+              <FolderInput size={16} strokeWidth={1.6} aria-hidden="true" />
+              <span>{t("page.moveToFolder")}</span>
+              <span className="gd-sheet-row-aside">{live.folderName || t("page.unsorted")}</span>
+            </button>
+            <button type="button" className="gd-sheet-row" onClick={() => { close(); openPost(live); }}>
+              <ExternalLink size={16} strokeWidth={1.6} aria-hidden="true" />
+              <span>{t("page.viewProject")}</span>
+            </button>
+            <button type="button" className="gd-sheet-row" onClick={() => removeItems([live])}>
+              <Bookmark size={16} strokeWidth={1.6} fill="currentColor" aria-hidden="true" />
+              <span>{t("page.removeFromSaved")}</span>
+            </button>
+          </div>
+        )}
+        <button type="button" className="gd-btn gd-btn--grey gd-btn--block gd-sheet-cancel" onClick={close}>{t("page.cancel")}</button>
+      </Sheet>
+    );
+  };
+
+  return (
+    <>
+      {/* Top bar mobile — mismo .nep-detail-header/.pl-topbar que "Tus proyectos" */}
+      {/* Dentro de una carpeta (o "Sin carpeta"), ‹ vuelve a todas las
+          carpetas y el título es el de la carpeta: en mobile la cabecera
+          común (con su ←) está oculta, este es el único "volver". */}
+      <div className="nep-detail-header pl-topbar">
+        <button
+          type="button"
+          className="pl-topbar-back"
+          onClick={inFolder ? goFolders : () => window.history.back()}
+          aria-label={inFolder ? t("page.backToFolders") : t("page.back")}
+        >
+          <ChevronLeft size={20} strokeWidth={1.6} aria-hidden="true" />
+        </button>
+        <span className="pl-topbar-title">{inFolder ? folderTitle : t("page.title")}</span>
+        <div className="pl-topbar-right">
+          <button type="button" className="gd-topbar-plus" onClick={() => setSheet({ type: "newFolder" })} aria-label={t("page.newFolder")}>
+            <Plus size={20} strokeWidth={1.6} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      <div className={`nep-main-content gd-scroll${selectionMode ? " is-selecting" : ""}`}>
+        <div className="gd-page">
+          <PanelPageHeader
+            className="gd-head"
+            title={t("page.title")}
+            subtitle={t("page.subtitle")}
+            actions={headerActions}
+            // Dentro de una carpeta (o "Sin carpeta"): sub-página de Guardados.
+            // En desktop el "volver a todas las carpetas" vive en el sidebar
+            // (icono de Guardados → flecha al hover), como en Proyectos y
+            // Plantillas; en tablet/mobile, la ← encima del título.
+            back={inFolder ? {
+              parent: "saved",
+              label: t("page.backToFolders"),
+              onClick: goFolders,
+              current: folderTitle,
+            } : undefined}
+          />
+
+          {!isEmpty && (
+            <div className="gd-switch" role="tablist" aria-label={t("page.views")}>
+              <button type="button" role="tab" aria-selected={view === "folders"} className={`gd-tab${view === "folders" ? " is-on" : ""}`} onClick={goFolders}>
+                {t("page.tabFolders")} <span className="gd-count">{folders.length}</span>
+              </button>
+              <button type="button" role="tab" aria-selected={view === "images"} className={`gd-tab${view === "images" ? " is-on" : ""}`} onClick={() => goImages(filter)}>
+                {t("page.tabImages")} <span className="gd-count">{allImages.length}</span>
+              </button>
+            </div>
+          )}
+
+          {loading ? renderSkeleton() : isEmpty ? (
+            <div className="gd-empty">
+              <Bookmark size={32} strokeWidth={1.6} aria-hidden="true" />
+              <p className="gd-empty-title">{t("page.emptyTitle")}</p>
+              <p className="gd-empty-text">{t("page.emptyText")}</p>
+              <button type="button" className="gd-btn gd-btn--grey" onClick={() => navigate("/explorer")}>{t("page.explore")}</button>
+            </div>
+          ) : view === "folders" ? renderFoldersView() : renderImagesView()}
+        </div>
+      </div>
+
+      {selectionMode && (
+        <SelectionBar
+          t={t}
+          count={selected.size}
+          moveOpen={bulkMoveOpen}
+          onToggleMove={() => setBulkMoveOpen((v) => !v)}
+          onRemove={() => (selectedItems.length > 1
+            ? setConfirm({ type: "removeMany", items: selectedItems })
+            : removeItems(selectedItems))}
+          onCancel={exitSelection}
+        >
+          {bulkMoveOpen && (
+            <MovePopover
+              t={t}
+              className="gd-popover--up"
+              folders={folders}
+              currentFolderId={undefined}
+              onSelect={(id) => moveItems(selectedItems, id)}
+              onCreate={(name) => createAndMove(selectedItems, name)}
+              onClose={() => setBulkMoveOpen(false)}
+              busy={busy}
+            />
+          )}
+        </SelectionBar>
+      )}
+
+      <Toast toast={toast} raised={selectionMode} />
+
+      {renderSheet()}
+
+      {confirm?.type === "deleteFolder" && (
+        <ConfirmDialog
+          title={t("page.deleteTitle", { name: confirm.folder.name })}
+          warning={t("page.deleteText")}
+          confirmLabel={t("page.delete")}
+          cancelLabel={t("page.cancel")}
+          onConfirm={() => deleteFolder(confirm.folder)}
+          onCancel={() => setConfirm(null)}
+          busy={busy}
+        />
+      )}
+      {confirm?.type === "removeMany" && (
+        <ConfirmDialog
+          title={t("page.removeManyTitle", { count: confirm.items.length })}
+          warning={t("page.removeManyText")}
+          confirmLabel={t("page.remove")}
+          cancelLabel={t("page.cancel")}
+          onConfirm={() => removeItems(confirm.items)}
+          onCancel={() => setConfirm(null)}
+        />
+      )}
+    </>
+  );
+}

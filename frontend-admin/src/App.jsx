@@ -24,6 +24,7 @@ import IndustryFormPage from './pages/IndustryFormPage'
 import ValidationPage from './pages/ValidationPage'
 import ReportsPage from './pages/ReportsPage'
 import ActivityPage from './pages/ActivityPage'
+import TrafficPage from './pages/TrafficPage'
 
 function App() {
   const { isAuthenticated, loading } = useAuth()
@@ -71,6 +72,7 @@ function App() {
           <Route path="validacion" element={<ValidationPage />} />
           <Route path="reportes" element={<ReportsPage />} />
           <Route path="actividad" element={<ActivityPage />} />
+          <Route path="trafico" element={<TrafficPage />} />
           <Route path="configuracion" element={<SettingsPage />} />
           <Route path="industria" element={<IndustryPage />} />
           <Route path="industria/nueva" element={<IndustryFormPage />} />

@@ -8,8 +8,14 @@ export default function MiniHeroPreview({
   isCompany,
   isEducationalInstitution,
   imageUrl,
+  // Encuadre elegido en "Imagen de portada" ({ x, y } en %), igual que en
+  // el hero real; sin él, cada miniatura usa su encuadre por defecto.
+  focus,
   view,
 }) {
+  const imgStyle = Number.isFinite(focus?.x) && Number.isFinite(focus?.y)
+    ? { objectPosition: `${focus.x}% ${focus.y}%` }
+    : undefined;
   const name =
     isCompany || isEducationalInstitution
       ? profile?.companyName || "Mi empresa"
@@ -29,7 +35,7 @@ export default function MiniHeroPreview({
     return (
       <div className={`ux-minihero ux-minihero--fullscreen-alt ${view === "mobile" ? "is-mobile" : ""}`}>
         <div className="ux-minihero-bg">
-          {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-minihero-img" /> : <div className="ux-minihero-placeholder" />}
+          {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-minihero-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
         <div className="ux-minihero-content">
           <div className="ux-minihero-name">{name}</div>
@@ -48,7 +54,7 @@ export default function MiniHeroPreview({
     return (
       <div className={`ux-minihero ux-minihero--fullscreen ${view === "mobile" ? "is-mobile" : ""}`}>
         <div className="ux-minihero-bg">
-          {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-minihero-img" /> : <div className="ux-minihero-placeholder" />}
+          {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-minihero-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
         <div className="ux-minihero-fullscreen-alt-desktop">
           <div className="ux-minihero-name">{name}</div>
@@ -67,7 +73,7 @@ export default function MiniHeroPreview({
     return (
       <div className="ux-minihero ux-minihero--split-image">
         <div className="ux-si-media">
-          {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-si-img" /> : <div className="ux-minihero-placeholder" />}
+          {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-si-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
         <div className="ux-si-bar">
           <div className="ux-minihero-name ux-minihero-name--dark">{name}</div>
@@ -89,7 +95,7 @@ export default function MiniHeroPreview({
           <div className="ux-minihero-name ux-minihero-name--dark">{name}</div>
         </div>
         <div className="ux-vcard-media">
-          {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-vcard-img" /> : <div className="ux-minihero-placeholder" />}
+          {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-vcard-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
         <div className="ux-vcard-footer">
           {tags.length > 0 && (
@@ -111,7 +117,7 @@ export default function MiniHeroPreview({
         </div>
         <div className="ux-minihero-col ux-minihero-col--center">
           <div className="ux-minihero-frame">
-            {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-minihero-img-centered" /> : <div className="ux-minihero-placeholder" />}
+            {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-minihero-img-centered" /> : <div className="ux-minihero-placeholder" />}
           </div>
         </div>
         <div className="ux-minihero-col ux-minihero-col--right">
@@ -139,7 +145,7 @@ export default function MiniHeroPreview({
         </div>
         <div className="ux-ve-right">
           <div className="ux-ve-frame">
-            {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-ve-img" /> : <div className="ux-minihero-placeholder" />}
+            {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-ve-img" /> : <div className="ux-minihero-placeholder" />}
           </div>
         </div>
       </div>
@@ -160,7 +166,7 @@ export default function MiniHeroPreview({
         </div>
         <div className="ux-vc-bottom">
           <div className="ux-vc-frame">
-            {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-vc-img" /> : <div className="ux-minihero-placeholder" />}
+            {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-vc-img" /> : <div className="ux-minihero-placeholder" />}
           </div>
         </div>
       </div>
@@ -180,7 +186,7 @@ export default function MiniHeroPreview({
           )}
         </div>
         <div className="ux-st-media">
-          {imageUrl ? <img src={clImg.post(imageUrl)}alt="" className="ux-st-img" /> : <div className="ux-minihero-placeholder" />}
+          {imageUrl ? <img src={clImg.post(imageUrl)} alt="" style={imgStyle} className="ux-st-img" /> : <div className="ux-minihero-placeholder" />}
         </div>
       </div>
     );

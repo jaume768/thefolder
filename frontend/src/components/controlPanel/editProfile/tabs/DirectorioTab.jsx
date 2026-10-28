@@ -2,8 +2,7 @@
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { clImg } from "../../../../utils/optimizeImage";
-import editCard from "../../../../../public/iconos/edit-card.svg";
-import trashDelete from "../../../../../public/iconos/bin.png";
+import { PenLine, Trash2, Camera } from "lucide-react";
 
 export default function DirectorioTab({
   coverImage,
@@ -55,7 +54,7 @@ export default function DirectorioTab({
             <img src={clImg.thumb(coverImage)} alt={t("editProfile.directoryCaption")} />
           ) : (
             <div className="ux-iv-placeholder">
-              <span className="ux-iv-camera">📷</span>
+              <Camera size={28} strokeWidth={1.5} aria-hidden="true" className="ux-iv-camera" />
             </div>
           )}
         </div>
@@ -64,7 +63,7 @@ export default function DirectorioTab({
 
         <div className="ux-iv-actions">
           <button className="ux-link-btn" type="button" onClick={() => fileRef.current?.click()}>
-            <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} /> {t("editProfile.edit")}
+            <PenLine size={14} strokeWidth={1.8} aria-hidden="true" /> {t("editProfile.edit")}
           </button>
           <span className="ux-iv-sep">|</span>
           <button
@@ -72,7 +71,7 @@ export default function DirectorioTab({
             type="button"
             onClick={onDelete}
           >
-            <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} /> {t("editProfile.delete")}
+            <Trash2 size={14} strokeWidth={1.8} aria-hidden="true" /> {t("editProfile.delete")}
           </button>
         </div>
 

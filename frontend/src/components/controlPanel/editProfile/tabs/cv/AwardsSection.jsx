@@ -1,7 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Section } from "../../ui/ProfileFormSection";
+import { PenLine, Plus } from "lucide-react";
 
-const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/bin.png";
 
 const AWARD_TYPES = [
@@ -180,7 +181,7 @@ export default function AwardsSection({
           {/* ACCIONES */}
           <div className="ux-exp-form-actions">
             {list.length > 0 && (
-              <button className="ux-btn" type="button" onClick={cancelAwardForm}>
+              <button className="ux-btn danger" type="button" onClick={cancelAwardForm}>
                 {t("editProfile.modals.cancel")}
               </button>
             )}
@@ -197,16 +198,7 @@ export default function AwardsSection({
   );
 
   return (
-    <div id="sec-cv-premios" className="ux-anchor-target">
-      <div className="ux-card">
-        <label className="ux-form-label separator">
-          <img src="/iconos/prizes.png" className="ux-section-icon" alt="" />
-          {t("editProfile.awardsSectionLabel")}
-        </label>
-
-        <div className="ux-helper ux-exp-helper">
-          {t("editProfile.awardsSubtitle")}
-        </div>
+    <Section id="sec-cv-premios" title={t("editProfile.awardsSectionLabel")} help={t("editProfile.awardsSubtitle")}>
 
         {list.length > 0 && (
           <div className="ux-exp-list">
@@ -215,9 +207,9 @@ export default function AwardsSection({
                 <div className="ux-exp-card" style={{ position: "relative", ...(item?.isDraft ? { background: "#f0f0f0" } : {}) }}>
                   <div className="ux-exp-content">
                     <div className="ux-exp-title">
-                      {(item?.name || "").toUpperCase()}
+                      {item?.name || ""}
                     </div>
-                    <div className="ux-exp-meta">{item?.issuer || "—"}</div>
+                    <div className="ux-exp-meta">{item?.issuer || "-"}</div>
                     {(item?.type && item.type !== "Otro") && (
                       <div className="ux-exp-subtle">{item.type}</div>
                     )}
@@ -227,7 +219,7 @@ export default function AwardsSection({
                     <div className="ux-exp-subtle">
                       {item?.awardMonth && item?.awardYear
                         ? `${MONTHS_ES[(Number(item.awardMonth) || 1) - 1]?.label}. ${item.awardYear}`
-                        : item?.awardYear || "—"}
+                        : item?.awardYear || "-"}
                     </div>
                   </div>
 
@@ -236,15 +228,19 @@ export default function AwardsSection({
                       type="button"
                       className="ux-link-btn"
                       onClick={() => openEditAwardForm(idx)}
+                      aria-label={t("editProfile.edit")}
                     >
-                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
+                      <PenLine size={14} strokeWidth={1.8} aria-hidden="true" />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.edit")}</span>
                     </button>
                     <button
                       type="button"
                       className="ux-link-btn danger"
                       onClick={() => confirmDeleteAward(idx)}
+                      aria-label={t("editProfile.delete")}
                     >
-                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{ width: "12px" }} />
+                      <img src={trashDelete} className="ux-icon" alt="" style={{ width: "12px" }} />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.delete")}</span>
                     </button>
                   </div>
                   {item?.isDraft && (
@@ -270,13 +266,13 @@ export default function AwardsSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewAwardForm}
             >
+              <Plus size={14} strokeWidth={2} aria-hidden="true" />
               {t("editProfile.addAward")}
             </button>
           </div>
         )}
 
         {(awardFormOpen && awardEditingIndex === null) || list.length === 0 ? renderForm() : null}
-      </div>
-    </div>
+    </Section>
   );
 }

@@ -1,157 +1,95 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../services/api';
-import '../styles/DashboardPage.css';
-import { 
-  FaUsers, 
-  FaBriefcase, 
-  FaGraduationCap, 
-  FaNewspaper,
-  FaChartLine
-} from 'react-icons/fa';
+// Resumen (/): la foto general de la plataforma en el periodo elegido —
+// cuántas personas hay y entran, qué suben, qué se guarda y qué queda
+// pendiente de revisar. El detalle de visitas está en Tráfico y navegación
+// y el de contenido/usuarios en Actividad. Datos: GET /api/admin/insights.
+import {
+  useInsights, PageHead, StatStrip, Block, Bars, RankRows, Delta, Loading, ErrorNote, fmtNum, pct,
+} from '../components/insights/Insights';
 
-// Importar componentes de estadísticas
-import EngagementStats from '../components/stats/EngagementStats';
-import ContentStats from '../components/stats/ContentStats';
-import GrowthStats from '../components/stats/GrowthStats';
-import EducationalStats from '../components/stats/EducationalStats';
+const dayLabel = (d) => new Date(`${d.date}T00:00:00`).getDate();
+const dayTip = (d) => new Date(`${d.date}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+
+const TYPE_NAMES = { creative: 'Creativos', industry: 'Industria', guest: 'Invitados' };
+const LEVEL_NAMES = { 1: 'Nivel 1', 2: 'Nivel 2', 3: 'Nivel 3', 4: 'Nivel 4 (profesional)', 5: 'Nivel 5' };
 
 const DashboardPage = () => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { days, setDays, data, error, loading } = useInsights();
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get('/api/admin/stats');
-        setStats(response.data.stats);
-      } catch (error) {
-        console.error('Error al obtener estadísticas:', error);
-        setError('Error al cargar las estadísticas del dashboard');
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (loading) return <Loading />;
+  if (error) return <div className="ai-page"><ErrorNote text={error} /></div>;
 
-    fetchStats();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p className="loading-indicator"> Cargando estadísticas...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error-container">
-        <h2>Ha ocurrido un error</h2>
-        <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="btn btn-primary"
-        >
-          Reintentar
-        </button>
-      </div>
-    );
-  }
+  const { users, traffic, content, offers, moderation } = data;
+  const typeRows = Object.entries(users.byType)
+    .filter(([, n]) => n > 0)
+    .map(([k, n]) => ({ key: k, label: TYPE_NAMES[k] || 'Sin tipo', count: n }))
+    .sort((a, b) => b.count - a.count);
+  const apps = offers.applications;
+  const appsTotal = apps.pending + apps.reviewed + apps.accepted + apps.rejected;
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1>Panel de control</h1>
-        <p className="dashboard-subtitle">Resumen general de la plataforma</p>
+    <div className="ai-page">
+      <PageHead
+        title="Resumen"
+        subtitle="Cómo va THEFOLDER en el periodo elegido, comparado con el periodo anterior de la misma duración."
+        days={days}
+        setDays={setDays}
+      />
+
+      {/* Lo principal del periodo */}
+      <StatStrip
+        items={[
+          { label: 'visitas', value: fmtNum(traffic.visits), to: '/trafico', extra: <Delta now={traffic.visits} prev={traffic.visitsPrev} /> },
+          { label: 'usuarios nuevos', value: fmtNum(users.new), to: '/usuarios', extra: <Delta now={users.new} prev={users.newPrev} /> },
+          { label: 'proyectos subidos', value: fmtNum(content.postsNew), to: '/actividad', extra: <Delta now={content.postsNew} prev={content.postsNewPrev} /> },
+          { label: 'imágenes guardadas', value: fmtNum(content.saves), to: '/actividad', extra: <Delta now={content.saves} prev={content.savesPrev} /> },
+        ]}
+      />
+
+      <div className="ai-cols-2">
+        <Block title="Visitas por día" aside={fmtNum(traffic.visits)}>
+          <Bars data={traffic.series} labelFor={dayLabel} tipFor={dayTip} />
+        </Block>
+        <Block title="Usuarios nuevos por día" aside={fmtNum(users.new)}>
+          <Bars data={users.newSeries} labelFor={dayLabel} tipFor={dayTip} />
+        </Block>
       </div>
 
-      <div className="stats-cards">
-        <div className="stats-card users">
-          <div className="card-icon">
-            <FaUsers />
-          </div>
-          <div className="card-content">
-            <h3>{stats?.usuarios?.total || 0}</h3>
-            <p>Usuarios</p>
-          </div>
-          <div className="card-breakdown">
-            <span>{stats?.usuarios?.creativos || 0} Creativos</span>
-            <span>{stats?.usuarios?.profesionales || 0} Profesionales</span>
-          </div>
-          <Link to="/usuarios" className="card-link">Ver detalles</Link>
-        </div>
+      {/* Comunidad: tamaño y calidad de los perfiles (totales, no del periodo) */}
+      <h2 className="ai-section-title">Comunidad</h2>
+      <StatStrip
+        items={[
+          { label: 'usuarios en total', value: fmtNum(users.total), to: '/usuarios' },
+          { label: 'han entrado en el periodo', value: `${pct(users.activeInRange, users.total)}%`, extra: <span className="ai-delta">{fmtNum(users.activeInRange)} personas</span> },
+          { label: 'con algún proyecto', value: `${pct(users.withProjects, users.total)}%`, extra: <span className="ai-delta">{fmtNum(users.withProjects)} personas</span> },
+          { label: 'perfil completo', value: `${pct(users.profileCompleted, users.total)}%`, extra: <span className="ai-delta">{fmtNum(users.verified)} con email verificado</span> },
+        ]}
+      />
 
-        <div className="stats-card offers">
-          <div className="card-icon">
-            <FaBriefcase />
-          </div>
-          <div className="card-content">
-            <h3>{stats?.ofertas?.total || 0}</h3>
-            <p>Ofertas de empleo</p>
-          </div>
-          <div className="card-breakdown">
-            <span>{stats?.ofertas?.activas || 0} Activas</span>
-          </div>
-          <Link to="/ofertas" className="card-link">Ver detalles</Link>
-        </div>
-
-        <div className="stats-card educational">
-          <div className="card-icon">
-            <FaGraduationCap />
-          </div>
-          <div className="card-content">
-            <h3>{stats?.ofertasEducativas?.total || 0}</h3>
-            <p>Ofertas educativas</p>
-          </div>
-          <Link to="/ofertas-educativas" className="card-link">Ver detalles</Link>
-        </div>
-
-        <div className="stats-card posts">
-          <div className="card-icon">
-            <FaNewspaper />
-          </div>
-          <div className="card-content">
-            <h3>{stats?.posts?.total || 0}</h3>
-            <p>Publicaciones</p>
-          </div>
-          <Link to="/posts" className="card-link">Ver detalles</Link>
-        </div>
+      <div className="ai-cols-3">
+        <Block title="Tipo de cuenta" aside={fmtNum(users.total)}>
+          <RankRows rows={typeRows} total={users.total} />
+        </Block>
+        <Block title="Nivel de los creativos">
+          <RankRows
+            rows={users.creativeLevels.map((l) => ({ key: String(l.level), label: LEVEL_NAMES[l.level] || 'Sin nivel', count: l.count }))}
+            total={users.byType.creative}
+          />
+        </Block>
+        <Block title="Ciudades con más usuarios">
+          <RankRows rows={users.topCities.map((c) => ({ label: c.city, count: c.count }))} total={users.total} />
+        </Block>
       </div>
 
-      <div className="dashboard-sections">
-        {/* Sección de estadísticas avanzadas */}
-        <div className="advanced-stats-container">
-          <h2 className="stats-heading">
-            <FaChartLine className="stats-heading-icon" />
-            Estadísticas Avanzadas
-          </h2>
-          
-          {/* Componentes de estadísticas */}
-          <GrowthStats stats={stats} />
-          <EngagementStats stats={stats} />
-          <ContentStats stats={stats} />
-          <EducationalStats stats={stats} />
-        </div>
-      </div>
-
-      <div className="dashboard-actions">
-        <h2>Acciones rápidas</h2>
-        <div className="quick-actions">
-          <Link to="/usuarios/crear-admin" className="action-card">
-            <div className="action-icon">
-              <FaUsers />
-            </div>
-            <div className="action-content">
-              <h3>Crear administrador</h3>
-              <p>Añadir un nuevo usuario con permisos de administración</p>
-            </div>
-          </Link>
-        </div>
-      </div>
+      {/* Ofertas y lo pendiente de revisar */}
+      <h2 className="ai-section-title">Ofertas y moderación</h2>
+      <StatStrip
+        items={[
+          { label: 'ofertas de empleo nuevas', value: fmtNum(offers.new), to: '/ofertas', extra: <span className="ai-delta">{fmtNum(offers.total)} en total</span> },
+          { label: 'candidaturas en el periodo', value: fmtNum(appsTotal), to: '/ofertas', extra: <span className="ai-delta">{fmtNum(apps.accepted)} aceptadas</span> },
+          { label: 'reportes pendientes', value: fmtNum(moderation.reportsPending), to: '/reportes' },
+          { label: 'validaciones pendientes', value: fmtNum(moderation.pendingValidation), to: '/validacion' },
+        ]}
+      />
     </div>
   );
 };

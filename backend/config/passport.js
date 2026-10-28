@@ -9,7 +9,7 @@ passport.use(new LocalStrategy(
     { usernameField: 'email', passReqToCallback: true },
     async (req, email, password, done) => {
         try {
-            const user = await User.findOne({ $or: [{ email }, { username: email }] });
+            const user = await User.findOne({ $or: [{ email }, { username: email }] }).select('+sessions +password');
             if (!user) {
                 return done(null, false, { message: 'Usuario no encontrado' });
             }
@@ -31,7 +31,7 @@ passport.use(new GoogleStrategy({
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await User.findOne({ email: profile.emails[0].value });
+            let user = await User.findOne({ email: profile.emails[0].value }).select('+sessions');
             if (user) {
                 if (!user.googleId) {
                     user.googleId = profile.id;

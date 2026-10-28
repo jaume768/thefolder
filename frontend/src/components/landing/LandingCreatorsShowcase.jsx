@@ -95,7 +95,7 @@ export default function LandingCreatorsShowcase({
             type="button"
             className={`tf-creatorCard tf-reveal tf-creatorCard--${i}`}
             style={{ "--d": `${200 + i * 80}ms` }}
-            onClick={() => navigate(`/profile/${c.slug}`)}
+            onClick={() => navigate(`/${c.slug}`)}
             aria-label={t("creatorsShowcase.viewProfile", { name: c.name })}
           >
             <div className="tf-creatorCard__imgWrap">

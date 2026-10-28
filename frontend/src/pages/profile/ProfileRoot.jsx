@@ -1,8 +1,9 @@
 // src/pages/profile/ProfileRoot.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import { useTranslation } from "react-i18next";
+import PageSkeleton from "../../components/skeleton/PageSkeleton";
 
 export default function ProfileRoot() {
   const { t } = useTranslation("profile");
@@ -32,11 +33,8 @@ export default function ProfileRoot() {
       try {
         const token = localStorage.getItem("authToken");
         if (!token) throw new Error("No token");
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-        const res = await axios.get(`${backendUrl}/api/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get('/api/users/profile');
 
         const user = res.data;
 
@@ -113,7 +111,7 @@ export default function ProfileRoot() {
     }
   };
 
-  if (loading) return <div className="loading-indicator">{t("settings.loading")}</div>;
+  if (loading) return <PageSkeleton variant="panel" />;
   if (!userData) return <div className="edit-profile-wrapper">{t("settings.noSession")}</div>;
 
   return (

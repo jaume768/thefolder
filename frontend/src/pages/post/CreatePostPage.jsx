@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FaTimes, FaExclamationCircle } from 'react-icons/fa';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { X, Users, Tag, WandSparkles, Newspaper, Plus, Upload, UserPlus, FilePlusCorner, BookA, Globe } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import api from '../../services/api';
+import CreditPersonField from "../../components/credits/CreditPersonField";
 import { useNavigate } from 'react-router-dom';
 import PeopleTagsList from "../../components/PeopleTagsList";
+import PageLoader from "../../components/PageLoader";
 import '../../components/controlPanel/css/CreatePost.css';
-import { clImg } from '../../utils/optimizeImage';
+import { getPostSlug } from '../../utils/postSlug';
+import { resolveProfileLayout } from '../../utils/profileLayout';
+
+// Plantillas que abren un proyecto en su propia página (/:username/project/
+// :slug, resuelta por UserProfilePage.jsx contra profile.profileLayout) en
+// vez del post genérico /post/:id — mismo criterio que
+// PublicPortfolioPagePage.jsx.
+const TEMPLATE_PROJECT_PAGE_LAYOUTS = ["daisy-film", "index-gallery"];
 
 // ── Tipos de proyecto ────────────────────────────────────────────────────────
 const PROJECT_TYPES = [
@@ -138,22 +147,36 @@ const CreatePost = ({ onClose } = {}) => {
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
 
   const [peopleTags, setPeopleTags] = useState([
-    { name: "", username: "", role: "", socialUrl: "", avatar: null, isRegistered: false }
+    { name: "", username: "", role: "Photographer",       socialUrl: "", instagram: "", avatar: null, isRegistered: false },
+    { name: "", username: "", role: "Stylist",             socialUrl: "", instagram: "", avatar: null, isRegistered: false },
+    { name: "", username: "", role: "Make Up and Hair",    socialUrl: "", instagram: "", avatar: null, isRegistered: false },
   ]);
-  const [searchTerm, setSearchTerm]         = useState("");
-  const [suggestedUsers, setSuggestedUsers] = useState([]);
-  const [activeTagIndex, setActiveTagIndex] = useState(null);
-  const [loadingUsers, setLoadingUsers]     = useState(false);
 
-  const [showTeam, setShowTeam] = useState(false);
-  const [showCredits, setShowCredits] = useState(false);
+  // Un solo panel activo a la vez
+  const [activePanel, setActivePanel] = useState(null);
+  const cpRightRef = useRef(null);
+  const togglePanel = (panel) => {
+    setActivePanel((prev) => {
+      const next = prev === panel ? null : panel;
+      // rAF: espera a que React monte el panel recién abierto antes de medir
+      // scrollHeight, si no mide el alto de antes de que el panel exista.
+      if (next) requestAnimationFrame(() => {
+        cpRightRef.current?.scrollTo({ top: cpRightRef.current.scrollHeight, behavior: 'smooth' });
+      });
+      return next;
+    });
+  };
+  const showTeam        = activePanel === 'team';
+  const showCredits     = activePanel === 'credits';
+  const showPublishedIn = activePanel === 'publishedIn';
+  const [publishedIn, setPublishedIn] = useState([{ mediaName: "", articleUrl: "", isOnline: false, isPrinted: false }]);
   const [hasImageRights, setHasImageRights] = useState(false);
   const [rightsError, setRightsError]       = useState("");
   const [titleTouched, setTitleTouched]     = useState(false);
   const [typesTouched, setTypesTouched]     = useState(false);
   const [isLoading, setIsLoading]           = useState(false);
   const [uploadSuccess, setUploadSuccess]   = useState(false);
-  const [createdPostId, setCreatedPostId]   = useState(null);
+  const [createdPost, setCreatedPost]       = useState(null);
   const [toast, setToast]                   = useState(null);
 
   const [publishStep, setPublishStep] = useState('form');
@@ -250,22 +273,6 @@ const CreatePost = ({ onClose } = {}) => {
     return () => { if (saveImagesTimerRef.current) clearTimeout(saveImagesTimerRef.current); };
   }, [images]);
 
-  useEffect(() => {
-    const search = async () => {
-      if (searchTerm.length < 2 || activeTagIndex === null) return;
-      setLoadingUsers(true);
-      try {
-        const token = localStorage.getItem("authToken");
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/users/searchUsers?term=${searchTerm}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setSuggestedUsers(res.data.users || []);
-      } catch { setSuggestedUsers([]); } finally { setLoadingUsers(false); }
-    };
-    const t = setTimeout(search, 300);
-    return () => clearTimeout(t);
-  }, [searchTerm, activeTagIndex]);
 
   const clearDraftEverywhere = async () => {
     localStorage.removeItem(DRAFT_KEY);
@@ -288,10 +295,10 @@ const CreatePost = ({ onClose } = {}) => {
         if (Array.isArray(meta.peopleTags) && meta.peopleTags.length) {
           setPeopleTags(meta.peopleTags.map(p => ({ name: "", role: "", socialUrl: "", avatar: null, isRegistered: false, ...p })));
           const hasTeam = meta.peopleTags.some(p => (p?.name || "").trim());
-          if (hasTeam) setShowTeam(true);
+          if (hasTeam) setActivePanel('team');
         }
         if (Array.isArray(meta.imageNotes) && meta.imageNotes.some(n => (n || "").trim())) {
-          setShowCredits(true);
+          setActivePanel('credits');
         }
       }
     } catch {} finally {
@@ -304,6 +311,7 @@ const CreatePost = ({ onClose } = {}) => {
     await clearDraftEverywhere();
     setImages([]); setPostTitle(""); setPostDescription(""); setAuthorRole(""); setProjectTypes([]);
     setPeopleTags([{ name: "", username: "", role: "", socialUrl: "", avatar: null, isRegistered: false }]);
+    setPublishedIn([{ mediaName: "", articleUrl: "", isOnline: false, isPrinted: false }]);
     setHasImageRights(false); setDraftModalOpen(false);
     draftLoadedRef.current = true;
   };
@@ -366,12 +374,35 @@ const CreatePost = ({ onClose } = {}) => {
     setImageNotes(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const handleDragEnd = (result) => {
-    if (!result.destination || result.source.droppableId !== "imageGrid") return;
-    const from = result.source.index, to = result.destination.index;
-    if (from === to) return;
-    setImages(prev => reorder(prev, from, to));
-    setImageNotes(prev => reorder(prev, from, to));
+  /* ── Drag & drop nativo HTML5 (igual que EditPostModal) ──────────────────── */
+  const [dragSrcIdx,  setDragSrcIdx]  = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+
+  const handleDragStart = (e, idx) => {
+    setDragSrcIdx(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== dragOverIdx) setDragOverIdx(idx);
+  };
+
+  const handleDrop = (e, toIdx) => {
+    e.preventDefault();
+    const fromIdx = dragSrcIdx;
+    setDragSrcIdx(null);
+    setDragOverIdx(null);
+    if (fromIdx === null || fromIdx === toIdx) return;
+    setImages(prev => reorder(prev, fromIdx, toIdx));
+    setImagePreviews(prev => reorder(prev, fromIdx, toIdx));
+    setImageNotes(prev => reorder(prev, fromIdx, toIdx));
+  };
+
+  const handleDragEnd = () => {
+    setDragSrcIdx(null);
+    setDragOverIdx(null);
   };
 
   const toggleType = (type) => {
@@ -391,43 +422,94 @@ const CreatePost = ({ onClose } = {}) => {
       if (name === "name") return { ...item, name: value, username: "", avatar: null, isRegistered: false };
       return { ...item, [name]: value };
     }));
-    if (name === "name") { setSearchTerm(value); setActiveTagIndex(index); }
   };
 
-  const selectUser = (user) => {
-    if (activeTagIndex === null) return;
-    const clean = String(user?.username || "").trim().replace(/^@/, "");
-    const fullName = String(user?.fullName || user?.name || "").trim();
-    setPeopleTags(prev => prev.map((item, i) => i === activeTagIndex
-      ? { ...item, name: fullName || toTitleCase(clean), username: clean, avatar: user?.profile?.profilePicture || null, isRegistered: true, socialUrl: "" }
-      : item));
-    setSearchTerm(""); setSuggestedUsers([]); setActiveTagIndex(null);
-  };
 
   const addPeopleTagCard = () => {
-    const last = peopleTags[peopleTags.length - 1];
-    if (String(last?.name || "").trim()) {
-      setPeopleTags(prev => [...prev, { name: "", username: "", role: "", socialUrl: "", avatar: null, isRegistered: false }]);
-    } else {
-      alert(t('create.errors.fillRequired'));
-    }
+    setPeopleTags(prev => [...prev, { name: "", username: "", role: "", socialUrl: "", instagram: "", avatar: null, isRegistered: false }]);
   };
 
   const removePeopleTagCard = (index) => {
-    if (peopleTags.length > 1) setPeopleTags(prev => prev.filter((_, i) => i !== index));
+    setPeopleTags(prev => prev.filter((_, i) => i !== index));
   };
+
+  /* ── Drag & drop people ─────────────────────────────────────────────────── */
+  const [personDragSrc,  setPersonDragSrc]  = useState(null);
+  const [personDragOver, setPersonDragOver] = useState(null);
+
+  const handlePersonDragStart = (e, idx) => {
+    setPersonDragSrc(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  const handlePersonDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== personDragOver) setPersonDragOver(idx);
+  };
+  const handlePersonDrop = (e, toIdx) => {
+    e.preventDefault();
+    const fromIdx = personDragSrc;
+    setPersonDragSrc(null); setPersonDragOver(null);
+    if (fromIdx === null || fromIdx === toIdx) return;
+    setPeopleTags(prev => reorder(prev, fromIdx, toIdx));
+  };
+  const handlePersonDragEnd = () => { setPersonDragSrc(null); setPersonDragOver(null); };
+
+  /* ── Drag & drop publicaciones ──────────────────────────────────────────── */
+  const [pubDragSrc,  setPubDragSrc]  = useState(null);
+  const [pubDragOver, setPubDragOver] = useState(null);
+
+  const handlePubDragStart = (e, idx) => {
+    setPubDragSrc(idx);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  const handlePubDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== pubDragOver) setPubDragOver(idx);
+  };
+  const handlePubDrop = (e, toIdx) => {
+    e.preventDefault();
+    const fromIdx = pubDragSrc;
+    setPubDragSrc(null); setPubDragOver(null);
+    if (fromIdx === null || fromIdx === toIdx) return;
+    setPublishedIn(prev => reorder(prev, fromIdx, toIdx));
+  };
+  const handlePubDragEnd = () => { setPubDragSrc(null); setPubDragOver(null); };
 
   const handleSocialUrlBlur = (index) =>
     setPeopleTags(prev => prev.map((item, i) => i === index ? { ...item, socialUrl: normalizeUrl(item.socialUrl) } : item));
 
-  const handleExternalNameBlur = (index) =>
-    setPeopleTags(prev => prev.map((item, i) => {
-      if (i !== index) return item;
-      const raw = String(item.name || "").trim();
-      return raw.startsWith("@") ? item : { ...item, name: toTitleCase(raw) };
-    }));
+
+  // Tras publicar, el proyecto debe abrirse con la misma plantilla que el
+  // usuario tiene activa en ese momento (June Stamp/Daisy Film abren su
+  // propia página de proyecto; el resto usa el post genérico) — sin esto,
+  // publicar desde el botón "+" siempre mandaba a /post/:id sin importar
+  // qué plantilla estuviera usando. La plantilla activa no está disponible
+  // aquí (ni en AuthContext, que no se sincroniza al cambiarla en /myprofile
+  // /edit/templates), así que se resuelve con el perfil fresco del usuario
+  // en el momento de publicar.
+  const goToPublishedPost = async (post) => {
+    try {
+      const me = await api.get('/api/users/profile');
+      const { username, profileLayout } = me?.data || {};
+      if (username && TEMPLATE_PROJECT_PAGE_LAYOUTS.includes(resolveProfileLayout(profileLayout))) {
+        const postsRes = await api.get(`/api/posts/user/${username}`);
+        const allPosts = postsRes?.data?.posts || [];
+        navigate(`/${username}/project/${getPostSlug(post, allPosts)}`);
+        return;
+      }
+    } catch (e) {}
+    navigate(`/post/${post._id}`);
+  };
 
   const handlePublish = async () => {
+    // Guard contra doble envío: sin esto, un segundo clic mientras la
+    // primera petición todavía está en vuelo (algo fácil de hacer si el
+    // popup de tags se quedaba tapando el loader, ver publishStep abajo)
+    // disparaba un segundo POST /api/posts y el proyecto se duplicaba o
+    // triplicaba.
+    if (isLoading) return;
     setTitleTouched(true);
     if (!hasImages || !postTitle.trim()) {
       return;
@@ -437,6 +519,11 @@ const CreatePost = ({ onClose } = {}) => {
       return;
     }
 
+    // Cierra el popup de tags (publishStep) ANTES de mostrar el loader: si
+    // se queda montado, .cp-draft-overlay y <PageLoader/> comparten
+    // z-index:9999 y el popup, al ir después en el DOM, tapaba el loader
+    // por completo — parecía que publicar no hacía nada.
+    setPublishStep('form');
     setIsLoading(true);
     const formData = new FormData();
     formData.append("title", postTitle);
@@ -452,28 +539,31 @@ const CreatePost = ({ onClose } = {}) => {
     }, {});
     formData.append("imageTags", JSON.stringify(imageTagsPayload));
     const validPeople = peopleTags
-      .map(({ name, username, role, socialUrl, isRegistered, avatar }) => ({
+      .map(({ name, username, role, socialUrl, instagram, isRegistered, avatar }) => ({
         name: toTitleCase(String(name || "").trim()),
         username: isRegistered ? String(username || "").trim().replace(/^@/, "") : "",
         role: String(role || "").trim(),
         socialUrl: isRegistered ? "" : normalizeUrl(socialUrl),
+        instagram: isRegistered ? "" : String(instagram || "").trim().replace(/^@/, ""),
         isRegistered: !!isRegistered,
         avatar: isRegistered ? (avatar || "") : "",
       }))
-      .filter(t => t.name !== "");
+      .filter(t => t.name !== "" || t.role !== "");
     formData.append("peopleTags", JSON.stringify(validPeople));
+    const validPublications = publishedIn.filter(e => String(e.mediaName || "").trim());
+    formData.append("publishedIn", JSON.stringify(validPublications));
     formData.append("tags", JSON.stringify([]));
 
     try {
-      const token = localStorage.getItem("authToken");
-      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/posts`, formData, {
-        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+      const res = await api.post('/api/posts', formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       await clearDraftEverywhere();
-      const postId = res?.data?.post?._id;
-      if (postId) {
-        navigate(`/post/${postId}`);
+      const newPost = res?.data?.post;
+      if (newPost?._id) {
+        setCreatedPost(newPost);
+        await goToPublishedPost(newPost);
         onClose?.();
       } else {
         setUploadSuccess(true);
@@ -487,15 +577,18 @@ const CreatePost = ({ onClose } = {}) => {
     }
   };
 
-  const handleViewPost = () => {
-    if (createdPostId) navigate(`/post/${createdPostId}`);
+  const handleViewPost = async () => {
+    if (createdPost) await goToPublishedPost(createdPost);
     setUploadSuccess(false); onClose?.();
   };
 
   // ════════════════════════════════════════════════════════════════════════
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="cp-overlay" onClick={handleClose}>
+    <div className="cp-overlay" onClick={handleClose}>
+        <span className="cp-overlay-mark" aria-hidden="true">
+          <span className="cp-overlay-mark-t">T</span>
+          <span className="cp-overlay-mark-slash">/</span>
+        </span>
 
         {toast && (
           <div className="cp-toast" role="alert">
@@ -508,8 +601,10 @@ const CreatePost = ({ onClose } = {}) => {
         {draftModalOpen && (
           <div className="cp-draft-overlay" role="dialog" aria-modal="true">
             <div className="cp-draft-card" onClick={e => e.stopPropagation()}>
-              <h3 className="cp-draft-title">{t('create.draft.resumeTitle')}</h3>
-              <p className="cp-draft-text">{t('create.draft.resumeText')}</p>
+              <div>
+                <h3 className="cp-draft-title">{t('create.draft.resumeTitle')}</h3>
+                <p className="cp-draft-text">{t('create.draft.resumeText')}</p>
+              </div>
               {draftThumbUrls.length > 0 && (
                 <div className="cp-draft-thumbs">
                   {draftThumbUrls.map((src, i) => (
@@ -531,7 +626,8 @@ const CreatePost = ({ onClose } = {}) => {
         <div className={`cp-modal${!hasImages ? " is-compact" : ""}`} onClick={e => e.stopPropagation()}>
 
           {/* ═══ IZQUIERDA ═══════════════════════════════════════════════ */}
-          <div className={`cp-left${!hasImages ? " is-empty" : ""}`}>
+          <div className={`cp-left-wrap${!hasImages ? " is-empty" : ""}`}>
+          <div className="cp-left">
             <input
               id="cp-image-upload"
               type="file"
@@ -543,53 +639,49 @@ const CreatePost = ({ onClose } = {}) => {
 
             {!hasImages ? (
               <label htmlFor="cp-image-upload" className="cp-empty-drop">
-                <span className="cp-empty-drop__plus">+</span>
+                <Upload size={32} strokeWidth={1.2} aria-hidden="true" className="cp-empty-drop__plus" />
                 <span className="cp-empty-drop__label">{t('create.emptyDropLabel')}</span>
                 <span className="cp-empty-drop__sub">{t('create.emptyDropSub')}</span>
               </label>
             ) : (
-              <Droppable droppableId="imageGrid" direction="horizontal">
-                {(provided) => (
-                  <div className="cp-grid cp-grid--tooltip" ref={provided.innerRef} {...provided.droppableProps}>
-                    {images.map((img, index) => {
-                      const id = getFileId(img);
-                      return (
-                        <Draggable key={id} draggableId={id} index={index}>
-                          {(prov, snap) => (
-                            <div
-                              ref={prov.innerRef}
-                              {...prov.draggableProps}
-                              {...prov.dragHandleProps}
-                              className={`cp-grid__item${snap.isDragging ? " is-dragging" : ""}`}
-                            >
-                              <img src={imagePreviews[index] || ""} alt={`Imagen ${index + 1}`} className="cp-grid__img" draggable={false} />
-                              <div className="cp-grid__num">{index + 1}</div>
-                              {index === 0 && <div className="cp-grid__cover">{t('create.cover')}</div>}
-                              {(imageNotes[index] || "").trim() && <div className="cp-grid__credit-dot" />}
-                              <button
-                                type="button"
-                                className="cp-grid__remove"
-                                onClick={e => { e.stopPropagation(); removeImage(index); }}
-                                onMouseDown={e => e.stopPropagation()}
-                                onPointerDown={e => e.stopPropagation()}
-                                aria-label={t('create.removeImage')}
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          )}
-                        </Draggable>
-                      );
-                    })}
-                    {provided.placeholder}
-                    {images.length < 6 && (
-                      <label htmlFor="cp-image-upload" className="cp-grid__add" aria-label={t('create.addImage')}>
-                        <span>+</span>
-                      </label>
-                    )}
+              <div className="cp-grid cp-grid--tooltip">
+                {images.map((img, index) => (
+                  <div
+                    key={getFileId(img)}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={[
+                      "cp-grid__item",
+                      dragSrcIdx === index ? "is-dragging" : "",
+                      dragOverIdx === index && dragSrcIdx !== index ? "is-drop-target" : "",
+                    ].join(" ").trim()}
+                    data-tooltip={t('create.dragToReorder')}
+                  >
+                    <img src={imagePreviews[index] || ""} alt={`Imagen ${index + 1}`} className="cp-grid__img" draggable={false} />
+                    <div className="cp-grid__num">{index === 0 ? t('create.cover') : index + 1}</div>
+                    <button
+                      type="button"
+                      className="cp-grid__remove"
+                      onClick={e => { e.stopPropagation(); removeImage(index); }}
+                      aria-label={t('create.removeImage')}
+                    >
+                      <X size={14} strokeWidth={2} aria-hidden="true" />
+                    </button>
                   </div>
+                ))}
+                {images.length < 6 && (
+                  <label
+                    htmlFor="cp-image-upload"
+                    className={`cp-grid__add${images.length % 2 === 0 ? " cp-grid__add--wide" : ""}`}
+                    aria-label={t('create.addImage')}
+                  >
+                    <Plus size={20} strokeWidth={1.5} aria-hidden="true" />
+                  </label>
                 )}
-              </Droppable>
+              </div>
             )}
 
             {imageUploadErrors.length > 0 && (
@@ -604,14 +696,11 @@ const CreatePost = ({ onClose } = {}) => {
               </div>
             )}
           </div>
+          </div>
 
           {/* ═══ DERECHA ═════════════════════════════════════════════════ */}
           <div className={`cp-right-div${!hasImages ? " is-hidden" : ""}`}>
-            <div className="cp-right">
-              <button type="button" className="cp-close" onClick={handleClose} aria-label={t('create.team.closeTitle') || 'Close'}>
-                <FaTimes />
-              </button>
-
+            <div className="cp-right" ref={cpRightRef}>
               <div className="cp-fields">
 
                 {/* Título */}
@@ -662,89 +751,102 @@ const CreatePost = ({ onClose } = {}) => {
                   />
                 </div>
 
+                {/* Botones opcionales — todos en la misma barra; el panel
+                    activo se muestra debajo, fuera de la barra. */}
+                <div className="cp-optional-bar">
+                  <button
+                    type="button"
+                    className={`cp-optional-btn${showTeam ? " is-active" : ""}`}
+                    onClick={() => togglePanel('team')}
+                  >
+                    <Users size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
+                    {t('create.team.addTeamBtn')}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`cp-optional-btn${showCredits ? " is-active" : ""}`}
+                    onClick={() => togglePanel('credits')}
+                  >
+                    <Tag size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
+                    {t('create.credits.addCreditsBtn')}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`cp-optional-btn${showPublishedIn ? " is-active" : ""}`}
+                    onClick={() => togglePanel('publishedIn')}
+                  >
+                    <Newspaper size={14} strokeWidth={1.8} aria-hidden="true" className="cp-optional-btn__icon" />
+                    {t('create.publishedIn.addBtn')}
+                  </button>
+                </div>
+
                 {/* Panel equipo */}
                 {showTeam && (
-                  <div className="cp-panel">
-                    <p className="cp-panel__desc">{t('create.team.label')}</p>
-                    <div className="people-cards">
-                      {peopleTags.map((tag, index) => {
-                        const rawName = String(tag.name || "").trim();
-                        const hasName = rawName.length > 0;
-                        const query = activeTagIndex === index ? String(searchTerm || "").trim() : "";
-                        const canShowDropdown = activeTagIndex === index &&
-                          (loadingUsers || suggestedUsers.length > 0 || query.length >= 2);
+                    <div className="cp-panel">
+                      <div className="people-cards">
+                        {peopleTags.map((tag, index) => {
 
-                        return (
-                          <div key={index} className="person-card">
-                            {peopleTags.length > 1 && (
-                              <button type="button" className="person-remove-btn" onClick={() => removePeopleTagCard(index)} aria-label={t('create.removeImage')}><FaTimes /></button>
-                            )}
-                            <div className="person-inline">
-                              <div className="tagged-person__avatar">
-                                {tag.avatar ? <img src={tag.avatar} alt="" /> : <span>{getInitials(rawName)}</span>}
-                              </div>
-                              <div className="person-inline-fields">
-                                <div className="autocomplete-wrapper">
-                                  <input
-                                    type="text"
-                                    placeholder={t('create.team.namePlaceholder')}
-                                    name="name"
-                                    value={tag.name}
-                                    onChange={e => handlePeopleTagChange(index, e)}
-                                    onFocus={() => { setActiveTagIndex(index); setSearchTerm(tag.name); }}
-                                    onBlur={() => { handleExternalNameBlur(index); setActiveTagIndex(null); setSuggestedUsers([]); setSearchTerm(""); }}
-                                    className="people-input people-input--name ux-input"
+                          return (
+                            <div
+                              key={index}
+                              draggable
+                              onDragStart={e => handlePersonDragStart(e, index)}
+                              onDragOver={e => handlePersonDragOver(e, index)}
+                              onDrop={e => handlePersonDrop(e, index)}
+                              onDragEnd={handlePersonDragEnd}
+                              className={["person-card",
+                                personDragSrc === index ? "is-dragging" : "",
+                                personDragOver === index && personDragSrc !== index ? "is-drop-target" : "",
+                              ].filter(Boolean).join(" ")}
+                            >
+                              <span className="person-drag-handle" aria-hidden="true">⠿</span>
+                              <div className="person-card-body">
+                                <div className="person-card-row">
+                                  {/* Quién es: en THEFOLDER o fuera, y su Instagram solo si está
+                                      fuera (components/credits/CreditPersonField.jsx). */}
+                                  <CreditPersonField
+                                    person={tag}
+                                    onChange={(patch) => setPeopleTags((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)))}
+                                    inputClassName="people-input ux-input"
                                   />
-                                  {canShowDropdown && (
-                                    <div className="autocomplete-dropdown">
-                                      {query.length >= 2 && (
-                                        <div className="autocomplete-item" onMouseDown={e => e.preventDefault()}
-                                          onClick={() => { setPeopleTags(prev => prev.map((it, i) => i === index ? { ...it, name: toTitleCase(String(tag.name || "").trim()), avatar: null, isRegistered: false } : it)); setSuggestedUsers([]); setActiveTagIndex(null); setSearchTerm(""); }}>
-                                          <div className="autocomplete-user-info">
-                                            <span className="username">{t('create.team.unregistered')}</span>
-                                            <span className="registered-badge">{String(tag.name || "").trim()}</span>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {loadingUsers
-                                        ? <div className="loading-users">{t('create.team.searching')}</div>
-                                        : suggestedUsers.length > 0
-                                          ? suggestedUsers.map(user => (
-                                            <div key={user._id} className="autocomplete-item" onMouseDown={e => e.preventDefault()} onClick={() => selectUser(user)}>
-                                              <img src={clImg.avatar(user.profile?.profilePicture) || "/multimedia/usuarioDefault.jpg"} alt={user.username} className="autocomplete-avatar" />
-                                              <div className="autocomplete-user-info">
-                                                <span className="username">@{user.username}</span>
-                                                <span className="registered-badge">{t('create.team.registered')}</span>
-                                              </div>
-                                            </div>
-                                          ))
-                                          : query.length >= 2 && <div className="loading-users">{t('create.team.noMatches')}</div>
-                                      }
-                                    </div>
-                                  )}
+
+                                  <div className="people-field">
+                                    <WandSparkles size={14} strokeWidth={1.8} aria-hidden="true" className="people-field__icon" />
+                                    <input
+                                      type="text"
+                                      placeholder={t('create.team.rolePlaceholder')}
+                                      name="role"
+                                      value={tag.role}
+                                      onChange={e => handlePeopleTagChange(index, e)}
+                                      onMouseDown={e => e.stopPropagation()}
+                                      className="people-input people-input--role ux-input"
+                                    />
+                                  </div>
+
                                 </div>
-                                <input type="text" placeholder={t('create.team.rolePlaceholder')} name="role" value={tag.role} onChange={e => handlePeopleTagChange(index, e)} className="people-input people-input--role ux-input" />
-                                {!tag.isRegistered && hasName && (
-                                  <input type="url" placeholder={t('create.team.linkPlaceholder')} name="socialUrl" value={tag.socialUrl || ""} onChange={e => handlePeopleTagChange(index, e)} onBlur={() => handleSocialUrlBlur(index)} className="people-input people-input--url ux-input" />
-                                )}
                               </div>
+                              <button type="button" className="person-remove-btn" onClick={() => removePeopleTagCard(index)} onMouseDown={e => e.stopPropagation()} aria-label={t('create.removeImage')}>
+                                <X size={12} strokeWidth={1.8} aria-hidden="true" />
+                              </button>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
+                      <button type="button" onClick={addPeopleTagCard} className="add-card-btn">
+                        <UserPlus size={14} strokeWidth={1.8} aria-hidden="true" className="add-card-btn__icon" />
+                        {t('create.team.addCollaborator')}
+                      </button>
                     </div>
-                    <button type="button" onClick={addPeopleTagCard} className="add-card-btn">{t('create.team.addCollaborator')}</button>
-                  </div>
-                )}
+                  )}
 
                 {/* Panel créditos */}
                 {showCredits && (
-                  <div className="cp-panel">
-                    {!hasImages
-                      ? <p className="cp-panel__desc">{t('create.credits.noImagesFirst')}</p>
-                      : <>
-                          <p className="cp-panel__desc">{t('create.credits.label')}</p>
-                          <div className="cp-credits-list">
+                    <div className="cp-panel">
+                      {!hasImages
+                        ? null
+                        : <div className="cp-credits-list">
                             {images.map((_, i) => (
                               <div key={i} className="cp-credit-item">
                                 <img src={imagePreviews[i] || ""} alt="" className="cp-credit-item__img" />
@@ -757,67 +859,121 @@ const CreatePost = ({ onClose } = {}) => {
                               </div>
                             ))}
                           </div>
-                        </>
-                    }
-                  </div>
-                )}
+                      }
+                    </div>
+                  )}
 
-                {/* Botones opcionales */}
-                <div className="cp-optional-bar">
-                  <button
-                    type="button"
-                    className={`cp-optional-btn${showTeam ? " is-active" : ""}`}
-                    onClick={() => setShowTeam(v => !v)}
-                  >
-                    {t('create.team.addTeamBtn')}
-                  </button>
-                  <button
-                    type="button"
-                    className={`cp-optional-btn${showCredits ? " is-active" : ""}`}
-                    onClick={() => setShowCredits(v => !v)}
-                  >
-                    {t('create.credits.addCreditsBtn')}
-                  </button>
-                </div>
-
-                {/* Footer dentro del scroll */}
-                <div className="cp-footer">
-                  <div className="cp-footer__actions">
-                    <button type="button" className="cp-btn cp-btn--ghost" onClick={handleClose}>
-                      {t('create.saveDraft')}
-                    </button>
-                    <button
-                      type="button"
-                      className={`cp-btn cp-btn--primary${!canPublish ? " is-disabled" : ""}`}
-                      onClick={handlePublish}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? t('create.publishing') : t('create.publish')}
-                    </button>
-                  </div>
-                </div>
-
+                {/* Panel Published in */}
+                  {showPublishedIn && (
+                    <div className="cp-panel">
+                      <div className="people-cards">
+                        {publishedIn.map((entry, index) => (
+                          <div
+                            key={index}
+                            draggable
+                            onDragStart={e => handlePubDragStart(e, index)}
+                            onDragOver={e => handlePubDragOver(e, index)}
+                            onDrop={e => handlePubDrop(e, index)}
+                            onDragEnd={handlePubDragEnd}
+                            className={["publication-card",
+                              pubDragSrc === index ? "is-dragging" : "",
+                              pubDragOver === index && pubDragSrc !== index ? "is-drop-target" : "",
+                            ].filter(Boolean).join(" ")}
+                          >
+                            <span className="person-drag-handle" aria-hidden="true">⠿</span>
+                            <div className="publication-card-body">
+                              <div className="people-field">
+                                <BookA size={14} strokeWidth={1.8} aria-hidden="true" className="people-field__icon" />
+                                <input
+                                  type="text"
+                                  className="people-input pub-input ux-input"
+                                  placeholder={t('create.publishedIn.mediaPlaceholder')}
+                                  value={entry.mediaName}
+                                  onChange={e => setPublishedIn(prev => prev.map((it, i) => i === index ? { ...it, mediaName: e.target.value } : it))}
+                                />
+                              </div>
+                              <div className="people-field">
+                                <Globe size={14} strokeWidth={1.8} aria-hidden="true" className="people-field__icon" />
+                                <input
+                                  type="text"
+                                  className="people-input pub-input pub-input--url ux-input"
+                                  placeholder={t('create.publishedIn.urlPlaceholder')}
+                                  value={entry.articleUrl}
+                                  onChange={e => setPublishedIn(prev => prev.map((it, i) => i === index ? { ...it, articleUrl: e.target.value } : it))}
+                                />
+                              </div>
+                              <div className="publication-card-checks">
+                                <label className="pub-check-label">
+                                  <input
+                                    type="checkbox"
+                                    checked={entry.isOnline}
+                                    onChange={e => setPublishedIn(prev => prev.map((it, i) => i === index ? { ...it, isOnline: e.target.checked } : it))}
+                                  />
+                                  {t('create.publishedIn.online')}
+                                </label>
+                                <label className="pub-check-label">
+                                  <input
+                                    type="checkbox"
+                                    checked={entry.isPrinted}
+                                    onChange={e => setPublishedIn(prev => prev.map((it, i) => i === index ? { ...it, isPrinted: e.target.checked } : it))}
+                                  />
+                                  {t('create.publishedIn.printed')}
+                                </label>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className="person-remove-btn"
+                              onClick={() => setPublishedIn(prev => prev.filter((_, i) => i !== index))}
+                              aria-label={t('create.removeImage')}
+                            >
+                              <X size={12} strokeWidth={1.8} aria-hidden="true" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPublishedIn(prev => [...prev, { mediaName: "", articleUrl: "", isOnline: false, isPrinted: false }])}
+                        className="add-card-btn"
+                      >
+                        <FilePlusCorner size={14} strokeWidth={1.8} aria-hidden="true" />
+                        {t('create.publishedIn.addEntry')}
+                      </button>
+                    </div>
+                  )}
               </div>
+            </div>
+
+            {/* Footer fuera del scroll — siempre visible, ver .cp-right-div/
+                .cp-right en CreatePost.css (el scroll vive en .cp-right). */}
+            <div className="cp-footer">
+              <div className="cp-footer__actions">
+                <button type="button" className="cp-btn cp-btn--ghost" onClick={handleClose}>
+                  {t('create.saveDraft')}
+                </button>
+                <button
+                    type="button"
+                    className={`cp-btn cp-btn--primary${!canPublish ? " is-disabled" : ""}`}
+                    onClick={handlePublish}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? t('create.publishing') : t('create.publish')}
+                  </button>
+                </div>
             </div>
           </div>
         </div>
 
-        {isLoading && (
-          <div className="cp-loading-overlay">
-            <div className="cp-loading-card">
-              <div className="cp-loading-spinner" aria-hidden="true" />
-              <p className="cp-loading-title">{t('create.loadingTitle')}</p>
-              <p className="cp-loading-sub">{t('create.loadingSub')}</p>
-            </div>
-          </div>
-        )}
-
+        {isLoading && <PageLoader />}
 
         {publishStep === 'type' && (
         <div className="cp-draft-overlay" role="dialog" aria-modal="true">
           <div className="cp-draft-card" onClick={e => e.stopPropagation()}>
-            <h3 className="cp-draft-title">{t('create.projectTags.title')}</h3>
-            <p className="cp-draft-text">{t('create.projectTags.subtitle')}</p>
+            <div>
+              <h3 className="cp-draft-title">{t('create.projectTags.title')}</h3>
+              <p className="cp-draft-text">{t('create.projectTags.subtitle')}</p>
+            </div>
             <div className="cp-type-dropdown--modal">
               {PROJECT_TYPES.map(type => {
                 const selected = projectTypes.includes(type);
@@ -830,7 +986,7 @@ const CreatePost = ({ onClose } = {}) => {
                     aria-selected={selected}
                     onClick={() => { if (!disabled) toggleType(type); }}
                   >
-                    <span className="cp-type-option__check">{selected ? "/" : ""}</span>
+                    <span className="cp-type-option__check">{selected ? "#" : ""}</span>
                     {type}
                   </div>
                 );
@@ -851,8 +1007,8 @@ const CreatePost = ({ onClose } = {}) => {
               </button>
               <button
                 type="button"
-                className={`cp-btn cp-btn--primary${(projectTypes.length === 0 || !hasImageRights) ? " is-disabled" : ""}`}
-                disabled={projectTypes.length === 0 || !hasImageRights}
+                className={`cp-btn cp-btn--primary${(projectTypes.length === 0 || !hasImageRights || isLoading) ? " is-disabled" : ""}`}
+                disabled={projectTypes.length === 0 || !hasImageRights || isLoading}
                 onClick={handlePublish}
               >
                 {t('create.publish')}
@@ -866,7 +1022,7 @@ const CreatePost = ({ onClose } = {}) => {
         {uploadSuccess && (
           <div className="cp-success-overlay">
             <div className="cp-success-card">
-              <button className="cp-close" onClick={() => { setUploadSuccess(false); onClose?.(); }} type="button" aria-label={t('create.team.closeTitle') || 'Close'}><FaTimes /></button>
+              <button className="cp-close" onClick={() => { setUploadSuccess(false); onClose?.(); }} type="button" aria-label={t('create.team.closeTitle') || 'Close'}><X size={16} strokeWidth={1.8} aria-hidden="true" /></button>
               <h3>{t('create.success.title')}</h3>
               <p>{t('create.success.subtitle')}</p>
               <button className="cp-btn cp-btn--primary" onClick={handleViewPost} type="button">{t('create.success.viewPost')}</button>
@@ -875,7 +1031,6 @@ const CreatePost = ({ onClose } = {}) => {
         )}
 
       </div>
-    </DragDropContext>
   );
 };
 

@@ -1,4 +1,4 @@
-# 🚀 Guía de Despliegue — TheFolder en EC2
+# 🚀 Guía de Despliegue — THEFOLDER en EC2
 
 ## Arquitectura de producción
 
@@ -141,7 +141,7 @@ GOOGLE_CALLBACK_URL=https://api.thefolder.es/api/auth/google/callback
 
 BREVO_API_KEY=tu_brevo_api_key
 SENDER_EMAIL=noreply@thefolder.es
-SENDER_NAME=TheFolder
+SENDER_NAME=THEFOLDER
 
 JWT_SECRET=<genera con: openssl rand -hex 32>
 

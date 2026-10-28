@@ -1,18 +1,22 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 
 /**
- * Componente que desplaza la página al inicio cuando se navega a una ruta diferente
+ * Desplaza al inicio solo en navegación hacia adelante (PUSH/REPLACE).
+ * En go back (POP) deja que el browser restaure la posición de scroll
+ * anterior, evitando el reflow/zoom que se producía al volver.
  */
 function ScrollToTop() {
   const { pathname } = useLocation();
+  const navType = useNavigationType(); // 'PUSH' | 'REPLACE' | 'POP'
 
   useEffect(() => {
-    // Desplazar al inicio de la página cuando cambia la ruta
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (navType !== 'POP') {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, navType]);
 
-  return null; // Este componente no renderiza nada
+  return null;
 }
 
 export default ScrollToTop;

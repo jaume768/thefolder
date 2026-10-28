@@ -23,8 +23,8 @@
   --radius-md: 18px;
   --radius-sm: 14px;
 
-  --danger: #d95858;
-  --danger-bg: rgba(217, 88, 88, 0.10);
+  --danger: #e54747;
+  --danger-bg: rgba(229, 71, 71, 0.10);
 
   --ok-bg: rgba(17, 17, 17, 0.06);
 }
@@ -708,23 +708,31 @@ h2.wizard-title {
 
 .add-card-btn {
   width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: solid 1.5px rgba(0, 0, 0, .08);
-  background: #f8f8f8;
-  color: #222;
-
-  padding: 8px 12px;
+  background: #333;
+  color: #fff;
+  padding: 12px 12px;
   border-radius: 8px;
-
   font-size: 13px;
   font-weight: 400;
   cursor: pointer;
-  font-family: 'Inter Tight', sans-serif;
+  font-family: Inter Tight, sans-serif;
   margin-top: 12px;
+  letter-spacing: 0.04em;
 }
 
 .add-card-btn:hover {
-  background: #e2e2e261;
+  background: #000;
   border: solid 1.5px #444;
+}
+
+.add-card-btn__icon {
+  color: #fdfdfd;
+  flex-shrink: 0;
 }
 
 /* Autocomplete */
@@ -733,10 +741,11 @@ h2.wizard-title {
 .autocomplete-wrapper input:-webkit-autofill,
 .autocomplete-wrapper input:-webkit-autofill:hover,
 .autocomplete-wrapper input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #fff inset;
-  box-shadow: 0 0 0 1000px #fff inset;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff00 inset;
+  box-shadow: 0 0 0 1000px #ffffff00 inset;
   -webkit-text-fill-color: #111;
   transition: background-color 9999s ease-in-out 0s;
+  background: transparent;
 }
 
 .autocomplete-dropdown {
@@ -1414,8 +1423,8 @@ button.wizard-btn.ghost:hover {
 }
 
 .draft-choice-meta{
-  background: #f6f6f6;
-  border-radius: 14px;
+  background: #f9f9f9;
+  border-radius: 12px;
   padding: 12px;
   margin-bottom: 14px;
 }
@@ -1952,11 +1961,122 @@ input.post-input {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  align-items: flex-end;
+}
+
+/* ── Person card (horizontal, drag & drop) ───────────────────────────────── */
+.person-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f1f1f1;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  transition: border-color .15s ease, opacity .15s ease;
+}
+
+.person-card.is-dragging {
+  opacity: 0.35;
+}
+
+.person-card.is-drop-target {
+  border-color: #bbb;
+}
+
+.person-drag-handle {
+  flex-shrink: 0;
+  cursor: grab;
+  color: #ccc;
+  font-size: 15px;
+  line-height: 1;
+  user-select: none;
+  padding: 0 2px;
   margin-top: 8px;
 }
 
-.person-card{
+.person-drag-handle:active {
+  cursor: grabbing;
+}
+
+.person-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.person-card-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-direction: column;
+}
+
+/* Nombre/Rol/Instagram, cada uno icono + input — el icono nace apagado
+   (mismo tono que el placeholder) y se oscurece cuando el campo tiene foco
+   o ya tiene contenido, para que ayude a leer el campo sin competir con el
+   texto en reposo. */
+.person-card .people-field,
+.publication-card .people-field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.person-card-row .autocomplete-wrapper {
+  flex: 1;
+  min-width: 0;
   position: relative;
+}
+
+.person-card .people-field__icon,
+.publication-card .people-field__icon {
+  flex-shrink: 0;
+  color: #bbb;
+  transition: color .15s ease;
+}
+
+.person-card .people-field:focus-within .people-field__icon,
+.person-card .people-field:has(input:not(:placeholder-shown)) .people-field__icon,
+.publication-card .people-field:focus-within .people-field__icon,
+.publication-card .people-field:has(input:not(:placeholder-shown)) .people-field__icon {
+  color: #444;
+}
+
+.person-card-url {
+  font-size: 12px !important;
+  color: #888 !important;
+}
+.person-card-url::placeholder {
+  color: #bbb !important;
+}
+.person-card-url.is-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.person-card .person-remove-btn {
+  position: static;
+  flex-shrink: 0;
+  align-self: flex-start;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: color .15s ease;
+}
+
+.person-card .person-remove-btn:hover {
+  color: #555;
 }
 
 /* Copia 1:1 del look de UserPost */
@@ -2015,24 +2135,23 @@ input.post-input {
   min-width: 0;
   flex: 1;
   cursor: pointer;
-}
-
-.tagged-person__role{
-  font-family: 'Inter Tight', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #111;
-  text-align: left;
+  justify-content: flex-end !important;
 }
 
 .tagged-person__user{
   font-family: 'Inter Tight', sans-serif;
   font-size: 0.80rem;
   color: #444;
+  text-decoration: underline;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.tagged-person__user:hover {
+  text-decoration: underline;
+  color: #333;
 }
 
 .tagged-person__external{
@@ -2042,13 +2161,17 @@ input.post-input {
   opacity: 0.8;
 }
 
+.tagged-person__user:hover {
+  text-decoration: underline;
+}
+
 /* Editor desplegable debajo de la card */
 .person-editor{
   margin-top: 10px;
   padding: 12px;
   border: 1px solid rgba(0,0,0,.08);
   border-radius: 16px;
-  background: #f6f6f6;
+  background: #f9f9f9;
 }
 
 /* Botón eliminar (no anida botón dentro de botón) */
@@ -2066,6 +2189,152 @@ input.post-input {
   z-index: 9999;
 }
 
+/* inputs dentro de person-card: sin borde ni fondo */
+.person-card .people-input,
+.publication-card .people-input {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #444;
+}
+
+/* Nombre/Rol/Instagram ahora viven cada uno en su propia fila
+   (.people-field: icono + input) — el input siempre llena lo que sobra
+   junto al icono, sin ancho fijo. */
+.person-card .people-field .people-input,
+.publication-card .people-field .people-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.person-card .people-input--role {
+  line-height: 20px;
+}
+
+.person-card .people-input--role::placeholder { color: #bbb; }
+.person-card .people-input--name::placeholder { color: #aaa; }
+.person-card .people-input--instagram::placeholder { color: #aaa; }
+
+/* ── Publication card (Published in) ─── mismo look que .person-card ────── */
+.publication-card {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f1f1f1;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  transition: border-color .15s ease, opacity .15s ease;
+}
+
+.publication-card.is-dragging {
+  opacity: 0.35;
+}
+
+.publication-card.is-drop-target {
+  border-color: #bbb;
+}
+
+.publication-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.publication-card .pub-input::placeholder { color: #aaa; }
+
+.publication-card .pub-input--url {
+  color: #888;
+}
+.publication-card .pub-input--url::placeholder { color: #bbb; }
+
+.publication-card-checks {
+  display: flex;
+  gap: 6px;
+}
+
+.pub-check-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pub-check-label input[type="checkbox"] {
+  accent-color: #111;
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+
+.publication-card .person-remove-btn {
+  position: static;
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #bbb;
+  font-size: 16px;
+  line-height: 1;
+  padding: 1px 2px;
+  transition: color .15s ease;
+}
+.publication-card .person-remove-btn:hover { color: #555; }
+
+/* Publication card — view mode (UserPostPage): conserva el look plano,
+   sin el fondo/padding que ahora tiene la card en el formulario. */
+.publication-card--view {
+  pointer-events: none;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+.publication-card--view a,
+.publication-card--view .pub-media-name--link {
+  pointer-events: all;
+}
+
+.pub-media-name {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #444;
+  text-decoration: none;
+}
+
+.pub-media-name--link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  color: var(--color-brand-blue-text);
+}
+
+.pub-media-name--link:hover { color: #444; }
+
+.publication-card-checks--view {
+  display: flex;
+  gap: 6px;
+}
+
+.pub-format-badge {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #444;
+}
+
+/* legacy — kept for people-step wizard */
 .person-inline{
   display: flex;
   gap: 16px;
@@ -2089,6 +2358,7 @@ input.post-input {
   display:flex;
   flex-direction:column;
   gap:16px;
+  align-items: flex-end;
 }
 
 .people-step .person-card{
@@ -2381,7 +2651,7 @@ span.review-value.details-input {
 
   max-width: 620px;
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 12px;
 
   background: rgba(20, 20, 20, 0.95);
   color: #fff;
@@ -2660,7 +2930,9 @@ span.review-value.details-input {
   right: 0;
   bottom: 0;
   left: 0;
-  background: #000000d4;
+  background: #000000c9;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2670,21 +2942,43 @@ span.review-value.details-input {
   cursor: pointer;
 }
 
+/* Marca "T/" decorativa en blanco, centrada arriba del overlay de crear/
+   editar post (mismo lenguaje visual que .fullscreen-mark en UserPost.css,
+   pero en blanco porque aquí el fondo es oscuro). top: 20px replica el
+   padding del overlay para que quede a la misma distancia del borde. */
+.cp-overlay-mark {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+  pointer-events: none;
+  z-index: 10001;
+}
+
+.cp-overlay-mark-t {
+  font-size: 14px;
+}
+
+.cp-overlay-mark-slash {
+  font-size: 17px;
+}
+
 /* ── Modal ───────────────────────────────────────────────────────────────── */
 .cp-modal {
-  display: flex;
-  width: 100%;
-  max-width: 960px;
-  max-height: 90vh;
-  border-radius: 0px;
-  overflow: hidden;
-  gap: 12px;
-
+  padding: 32px 0px 16px;
   display: flex;
   justify-content: center;
   width: 100%;
   max-width: 960px;
   max-height: 90vh;
+  border-radius: 0px;
   overflow-y: auto;
   gap: 12px;
 }
@@ -2693,7 +2987,7 @@ span.review-value.details-input {
   max-width: 576px;
   align-items: center;
   overflow: unset;
-  height: 25dvh;
+  height: 60dvh;
 }
 
 .cp-type-dropdown--modal {
@@ -2702,15 +2996,31 @@ span.review-value.details-input {
   width: 100%;
   max-height: 300px;
   overflow-y: auto;
-  margin: 12px 0;
+  margin: 0px 0px 12px;
   border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-/* ═══ IZQUIERDA ══════════════════════════════════════════════════════════════ */
+/* ═══ IZQUIERDA ══════════════════════════════════════════════════════════════
+   .cp-left-wrap ocupa el mismo 50% que .cp-right-div — así el gap entre
+   ambos cae exactamente en el centro del modal, alineado con
+   .cp-overlay-mark (que está centrado con left:50%). .cp-left en sí es más
+   angosto (70% del wrapper = 35% del modal) y se pega al borde derecho del
+   wrapper, contra ese hueco central, en vez de ocupar el 50% completo. */
+.cp-left-wrap {
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+  transition: flex 0.3s ease;
+}
+
+.cp-left-wrap.is-empty {
+  flex: 1;
+}
 
 .cp-left {
-  width: 40%;
+  width: 75%;
   background: #fff;
   border-radius: 8px;
   padding: 8px;
@@ -2722,12 +3032,13 @@ span.review-value.details-input {
   min-width: 0;
   scrollbar-width: thin;
   scrollbar-color: #99999926 transparent;
-
-  transition: flex 0.3s ease;
+  transition: width 0.3s ease;
 }
 
-.cp-left.is-empty {
-  flex: 1;
+/* Sin imágenes (is-compact): no hay .cp-right-div contra la que alinearse,
+   así que .cp-left llena el wrapper entero en vez de quedarse en el 70%. */
+.cp-left-wrap.is-empty .cp-left {
+  width: 100%;
 }
 
 .cp-left__header {
@@ -2768,9 +3079,9 @@ span.review-value.details-input {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
+  gap: 4px;
+  border: 1.2px dashed #bbb;
+  border-radius: 0px;
   cursor: pointer;
   padding: 48px 24px;
   transition: border-color 0.2s, background 0.2s;
@@ -2778,26 +3089,32 @@ span.review-value.details-input {
 }
 
 .cp-empty-drop:hover {
-  border-color: #666;
+  border-color: #444;
   background: #fafafa;
 }
 
 .cp-empty-drop__plus {
-  font-size: 36px;
   color: #bbb;
-  line-height: 1;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.cp-empty-drop:hover .cp-empty-drop__plus {
+  color: #444;
 }
 
 .cp-empty-drop__label {
-  font-size: 15px;
-  font-weight: 600;
-  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
 }
 
 .cp-empty-drop__sub {
   font-size: 12px;
-  color: #aaa;
+  font-weight: 300;
+  color: #666;
   text-align: center;
+  letter-spacing: .02em;
 }
 
 /* ── Grid de imágenes ─────────────────────────────────────────────────────── */
@@ -2810,7 +3127,7 @@ span.review-value.details-input {
 .cp-grid__item {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   cursor: grab;
 }
@@ -2825,7 +3142,7 @@ span.review-value.details-input {
 }
 
 .cp-grid__item.is-drop-target {
-  outline: 2px solid #111;
+  outline: 2px solid var(--color-brand-blue-text);
   outline-offset: -2px;
 }
 
@@ -2854,43 +3171,32 @@ span.review-value.details-input {
 
 .cp-grid__num {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
+  top: 4px;
+  left: 4px;
+  padding: 0px 6px;
+  width: fit-content;
+  height: 18px;
   background: #00000080;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 0px;
   color: #fff;
-  font-size: 10.5px;
-  font-family: 'Inter Tight', sans-serif;
-  font-weight: 400;
+  font-size: 12px;
+  font-family: Inter Tight, sans-serif;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.cp-grid__cover {
-  position: absolute;
-  bottom: 6px;
-  left: 33%;
-  background: #00000080;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 400;
-  padding: 2px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
 .cp-grid__remove {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.55);
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: var(--danger);
   border: none;
   color: #fff;
   font-size: 11px;
@@ -2899,22 +3205,12 @@ span.review-value.details-input {
   justify-content: center;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: opacity .15s;
   padding: 0;
 }
 
 .cp-grid__item:hover .cp-grid__remove {
   opacity: 1;
-}
-
-.cp-grid__credit-dot {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #3c07cf;
 }
 
 /* Slot añadir */
@@ -2926,9 +3222,6 @@ span.review-value.details-input {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 40px;
-  font-weight: 200;
-  font-family: 'Inter Tight', sans-serif;
   color: #bbb;
   transition: border-color 0.2s, color 0.2s;
 }
@@ -2936,6 +3229,11 @@ span.review-value.details-input {
 .cp-grid__add:hover {
   border-color: #777;
   color: #777;
+}
+
+.cp-grid__add--wide {
+  grid-column: span 2;
+  aspect-ratio: 2 / 1;
 }
 
 /* Errores de subida */
@@ -2967,16 +3265,20 @@ span.review-value.details-input {
   display: flex;
 }
 
-/* ═══ DERECHA ════════════════════════════════════════════════════════════════ */
+/* ═══ DERECHA ════════════════════════════════════════════════════════════════
+   .cp-right-div ya no scrollea — solo reparte altura entre .cp-right (el que
+   scrollea, ver min-height:0 más abajo) y .cp-footer (flex-shrink:0, fuera
+   de .cp-right así que nunca se scrollea con los campos: queda siempre
+   visible). */
 .cp-right-div {
-    width: 50%;
+    width: 52%;
     display: flex;
     flex-direction: column;
     gap: 12px;
 
     min-width: 0;
     transition: all 0.3s ease;
-    overflow: scroll;
+    overflow: hidden;
 }
 
 .cp-right-div.is-hidden {
@@ -2987,39 +3289,33 @@ span.review-value.details-input {
 }
 
 .cp-right {
-  min-height: 384px;
-  flex-shrink: 0;
+  min-height: 0;
+  flex: 1 1 auto;
   background: #fff;
   border-radius: 8px;
-  padding: 24px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow-y: auto;
+  gap: 12px;
 }
 
 /* Botón cerrar */
 .cp-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
+  width: 100%;
+  height: 24px;
   border-radius: 50%;
   background: transparent;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   font-size: 13px;
   color: #555;
   transition: background .15s;
   z-index: 2;
-}
-
-.cp-close:hover {
-  background: #e5e5e5;
 }
 
 /* ── Campos ──────────────────────────────────────────────────────────────── */
@@ -3027,8 +3323,10 @@ span.review-value.details-input {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  padding-top: 24px;
+  gap: 24px;
+  background-color: #00000005;
+  padding: 12px;
+  border-radius: 8px;
 }
 
 .cp-field-group {
@@ -3053,9 +3351,7 @@ span.review-value.details-input {
   color: #111;
   background: transparent;
   caret-color: #111;
-  text-transform: uppercase;
-  text-align: right;
-
+  text-align: left;
   resize: none;
   overflow: hidden;
 }
@@ -3075,13 +3371,15 @@ span.review-value.details-input {
   outline: none;
   resize: none;
   font-size: 12px;
-  line-height: 16px;
+  line-height: 20px;
   text-align: left;
   font-family: Inter Tight, sans-serif;
   font-weight: 400;
   color: #333;
   caret-color: #111;
   font-family: inherit;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  letter-spacing: 0.02em;
 }
 
 .cp-desc-input::placeholder {
@@ -3094,6 +3392,7 @@ span.review-value.details-input {
   font-size: 12px;
   color: #e00;
   margin-top: 4px;
+  text-align: center;
 }
 
 /* ── Tipo de proyecto ─────────────────────────────────────────────────────── */
@@ -3161,6 +3460,7 @@ span.review-value.details-input {
 .cp-type-option {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 9px 14px;
   font-size: 13px;
@@ -3174,7 +3474,7 @@ span.review-value.details-input {
 }
 
 .cp-type-option.is-selected {
-  font-weight: 600;
+  font-weight: 500;
   color: #111;
 }
 
@@ -3184,8 +3484,7 @@ span.review-value.details-input {
 }
 
 .cp-type-option__check {
-  width: 16px;
-  font-size: 12px;
+  font-size: 14px;
   color: #111;
   flex-shrink: 0;
 }
@@ -3195,43 +3494,46 @@ span.review-value.details-input {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 
 .cp-optional-btn {
-  padding: 8px 16px;
-  border-radius: 24px;
+  padding: 6px 12px;
+  border-radius: 6px;
   border: none;
-  font-family: "Inter Tight", sans-serif;
-  background: #f8f8f8;
-  border: 1px solid rgba(0, 0, 0, .08);
-  color: #222;
-  font-size: 12px;
+  font-family: Inter Tight, sans-serif;
+  color: #111;
+  font-size: 10px;
   font-weight: 400;
   cursor: pointer;
   font-family: inherit;
-  letter-spacing: .2px;
-  border: solid 1.5px transparent;
-  transition: all ease-in-out 0.1s;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(0, 0, 0, .1);
+  transition: all ease-in-out .1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+}
+
+.cp-optional-btn__icon {
+  flex-shrink: 0;
 }
 
 .cp-optional-btn:hover {
-  background: #f8f8f8;
-  border: solid 1.5px #444;
+  border: 1px solid #111;
 }
 
 .cp-optional-btn.is-active {
-  background: #f8f8f8;
-  border: solid 1.5px #444;
+  background: #000;
+  color: #fdfdfd;
+  opacity: 1;
+  border: solid 1px #000;
 }
 
-/* ── Paneles opcionales ──────────────────────────────────────────────────── */
-.cp-panel__desc {
-  font-family: Inter Tight, sans-serif;
-  font-weight: 400;
-  color: #888;
-  font-size: 11px;
-  margin-bottom: 10px;
+.cp-optional-btn.is-active:hover {
+  opacity: 0.85;
 }
 
 /* Strip de créditos */
@@ -3299,23 +3601,25 @@ span.review-value.details-input {
 .cp-credits-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 4px 0 8px;
+  gap: 6px;
+  padding: 12px;
+  background: #f1f1f1;
+  border-radius: 6px;
 }
 
 .cp-credit-item {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   gap: 12px;
 }
 
 .cp-credit-item__img {
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 2px;
   display: block;
 }
 
@@ -3323,10 +3627,17 @@ span.review-value.details-input {
   flex: 1;
 }
 
-/* ═══ FOOTER ═════════════════════════════════════════════════════════════════ */
+/* ═══ FOOTER ═════════════════════════════════════════════════════════════════
+   Hermano de .cp-right dentro de .cp-right-div (no hijo) — flex-shrink:0 para
+   que siempre conserve su tamaño natural y quede visible, sin importar
+   cuánto scrollee .cp-right por encima. */
 .cp-footer {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .cp-rights {
@@ -3338,6 +3649,7 @@ span.review-value.details-input {
   font-size: 11px;
   color: #555;
   line-height: 1.4;
+  margin-bottom: 12px;
 }
 
 .cp-rights input[type="checkbox"] {
@@ -3357,7 +3669,7 @@ span.review-value.details-input {
 
 /* ── Botones principales ─────────────────────────────────────────────────── */
 .cp-btn {
-  padding: 10px 16px;
+  padding: 12px 24px;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 400;
@@ -3372,6 +3684,7 @@ span.review-value.details-input {
 .cp-btn--ghost {
   background: transparent;
   color: #333;
+  max-width: 200px;
 }
 
 .cp-btn--ghost:hover {
@@ -3379,12 +3692,13 @@ span.review-value.details-input {
 }
 
 .cp-btn--primary {
-  background: #111;
+  background: var(--color-brand-blue);
   color: #fff;
+  flex: 1;
 }
 
 .cp-btn--primary:hover:not(.is-disabled) {
-  background: #333;
+  background: var(--color-brand-blue-dark);
 }
 
 .cp-btn--primary.is-disabled {
@@ -3396,6 +3710,15 @@ span.review-value.details-input {
 .cp-btn--danger {
   background: #d00;
   color: #fff;
+}
+
+/* Filas de 2 botones (footer, resumir borrador, confirmar borrado):
+   ambos ocupan el 50% cada uno, respetando el gap. */
+.cp-footer__actions .cp-btn,
+.cp-draft-actions .cp-btn,
+.cp-delete-confirm__actions .cp-btn {
+  flex: 1;
+  max-width: none;
 }
 
 .cp-btn--danger:hover:not(:disabled) {
@@ -3440,45 +3763,55 @@ span.review-value.details-input {
 }
 
 .cp-draft-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   background: #fff;
   border-radius: 8px;
   padding: 18px;
-  max-width: 400px;
+  max-width: 450px;
   width: 90%;
+  /* Antes height:250px fijo + justify-content:space-evenly — le quedaba
+     bien al modal corto de "retomar borrador", pero el de "tags de
+     proyecto" (mismo .cp-draft-card, más contenido: título, subtítulo,
+     dropdown, checkbox de derechos, error) quedaba apretado/recortado
+     dentro de esos 250px. height:auto + gap fijo: crece con el contenido
+     de cada variante, max-height solo como red de seguridad. */
+  height: auto;
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 16px 56px rgba(0,0,0,0.2);
 }
 
 .cp-draft-title {
     font-size: 18px;
-    line-height: 17px;
+    line-height: 22px;
     font-family: Inter Tight, sans-serif;
     font-weight: 500;
     color: #222;
-    letter-spacing: .04em;
     text-align: left;
-    margin-bottom: 4px;
 }
 
 .cp-draft-text {
   font-family: Inter Tight, sans-serif;
   font-size: 12px;
-  line-height: 17px;
-  letter-spacing: .02em;
-  font-weight: 300;
+  line-height: 16px;
+  font-weight: 400;
   margin: 0;
-  color: #555;
-  margin-bottom: 8px;
+  color: #444;
+  letter-spacing: 0.02em;
 }
 
 .cp-draft-thumbs {
   display: flex;
   gap: 6px;
-  margin: 20px 0;
+  margin: 8px 0;
 }
 
 .cp-draft-thumb {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 8px;
   overflow: hidden;
   background: #f0f0f0;
@@ -3505,15 +3838,45 @@ span.review-value.details-input {
   justify-content: space-between;
 }
 
+@media (max-width: 720px) {
+  .cp-draft-card {
+    width: 92%;
+    max-height: 85dvh;
+    padding: 16px;
+  }
+
+  .cp-draft-thumbs {
+    flex-wrap: wrap;
+    margin: 8px 0;
+  }
+
+  .cp-draft-thumb {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 420px) {
+  .cp-draft-card {
+    width: 94%;
+    padding: 14px;
+  }
+
+  .cp-draft-thumb {
+    width: 56px;
+    height: 56px;
+  }
+}
+
 /* ═══ TOOLTIP IMAGEN ════════════════════════════════════════════════════════════════ */
 
-.cp-grid__item::after {
-  content: "Arrastra para cambiar el orden";
+.cp-grid__item[data-tooltip]::after {
+  content: attr(data-tooltip);
   position: absolute;
-  bottom: 8px;
+  bottom: 5px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.75);
+  background: #00000080;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #fff;
@@ -3521,8 +3884,7 @@ span.review-value.details-input {
   font-size: 11px;
   font-weight: 300;
   letter-spacing: 0.04em;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 4px 6px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
@@ -3530,58 +3892,14 @@ span.review-value.details-input {
   z-index: 10;
 }
 
-.cp-grid__item:hover::after {
+.cp-grid__item[data-tooltip]:hover::after {
   opacity: 1;
 }
 
 /* ═══ ESTADOS ════════════════════════════════════════════════════════════════ */
-.cp-loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-.cp-loading-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 36px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  min-width: 240px;
-}
-
-.cp-loading-spinner {
-  width: 44px;
-  height: 44px;
-  border: 3px solid #e0e0e0;
-  border-top-color: #111;
-  border-radius: 50%;
-  animation: cp-spin 0.8s linear infinite;
-}
-
-@keyframes cp-spin {
-  to { transform: rotate(360deg); }
-}
-
-.cp-loading-title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: #111;
-  letter-spacing: -0.01em;
-}
-
-.cp-loading-sub {
-  margin: 0;
-  font-size: 13px;
-  color: #888;
-}
+/* La carga de "publicando" ahora usa <PageLoader /> (componentes/PageLoader.jsx
+   + PageLoader.css) — la misma animación de marca "FOLDER/" que en el resto
+   de la app, en vez de un spinner + card propios de este modal. */
 
 .cp-success-overlay {
   position: fixed;
@@ -3652,12 +3970,38 @@ span.review-value.details-input {
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
-  .cp-modal {
+  /* .cp-modal.is-compact (sin imágenes) tiene su propia regla base con
+     overflow: unset y más especificidad que un simple ".cp-modal", así que
+     hay que repetir el selector aquí o el scroll se rompe en mobile cuando
+     el post está vacío — justo el estado inicial al crear un post. */
+  .cp-modal,
+  .cp-modal.is-compact {
     flex-direction: column;
-    max-height: 100dvh;
     border-radius: 0;
     margin: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100% !important;
+    align-items: stretch;
+    /* La regla base trae justify-content:center (pensada para el layout en
+       fila de desktop) — en columna, con contenido más alto que los 90dvh
+       del modal, un flex container centrado recorta el overflow por igual
+       arriba y abajo y dentro de ese scrollport centrado el navegador solo
+       deja alcanzar la franja del medio: ni el principio (título/imágenes)
+       ni el final (footer) quedan alcanzables con scroll. flex-start ancla
+       el contenido arriba, así el scroll parte de verdad desde el inicio. */
+    justify-content: flex-start;
+  }
+
+  .cp-modal {
+    height: 95dvh !important;
+  }
+
+  /* .is-compact = sin imágenes (.cp-empty-drop visible): el modal solo
+     necesita el alto del drop vacío, no los 95dvh del formulario completo. */
+  .cp-modal.is-compact {
+    height: auto !important;
+    max-height: 40vh !important;
   }
 
   .cp-overlay {
@@ -3667,25 +4011,71 @@ span.review-value.details-input {
     height: 100dvh;
   }
 
+  /* .cp-modal es el único que scrollea en mobile (arriba) — .cp-left/
+     .cp-right-div/.cp-right traen su propio overflow-y:auto para el layout
+     de 2 columnas de desktop (ver reglas base más arriba); en mobile hay
+     que apagarlo explícitamente en los 3, si no las imágenes (.cp-left)
+     quedan "anclagas" con su propio scroll interno en vez de moverse con
+     el resto del formulario. */
   .cp-right-div {
     width: 100%;
-    
+    overflow: visible;
+  }
+
+  /* .is-hidden colapsaba con width:0 — funciona en desktop (eje principal
+     horizontal, .cp-modal en fila) pero en mobile .cp-modal pasa a columna:
+     el eje principal es el alto, y width:0 no lo toca. Sin esto, todo el
+     contenido de dentro (título/descripción/barra opcional/footer) se sigue
+     renderizando a su alto natural aunque sea invisible (opacity:0), y ese
+     hueco fantasma le robaba casi todo el alto a .cp-left-wrap.is-empty
+     (flex:1) — por eso no se veía la zona de subir imágenes. */
+  .cp-right-div.is-hidden {
+    height: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* En mobile no hay una segunda columna contra la que alinear el gap
+     central — .cp-left-wrap pasa a ocupar todo el ancho, igual que
+     .cp-right-div arriba. */
+  .cp-left-wrap {
+    width: 100%;
   }
 
   .cp-left {
-    width: auto;
-    margin: 8px 24px 0;
-    overflow-y: unset;
+    width: -webkit-fill-available;
+    margin: 0px 24px 0;
+    height: auto;
+    overflow-y: visible;
   }
 
   .cp-right {
-    margin: 0 24px 8px;
+    margin: 0 24px 0px;
     width: auto;
+    flex: none;
+    min-height: 0;
+    overflow-y: visible;
+  }
+
+  .cp-footer {
+    margin: 0 24px 0px;
   }
 
   .cp-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
+}
+
+/* Esquinas rectas en todo el overlay de crear/editar post — !important +
+   selector universal para ganar sin depender del orden/especificidad de
+   cada regla individual (thumbnails, inputs, botones, modal…) dentro de
+   .cp-overlay. */
+.cp-overlay,
+.cp-overlay * {
+  border-radius: 0px !important;
 }
 
 @media (max-width: 1024px) {

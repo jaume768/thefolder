@@ -33,9 +33,11 @@ const UserLanguagesSection = ({ languages = [] }) => {
       <h2>{t("sections.languages")}</h2>
       <div className="user-extern-languages">
         {normalized.map((l, index) => (
+          // Idioma y nivel separados por el gap de .user-languae-text (sin
+          // corchetes, como la ubicación del perfil).
           <div key={`${l.language}-${index}`} className="user-languae-text">
-            <p className="user-languae-text">{l.language}</p>
-            <p className="user-languae-text">{l.level ? `[ ${levelLabel(t, l.level)} ]` : ""}</p>
+            <span className="user-language-name">{l.language}</span>
+            {l.level && <span className="user-language-level">{levelLabel(t, l.level)}</span>}
           </div>
         ))}
       </div>

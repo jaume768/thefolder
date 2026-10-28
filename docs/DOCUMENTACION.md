@@ -179,6 +179,7 @@ frontend/src/
 ├── components/
 │   ├── TokenHandler.jsx             # Captura token OAuth de URL y redirige a /explorer
 │   ├── ScrollToTop.jsx              # Scroll al inicio en cada cambio de ruta
+│   ├── CookieBanner.jsx             # Banner de consentimiento de cookies (desktop + mobile)
 │   ├── PeopleTagsList.jsx           # Lista de menciones de usuarios en posts
 │   ├── forms/
 │   │   └── ExtraQuestionsForm.jsx   # Formulario dinámico de preguntas extra (ofertas)
@@ -412,6 +413,8 @@ frontend-admin/src/
   country: String,
   city: String,
   customCountry: String,
+  city2: String,
+  country2: String,
 
   // Portadas de perfil
   featuredHeaderImageDesktop: String (URL),
@@ -788,7 +791,7 @@ Base URL: `http://localhost:5000/api`
 | Método | Ruta | Descripción | Auth |
 |---|---|---|---|
 | GET | `/` | Tags (filtrable por type, status) | No |
-| GET | `/cities` | Contadores de usuarios por ciudad | No |
+| GET | `/cities` | Contadores de usuarios por ciudad (agrega city + city2) | No |
 
 ### Admin — `/api/admin` (requiere isAdmin)
 
@@ -1112,3 +1115,73 @@ Eliminados archivos huérfanos:
 | Guardar en carpetas | — | ✓ | ✓ |
 | Staff picks, moderar contenido | — | — | ✓ |
 | Gestión completa (CRUD todo) | — | — | ✓ |
+
+### Nuevas funcionalidades (marzo 2026)
+
+#### Segunda ubicación en perfil de usuario
+
+Los usuarios pueden registrar una segunda ciudad de trabajo o residencia.
+
+**Modelo User** — nuevos campos:
+```js
+city2: String,
+country2: String,
+```
+
+**Backend actualizado:**
+- `userController.js` — `ALLOWED_FIELDS` incluye `city2` y `country2`; el filtro de ciudad usa `$or: [{ city }, { city2 }]`; la proyección del aggregate incluye ambos campos
+- `postController.js` — todos los `populate({ select })` incluyen `city2 country2`; el filtro de ciudad del explorer también usa `$or`
+- `routes/tags.js` (`/api/tags/cities`) — agrega conteos de `city` y `city2` y los fusiona en un único mapa
+
+**Frontend actualizado:**
+- `InfoTab.jsx` — sección "Segunda ubicación" con selector de país + ciudad, botones añadir/eliminar
+- `NewEditProfileContent.jsx` — el payload `updates` incluye `city2` y `country2`
+- Visualización en: `UserProfileHeader.jsx`, `UserProfilePage.jsx`, `MiPerfilPage.jsx`, `ProfileIndexGallery.jsx`, `CreativesPage.jsx`, `CommunityPage.jsx`, `UserPostPage.jsx`
+- Filtros de ciudad en `ExplorerPage.jsx`, `CreativesPage.jsx`, `CommunityPage.jsx` comprueban ambas ubicaciones
+
+---
+
+#### PeopleTagsList — underline condicional por link externo
+
+Si un tagged person no tiene link externo asignado, el nombre no muestra subrayado ni aparece el tooltip "link externo →".
+
+- `PeopleTagsList.jsx` — la clase `is-external` solo se añade cuando `isExternalClickable` es true; el hovercard `[link externo ↗]` solo se renderiza si hay link
+- `UserPost.css` — `text-decoration: none` en base, `underline` solo para `.tagged-person.is-external .tagged-person__user`
+
+---
+
+#### ExplorerPage — corrección de race condition en filtros
+
+El `useEffect` del debounce de filtros se disparaba en el montaje inicial, limpiaba `postImages` y no volvía a disparar la carga (porque `hasMore` ya era `true`).
+
+**Solución:** `filtersInitRef` (`useRef(false)`) omite la primera ejecución del efecto:
+```js
+const filtersInitRef = useRef(false);
+useEffect(() => {
+  if (!filtersInitRef.current) { filtersInitRef.current = true; return; }
+  // debounce lógica...
+}, [filters]);
+```
+
+---
+
+#### CookieBanner — componente reutilizable
+
+Extraído de `LandingHero.jsx` a `components/CookieBanner.jsx`.
+
+- Usa la misma clave de localStorage (`"thefolder_cookie_basic_ok"`) que la landing
+- Renderiza variante desktop (`.tf-cookie.tf-only-desktop`) y mobile (`.tf-cookieSheet.tf-only-mobile`)
+- Ambas variantes tienen botón `.cp-close` (X) en la esquina superior derecha
+
+---
+
+#### Perfiles públicos para usuarios no registrados (guest view)
+
+Cuando un usuario no autenticado visita el perfil de otro usuario (`/profile/:username` o `/:username`):
+
+- Se muestra `LandingHeader` en lugar del header de usuario registrado
+- Se muestra `CookieBanner`
+- Se muestra un botón CTA (`.tf-btn--CTA`) con "Crea tu perfil en THEFOLDER/"
+- En la plantilla Editorial Index (`ProfileIndexGallery.jsx`): el botón `pig-back` desaparece para usuarios invitados (solo visible para usuarios registrados con historial de navegación)
+
+Archivos modificados: `UserProfilePage.jsx`, `ProfileIndexGallery.jsx`

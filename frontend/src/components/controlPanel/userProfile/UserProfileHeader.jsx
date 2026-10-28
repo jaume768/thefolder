@@ -41,7 +41,7 @@ const UserProfileHeader = ({
                             {profile?.professionalTitle || t('sections.defaultTitle')}
                         </p>
                         <p className="user-profile-location">
-                            {formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2 })
+                            {formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2, city3: profile?.city3, country3: profile?.country3 })
                               || t('header.locationNotSpecified')}
                         </p>
                         <div className="user-profile-stats">

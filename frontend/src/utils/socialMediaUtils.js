@@ -25,7 +25,7 @@ export const buildSocialMediaUrl = (platform, value) => {
             return `https://www.instagram.com/${trimmedValue}/`;
             
         case 'youtube':
-            return `https://www.youtube.com/${trimmedValue}/`;
+            return `https://www.youtube.com/@${trimmedValue.replace(/^@/, '')}`;
             
         case 'linkedin':
             // LinkedIn puede tener diferentes formatos de usuario
@@ -39,9 +39,6 @@ export const buildSocialMediaUrl = (platform, value) => {
 
         case 'tiktok':
             return `https://www.tiktok.com/@${trimmedValue.startsWith('@') ? trimmedValue.substring(1) : trimmedValue}`;
-            
-        case 'tumblr':
-            return `https://www.tumblr.com/${trimmedValue}/`;
             
         case 'pinterest':
             return `https://www.pinterest.com/${trimmedValue}/`;

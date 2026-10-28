@@ -8,7 +8,7 @@
   box-shadow: 0 12px 32px rgba(0,0,0,0.12);
   background: #fdfdfd;
   margin-top: 32px;
-  border-radius: 24px;
+  border-radius: 0px;
   cursor: none;
 }
 
@@ -43,8 +43,8 @@
 /* Términos */
 .terms-row{
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: stretch;
+  gap: 4px;
   font-size: 14px;
   color: #666;
   margin-top: 12px;
@@ -72,21 +72,22 @@ input[type="checkbox"] {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin: 10px 0 24px;
+  margin: 14px 0 14px;
 }
 
 .code-cell{
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 60px;
+  height: 60px;
+  border-radius: 0px;
   border: 1px solid #ccc;
   text-align: center;
-  font-size: 16px;
+  font-size: 22px;
+  font-weight: bold;
   outline: none;
 }
 
 .code-cell:focus{
-  border: 1px solid #333;
+  border: 1.2px solid #222;
 }
 
 .resend-row{
@@ -126,11 +127,11 @@ input[type="checkbox"] {
 p.success {
   color: #27500A;
   text-align: center;
-  margin-bottom: 12px;
-  font-size: 14px;
+  margin: 12px 0px 12px 0px;
+  font-size: 12px;
   background: #EAF3DE;
   padding: 4px;
-  border-radius: 6px;
+  border-radius: 0px;
 }
 
 p.error {

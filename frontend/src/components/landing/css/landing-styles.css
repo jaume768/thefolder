@@ -172,7 +172,7 @@
 .tf-btn--primary {
   background: #000;
   color: #fff;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 6px 16px;
   font-size: 11px;
   letter-spacing: .06em;
@@ -183,12 +183,11 @@
 .tf-btn--pill {
   background: #000;
   color: #fff;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 11px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  border-radius: 0px;
+  padding: 10px 18px;
+  font-size: 14px;
   display: inline-flex;
+  letter-spacing: 0.02em;
   align-items: center;
   gap: 6px;
   transition: transform .22s var(--ease-luxe), filter .22s var(--ease-luxe);
@@ -204,14 +203,15 @@
   width: 100%;
   background: #000;
   color: #fff;
-  border-radius: 6px;
+  border-radius: 0px;
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 17px;
   font-weight: 400;
   letter-spacing: 0.02em;
   text-align: left;
   font-family: "Inter Tight", sans-serif;
+  cursor: pointer;
 }
 
 button.tf-btn.tf-btn--CTA.tf-btn-CTA--wall {
@@ -236,7 +236,7 @@ button.tf-btn.tf-btn--CTA.tf-btn-CTA--wall {
   bottom: 36px;
   width: 300px;
   background: #f2f2f2;
-  border-radius: 12px;
+  border-radius: 0px;
   padding: 18px 18px 16px;
   box-shadow: var(--shadow);
   z-index: 2501;
@@ -337,12 +337,16 @@ button.tf-btn.tf-btn--CTA.tf-btn-CTA--wall {
   align-items: center;
   gap: 26px;
   padding: 0 20px 24px;
+  overflow-y: auto;
+}
+.tf-menu__content.register {
+  justify-content: flex-start;
+  padding-top: 16px;
 }
 .tf-menu__links {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
 }
 .tf-menu__link {
   background: transparent;
@@ -371,7 +375,7 @@ button.tf-btn.tf-btn--CTA.tf-btn-CTA--wall {
 }
 .tf-btn--wide {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 14px 16px;
 }
 .tf-btn--ghost {
@@ -429,7 +433,21 @@ span.tf-close-text {
    LANDING HEADER OVERRIDES
    ============================================= */
 
-.landing-header .mobile-top-menubtn { display: none; }
+/* Mismo trigger (icono, no texto) que .mobile-top-menubtn en
+   MobileTopHeader.css — self-contained aquí (sin depender de que ese CSS
+   ya esté cargado) para que el botón se vea igual también en las rutas
+   públicas (landing, plantillas en modo invitado) que no montan
+   MobileTopHeader.jsx. */
+.landing-header .mobile-top-menubtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: #222;
+  cursor: pointer;
+}
 @media (max-width: 960px) {
   .landing-header .mobile-top-menubtn { display: inline-flex; }
 }
@@ -444,7 +462,6 @@ span.tf-close-text {
 }
 button.button.header-left-link { padding: 0; }
 button.button.header-left-link { padding-right: 0px; }
-.tf-nav .header-dot { display: inline-block; }
 
 .tf-nav .tf-nav__left .header-left-link {
   font-family: var(--font-serif);
@@ -465,7 +482,20 @@ button.button.header-left-link { padding-right: 0px; }
   cursor: pointer;
 }
 
-header.dashboard-header.landing-header { justify-content: space-between; }
+header.dashboard-header.landing-header {
+  justify-content: space-between;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+/* Se esconde al llegar a .tf-footer (LandingHeader.jsx, IntersectionObserver
+   sobre .tf-footer) — mismo lenguaje visual que .mobile-top-header.is-hidden
+   (fade + desplazamiento hacia arriba, no display:none, para que la
+   transición no dé un salto). */
+header.dashboard-header.landing-header.is-footer-hidden {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
 
 .landing-header__row {
   width: 100%;
@@ -479,7 +509,7 @@ header.dashboard-header.landing-header.is-open .landing-mobile-panel {
   display: flex;
   height: 90dvh;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-evenly;
   gap: 100px;
 }
 .landing-mobile-panel__links {
@@ -493,7 +523,6 @@ header.dashboard-header.landing-header.is-open .landing-mobile-panel {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: 24px;
 }
 
 /* =============================================
@@ -604,11 +633,34 @@ header.dashboard-header.landing-header.is-open .landing-mobile-panel {
   .tf-cookieSheet { display: flex; }
 
   /* Dashboard header fixes */
-  .dashboard-header { padding: 0 24px; }
+  .dashboard-header { padding: 0 16px; }
   .landing-header__row { height: 42px; }
   header.dashboard-header.landing-header {
     height: auto !important;
     flex-direction: column;
+  }
+
+  /* Misma píldora que .mobile-top-header--editorial (MobileTopHeader.css) en
+     estado cerrado — border-radius:5px/padding 0 20px son los valores de
+     .dashboard-header desktop (barra ancha, esquinas casi rectas), pero en
+     mobile este header y el logueado (MobileTopHeader) deben leerse como la
+     misma pieza. No toca .is-open: el panel desplegable es harina de otro
+     costal (no se toca su forma ni contenido). */
+  header.dashboard-header.landing-header:not(.is-open) {
+    border-radius: 6px;
+  }
+
+  /* Mismo wordmark que .mobile-top-leftlink (MobileTopHeader.css) — solo el
+     botón de marca (hijo directo de .header-left), no los links del nav
+     desktop (ya ocultos aquí) ni los del panel desplegable
+     (.landing-mobile-link, con su propio tamaño más abajo). */
+  .landing-header .header-left > .header-left-link {
+    font-family: "Inter Tight", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    color: #111;
   }
 
   /* Nav mobile overrides */
@@ -649,3 +701,93 @@ header.dashboard-header.landing-header.is-open .landing-mobile-panel {
 }
 
 .tf-creatorCard__meta { margin-top: 4px; }
+
+/* =============================================
+   COOKIE — barra a todo el ancho, abajo (CookieBanner.jsx). Sustituye a la
+   caja flotante (.tf-cookie) y a la hoja de móvil (.tf-cookieSheet), que ya
+   no se pintan. Estética de la landing: esquinas rectas, sin sombra y sin
+   oscurecer lo de detrás.
+   ============================================= */
+.tf-cookiebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 16px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  /* Sin raya arriba: un gris claro la separa del contenido de detrás. */
+  background: #f0f0f0;
+  font-family: "Inter Tight", system-ui, sans-serif;
+  color: #0b0b0b;
+}
+
+.tf-cookiebar__text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.tf-cookiebar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.tf-cookiebar__link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0b0b0b;
+  text-decoration: none;
+  border-bottom: 1px solid #0b0b0b;
+}
+
+.tf-cookiebar__accept {
+  border: 0;
+  border-radius: 0;
+  background: #0b0b0b;
+  color: #fdfdfd;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.tf-cookiebar__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0b0b0b;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .tf-cookiebar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 10px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .tf-cookiebar__actions {
+    justify-content: space-between;
+  }
+
+  .tf-cookiebar__link {
+    margin-right: auto;
+  }
+}

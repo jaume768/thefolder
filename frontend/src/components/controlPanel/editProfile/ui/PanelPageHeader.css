@@ -1,0 +1,293 @@
+/* ── Cabecera común de páginas del panel (PanelPageHeader.jsx) ─────────
+   Plantilla: .pl-head de "Tus proyectos". Inter Tight, sin letter-spacing
+   ni mayúsculas, jerarquía por tamaño/peso. Botones de la página a la
+   derecha: 40px de alto, gris (#00000006) los secundarios, negro el
+   principal, esquinas rectas. */
+
+.nep-ph {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-shrink: 0;
+  padding-top: 18px;
+  padding-bottom: 12px;
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+  /* Fija arriba al hacer scroll en .nep-main-content (el contenedor de
+     scroll del panel). */
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #fff;
+}
+
+.nep-ph-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 560px;
+  min-width: 0;
+}
+
+.nep-ph-eyebrow {
+  margin-bottom: 4px;
+}
+
+.nep-ph-title {
+  margin: 0;
+  font-family: inherit;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+/* Título editable en el sitio (p. ej. renombrar carpeta): mismo tamaño que
+   el título, sin bordes, subrayado mientras se edita. */
+.nep-ph-title-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-bottom: 2px solid #111;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  outline: none;
+}
+
+.nep-ph-subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.nep-ph-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.nep-ph-actions:empty {
+  display: none;
+}
+
+.nep-ph-hint {
+  margin-right: 8px;
+  font-size: 13px;
+  color: #555;
+  white-space: nowrap;
+}
+
+/* Estado de autoguardado (AutosaveStatus) dentro de la cabecera: texto de
+   ayuda junto a los botones, sin los márgenes que tiene bajo el formulario. */
+.nep-shell .nep-ph-actions .ux-autosave {
+  margin: 0;
+  text-align: left;
+}
+
+.nep-shell .nep-ph-actions .ux-autosave p {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ── Botones de cabecera ─────────────────────────────────────────── */
+.nep-ph-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.nep-ph-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.nep-ph-btn--grey {
+  background: #00000006;
+  color: #111;
+}
+.nep-ph-btn--grey:hover:not(:disabled) {
+  background: #ececec;
+}
+
+.nep-ph-btn--black {
+  padding: 0 20px;
+  background: #111;
+  color: #fff;
+}
+.nep-ph-btn--black:hover:not(:disabled) {
+  background: #000;
+}
+
+/* Icono solo (renombrar, borrar…): cuadrado de 40px */
+.nep-ph-btn--icon {
+  width: 40px;
+  padding: 0;
+}
+
+/* Enlace de texto (p. ej. "Ver en mi portfolio ↗") */
+.nep-ph-btn--link {
+  padding: 0 12px;
+  background: none;
+  color: #111;
+}
+.nep-ph-btn--link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* "Volver" encima del título (eyebrow): solo flecha ←, mismo tamaño que la
+   → de "Tus proyectos" en el Panel (.ht-view-project, 20px / 1.6); el
+   texto va en aria-label. Al hover se desplaza 2px, como aquella. */
+.nep-ph-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #111;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nep-ph-back svg {
+  transition: transform 0.15s ease;
+}
+.nep-ph-back:hover svg,
+.nep-ph-back:focus-visible svg {
+  transform: translateX(-2px);
+}
+
+/* ── Sub-páginas: "volver" ───────────────────────────────────────────
+   En desktop el "volver" vive en el sidebar (sección padre, ver
+   PanelSidebar.jsx y PanelShellContext.jsx): la ← encima del título solo
+   queda en tablet/mobile. */
+@media (min-width: 1025px) {
+  .nep-ph-eyebrow--back {
+    display: none;
+  }
+}
+
+/* ── Tablet (769–992px) ──────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .nep-ph-title {
+    font-size: 34px;
+  }
+}
+
+/* ── Mobile (≤768px) ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Título: ya lo enseña la barra superior mobile (.nep-detail-header)
+     cuando la página la tiene; si no, se queda, más pequeño. Botones bajo
+     el texto, a lo ancho. */
+  .nep-ph {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding-top: 0;
+    padding-bottom: 18px;
+  }
+
+  .nep-ph-text {
+    max-width: none;
+  }
+
+  .nep-ph-title {
+    font-size: 26px;
+  }
+
+  .nep-main:has(.nep-detail-header) .nep-ph-title {
+    display: none;
+  }
+
+  .nep-ph-subtitle {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .nep-ph-actions {
+    justify-content: flex-start;
+  }
+
+  .nep-ph-btn {
+    height: 44px;
+  }
+}
+
+/* Barra de selección compartida (SelectionActionBar, .opa-bar) dentro de la
+   cabecera — Guardados y Proyectos → Páginas. Desktop/tablet: en su sitio,
+   40px de alto, esquinas rectas y sin sombra, y el desplegable "mover a…"
+   hacia abajo. En mobile no se toca: sigue fija abajo (position:fixed sale
+   de la cabecera igual), más cómoda para el pulgar. */
+@media (min-width: 769px) {
+  .nep-ph-actions .opa-bar {
+    position: relative;
+    inset: auto;
+    z-index: 40;
+    height: 40px;
+    padding: 0 4px 0 16px;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+  }
+
+  .nep-ph-actions .opa-count {
+    font-size: 13px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .nep-ph-actions .opa-move-btn,
+  .nep-ph-actions .opa-cancel-btn,
+  .nep-ph-actions .opa-delete-btn {
+    border-radius: 0;
+  }
+
+  .nep-ph-actions .opa-dropdown {
+    top: calc(100% + 8px);
+    bottom: auto;
+    border-radius: 0;
+  }
+}
+
+/* Con la cabecera común, el botón "volver" flotante del panel
+   (.nep-fixed-back-btn, PanelShellLayout.jsx) se montaba encima del título
+   alineado a la izquierda: las sub-páginas llevan su propio "← volver"
+   encima del título (eyebrow) y las de primer nivel ya tienen el sidebar. */
+.nep-main:has(.nep-ph) .nep-fixed-back-btn {
+  display: none;
+}
+
+/* Pre-pages de grupo: la cabecera ya separa (padding-bottom), sin el margen
+   superior propio de .nep-hub-list. */
+.nep-ph + .nep-tab-body > .nep-hub-list {
+  margin-top: 0;
+}

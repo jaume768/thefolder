@@ -103,7 +103,7 @@ const IndustryPage = () => {
                     {x.image ? (
                       <img src={x.image} alt={x.name} style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8 }} />
                     ) : (
-                      '—'
+                      '-'
                     )}
                   </td>
                   <td>{x.name}</td>

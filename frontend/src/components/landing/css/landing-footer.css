@@ -1,127 +1,235 @@
+/* ============================================================
+   FOOTER — magenta, 80vh, sin esquinas redondeadas. .tf-footer__inner
+   (padding:12px) tiene 2 bloques apilados (space-between): páginas
+   arriba, y .tf-footer__main (marca + fila de 3 columnas) agrupados
+   abajo — así se pueden maquetar/mover juntos sin tocar las páginas.
+   Sin mayúsculas forzadas en ningún sitio — "THEFOLDER/" ya viene en
+   mayúsculas como texto literal (ver LandingFooter.jsx), no por CSS.
+   ============================================================ */
+
+.tf-footer--site {
+  container-type: inline-size; /* cqw para .tf-footer__pages */
+}
+
 .tf-footer {
-  background-color: #f8f8f8;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
+  /* Sin color propio (antes #99faff): el fondo de la página. */
+  background: transparent;
+  color: #0b0b0b;
+  height: 100vh;
 }
 
-.tf-footer__inner{
-  max-width: 1200px;
-  width: 100%;
-  margin: 0px;
-  padding: 16px;
+.tf-footer__inner {
+  height: 100%;
+  padding: 12px 16px; /* 16px a los lados, como el resto de la landing */
   display: flex;
+  flex-direction: column;
+  /* Find Creatives arriba; THEFOLDER/ + fila de links abajo. */
   justify-content: space-between;
-  gap: 8px;
 }
 
-/* Izquierda */
-.tf-footer__brand{
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-  color: var(--text);
-  font-family: 'Inter Tight', ui-sans-serif, system-ui;
-  font-weight: 400;
-  letter-spacing: -0.01em;
+/* Agrupa la marca y la fila de columnas — punto único para maquetar/mover
+   ese bloque sin tocar .tf-footer__pages (que se queda fuera, arriba). */
+.tf-footer__main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.tf-footer__mark{
-  font-size: 10px;
-  line-height: 1;
-}
-
-.tf-footer__year{
-  font-size: 12px;
-  line-height: 1;
-}
-
-.tf-footer__name{
-  font-size: 12px;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-/* Derecha */
-.tf-footer__nav{
-  display: inline-flex;
-  align-items: center;
-  gap: 22px;
-}
-
-.tf-footer__link{
-  font-family: 'Inter Tight', ui-sans-serif, system-ui;
-  letter-spacing: 0.02em;
-  font-size: 11px;
-  color: rgba(0,0,0,.55);
-  text-decoration: none;
-
-}
-
-.tf-footer__link:hover{
-  color: rgba(0,0,0,.85);
-}
-
-.tf-footer__contact {
-  position: relative;
-  cursor: default;
-}
-
-.tf-footer__contact-tip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #111;
-  border-radius: 5px;
-  padding: 6px 10px;
+/* Mismo diseño que .tf-finalCta__brand (landing-final-cta.css) pero como
+   clase propia — ver comentario en LandingFooter.jsx. Cambiar esto no
+   toca la sección CTA, y viceversa. */
+.tf-footer__brand {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16vw;
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: #0b0b0b;
   white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Páginas — primer bloque, como una fila más del texto pautado de la
+   landing (landing-ruled.css): mismo tamaño de letra, raya de 0.07em pegada
+   al texto y de lado a lado (16px a cada lado),
+   texto a la derecha. Arriba del footer, sin margen propio. */
+.tf-footer__pages {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45em;
+  margin: 6px 0 0;
+  font-size: calc(70cqw / 18);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Base compartida por todos los links del footer — el tamaño/peso lo pone
+   cada contenedor (.tf-footer__pages, .tf-footer__connect, .tf-footer__legal)
+   y se hereda; aquí solo lo que es igual en todos. */
+.tf-footer__link {
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  color: #0b0b0b;
+  text-decoration: none;
   transition: opacity 0.15s ease;
 }
 
-.tf-footer__contact-tip a {
-  font-family: 'Inter Tight', ui-sans-serif, system-ui;
-  font-size: 11px;
-  color: #fff;
-  text-decoration: none;
-  letter-spacing: 0.02em;
+.tf-footer__pages .tf-footer__link {
+  display: block;
+  line-height: 0.95;
+  text-align: right;
+  border-bottom: 0.07em solid #0b0b0b;
 }
 
-.tf-footer__contact:hover .tf-footer__contact-tip {
+/* Flecha tras "Find Creatives", a escala de la letra. */
+.tf-footer__arrow {
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.1em;
+  stroke-width: 1.6;
+  vertical-align: -0.02em;
+}
+
+.tf-footer__link:hover,
+.tf-footer__link:active {
   opacity: 1;
-  pointer-events: auto;
 }
 
-/* Mobile: links arriba, texto debajo */
-@media (max-width: 640px){
-  .tf-footer__inner{
-    padding: 18px 22px;
+/* Fila inferior — 3 columnas a partes iguales. */
+.tf-footer__row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 24px;
+}
+
+.tf-footer__connect,
+.tf-footer__legal {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  justify-content: flex-end;
+}
+
+.tf-footer__social {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Cuarta columna — cambio de idioma, entre connect y el copyright. */
+.tf-footer__language {
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.tf-footer__language .ls-trigger {
+  color: #0b0b0b;
+  line-height: 1;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  opacity: 1;
+}
+
+/* El copyright comparte fila con connect/legal pero se ancla abajo a la
+   derecha de su propia columna (útil si las otras dos columnas envuelven a
+   más de una línea y quedan más altas). */
+.tf-footer__copy {
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  text-align: right;
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* ============================================================
+   MOBILE — el texto a 3rem/2rem no cabe en una pantalla estrecha; se
+   reduce y la fila de 3 columnas pasa a apilarse. height:80vh fijo
+   recortaría contenido en pantallas bajas, así que aquí es min-height.
+   ============================================================ */
+@media (max-width: 768px) {
+  .tf-footer__pages {
+    font-size: min(8.6vw, 36px);
+  }
+
+  .tf-footer--site {
+    height: auto;
+    min-height: 80vh;
+  }
+
+
+  .tf-footer__brand {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .tf-footer__row {
     flex-direction: column;
+    gap: 28px;
+  }
+
+  .tf-footer__connect,
+  .tf-footer__legal {
+    font-size: 1.25rem;
+  }
+
+  .tf-footer__language .ls-trigger {
+    font-size: 1.25rem;
+  }
+
+  .tf-footer__copy {
     align-items: flex-start;
-    background: #f8f8f8;
-    border-radius: 8px;
+    justify-content: flex-start;
+    text-align: left;
   }
 
-  .tf-footer__nav{
-    order: 1;
-    width: 100%;
-    justify-content: center;
+  .tf-footer--site {
+    height: 80vh;
+  }
+}
+
+/* Móvil: márgenes laterales de la landing a 10px (16px en escritorio),
+   iguales a los dos lados en texto, fotos, barra de arriba y footer. */
+@media (max-width: 768px) {
+  .tf-footer--site .tf-footer__inner {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* Móvil: el footer también ocupa una pantalla (100dvh), como las
+   secciones: "Find Creatives" arriba, THEFOLDER/ y los links abajo. */
+@media (max-width: 768px) {
+  .tf-footer--site {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
   }
 
-  .tf-footer__brand{
-    order: 2;
-    justify-content: center;
-    width: 100%;
+  /* height:auto (no 100%): con el footer en min-height, el 100% no se
+     resuelve y el contenido no se estiraba; así llega hasta abajo y el
+     © queda al final, sin blanco debajo. */
+  .tf-footer--site .tf-footer__inner {
+    flex: 1;
+    height: auto;
+    gap: 80px;
+    padding-bottom: 16px;
   }
+}
 
-  .tf-footer__year,
-  .tf-footer__name{
-      font-size: 10px;
-      line-height: 14px;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      font-weight: 400;
-  }
+/* Sin "Find Creatives" (p.ej. en /creatives) la marca y los links siguen
+   abajo del todo, no pegados arriba. */
+.tf-footer--site .tf-footer__inner > .tf-footer__main:first-child {
+  margin-top: auto;
 }

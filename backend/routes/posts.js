@@ -77,6 +77,10 @@ router.get('/staff-picks', postController.getStaffPicks);
 // Buscar posts (protegido)
 router.get('/search', ensureAuthenticated, postController.searchPosts);
 
+// Reordenar manualmente "Todos los proyectos" — antes de /:id para que
+// Express no la confunda con un ID.
+router.put('/reorder', ensureAuthenticated, postController.reorderPosts);
+
 // Rutas que requieren un ID (estas se definen después para evitar conflictos)
 router.get('/:id', postController.getPostById); // público: permite acceso a guests
 

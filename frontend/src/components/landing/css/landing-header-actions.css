@@ -1,0 +1,234 @@
+/* ============================================================
+   LANDING HEADER ACTIONS — barra fija arriba, ancho completo:
+   marca a la izquierda, login/register a la derecha (space-between).
+   Reemplaza a .dashboard-header.landing-header únicamente en Home.jsx.
+   La marca arranca al tamaño que tenía dentro del hero (8rem) y se
+   reduce al 20% (is-scrolled) en cuanto se empieza a hacer scroll.
+   Ver LandingHeaderActions.jsx.
+   ============================================================ */
+
+.tf-actionsbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px 16px; /* 16px a los lados, como el texto de la landing */
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+.tf-actionsbar.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Tiene que ir después de .is-ready en el archivo: misma especificidad,
+   gana la que esté declarada más abajo — así manda cuando ambas clases
+   están puestas a la vez (llegas al footer con la barra ya visible). */
+.tf-actionsbar.is-footer-hidden {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+
+/* Al bajar, fondo del color de la página semitransparente y difuminado:
+   lo que pasa por debajo se ve borroso. En la primera pantalla (marca aún
+   oculta) no, para no tapar su texto con el desenfoque. */
+.tf-actionsbar {
+  background-color: rgba(253, 253, 253, 0);
+  transition: opacity .35s ease, transform .35s ease, background-color .3s ease, backdrop-filter .3s ease;
+}
+
+.tf-actionsbar.is-scrolled:not(.is-brand-hidden) {
+  background-color: rgba(253, 253, 253, 0.7);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-actionsbar {
+    transition: none;
+  }
+}
+
+.tf-actionsbar .tf-mainhero__brand {
+  font-family: "Inter Tight", var(--font-sans);
+  font-size: 8rem;
+  font-weight: 500;
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0;
+  transition: font-size 280ms ease;
+}
+
+.tf-actionsbar.is-scrolled .tf-mainhero__brand {
+  font-size: 3rem;
+  letter-spacing: 0rem;
+}
+
+/* Home: la marca solo entra al pasar la primera pantalla (LandingFinalCTA ya
+   lleva su THEFOLDER/ gigante). Ocupa su sitio igualmente, así los botones
+   de la derecha no se mueven. */
+.tf-actionsbar.is-brand-hidden .tf-mainhero__brand {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tf-actionsbar .tf-mainhero__brand {
+  transition: font-size 280ms ease, opacity 220ms ease;
+}
+
+.tf-actionsbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tf-actionsbar__login {
+  background: #fdfdfd;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  color: var(--text);
+  padding: 10px 18px;
+}
+
+.tf-actionsbar__login:hover {
+  opacity: 1;
+}
+
+.tf-actionsbar__cta {
+  background: var(--text);
+  /* Fondo de la web; antes var(--bg), que la landing no define y dejaba el
+     texto negro sobre el botón negro. */
+  color: #fdfdfd;
+  border: 0;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.tf-actionsbar__cta:hover {
+  filter: brightness(0.92);
+}
+
+@media (max-width: 768px) {
+  .tf-actionsbar {
+    padding: 12px 16px;
+  }
+
+  .tf-actionsbar .tf-mainhero__brand {
+    font-size: 2.4rem;
+  }
+
+  .tf-actionsbar.is-scrolled .tf-mainhero__brand {
+    font-size: 1rem; /* 20% de 2.4rem, redondeado */
+  }
+}
+
+/* ---------- Burger (móvil + tablet vertical) ----------
+   En desktop el botón no existe y .tf-actionsbar__menu es un wrapper
+   transparente. En móvil y tablet en vertical las acciones pasan a un
+   desplegable bajo el burger, alineado a la derecha. */
+.tf-actionsbar__menu {
+  position: relative;
+}
+
+.tf-actionsbar__burger {
+  display: none;
+}
+
+@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
+  .tf-actionsbar__burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: #fdfdfd;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .tf-actionsbar__actions {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px;
+    background: #fdfdfd;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+  }
+
+  .tf-actionsbar__menu.is-open .tf-actionsbar__actions {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity .2s ease, transform .2s ease, visibility 0s;
+  }
+
+  .tf-actionsbar__login,
+  .tf-actionsbar__cta {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-actionsbar__actions {
+    transition: none !important;
+  }
+}
+
+/* Móvil: márgenes laterales de la landing a 10px (16px en escritorio),
+   iguales a los dos lados en texto, fotos, barra de arriba y footer. */
+@media (max-width: 768px) {
+  .tf-actionsbar {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* Móvil: la marca THEFOLDER/ de la barra, a la altura del menú (caja de
+   40px como el botón, letra que la llena) y el botón del menú sin fondo. */
+@media (max-width: 768px) {
+  .tf-actionsbar .tf-mainhero__brand,
+  .tf-actionsbar.is-scrolled .tf-mainhero__brand {
+    font-size: 1.9rem;
+    line-height: 40px;
+  }
+
+  .tf-actionsbar__burger {
+    background: transparent;
+  }
+}
+
+/* Marca como enlace a la home (modo compact, fuera de la landing). */
+.tf-actionsbar__home {
+  color: inherit;
+  text-decoration: none;
+}

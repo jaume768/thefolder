@@ -38,3 +38,6 @@ desktop.ini
 
 # Varios
 *.local
+
+# Backups locales (contienen .env)
+backups/

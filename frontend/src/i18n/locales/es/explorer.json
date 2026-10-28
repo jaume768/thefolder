@@ -6,9 +6,14 @@
     "modalTitle": "Filtros",
     "experience": "Experiencia",
     "specialty": "Especialidad del creativo",
+    "specialtyGroup": "Especialidad",
+    "tagGroup": "Tag",
     "location": "Ubicación",
     "otherCities": "Otros",
     "noCreativesInCountry": "Sin creativos en este país",
+    "cityLabel": "Ciudad:",
+    "allCities": "Todas",
+    "specialtyLabel": "Especialidad:",
     "projectTags": "Tags de proyecto",
     "clear": "Borrar filtros",
     "apply": "Filtrar",
@@ -38,7 +43,7 @@
     "noProjects": "No hay proyectos con el tag {{tag}} todavía."
   },
   "morePosts": {
-    "title": "EXPLORADOR /",
+    "title": "Sigue explorando proyectos",
     "noMore": "No hay más publicaciones para mostrar.",
     "continue": "Continuar en el explorador"
   },

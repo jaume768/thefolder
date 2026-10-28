@@ -193,7 +193,7 @@
 }
 
 .about-photo-autor a {
-    color: #1a73e8;
+    color: var(--color-brand-blue-text);
     text-decoration: none;
     font-weight: 500;
 }

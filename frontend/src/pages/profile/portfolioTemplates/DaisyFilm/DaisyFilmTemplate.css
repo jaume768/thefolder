@@ -1,0 +1,1006 @@
+/* ── ProfileDaisyFilm v4 ──────────────────────────────────────────────────── */
+
+@keyframes df-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .df-layout, .df-page, .df-individual { animation: none !important; }
+}
+
+.df-layout {
+  --text: #222;
+  --muted-2: rgba(34, 34, 34, 0.46);
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #fdfdfd;
+  color: #222;
+  font-family: "Google Sans Code", monospace;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  animation: df-fade-in 0.22s ease;
+}
+
+/* El tooltip de volver/seguir (.nep-icon-tooltip) es un componente
+   compartido con el resto de la plataforma (panel de control, guardados…),
+   así que mantiene la tipografía global en vez de heredar la de DaisyFilm. */
+.df-layout .nep-icon-tooltip {
+  font-family: "Inter Tight", sans-serif;
+}
+
+/* Preview embebido (iframe) en /myprofile/edit/templates — ver isPreview en
+   DaisyFilmTemplate.jsx. .df-quick-actions ya se oculta entera desde JS;
+   esto apaga cualquier <a>/<Link> real que quede dentro del propio
+   contenido (redes en About/Contact, link de proyecto publicado, crédito
+   "Plantilla Daisy Film" del footer, perfil de alguien etiquetado…) — nada
+   debe sacar al usuario de la plantilla mientras la está previsualizando.
+   .df-nav-btn (TopBar: Portfolio/About/Contact/páginas del portfolio) queda
+   fuera a propósito: esa es navegación DENTRO de la propia plantilla. */
+.df-layout--preview a:not(.df-nav-btn) {
+  pointer-events: none;
+}
+
+/* Mismo preview, solo mobile: un poco de aire arriba (el iframe queda
+   pegado al borde superior del hueco de .pat-preview-scale-wrap sin esto).
+   position:fixed + inset:0 sigue respetando margin — empuja el "top"
+   efectivo, no lo ignora. */
+@media (max-width: 768px) {
+  .df-layout--preview {
+    margin-top: 16px;
+  }
+}
+
+/* Cada vista dentro de df-stage (galería, about, proyecto) es un elemento
+   nuevo cuando se cambia de una a otra — el fade la suaviza en vez de un
+   corte seco, tanto al cambiar de sección como al montar la plantilla. */
+.df-individual,
+.df-page {
+  animation: df-fade-in 0.25s ease;
+}
+
+/* .df-quick-actions/.df-back-btn/.df-action-btn* viven ahora en
+   shared/QuickActions.css (componente compartido por las 4 plantillas de
+   portfolio, ver shared/QuickActions.jsx) — este archivo ya no las define. */
+
+/* ── Menú "más" (copiar link / descargar / reportar) ──────────────────────
+   Vive fuera de la tarjeta .df-quick-actions (position:relative solo en su
+   propio wrapper, no en la tarjeta), pero pegado justo debajo del botón que
+   lo abre — mismo fondo/sombra que .df-quick-actions para que se lea como
+   parte de la misma familia sin quedar encajado dentro de ella. */
+.df-more-wrap {
+  position: relative;
+}
+
+.df-more-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 2600;
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  border-radius: 0px;
+  background: #fdfdfdc2;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 13px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+}
+
+.df-more-menu__item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: left;
+  color: #222;
+  padding: 8px 10px;
+  border-radius: 0px;
+  transition: background 0.15s ease;
+}
+
+.df-more-menu__item:hover {
+  background: #f0f0f0;
+}
+
+.df-more-menu__item--danger {
+  color: #c0392b;
+}
+
+/* ── Modales (reportar proyecto / confirmar borrado) ──────────────────────
+   .df-modal-overlay/.df-modal* se usaban ya en el modal de "reportar" pero
+   nunca habían tenido CSS propio en ningún archivo del proyecto — se veía
+   sin estilo (default del navegador). Se define aquí de una vez, para ese
+   modal y para el nuevo de "eliminar proyecto". */
+.df-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.df-modal {
+  width: min(360px, 100%);
+  background: #fdfdfd;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 40px 0px, rgba(0, 0, 0, 0.08) 0px 2px 8px -1px;
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  box-sizing: border-box;
+}
+
+.df-modal__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px;
+}
+
+.df-modal__desc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.df-modal__textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.df-modal__textarea:focus {
+  outline: none;
+  border-color: #999;
+}
+
+.df-modal__notice {
+  font-size: 11px;
+  color: #999;
+  margin: 0 0 4px;
+}
+
+.df-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.df-modal__btn {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.df-modal__btn:hover:not(:disabled) {
+  background: #e4e4e4;
+}
+
+.df-modal__btn--strong {
+  background: #111;
+  color: #fdfdfd;
+}
+
+.df-modal__btn--strong:hover:not(:disabled) {
+  background: #111;
+  opacity: 0.85;
+}
+
+/* Confirmar borrado — mismo rojo que .df-action-btn--danger/.df-more-menu__item--danger. */
+.df-modal__btn--danger {
+  background: #c0392b;
+  color: #fdfdfd;
+}
+
+.df-modal__btn--danger:hover:not(:disabled) {
+  background: #c0392b;
+  opacity: 0.85;
+}
+
+.df-modal__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Cabecera / navegación ────────────────────────────────────────────────── */
+
+.df-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 64px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 8px 8px;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+
+.df-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0;
+  color: #222;
+  transition: color 0.18s ease;
+}
+
+.df-nav-btn:hover { color: #111; }
+
+.df-nav-btn--active {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ── Escenario ─────────────────────────────────────────────────────────────── */
+
+.df-stage {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Portfolio (galería vertical) ─────────────────────────────────────────── */
+
+.df-individual {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 64px;
+  padding: 64px 0px 0px;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  animation: df-fade-in 0.35s ease both;
+}
+
+.df-individual::-webkit-scrollbar { display: none; }
+
+.df-gallery-item {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: inherit;
+}
+
+.df-gallery-item__img {
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+  display: block;
+  object-fit: contain;
+}
+
+/* Debajo de la imagen, centrado, y solo visible al hacer hover — no ocupa
+   espacio en el layout (absolute) para que el resto de la galería no salte
+   al aparecer. */
+.df-gallery-item__title {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 6px;
+  text-align: center;
+  color: #222;
+  font-weight: 400;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.df-gallery-item:hover .df-gallery-item__title,
+.df-gallery-item:focus-visible .df-gallery-item__title {
+  opacity: 1;
+}
+
+.df-main-empty {
+  width: 40%;
+  aspect-ratio: 3 / 4;
+  background: #efefef;
+}
+
+/* ── Páginas internas (About) ─────────────────────────────────────────────── */
+
+.df-page {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  animation: df-fade-in 0.35s ease both;
+}
+
+.df-page::-webkit-scrollbar { display: none; }
+
+/* Hero de portada: nombre + avatar + descripción larga, a pantalla
+   completa, antes del bloque de CV. */
+.df-about__hero {
+  width: 100%;
+  height: 90vh;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 40px 30px;
+}
+
+.df-about__title-row,
+.df-about__subtitle-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Especialización (bajo el nombre) y ubicación (bajo la descripción) —
+   misma tipografía discreta, sin mayúsculas; cuando hay varias etiquetas
+   (especialización) se separan con gap en vez de un carácter divisor. */
+.df-about__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 12px;
+  color: #222;
+  text-transform: none;
+}
+
+.df-about__avatar-wrapper {
+  width: 100%;
+  margin: 20px 0 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.df-about__avatar {
+  width: 95px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.df-page--about {
+  flex: 1 0 auto;
+  padding: 8px;
+}
+
+/* ── Contacto ──────────────────────────────────────────────────────────────── */
+
+.df-page--contact {
+  height: 90vh;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 24px 24px 12px;
+  box-sizing: border-box;
+}
+
+.df-contact__email-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.df-contact__primary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.df-contact__email,
+.df-contact__website {
+  font-size: 12px;
+  color: #222;
+  text-decoration: none;
+}
+
+.df-contact__email:hover,
+.df-contact__website:hover { text-decoration: underline; }
+
+.df-contact__representation {
+  font-size: 12px;
+  color: #222;
+  margin: 0;
+}
+
+.df-contact__representation-link {
+  color: #222;
+  text-decoration: none;
+}
+
+.df-contact__representation-link:hover { text-decoration: underline; }
+
+.df-contact__socials {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.df-contact__social-link {
+  font-size: 12px;
+  color: #222;
+  text-decoration: none;
+}
+
+.df-contact__social-link:hover { text-decoration: underline; }
+
+/* ── CV ────────────────────────────────────────────────────────────────────── */
+
+.df-about__cv-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 60px;
+  width: 100%;
+}
+
+.df-about__cv {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 720px;
+  padding-top: 10px;
+}
+
+/* Columna del carrusel: pegada a la derecha del CV, y sticky al fondo del
+   viewport mientras el CV (más largo) sigue scrolleando por debajo — deja
+   de pegarse en cuanto termina el bloque de CV, justo antes del footer. */
+.df-about__cv-slideshow-col {
+  flex: 0 0 320px;
+  position: sticky;
+  top: 40px;
+  aspect-ratio: 3/4;
+}
+
+.df-about__cv-slideshow {
+  width: 320px;
+  height: 35vh;
+  overflow: hidden;
+  background: #efefef;
+}
+
+.df-about__cv-slideshow-track {
+  display: flex;
+  height: 100%;
+}
+
+.df-about__cv-slideshow-img {
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+
+.df-cv__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  max-width: 350px;
+}
+
+/* Skills, Software e Idiomas comparten fila en desktop, a partes iguales. */
+.df-cv__row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.df-cv__row .df-cv__section {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.df-cv__heading {
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  opacity: .8;
+  letter-spacing: 0.04em;
+}
+
+.df-cv__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.df-cv__item--column {
+  flex-direction: column;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.df-cv__item-title {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.df-cv__item-sub {
+  font-size: 11px;
+  font-weight: 300;
+  color: #444;
+  letter-spacing: 0.02em;
+}
+
+.df-cv__item-date {
+  font-size: 10px;
+  opacity: 0.75;
+  letter-spacing: 0.03em;
+}
+
+.df-cv__item-desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: #444;
+  line-height: 16px;
+  margin: 2px 0 0;
+}
+
+.df-cv__item-link {
+  font-size: 11px;
+  font-weight: 300;
+  color: #555;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+}
+
+.df-cv__item-link:hover { color: #222; }
+
+.df-cv__tags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  max-width: 250px;
+  flex-direction: column;
+}
+
+.df-cv__tag {
+  font-size: 11px;
+  font-weight: 400;
+  color: #444;
+}
+
+.df-cv__empty {
+  font-size: 13px;
+  opacity: 0.32;
+  text-align: center;
+  padding: 40px 0;
+  margin: 0;
+}
+
+/* ── Vista de proyecto (dentro de df-stage, misma navbar que el resto) ───────── */
+
+.df-page--project {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 0 auto;
+  padding: 60px 0 0px;
+  gap: 36px;
+}
+
+/* Título + imágenes + créditos + publicado-en + tags: bloque único con
+   altura mínima de casi una pantalla, antes de llegar a "next projects". */
+.df-project__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 90dvh;
+  gap: 36px;
+}
+
+.df-project__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.df-project__title {
+  font-size: 16px;
+  line-height: normal;
+  color: #222;
+  text-align: center;
+  margin: 0;
+}
+
+.df-project__title.left-text {
+  text-align: left;
+}
+
+.df-project__subtitle {
+  font-size: 12px;
+  line-height: normal;
+  color: #222;
+  text-align: center;
+  margin: 0;
+  max-width: 550px;
+}
+
+.df-project__credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 80%;
+  margin: 36px 0 0;
+}
+
+.df-project__credit-item {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+  color: #222;
+  text-align: center;
+  margin: 0;
+}
+
+.df-project__credit-link {
+  color: #222;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+.df-project__img-wrap {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.df-project__img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Crédito por imagen (post.imageTags) — horizontal y centrado debajo de la
+   imagen, no vertical/rotado como en UserPost.css (.image-credit). */
+.df-project__img-credit {
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #222;
+  letter-spacing: 0;
+  text-align: center;
+  max-width: 90%;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ── Publicado en / tags de proyecto ──────────────────────────────────────── */
+
+.df-project__published {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.df-project__published-heading {
+  font-size: 10px;
+  font-weight: 400;
+  color: #222;
+  margin: 0;
+}
+
+.df-project__published-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 10px;
+}
+
+.df-project__published-item {
+  font-size: 10px;
+  font-weight: 400;
+  color: #222;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+a.df-project__published-item {
+  border-bottom-color: #222;
+}
+
+a.df-project__published-item:hover {
+  opacity: 0.6;
+}
+
+.df-project__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 4px 0 0;
+  max-width: 80%;
+  flex-direction: row;
+}
+
+/* Tags: pequeños y en gris claro; más oscuros al pasar por encima. */
+.df-project__tag {
+  position: relative;
+  font-size: 9px;
+  font-weight: 400;
+  color: #999;
+  padding: 3px 6px;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+/* Tooltip — mismo look que .nep-icon-tooltip (control-panel.css), pero
+   centrado y abierto hacia arriba: el tag es una pill angosta dentro de
+   una fila centrada, así que la posición default (abajo, pegado a la
+   derecha) quedaría descuadrada. */
+.df-project__tag .nep-icon-tooltip {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.df-project__tag:hover,
+.df-project__tag:focus-visible {
+  color: #111;
+}
+
+.df-project__tag:hover .nep-icon-tooltip,
+.df-project__tag:focus-visible .nep-icon-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ── Siguientes proyectos (fin de página de proyecto) ─────────────────────── */
+
+.df-next-projects__title {
+  width: 100%;
+  font-size: 11px;
+  font-weight: 400;
+  color: #222;
+  text-align: center;
+  margin: 60px 0 0px;
+}
+
+.df-next-projects {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+.df-next-projects__item {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  max-width: 320px;
+  font-family: inherit;
+}
+
+.df-next-projects__img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  background: #efefef;
+}
+
+/* ── Footer (reutiliza .tf-footer de landing-footer.css) ──────────────────── */
+
+.df-footer {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 160px; /* más aire entre el contenido y el footer */
+  background: #fdfdfd;
+  border-radius: 0;
+  height: fit-content;
+}
+
+/* Ninguna vista tiene un wrapper de contenido único al que darle flex:1
+   (la galería son varios botones sueltos; About/Contact/Proyecto son bloques
+   de alto variable), así que el footer se empuja directamente con
+   margin-top:auto cuando el contenido no llena el viewport — footer siempre
+   pegado al final real del scroll, en todas las vistas (df-individual y
+   df-page), nunca flotando a media pantalla con hueco debajo. */
+.df-individual .df-footer,
+.df-page .df-footer {
+  margin-top: auto;
+}
+
+.df-footer .tf-footer__inner {
+  padding: 32px 8px 8px; /* aire solo arriba del texto; abajo como antes */
+  justify-content: center;
+  gap: 32px;
+  font-family: inherit;
+  height: fit-content;
+}
+
+.df-footer__credit {
+  font-family: inherit;
+  font-size: 8px;
+  color: #222;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.df-footer__credit-link {
+  color: #222;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+.df-footer__credit-link:hover {
+  opacity: 0.6;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .df-top { padding: 8px 8px 0px; gap: 0px 12px; justify-content: space-evenly; }
+  .df-nav-btn { font-size: 12px; padding: 8px; line-height: 1; }
+
+  .df-gallery-item { width: 86%; }
+  .df-main-empty   { width: 86%; }
+  /* Sin padding-bottom: el footer es el último hijo de .df-individual y debe
+     quedar pegado al final real del scroll, no con un hueco de 40px debajo. */
+  .df-individual   { gap: 16px; padding: 8px 0 0; }
+
+  .df-gallery-item__title {
+    position: static;
+    margin-left: 0;
+    transform: none;
+    min-width: 0;
+    max-width: 100%;
+    padding-top: 4px;
+    text-align: center;
+    opacity: 1;
+    pointer-events: auto;
+    font-size: 10px;
+  }
+
+  .df-about__hero {
+    height: fit-content;
+    min-height: 70vh;
+    padding: 16px;
+  }
+
+  .df-about__avatar-wrapper {
+    margin: 8px;
+  }
+
+  .df-page--about { padding: 24px 20px 40px; }
+
+  .df-about__cv {
+    max-width: 100%;
+  }
+
+  .df-about__cv-slideshow-col { display: none; }
+
+  .df-cv__row {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .df-page--contact { padding: 24px 20px 40px; }
+
+  .df-project__img-wrap { width: 92%; }
+
+  .df-next-projects { gap: 12px; padding: 0 16px; }
+  .df-next-projects__item { max-width: 260px; }
+
+  .df-footer .tf-footer__inner { 
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   }
+
+   .df-page--project {
+    padding: 60px 12px 0;
+   }
+
+  /* Quick actions (tarjeta vertical desktop → barra horizontal mobile):
+     mobile override en shared/QuickActions.css ahora, junto al resto de
+     esas clases. */
+
+  .df-footer__credit {
+    font-size: 8px;
+  }
+
+  .df-gallery-item__img { 
+    width: fit-content;
+  }
+}
+
+/* ── Hueco para el botón ← THEFOLDER/ (shared/QuickActions.jsx) ───────────
+   Va fijo arriba a la izquierda (16px + 40px de alto en desktop, 12px + 44px
+   en mobile) y solo existe con sesión iniciada. Mientras se ve, el menú de
+   arriba (Portfolio / About / Contact) baja para no quedar debajo. */
+.df-quick-actions--top ~ .df-top {
+  padding-top: 68px;
+}
+
+@media (max-width: 768px) {
+  .df-quick-actions--top ~ .df-top {
+    padding-top: 64px;
+  }
+}

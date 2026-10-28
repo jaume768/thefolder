@@ -224,7 +224,7 @@ const SearchFullScreen = ({ results = {}, query = '', isSearching = false, onRes
       <div className="search-fullscreen-content">
         {!!searchQuery.trim() && (
           <div className="search-fullscreen-title">
-            "{searchQuery}"
+            '{searchQuery}'
           </div>
         )}
 

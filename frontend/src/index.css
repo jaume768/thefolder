@@ -18,6 +18,102 @@ html {
   overflow-x: hidden;
 }
 
+/* ── SCROLLBAR GLOBAL ─────────────────────────────────────────
+   Grosor único (--scrollbar-size) para que la barra vertical y la
+   horizontal midan exactamente lo mismo. Sin scrollbar-gutter: al
+   reservar el hueco del scrollbar nativo (más ancho que estos 6px)
+   dejaba un margen vacío junto a la barra fina.
+────────────────────────────────────────────────────────────── */
+
+:root {
+  --scrollbar-size: 6px;
+
+  /* ── COLOR — gama azul de marca ──────────────────────────────
+     Sustituye a los azules sueltos en hex (#1a73e8, #4361ee,
+     #4c85ff...) repartidos por los CSS del sitio. Un solo lugar
+     para volver a cambiar el tono el día que toque otra vez.
+     Vuelta al azul de antes (el cyan claro no gustó) — mismo nombre
+     de token, valores nuevos, "blue" en el nombre para que quede
+     claro de qué familia es sin abrir este archivo. */
+  --color-brand-blue-light: #66AFFF;
+  --color-brand-blue: #1767be;
+  --color-brand-blue-rgb: 0, 122, 255;      /* = --color-brand-blue, para rgba() en box-shadow/glow */
+  --color-brand-blue-dark: #0066D6;
+  /* #007AFF como texto sobre blanco ronda ~4:1 (justo por debajo del 4.5:1
+     de AA) — reutiliza --color-brand-blue-dark, que sí pasa (~5.4:1), en
+     vez de inventar un tercer tono solo para esto. */
+  --color-brand-blue-text: var(--color-brand-blue-dark);
+
+  /* ── COLOR — magenta de marca (footer, landing) ──────────────── */
+  --color-brand-magenta: #FF1493;
+  --color-brand-magenta-dark: #D6117D;
+
+  /* ── COLOR — turquesa de marca (CTA landing header) ──────────── */
+  --color-brand-turquoise: #9ff5fa;
+  --color-brand-turquoise-dark: #55c2c8;
+
+  /* ── TIPOGRAFÍA — tokens de tamaño/peso ─────────────────────── */
+  --text-display-size: 4rem;      /* 56px */
+  --text-display-weight: 500;
+
+  --text-h1-size: 3rem;           /* 42px */
+  --text-h1-weight: 500;
+
+  --text-h2-size: 2rem;           /* 28px */
+  --text-h2-weight: 500;
+
+  --text-h3-size: 1.5rem;         /* 21px */
+  --text-h3-weight: 500;
+
+  --text-h4-size: 1.25rem;        /* 17.5px */
+  --text-h4-weight: 500;
+
+  --text-body-lg-size: 1.125rem;  /* 15.75px */
+  --text-body-lg-weight: 400;
+
+  --text-body-size: 1rem;         /* 14px */
+  --text-body-weight: 400;
+
+  --text-small-size: 0.875rem;    /* 12.25px */
+  --text-small-weight: 400;
+
+  --text-label-size: 0.8125rem;   /* 11.375px */
+  --text-label-weight: 400;
+
+  --text-caption-size: 0.75rem;   /* 10.5px */
+  --text-caption-weight: 400;
+
+  --text-micro-size: 0.6875rem;   /* 9.625px */
+  --text-micro-weight: 400;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 99px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 body {
   width: 100%;
   min-height: 100%;
@@ -50,6 +146,11 @@ select {
   background-color: transparent;
   color: #222;
   -webkit-text-fill-color: #222;
+  border: solid transparent;
+  border-bottom: solid 1px #888;
+  border-radius: 0;
+  outline: none;
+  transition: border-color .3s ease;
 }
 
 .ux-exp-check {
@@ -138,38 +239,20 @@ body.hide-dashboard-header .dashboard-header{
   display: none !important;
 }
 
+/* MobileTopHeader.jsx (barra flotante "THEFOLDER" + hamburguesa, .mobile-top-header
+   / .mobile-top-header--editorial, position:fixed) — el mismo AppLayout la
+   renderiza en vez de .dashboard-header cuando el viewport es estrecho, así que
+   dentro de .pat-preview-frame--mobile (iframe angosto, activa la rama "mobile"
+   de AppLayout.jsx) esta regla de arriba no la tapaba: se quedaba flotando
+   encima del hero de la plantilla, añadiendo altura/overlap que el preview no
+   debería tener (el visitante real del perfil sí la ve, pero no es lo que
+   este preview intenta enseñar). */
+body.hide-dashboard-header .mobile-top-header{
+  display: none !important;
+}
+
 body.hide-dashboard-header .dashboard-content{
   margin-top: 0 !important;
   padding-top: 0 !important;
-}
-
-
-/* Firefox */
-* {
-  scrollbar-width: thin;                    /* auto | thin | none */
-  scrollbar-color: rgba(0,0,0,.35) transparent;
-}
-
-/* Chrome / Edge / Safari */
-*::-webkit-scrollbar {
-  width: 4px;
-  height: 10px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,.25);
-  border-radius: 999px;
-  border: 3px solid transparent;           /* “padding” interno */
-  background-clip: content-box;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,.4);
-  border: 3px solid transparent;
-  background-clip: content-box;
 }
 

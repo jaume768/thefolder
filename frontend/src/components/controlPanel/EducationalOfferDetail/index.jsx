@@ -9,6 +9,7 @@ import GallerySection from './GallerySection';
 import AdditionalInfoSection from './AdditionalInfoSection';
 import { formatDate, formatPrice, formatDuration } from './utils';
 import '../css/jobOfferDetail.css';
+import PageSkeleton from '../../skeleton/PageSkeleton';
 
 const EducationalOfferDetail = () => {
     const { t } = useTranslation('offers');
@@ -39,10 +40,7 @@ const EducationalOfferDetail = () => {
 
     if (loading) {
         return (
-            <div className="job-offer-loading-jobdetail">
-                <i className="fas fa-spinner fa-spin"></i>
-                <span className="loading-indicator">{t('view.loadingEducational')}</span>
-            </div>
+            <PageSkeleton variant="article" />
         );
     }
 

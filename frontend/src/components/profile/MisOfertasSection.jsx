@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaCheck, FaTimesCircle } from 'react-icons/fa';
 import '../controlPanel/css/MisOfertasSection.css';
 import { clImg } from '../../utils/optimizeImage';
+import PageSkeleton from '../skeleton/PageSkeleton';
 
 const MisOfertasSection = ({ userRole, professionalType }) => {
     const { t } = useTranslation('offers');
@@ -59,22 +61,14 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                 return;
             }
 
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            
             // Obtener ofertas guardadas
-            const savedOffersResponse = await axios.get(
-                `${backendUrl}/api/users/saved-offers`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
+            const savedOffersResponse = await api.get('/api/users/saved-offers');
+
             // Obtener ofertas aplicadas si es perfil creativo
             let appliedOffersData = [];
             if (isCreative) {
                 try {
-                    const appliedOffersResponse = await axios.get(
-                        `${backendUrl}/api/users/applied-offers`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
+                    const appliedOffersResponse = await api.get('/api/users/applied-offers');
                     appliedOffersData = appliedOffersResponse.data.offers || [];
                 } catch (appliedError) {
                 }
@@ -124,11 +118,8 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                 return;
             }
 
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const response = await axios.get(`${backendUrl}/api/offers/${offerId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
+            const response = await api.get(`/api/offers/${offerId}`);
+
             // Obtener la oferta con sus aplicaciones
             const offer = response.data.offer;
             setCurrentOffer(offer);
@@ -199,13 +190,11 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             const token = localStorage.getItem('authToken');
             if (!token) return;
             
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const response = await axios.put(
-                `${backendUrl}/api/offers/${currentOffer._id}/applications/${candidateId}/status`,
-                { status: action },
-                { headers: { Authorization: `Bearer ${token}` } }
+            const response = await api.put(
+                `/api/offers/${currentOffer._id}/applications/${candidateId}/status`,
+                { status: action }
             );
-            
+
             // Actualizar el estado local de los candidatos
             setCandidates(prevCandidates => 
                 prevCandidates.map(candidate => 
@@ -245,10 +234,8 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                 return;
             }
 
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            
             // Construir parámetros de filtrado para ofertas de trabajo
-            let jobOffersUrl = `${backendUrl}/api/offers/company`;
+            let jobOffersUrl = '/api/offers/company';
             const params = new URLSearchParams();
             
             // Mapear los filtros de UI a los valores del backend
@@ -269,16 +256,12 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             }
 
             // URL para ofertas educativas
-            const educationalOffersUrl = `${backendUrl}/api/offers/educational-offers/user`;
-            
+            const educationalOffersUrl = '/api/offers/educational-offers/user';
+
             // Hacer ambas llamadas en paralelo
             const [jobOffersResponse, educationalOffersResponse] = await Promise.allSettled([
-                axios.get(jobOffersUrl, {
-                    headers: { Authorization: `Bearer ${token}` }
-                }),
-                axios.get(educationalOffersUrl, {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
+                api.get(jobOffersUrl),
+                api.get(educationalOffersUrl),
             ]);
             
             // Procesar ofertas de trabajo
@@ -373,13 +356,8 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             const token = localStorage.getItem('authToken');
             if (!token) return;
             
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            await axios.put(
-                `${backendUrl}/api/offers/${selectedOfferId}/status`,
-                { status: newStatus },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
+            await api.put(`/api/offers/${selectedOfferId}/status`, { status: newStatus });
+
             // Cerrar el modal y actualizar la lista
             closeModals();
             fetchCompanyOffers();
@@ -387,7 +365,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             closeModals();
         }
     };
-    
+
     // Funciones para manejar los modales
     const openDeleteModal = (offerId, e) => {
         if (e) e.stopPropagation();
@@ -412,12 +390,8 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
             const token = localStorage.getItem('authToken');
             if (!token) return;
             
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            await axios.delete(
-                `${backendUrl}/api/offers/${selectedOfferId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
+            await api.delete(`/api/offers/${selectedOfferId}`);
+
             // Cerrar el modal y actualizar la lista
             closeModals();
             fetchCompanyOffers();
@@ -493,10 +467,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
     
     if (loading) {
         return (
-            <div className="mis-ofertas-loading">
-                <i className="fas fa-spinner fa-spin"></i>
-                <p className="loading-indicator">{t('myOffers.loading')}</p>
-            </div>
+            <PageSkeleton variant="list" />
         );
     }
 
@@ -594,7 +565,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                             <div className="candidatos-info">
                                                 <h3  
                                                     className="candidatos-name"  
-                                                    onClick={() => navigate(`/profile/${candidate.user.username}`)}  
+                                                    onClick={() => navigate(`/${candidate.user.username}`)}  
                                                     style={{ cursor: 'pointer' }}  
                                                 >  
                                                     {candidate.user.fullName}  
@@ -647,7 +618,7 @@ const MisOfertasSection = ({ userRole, professionalType }) => {
                                         {showResponses && (
                                             <button 
                                                 className="candidatos-view-profile"  
-                                                onClick={() => navigate(`/profile/${candidate.user.username}`)}  
+                                                onClick={() => navigate(`/${candidate.user.username}`)}  
                                             >  
                                                 {t('myOffers.viewProfile')}  
                                             </button>  

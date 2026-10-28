@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../services/api';
 import { toast } from 'react-toastify';
 import HeaderSection from '../../components/controlPanel/CreateEducationalOffer/HeaderSection';
 import BasicInfoForm from '../../components/controlPanel/CreateEducationalOffer/BasicInfoForm';
@@ -70,10 +71,7 @@ const CreateEducationalOffer = () => {
                     return;
                 }
 
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const response = await axios.get(`${backendUrl}/api/users/profile`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get('/api/users/profile');
 
                 setProfile(response.data);
                 
@@ -182,21 +180,17 @@ const CreateEducationalOffer = () => {
 
             formDataToSend.append('institutionName', profile?.companyName || '');
 
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
             const token = localStorage.getItem('authToken');
-            
+
             if (!token) {
                 throw new Error('No estás autenticado');
             }
-            
-            const response = await axios.post(
-                `${backendUrl}/api/offers/educational`,
+
+            const response = await api.post(
+                '/api/offers/educational',
                 formDataToSend,
                 {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
-                    },
+                    headers: { 'Content-Type': 'multipart/form-data' },
                     timeout: 3000
                 }
             );

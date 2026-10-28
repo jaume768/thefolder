@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { clImg } from "../../utils/optimizeImage";
+import { Skel } from "../../components/skeleton/PageSkeleton";
 
 const Industry = () => {
   const navigate = useNavigate();
@@ -275,6 +276,12 @@ const Industry = () => {
         {/* ✅ Grid */}
         <div className="explorer-content">
           <div className="explorer-grid">
+            {loading &&
+              Array.from({ length: 8 }).map((_, i) => (
+                <article key={`sk-${i}`} className="masonry-item sk-static" aria-hidden="true">
+                  <Skel w="100%" ratio="4 / 5" />
+                </article>
+              ))}
             {!loading &&
               filteredItems.map((item) => (
                 <article

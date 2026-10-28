@@ -1,0 +1,211 @@
+/* portfolioTemplates/shared/EditAboutOverlay.css
+   Marco del overlay para editar Info/CV/Redes sin salir del portfolio
+   (EditAboutOverlay.jsx) — también lo reutiliza OrganizeProjectsOverlay.jsx.
+   El CONTENIDO (InfoTab/CvTab/SocialTab, ProjectsOrganizerPanel) ya trae su
+   propio look de /myprofile/ — este archivo solo viste el CHROME del popup.
+
+   Mismo lenguaje que los modales del panel /myprofile/ (oct 2026): velo de
+   .pl-overlay, popup blanco con esquinas rectas y sin sombra, cabecera como
+   .pe-modal-head (ProjectEditor.css), pestañas como el control segmentado
+   .pi-segmented (gris tenue, la activa en negro), estado de autoguardado
+   como en la cabecera de /myprofile/edit y × como .pe-modal-icon. */
+
+.eao-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(17, 17, 17, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Inter Tight', ui-sans-serif, system-ui;
+  letter-spacing: normal;
+  /* Toda la zona fuera de .eao-panel cierra el overlay al hacer click. */
+  cursor: pointer;
+}
+
+.eao-panel {
+  width: min(920px, 100%);
+  max-height: min(90vh, 900px);
+  background: #fff;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: default;
+}
+
+.eao-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 20px 20px 24px;
+  flex-shrink: 0;
+}
+
+/* Pestañas = .pi-segmented / .pi-segment (ProfileInfo.css) */
+.eao-tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.eao-tabs::-webkit-scrollbar { display: none; }
+
+.eao-tab {
+  height: 40px;
+  padding: 0 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+  transition: background-color 0.12s ease;
+}
+
+.eao-tab:hover:not(.is-active) {
+  background: #ececec;
+}
+
+.eao-tab.is-active {
+  background: #111;
+  color: #fff;
+}
+
+.eao-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Estado de autoguardado (AutosaveStatus): texto de ayuda junto a la ×,
+   igual que en la cabecera de /myprofile/edit (PanelPageHeader.css). */
+.eao-header-actions .ux-autosave {
+  margin: 0;
+  text-align: left;
+}
+
+.eao-header-actions .ux-autosave p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1;
+  color: #555;
+}
+
+/* Las reglas del icono viven bajo .nep-shell (editProfileShell.css) y el
+   overlay no está dentro del panel: se repiten aquí. */
+.eao-header-actions .ux-autosave-icon {
+  flex-shrink: 0;
+  color: #333;
+}
+
+.eao-header-actions .ux-autosave--saving .ux-autosave-icon {
+  animation: eao-spin 0.9s linear infinite;
+}
+
+.eao-header-actions .ux-autosave--error .ux-autosave-icon {
+  color: #c0392b;
+}
+
+@keyframes eao-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* × = .pe-modal-icon */
+.eao-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  cursor: pointer;
+}
+
+.eao-close:hover {
+  background: #00000006;
+}
+
+.eao-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 40px;
+}
+
+.eao-loading {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+}
+
+/* OrganizeProjectsOverlay.jsx: el cuerpo es el mismo de /myprofile/projects
+   (ProjectsOrganizerPanel.jsx → .nep-main-content), que trae su propia
+   cabecera, padding y scroll. El popup tiene alto fijo (como .pe-modal) y
+   el cuerpo hace de .nep-main: columna flex sin scroll propio, para que la
+   rejilla de "Páginas" (.op-pages-fit) pueda estirarse al alto disponible
+   y .nep-main-content scrollee por dentro. */
+.eao-panel--organizer {
+  width: min(1200px, 100%);
+  height: min(860px, 100%);
+  max-height: none;
+}
+
+.eao-body--organizer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  /* Pantalla completa, como .pe-modal en mobile */
+  .eao-overlay {
+    padding: 0;
+  }
+
+  .eao-panel {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .eao-header {
+    flex-wrap: wrap;
+    padding: 12px 8px 12px 16px;
+  }
+
+  .eao-tab {
+    padding: 0 12px;
+  }
+
+  /* Sin sitio para el texto del autoguardado: solo su icono */
+  .eao-header-actions .ux-autosave p {
+    font-size: 0;
+  }
+
+  .eao-body {
+    padding: 8px 0 32px;
+  }
+}

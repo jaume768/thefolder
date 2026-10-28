@@ -1,0 +1,1073 @@
+/* ============================================================
+   ProfileAppearanceTab.jsx: Plantillas (/myprofile/edit/templates).
+   Paso 1 = galería de plantillas; paso 2 = preview real (iframe) +
+   opciones de la plantilla abierta.
+
+   Mismo lenguaje que el resto del panel (Home, Info de perfil, Tus
+   proyectos, Páginas): solo Inter Tight, sin letter-spacing ni
+   mayúsculas, jerarquía por tamaño/peso, esquinas rectas, bloques gris
+   tenue (#00000006) sin bordes ni sombras y un único botón negro.
+   Las bases compartidas vienen de ProfileInfo.css (.pi-segmented,
+   .pi-btn, .pi-spinner) y ProjectsLibrary.css (.pl-card, .pl-cover,
+   .pl-actions, .pl-tip, .pl-overlay); aquí solo los ajustes .pat-*.
+   Las clases .ux-* / .ulp-* de las miniaturas (MiniHeroPreview,
+   TemplateThumbnail) viven en UserProfileExtern.css y no se redefinen:
+   solo se ajustan dentro de .pat-*.
+   ============================================================ */
+
+.pat-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.pat-shell button,
+.pat-cover-dialog button {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Aviso "añade contenido" (sin imágenes todavía): bloque gris tenue, como
+   .pi-readonly de Info de perfil. No bloquea nada. */
+.pat-empty-notice {
+  padding: 14px 16px;
+  background: #00000006;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Scroll fino y discreto (galería, preview y opciones) */
+.pat-picker,
+.pat-col--preview,
+.pat-col--options {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.pat-picker::-webkit-scrollbar,
+.pat-col--preview::-webkit-scrollbar,
+.pat-col--options::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pat-picker::-webkit-scrollbar-thumb,
+.pat-col--preview::-webkit-scrollbar-thumb,
+.pat-col--options::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* ── Paso 1: galería ──────────────────────────────────────────
+   Rejilla de "Tus proyectos" (.pl-grid): 4 columnas, 40px entre filas y
+   24px entre columnas. Tarjetas .pl-card (ver ProfileAppearanceTab.jsx). */
+.pat-picker {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 24px;
+}
+
+.pat-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px 24px;
+}
+
+/* Portada de la tarjeta: 16:10 (proporción de una pantalla) en vez del
+   4:5 de los proyectos; la miniatura de la plantilla cubre toda la
+   portada, sin aire alrededor. */
+.pat-picker-cover {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+/* Portada fija de la plantilla (cover en el manifest de
+   ProfileAppearanceTab.jsx): misma proporción 16:10, cubre la tarjeta. */
+.pat-picker-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pat-picker-cover .ux-layout-preview.pat-thumb-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  aspect-ratio: auto;
+  border: none;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+/* June Stamp: aire alrededor de su composición dentro de la portada */
+.pat-picker-cover .ux-layout-preview--index.pat-thumb-preview {
+  padding: 6px;
+}
+
+/* Hover: velo oscuro sobre toda la tarjeta (portada + título/descripción)
+   con el icono y "Ver y personalizar" en blanco, centrados. Decorativo:
+   toda la tarjeta abre la plantilla. Debajo de las etiquetas. */
+.pat-picker-hover {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(17, 17, 17, 0.42);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.pat-picker-card:hover .pat-picker-hover,
+.pat-picker-card:has(.pat-picker-cover:focus-visible) .pat-picker-hover {
+  opacity: 1;
+}
+
+.pat-picker-hover-icon {
+  display: flex;
+  color: #fff;
+}
+
+.pat-picker-hover-label {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #fff;
+}
+
+/* Tarjeta sobre gris tenue (#00000006, como el resto del panel); el
+   texto pegado a la portada (sin gap) con 8px de aire. */
+.pat-picker-card {
+  gap: 0;
+  background: #00000006;
+}
+
+.pat-picker-card .pl-caption {
+  padding: 8px;
+}
+
+/* Descripción: hasta 2 líneas (en .pl-card-meta es 1 línea con "…") */
+.pat-picker-desc {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.45;
+}
+
+/* Etiquetas sobre la portada (arriba a la izquierda): "En tu perfil" y
+   "Nuevo". Blancas, rectas, 12px, como las acciones .pl-action. */
+.pat-picker-tags {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.pat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  color: #111;
+  white-space: nowrap;
+}
+
+/* La plantilla en uso: la única etiqueta negra de la galería */
+.pat-tag--live {
+  background: #111;
+  color: #fff;
+}
+
+/* Relleno real (TemplateThumbnail.jsx) de los huecos .ulp-thumb/.ulp-hero */
+.ulp-thumb img,
+.ulp-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* .pat-thumb-daisy-nav/-stack/-slot viven en UserProfileExtern.css, junto a
+   .ux-layout-preview--daisy y el resto de miniaturas de plantilla. */
+
+/* ── Modal de preview (clic en una tarjeta) ─────────────────────
+   .pl-overlay + panel blanco recto casi a pantalla completa, como
+   .pat-cover-dialog pero grande: cabecera (nombre + descripción a la
+   izquierda; Ordenador/Móvil, "Activar plantilla" y cerrar a la derecha)
+   y debajo .pat-columns (preview + opciones), que ocupa el resto. */
+.pat-preview-dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1600px;
+  height: calc(100vh - 40px);
+  height: calc(100dvh - 40px);
+  padding: 24px 28px 28px;
+  background: #fff;
+  border-radius: 0;
+  font-family: 'Inter Tight', sans-serif;
+  color: #111;
+}
+
+.pat-preview-dialog button {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.pat-preview-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.pat-preview-dialog-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pat-preview-dialog-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111;
+}
+
+.pat-preview-dialog-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.pat-preview-dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.pat-preview-dialog .pat-viewport-toggle {
+  width: 240px;
+}
+
+.pat-preview-dialog .pat-cover-dialog-close {
+  margin-right: -10px;
+}
+
+/* Dentro del modal el preview no necesita el aire inferior de la página */
+.pat-preview-dialog .pat-columns {
+  padding-bottom: 0;
+}
+
+/* ── Preview + opciones ─────────────────────────────────────── */
+.pat-columns {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.pat-col--preview {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  transition: flex-basis .32s ease;
+}
+
+/* Ordenador / Móvil: .pi-segmented (gris tenue, activo en negro) con el
+   ancho justo para los dos botones. */
+.pat-viewport-toggle {
+  align-self: flex-start;
+  width: 280px;
+  max-width: 100%;
+  min-height: 40px;
+}
+
+.pat-viewport-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* "Escenario" del preview: bloque gris tenue como los del Home (.ht-block).
+   flex:1 + min-height:0: el preview cabe siempre en lo que queda de
+   pantalla, nunca pide scroll propio, solo encoge (ver el escalado en
+   ProfileAppearanceTab.jsx). */
+.pat-preview-frame {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  /* Rejilla de puntos (la que tenía antes .nep-main-content--appearance),
+     en portátil y en móvil, sobre el gris tenue. */
+  background-color: #00000006;
+  background-image: radial-gradient(circle, #00000045 1px, #f5f5f52e 1px);
+  background-size: 20px 20px;
+}
+
+.pat-preview-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cargando: solo un círculo fino girando sobre la rejilla de puntos, sin
+   velo ni caja detrás. Selector reforzado (3 clases): control-panel.css
+   pone border-radius:0 a todo con `.dashboard-content.overflow-hidden-desktop *`
+   (2 clases) y convertía el círculo en un cuadrado girando. */
+.pat-preview-frame .pat-preview-loading .pat-preview-spinner {
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: pat-spin 0.8s linear infinite;
+}
+
+@keyframes pat-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Maqueta del dispositivo (portátil / móvil) ──────────────────
+   .pat-preview-scale-wrap centra y escala el conjunto: el iframe siempre
+   mide un ancho real de dispositivo (1440 o 390px, ver
+   ProfileAppearanceTab.jsx) y se encoge con transform:scale, así que el
+   perfil público dentro del iframe ve un window.innerWidth de verdad. Los
+   biseles redondeados son parte de la maqueta del dispositivo, no de la UI
+   del panel, por eso no siguen la regla de esquinas rectas. */
+.pat-preview-scale-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  transition:
+    width .35s cubic-bezier(.4, 0, .2, 1),
+    height .35s cubic-bezier(.4, 0, .2, 1),
+    transform .35s cubic-bezier(.4, 0, .2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pat-preview-iframe-wrap {
+  transition:
+    border-width .35s ease,
+    border-radius .35s ease;
+}
+
+/* Portátil: pantalla 1440x900 + base */
+.pat-preview-frame--desktop .pat-preview-scale-wrap {
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.pat-preview-frame--desktop .pat-preview-iframe-wrap {
+  flex: 0 0 900px;
+  width: 100%;
+  height: 900px;
+  box-sizing: border-box;
+  border: 16px solid #111;
+  border-bottom-width: 26px;
+  border-radius: 22px 22px 4px 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.pat-laptop-base {
+  position: relative;
+  flex: 0 0 30px;
+  width: 112%;
+  height: 30px;
+  background: linear-gradient(180deg, #e2e2e2 0%, #c9c9c9 55%, #a8a8a8 100%);
+  border-radius: 2px 2px 26px 26px;
+}
+
+.pat-laptop-base::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14%;
+  height: 10px;
+  background: #b4b4b4;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Móvil */
+.pat-preview-frame--mobile .pat-preview-iframe-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 8px solid #111;
+  border-radius: 36px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* "Dynamic Island" decorativa (no bloquea el iframe) */
+.pat-preview-frame--mobile .pat-preview-iframe-wrap::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65px;
+  height: 20px;
+  background: #111;
+  border-radius: 999px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.pat-preview-iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ── Columna de opciones ─────────────────────────────────────────
+   Sin tarjeta (ni borde ni sombra): bloques con título + ayuda como las
+   secciones de Info de perfil. Siempre montada; sin opciones se colapsa a
+   0 con transición (.pat-col--options-empty) para que el preview crezca
+   en vez de saltar. */
+.pat-col--options {
+  flex: 0 0 280px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 0;
+  overflow-y: auto;
+  transition:
+    flex-basis .32s ease,
+    width .32s ease,
+    opacity .22s ease,
+    margin-left .32s ease;
+}
+
+/* margin-left negativo: anula el gap:24px de .pat-columns */
+.pat-col--options.pat-col--options-empty {
+  flex-basis: 0;
+  width: 0;
+  min-width: 0;
+  margin-left: -24px;
+  opacity: 0;
+  overflow: hidden !important;
+  pointer-events: none;
+}
+
+.pat-option-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pat-option-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+/* = .pi-section-title / .pi-section-help (ProfileInfo.css) */
+.pat-option-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111;
+}
+
+.pat-option-help {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.pat-cover-upload-btn {
+  width: 100%;
+}
+
+/* Estilos de portada (Classic): miniaturas sobre gris tenue; la elegida
+   con marco negro de 2px. */
+.pat-col--options .ux-template-grid {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.pat-cover-option {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pat-cover-option:hover:not(.is-selected) {
+  background: #ececec;
+}
+
+.pat-cover-option.is-selected {
+  outline: 2px solid #111;
+  outline-offset: -2px;
+}
+
+.pat-cover-option .ux-template-preview {
+  border-radius: 0;
+}
+
+/* Vista del portfolio (June Stamp): opciones apiladas, mismo gris tenue
+   que .pi-segment y la elegida en negro, como el segmento activo. */
+.pat-mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pat-mode-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 14px 16px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  text-align: left;
+  color: #111;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pat-mode-option:hover:not(.is-selected) {
+  background: #ececec;
+}
+
+.pat-mode-option-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pat-mode-option-desc {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #555;
+}
+
+.pat-mode-option.is-selected {
+  background: #111;
+  color: #fff;
+}
+
+.pat-mode-option.is-selected .pat-mode-option-desc {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Diálogo "Foto de portada" ──────────────────────────────────
+   Overlay de .pl-overlay (Tus proyectos); panel blanco recto como
+   .pl-dialog, un poco más ancho porque lleva la vista previa. */
+.pat-cover-dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 28px;
+  background: #fff;
+  border-radius: 0;
+  font-family: 'Inter Tight', sans-serif;
+  color: #111;
+}
+
+.pat-cover-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pat-cover-dialog-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111;
+}
+
+.pat-cover-dialog-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -10px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #111;
+  cursor: pointer;
+}
+
+.pat-cover-dialog-close:hover {
+  background: #00000006;
+}
+
+.pat-cover-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Zona de la imagen: gris #f9f9f9 (como .pl-cover); clic = subir */
+.pat-cover-drop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #f9f9f9;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pat-cover-drop--desktop {
+  aspect-ratio: 16 / 9;
+}
+
+/* Alto explícito: con width:auto y solo hijos absolutos (img, aviso) el
+   marco se quedaba a 0×0 y la imagen de mobile no se veía. El ancho sale
+   del aspect-ratio. */
+.pat-cover-drop--mobile {
+  aspect-ratio: 9 / 16;
+  height: min(46vh, 480px);
+  width: auto;
+  align-self: center;
+}
+
+.pat-cover-drop:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 3px;
+}
+
+.pat-cover-drop > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Encuadre: con imagen propia el marco se arrastra para elegir qué parte
+   se ve (ProfileAppearanceTab.jsx). touch-action:none para que en móvil el
+   gesto mueva la imagen y no haga scroll del diálogo. */
+.pat-cover-drop.is-frameable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pat-cover-drop.is-frameable.is-dragging {
+  cursor: grabbing;
+}
+
+.pat-cover-drop.is-frameable > img {
+  pointer-events: none;
+}
+
+/* Pista de encuadre (ProfileAppearanceTab.jsx): velo + pastilla blanca
+   recta con el icono de mover, al hover/foco. Fuera mientras se arrastra. */
+.pat-cover-frame-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 17, 17, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.pat-cover-frame-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  background: #fdfdfd;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  white-space: nowrap;
+}
+
+.pat-cover-drop.is-frameable:hover .pat-cover-frame-hint,
+.pat-cover-drop.is-frameable:focus-visible .pat-cover-frame-hint {
+  opacity: 1;
+}
+
+/* Táctil (sin hover): siempre visible, sin velo, para que se sepa que se
+   puede mover. */
+@media (hover: none) {
+  .pat-cover-frame-hint {
+    background: none;
+    opacity: 1;
+  }
+}
+
+.pat-cover-drop.is-frameable.is-dragging .pat-cover-frame-hint {
+  opacity: 0;
+}
+
+/* Mobile sin imagen propia: se ve la de desktop con este aviso encima;
+   al pulsar, se quita y se activa el encuadre (ProfileAppearanceTab.jsx). */
+.pat-cover-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  background: rgba(17, 17, 17, 0.55);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #fff;
+  text-align: center;
+}
+
+.pat-cover-drop-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+}
+
+.pat-cover-drop-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.pat-cover-caption {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.pat-cover-actions {
+  display: flex;
+  flex-wrap: wrap; /* en el móvil los 3 botones no caben en una fila */
+  gap: 8px;
+}
+
+.pat-cover-delete {
+  color: #c30f2a;
+}
+
+.pat-cover-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pat-cover-hints p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* ── Responsive ───────────────────────────────────────────────
+   Tablet (769–1100px): galería a 2 columnas y, en el paso 2, opciones
+   debajo del preview. Mobile (≤768px): galería a 1 columna. */
+@media (max-width: 1100px) {
+  .pat-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pat-columns {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .pat-col--preview {
+    flex: 0 0 auto;
+    height: 60vh;
+  }
+
+  .pat-col--options {
+    flex: 0 0 auto;
+    width: 100%;
+    overflow-y: visible;
+  }
+
+  .pat-col--options.pat-col--options-empty {
+    margin-left: 0;
+    margin-top: -24px;
+    height: 0;
+  }
+
+  .pat-col--options .ux-template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .pat-picker-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  /* Modal de preview a pantalla completa; la cabecera se apila */
+  .pat-preview-overlay {
+    padding: 0;
+  }
+
+  .pat-preview-dialog {
+    height: 100vh;
+    height: 100dvh;
+    padding: 16px 16px 20px;
+    gap: 16px;
+  }
+
+  .pat-preview-dialog-head {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .pat-preview-dialog-titles {
+    flex: 1 1 calc(100% - 52px);
+  }
+
+  .pat-preview-dialog-actions {
+    order: 3;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .pat-preview-dialog .pat-viewport-toggle {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .pat-preview-dialog-actions .nep-ph-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .pat-preview-dialog .pat-cover-dialog-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    margin-right: 0;
+  }
+
+  .pat-preview-dialog {
+    position: relative;
+  }
+
+  .pat-cover-dialog {
+    padding: 20px;
+  }
+
+  .pat-cover-actions .pi-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .pat-col--options .ux-template-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Consejo "mejor desde el ordenador" del encuadre de portada: solo móvil */
+.pat-cover-hint-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .pat-cover-hint-mobile {
+    display: block;
+  }
+}
+
+/* Mobile: la página de Plantillas hace scroll entera, como el resto del
+   panel (en desktop solo scrollea la galería, .pat-picker). Si no, al bajar
+   la barra superior se escondía pero el subtítulo y el aviso de "sin
+   proyectos" se quedaban fijos arriba, y la galería no pasaba por debajo
+   de la barra de pestañas flotante. */
+@media (max-width: 768px) {
+  .nep-main-content.nep-main-content--appearance {
+    overflow-y: auto;
+  }
+
+  .nep-tab-body.nep-tab-body--appearance,
+  .pat-shell {
+    height: auto;
+    flex: none;
+  }
+
+  .pat-picker {
+    flex: none;
+    overflow: visible;
+  }
+
+  .nep-ph.pat-ph {
+    position: static;
+  }
+}
+
+/* ── Próxima plantilla (NextTemplateCard, ProfileAppearanceTab.jsx) ─────────
+   Misma tarjeta que las plantillas (portada gris 16:10 + título y
+   descripción), sin hover ni clic. Dentro de la portada, los días que
+   faltan para el 15 de noviembre: número grande en Inter Tight y "días"
+   debajo en gris, como las cifras del panel (Inicio / Estadísticas). */
+.pat-next-card {
+  cursor: default;
+}
+
+.pat-next-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+/* Foto de adelanto detrás de la cuenta, muy difuminada y con un velo
+   oscuro suave para que el número, en blanco, se lea. */
+.pat-next-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(18px);
+  transform: scale(1.2); /* que el difuminado no deje bordes claros */
+}
+
+.pat-next-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+/* El número por encima del velo (la etiqueta ya va encima, z-index 2). */
+.pat-next-cover .pat-countdown {
+  position: relative;
+  z-index: 1;
+}
+
+.pat-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: "Inter Tight", system-ui, sans-serif;
+}
+
+.pat-countdown-num {
+  font-size: clamp(30px, 2.8vw, 40px);
+  font-weight: 500;
+  line-height: 1;
+  color: #111;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.pat-countdown-label {
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
+  letter-spacing: 0.02em;
+}
+
+/* Cuenta en blanco sobre la foto difuminada. */
+.pat-next-cover .pat-countdown-num {
+  color: #fdfdfd;
+}
+
+.pat-next-cover .pat-countdown-label {
+  color: #fdfdfd;
+  font-size: 12px;
+  font-weight: 500;
+}

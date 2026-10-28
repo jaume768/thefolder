@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronRight } from 'lucide-react';
 
 const BASE_OPTIONS = [
   { value: 'creative', key: 'creative', tag: '[ 🪐 ]', available: true },
@@ -17,46 +18,37 @@ const TypeStep = ({ selected, onSelect, onNext }) => {
   return (
   <div className="ob-center">
     <h1 className="ob-title">{t('type.title')}</h1>
-    <div className="ob-type-options">
-      {OPTIONS.map(opt => (
-        <button
-          key={opt.value}
-          type="button"
-          className={`ob-type-btn ${selected === opt.value ? 'selected' : ''} ${!opt.available ? 'ob-type-btn--soon' : ''}`}
-          onClick={() => opt.available && onSelect(opt.value)}
-          disabled={!opt.available}
-        >
-          <span className="ob-type-btn__tag">{opt.tag}</span>
-          <div>
-            <span className="ob-type-btn__title">
-              {opt.title}
-            </span>
-            <span className="ob-type-btn__desc"> 
-              {opt.desc.main}
-              <br />
-              <br />
-              {opt.desc.sub}
-            </span>
-          </div>
-        </button>
-      ))}
+    <div className="ob-step-content">
+      <div className="ob-type-options">
+        {OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            type="button"
+            className={`ob-type-btn ${selected === opt.value ? 'selected' : ''} ${!opt.available ? 'ob-type-btn--soon' : ''}`}
+            onClick={() => opt.available && onSelect(opt.value)}
+            disabled={!opt.available}
+          >
+            <span className="ob-type-btn__tag">{opt.tag}</span>
+            <div>
+              <span className="ob-type-btn__title">
+                {opt.title}
+              </span>
+              <span className="ob-type-btn__desc">
+                {opt.desc.main}
+                <br />
+                <br />
+                {opt.desc.sub}
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
 
-    <button
-      className="ob-cta"
-      disabled={!selected}
-      onClick={onNext}
-      style={{ marginTop: 16 }}
-    >
-      {t('common.continue')}
-    </button>
-
-    <div className="ob-dots" aria-hidden="true">
-      <span className="dot active" />
-      <span className="dot" />
-      <span className="dot" />
-      <span className="dot" />
-      <span className="dot" />
+    <div className="ob-buttons ob-buttons--single">
+      <button className="ob-cta ob-cta--icon" disabled={!selected} onClick={onNext} aria-label={t('common.continue')}>
+        <ChevronRight size={18} strokeWidth={1.8} />
+      </button>
     </div>
   </div>
   );

@@ -1,0 +1,384 @@
+/* landing-ruled.css
+   Texto "pautado" de la landing (oct 2026): mismo tamaño, raya y aire que
+   la primera pantalla (.tf-finalCta__brand--text en landing-final-cta.css),
+   para las secciones siguientes (why, ...). Cada fila es un
+   .tf-ruled__row con su sangría (--in) y la raya siguiendo vacía después
+   del texto (--tail), distinta en cada fila. */
+
+.tf-ruled-section {
+  container-type: inline-size; /* cqw = ancho real, sin la barra de scroll */
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fdfdfd;
+  overflow: hidden;
+}
+
+.tf-ruled {
+  --rule: 0.07em;
+  position: relative;
+  z-index: 1; /* por encima de la foto */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45em;
+  /* Debajo de la barra fija de arriba (LandingHeaderActions), que a partir
+     de aquí ya enseña THEFOLDER/ a la izquierda. */
+  margin: 88px 0 24px 16px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: calc(70cqw / 18);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: #0b0b0b;
+  white-space: nowrap;
+}
+
+.tf-ruled__row {
+  display: block;
+  padding: 0 var(--tail, 0) 0 var(--in, 0);
+  border-bottom: var(--rule) solid #0b0b0b;
+}
+
+/* Filas "largas": la raya llega hasta el 74% del ancho de la página (la
+   fila empieza a 16px del borde izquierdo). */
+.tf-ruled__row--long {
+  min-width: calc(74cqw - 16px);
+  box-sizing: border-box;
+}
+
+/* Filas de lado a lado: de los 16px de la izquierda a los 16px de la
+   derecha. */
+.tf-ruled__row--full {
+  min-width: calc(100cqw - 32px);
+  box-sizing: border-box;
+}
+
+/* En las filas de lado a lado, un enlace al final queda pegado a la
+   derecha ("Create profile" del cierre). */
+.tf-ruled__row--full {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.tf-ruled__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Misma flecha (ArrowUpRight) y escala que "Find Creatives" del footer. */
+.tf-ruled__arrow {
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.1em;
+  stroke-width: 1.6;
+  vertical-align: -0.02em;
+}
+
+/* Bloque del 74% del ancho con filas centradas dentro (FOR WHO). */
+.tf-ruled--wide {
+  width: calc(74cqw - 16px);
+}
+
+/* Texto centrado en el bloque, raya desde la izquierda del todo hasta
+   --cut antes del final del bloque. */
+.tf-ruled__row--center {
+  position: relative;
+  align-self: stretch;
+  padding: 0;
+  margin-bottom: var(--rule); /* el hueco que ocupaba la raya */
+  border-bottom: 0;
+  text-align: center;
+}
+
+.tf-ruled__row--center::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: calc(-1 * var(--rule));
+  width: calc(100% - var(--cut, 0%));
+  border-bottom: var(--rule) solid #0b0b0b;
+}
+
+/* Columna de fotos de perfiles a la derecha (LandingProfilesColumn), una
+   sola para todas las secciones: desde el principio de (WHY) hasta el final, a 16px
+   del borde derecho (como el botón de arriba), fotos una debajo de otra. */
+.tf-ruled-flow {
+  position: relative;
+}
+
+.tf-profiles-column {
+  position: absolute;
+  /* Arranca justo donde acaba la primera pantalla: la foto de ahí está a
+     12px de su borde inferior, así entre esa foto y la primera de la
+     columna quedan los mismos 12px que entre las demás. */
+  top: 0;
+  right: 16px;
+  bottom: 12px;
+  /* 250px; en pantallas estrechas se encoge (22% del ancho) para seguir
+     cabiendo al lado del texto, que llega como mucho al 74%. */
+  width: min(250px, 22vw);
+  display: flex;
+  flex-direction: column;
+  /* Las fotos que ya no caben enteras saltan a una segunda columna (wrap),
+     que queda fuera del ancho y no se ve: nunca sale una foto cortada al
+     final, solo fotos completas. */
+  flex-wrap: wrap;
+  row-gap: 6px; /* poco aire entre fotos */
+  column-gap: 6px;
+  overflow: hidden;
+  z-index: 2; /* por encima del bloque de texto, para poder hacer clic */
+}
+
+.tf-profiles-column img,
+.tf-profiles-column__link {
+  display: block;
+  width: 100%;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.tf-profiles-column__link img {
+  transition: opacity 0.2s ease;
+}
+
+.tf-profiles-column__link:hover img {
+  opacity: 0.85;
+}
+
+/* Entrada al verse (useRevealOnView), igual que el resto de secciones. */
+.tf-ruled-section .tf-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 600ms ease, transform 700ms cubic-bezier(.16, 1, .3, 1);
+  transition-delay: var(--d, 0ms);
+}
+
+.tf-ruled-section.is-in .tf-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-ruled-section .tf-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Cierre (LandingClosingCTA): sección aparte, solo del alto de su texto
+   (antes 90vh con el texto abajo, que tras FOR WHO dejaba casi una pantalla
+   en blanco), pegada al footer: lo siguiente es "Find Creatives". */
+.tf-ruled-section--closing {
+  min-height: 0;
+  justify-content: flex-end;
+}
+
+.tf-ruled-section--closing .tf-ruled {
+  margin-top: 12rem; /* escritorio; en móvil, ver más abajo */
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  /* Móvil: letra grande (min(8.6vw, 36px)) que se lee entera en una
+     pantalla (100dvh) por sección. Las filas pueden partirse en dos líneas
+     y cada línea lleva su raya: un fondo que se repite cada --lh con la
+     raya a --rule-at, a la misma distancia del texto que en escritorio.
+     Sangrías a la mitad y sin colas: en móvil la raya acaba donde acaba el
+     texto (o llega de lado a lado si la fila se parte), así la cola no
+     obliga a partir filas que caben. El texto llega hasta la columna de fotos
+     (18vw + 12px de hueco) y nunca se mete debajo de ella. */
+  .tf-ruled {
+    --lh: 1.3em;
+    --rule-at: 1.12em;
+    margin-top: 72px;
+    font-size: min(8.6vw, 36px);
+    line-height: var(--lh);
+    gap: 0;
+    white-space: normal;
+    max-width: calc(100cqw - 32px - 18vw - 12px);
+  }
+
+  .tf-ruled__row {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 0 0 calc(var(--in, 0em) * 0.5);
+    border-bottom: 0;
+    background-image: linear-gradient(
+      to bottom,
+      transparent calc(var(--rule-at) - var(--rule)),
+      #0b0b0b calc(var(--rule-at) - var(--rule)),
+      #0b0b0b var(--rule-at),
+      transparent var(--rule-at)
+    );
+    background-size: 100% var(--lh);
+  }
+
+  .tf-ruled__row--long {
+    min-width: 100%;
+  }
+
+  /* FOR WHO: el bloque ocupa todo el hueco del texto; la raya de las filas
+     centradas va a la altura de --rule-at. */
+  .tf-ruled--wide {
+    width: auto;
+    /* Un poco menor para que cada rol ("Graphic designers (0)") quepa en
+       una sola línea con su número. */
+    font-size: min(7.4vw, 31px);
+  }
+
+  .tf-ruled__row--center {
+    white-space: nowrap;
+  }
+
+  .tf-ruled__row--center {
+    margin-bottom: 0;
+    background-image: none;
+  }
+
+  .tf-ruled__row--center::after {
+    top: calc(var(--rule-at) - var(--rule));
+    bottom: auto;
+  }
+
+  /* Cierre: sin columna de fotos, llega de lado a lado; "Create profile"
+     baja a la línea siguiente, a la derecha, si no cabe. */
+  .tf-ruled-section--closing .tf-ruled {
+    max-width: calc(100cqw - 32px);
+  }
+
+  .tf-ruled__row--full {
+    min-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .tf-ruled__link {
+    margin-left: auto;
+  }
+
+  .tf-profiles-column {
+    width: 18vw;
+  }
+
+}
+
+/* Móvil: márgenes laterales de la landing a 10px (16px en escritorio),
+   iguales a los dos lados en texto, fotos, barra de arriba y footer. */
+@media (max-width: 768px) {
+  .tf-ruled {
+    margin-left: 10px;
+    max-width: calc(100cqw - 20px - 18vw - 10px);
+  }
+
+  .tf-ruled-section--closing .tf-ruled {
+    max-width: calc(100cqw - 20px);
+  }
+
+  .tf-profiles-column {
+    right: 10px;
+    gap: 4px;
+  }
+}
+
+/* Móvil: rayas equilibradas, no todas iguales. Por defecto la raya acaba
+   tras el texto con una cola corta (35% de --tail) y nunca pasa de donde
+   empieza la columna de fotos; las filas long/full van de lado a lado y
+   pasan por debajo de las fotos. El texto siempre para antes de la columna
+   (padding-right = columna + hueco en las filas anchas). */
+@media (max-width: 768px) {
+  .tf-ruled,
+  .tf-ruled-section--closing .tf-ruled {
+    max-width: calc(100cqw - 20px);
+  }
+
+  .tf-ruled__row {
+    min-width: 0;
+    max-width: calc(100% - 18vw - 10px);
+    padding-right: calc(var(--tail, 0em) * 0.35);
+  }
+
+  .tf-ruled__row--long,
+  .tf-ruled__row--full,
+  .tf-ruled__row--center {
+    min-width: 100%;
+    max-width: 100%;
+    padding-right: calc(18vw + 10px);
+  }
+
+  /* Cierre: no hay columna de fotos al lado. */
+  .tf-ruled-section--closing .tf-ruled__row {
+    max-width: 100%;
+  }
+
+  .tf-ruled-section--closing .tf-ruled__row--full {
+    padding-right: 0;
+  }
+
+  /* FOR WHO: texto centrado en el hueco del texto; cada raya acaba en un
+     punto distinto (unas antes de las fotos, otras por debajo). */
+  .tf-ruled__row--center {
+    padding-left: 0;
+  }
+
+  .tf-ruled__row--center::after {
+    width: calc(100% - var(--cut, 0%) * 2.2);
+  }
+
+  .tf-profiles-column {
+    z-index: 2; /* fotos por encima de las rayas */
+  }
+}
+
+/* Móvil: cada sección ocupa una pantalla entera (100dvh, la altura visible
+   real), como la primera; el texto arriba, bajo la barra. El cierre no:
+   solo su texto, pegado al footer. */
+@media (max-width: 768px) {
+  .tf-ruled-section {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .tf-ruled-section--closing {
+    min-height: 0;
+  }
+
+  .tf-ruled {
+    margin-top: 80px;
+    margin-bottom: 24px;
+  }
+
+  .tf-ruled-section--closing .tf-ruled {
+    margin-top: 80px;
+    margin-bottom: 0;
+  }
+
+  .tf-ruled-flow {
+    padding-bottom: 8px;
+  }
+}
+
+/* Escritorio: cierre + footer juntos abajo de una última pantalla. El
+   bloque ocupa al menos 100vh y empuja todo hacia abajo: "We are where your
+   portfolio lives.", "Find Creatives", THEFOLDER/ y los links, seguidos y
+   pegados al final; el blanco queda arriba. En móvil no aplica (cada uno
+   con su altura, ver más arriba y landing-footer.css). */
+@media (min-width: 769px) {
+  .tf-landing-end {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .tf-landing-end .tf-footer {
+    height: auto;
+  }
+
+  .tf-landing-end .tf-footer__inner {
+    height: auto;
+    gap: 16rem; /* aire amplio entre "Find Creatives" y THEFOLDER/ */
+  }
+}

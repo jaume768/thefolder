@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { printUserProfile } from './printProfile'; // Importamos la nueva función de impresión
-import downloadPdfIcon from '../../../../public/iconos/download-pdf.svg';
+import api from '../../../services/api';
+import { printUserProfile } from './printProfile';
+import { ArrowDownToLine } from "lucide-react";
 
 
 const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
@@ -15,12 +15,9 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
             try {
                 const token = localStorage.getItem('authToken');
                 if (!token) return;
-                
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const res = await axios.get(`${backendUrl}/api/users/profile`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                
+
+                const res = await api.get('/api/users/profile');
+
                 setProfileData(res.data);
             } catch (error) {
             }
@@ -267,7 +264,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                         style={{position: 'relative'}}
                     >
                         {t('sections.viewPdf')}
-                        <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
+                        <ArrowDownToLine size={16} strokeWidth={1.8} aria-hidden="true" className="pdf-icon" />
                     </a>
                 </div>
                 <div className="pdf-row second-row">
@@ -279,7 +276,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                         onClick={e => !portfolioUrl && e.preventDefault()}
                     >
                         {t('sections.portfolioPdf')}
-                        <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
+                        <ArrowDownToLine size={16} strokeWidth={1.8} aria-hidden="true" className="pdf-icon" />
 
                     </a>
                     
@@ -291,7 +288,7 @@ const DownloadableFilesSection = ({ cvUrl, portfolioUrl }) => {
                         onClick={e => !cvUrl && e.preventDefault()}
                     >
                         {t('sections.cvPdf')}
-                        <img src={downloadPdfIcon} alt="Download" className="pdf-icon" />
+                        <ArrowDownToLine size={16} strokeWidth={1.8} aria-hidden="true" className="pdf-icon" />
 
                     </a>
                 </div>

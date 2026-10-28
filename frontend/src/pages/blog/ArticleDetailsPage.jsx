@@ -4,13 +4,19 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import '../../components/controlPanel/css/blog.css';
 import '../../components/controlPanel/css/article-detail.css';
-import { FaArrowLeft, FaSpinner, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
+import { FaArrowLeft, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const ArticleDetail = () => {
     const { t } = useTranslation('blog');
     const { id } = useParams();
     const [article, setArticle] = useState(null);
     const [relatedArticles, setRelatedArticles] = useState([]);
+
+    useEffect(() => {
+        if (!article?.title) return;
+        document.title = `${article.title} | THEFOLDER`;
+    }, [article?.title]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showFullScreenPreview, setShowFullScreenPreview] = useState(false);
@@ -21,7 +27,7 @@ const ArticleDetail = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const apiUrl = process.env.REACT_APP_API_URL || 'https://backend-studen-station-production.up.railway.app';
+                const apiUrl = import.meta.env.VITE_BACKEND_URL // antes process.env (no existe en Vite: la página se rompía) + un backend antiguo de Railway;
                 
                 // Obtener el artículo actual
                 const articleResponse = await axios.get(`${apiUrl}/api/blog/${id}`);
@@ -100,16 +106,7 @@ const ArticleDetail = () => {
         return `${day}.${month}.${year}`;
     };
 
-    if (loading) {
-        return (
-            <div className="article-container">
-                <div className="article-loading">
-                    <FaSpinner className="fa-spin" />
-                    <span className="loading-indicator">{t('loadingArticle')}</span>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <PageSkeleton variant="article" />;
 
     if (error || !article) {
         return (

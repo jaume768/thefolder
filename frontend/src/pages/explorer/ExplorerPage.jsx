@@ -1,8 +1,11 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X, SlidersHorizontal, Check, Bookmark } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import api from '../../services/api';
 import Masonry from 'react-masonry-css';
+import { masonrySkeletonItems } from '../../components/skeleton/PageSkeleton';
 import { AuthContext } from '../../contexts/AuthContext';
 import { LOCATIONS, ALL_COUNTRIES, COUNTRY_CODES } from '../../utils/locations';
 import { clImg } from '../../utils/optimizeImage';
@@ -31,17 +34,47 @@ const FLAG_IMAGES = {
 
 const GROUP_ICONS = {
   'Accesorios':          '/iconos/specialty/accesories.png',
-  'Beauty (MUAH)':       '/iconos/specialty/beauty.png',
+  'Beauty & Hair':       '/iconos/specialty/beauty.png',
   'Fotografía & Vídeo':  '/iconos/specialty/camera-photo.png',
   'Dirección Creativa':  '/iconos/specialty/creative-direction.png',
   'Diseño':              '/iconos/specialty/fashion-design.png',
-  'Digital & 3D':        '/iconos/specialty/graphic-design.png',
-  'Ilustración':         '/iconos/specialty/illustration.png',
+  '3D & Producto':       '/iconos/specialty/graphic-design.png',
+  'Gráfica & Ilustración': '/iconos/specialty/illustration.png',
   'Styling':             '/iconos/specialty/styling.png',
   'Marketing & PR':           '/iconos/specialty/marketing.png',
-  'Digital & Social':         '/iconos/specialty/content-creator.png',
+  'Social & Ecommerce':       '/iconos/specialty/content-creator.png',
   'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
   'Otro':                     '/iconos/specialty/clue.png',
+};
+
+const GROUP_I18N_KEY = {
+  'Accesorios':               'accesorios',
+  'Beauty & Hair':            'beautymuah',
+  'Fotografía & Vídeo':       'fotografiavideo',
+  'Dirección Creativa':       'direccioncreativa',
+  'Diseño':                   'diseno',
+  '3D & Producto':            'digital3d',
+  'Gráfica & Ilustración':    'ilustracion',
+  'Styling':                  'styling',
+  'Marketing & PR':           'marketingpr',
+  'Social & Ecommerce':       'digitalsocial',
+  'Comunicación & Editorial': 'comunicacioneditorial',
+  'Otro':                     'otro',
+};
+
+const GROUP_BG = {
+  'Accesorios':               '/multimedia/specialty-filters/accesories.jpg',
+  'Beauty & Hair':            '/multimedia/specialty-filters/beauty.jpg',
+  'Fotografía & Vídeo':       '/multimedia/specialty-filters/photography.jpg',
+  'Dirección Creativa':       '/multimedia/specialty-filters/creative-direction.jpg',
+  'Diseño':                   '/multimedia/specialty-filters/design.jpg',
+  '3D & Producto':            '/multimedia/specialty-filters/digital.jpg',
+  'Gráfica & Ilustración':    '/multimedia/specialty-filters/illustration.jpg',
+  'Styling':                  '/multimedia/specialty-filters/styling.jpg',
+  'Marketing & PR':           '/multimedia/specialty-filters/marketing-pr.jpg',
+  'Social & Ecommerce':       '/multimedia/specialty-filters/social.jpg',
+  'Comunicación & Editorial': '/multimedia/specialty-filters/editorial.jpg',
+  'Otro':                     '/multimedia/specialty-filters/other.jpg',
 };
 const flagEmoji = code => [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join('');
 
@@ -68,13 +101,17 @@ const EMPTY_FILTERS = { city: [], professionalProfile: [], creativeLevel: [], pr
 const Explorer = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('explorer');
+  const { t: tFilters } = useTranslation('filters');
   const { user } = useContext(AuthContext);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   // ── Tabs ────────────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState('explorer');
   const [tabDisabled, setTabDisabled] = useState(false);
-  const initialExplorerRef = useRef(true);
+  // Pestaña anterior: solo recargamos al volver a 'explorer' desde otra pestaña.
+  // (Un flag de "primera vez" fallaba en dev: StrictMode ejecuta el efecto dos
+  // veces al montar y la segunda disparaba un reload infinito.)
+  const prevTabRef = useRef(activeTab);
 
   useEffect(() => {
     sessionStorage.removeItem('explorerImages');
@@ -105,12 +142,10 @@ const Explorer = () => {
   }, [backendUrl]);
 
   useEffect(() => {
-    if (activeTab === 'explorer') {
-      if (initialExplorerRef.current) {
-        initialExplorerRef.current = false;
-      } else {
-        window.location.reload();
-      }
+    const prevTab = prevTabRef.current;
+    prevTabRef.current = activeTab;
+    if (activeTab === 'explorer' && prevTab !== 'explorer') {
+      window.location.reload();
     }
   }, [activeTab]);
 
@@ -123,13 +158,13 @@ const Explorer = () => {
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef(null);
   const sentinelRef = useRef(null);
-  const filtersInitRef = useRef(false);
 
   // ── Filtros ─────────────────────────────────────────────────────────────
   const [facets, setFacets] = useState({ tags: {}, cities: {}, levels: {}, projectTypes: {} });
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(EMPTY_FILTERS);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const [isModalClosing, setIsModalClosing] = useState(false);
   const [activeCountryPanel, setActiveCountryPanel] = useState(null);
   const [tagPreviews, setTagPreviews] = useState({});
 
@@ -171,8 +206,8 @@ const Explorer = () => {
     const groups = [...Object.keys(rolesByGroup), ...(customTags.length > 0 ? ['Otro'] : [])];
     const GROUP_ORDER_EXPLORER = [
       "Diseño", "Dirección Creativa", "Fotografía & Vídeo", "Styling",
-      "Beauty (MUAH)", "Digital & 3D", "Accesorios",
-      "Comunicación & Editorial", "Marketing & PR", "Digital & Social", "Ilustración", "Otro",
+      "Beauty & Hair", "3D & Producto", "Accesorios",
+      "Comunicación & Editorial", "Marketing & PR", "Social & Ecommerce", "Gráfica & Ilustración", "Otro",
     ];
     const rank = Object.fromEntries(GROUP_ORDER_EXPLORER.filter(g => g !== 'Otro').map((g, i) => [g, i]));
     const sorted = [...new Set(groups)].filter(g => g !== 'Otro').sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
@@ -188,12 +223,13 @@ const Explorer = () => {
       .sort((a, b) => a.localeCompare(b, 'es'));
   }, [cityCounts]);
 
-  // Aplicar filtros con debounce 400ms (omitir el primer render)
+  // Aplicar filtros con debounce 400ms, solo si los filtros cambiaron de verdad.
+  // (Un flag de "primer render" fallaba en dev: StrictMode ejecuta el efecto
+  // dos veces y la segunda vaciaba el feed sin volver a pedirlo.)
+  const prevFiltersRef = useRef(filters);
   useEffect(() => {
-    if (!filtersInitRef.current) {
-      filtersInitRef.current = true;
-      return;
-    }
+    if (prevFiltersRef.current === filters) return;
+    prevFiltersRef.current = filters;
     const t = setTimeout(() => {
       setAppliedFilters(filters);
       setPage(1);
@@ -213,10 +249,9 @@ const Explorer = () => {
         (filters.city || []).forEach(v => params.append('city', v));
         (filters.professionalProfile || []).forEach(v => params.append('professionalProfile', v));
         (filters.creativeLevel || []).forEach(v => params.append('creativeLevel', v));
-        const token = localStorage.getItem('authToken');
-        const res = await axios.get(
-          `${backendUrl}/api/posts/explorer/facets?${params.toString()}`,
-          { signal: controller.signal, headers: token ? { Authorization: `Bearer ${token}` } : {} }
+        const res = await api.get(
+          `/api/posts/explorer/facets?${params.toString()}`,
+          { signal: controller.signal }
         );
         setFacets(res.data);
       } catch {
@@ -240,17 +275,22 @@ const Explorer = () => {
     setFilters(prev => ({ ...prev, [key]: (prev[key] || []).filter(v => v !== val) }));
   }, []);
 
+  const closeFiltersModal = () => {
+    setIsModalClosing(true);
+    setTimeout(() => { setShowFiltersModal(false); setIsModalClosing(false); }, 220);
+  };
+
   const clearAll = useCallback(() => {
     setFilters(EMPTY_FILTERS);
     setFacets({ tags: {}, cities: {}, levels: {}, projectTypes: {} });
-    setShowFiltersModal(false);
+    closeFiltersModal();
     setActiveCountryPanel(null);
   }, []);
 
   // Cerrar modal con Escape
   useEffect(() => {
     if (!showFiltersModal) return;
-    const onKey = e => { if (e.key === 'Escape') setShowFiltersModal(false); };
+    const onKey = e => { if (e.key === 'Escape') closeFiltersModal(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [showFiltersModal]);
@@ -260,22 +300,16 @@ const Explorer = () => {
     ...(appliedFilters.city || []).map(v => {
       const country = ALL_COUNTRIES.find(c => (LOCATIONS[c] || []).includes(v));
       const code = country ? COUNTRY_CODES[country] : null;
-      return { key: 'city', label: code ? `${v} (${code})` : v, value: v };
+      return { key: 'city', label: v, value: v, flagSrc: code && FLAG_IMAGES[code] ? FLAG_IMAGES[code] : null };
     }),
     ...(appliedFilters.professionalProfile || []).map(id => ({
-      key: 'professionalProfile',
-      label: tagLabelById[id] || id,
-      value: id,
+      key: 'professionalProfile', label: tFilters(`tags.${id}`) || tagLabelById[id] || id, value: id,
     })),
     ...(appliedFilters.creativeLevel || []).map(v => ({
-      key: 'creativeLevel',
-      label: CREATIVE_LEVELS.find(l => l.value === v)?.label || v,
-      value: v,
+      key: 'creativeLevel', label: CREATIVE_LEVELS.find(l => l.value === v)?.label || v, value: v,
     })),
     ...(appliedFilters.projectType || []).map(v => ({
-      key: 'projectType',
-      label: `#${v.toLowerCase().replace(/\s+/g, '')}`,
-      value: v,
+      key: 'projectType', label: `#${v.toLowerCase().replace(/\s+/g, '')}`, value: v,
     })),
   ], [appliedFilters, tagLabelById]);
 
@@ -287,9 +321,7 @@ const Explorer = () => {
       const token = localStorage.getItem('authToken');
       if (!token) return;
       try {
-        const response = await axios.get(`${backendUrl}/api/users/favorites`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await api.get('/api/users/favorites');
         const map = new Map();
         (response.data.favorites || []).forEach(fav => {
           const key = `${fav.postId}-${fav.mainImage || fav.savedImage}`;
@@ -410,28 +442,138 @@ const Explorer = () => {
       const isSaved = savedPosts.has(key);
 
       if (isSaved) {
-        await axios.delete(`${backendUrl}/api/users/favorites/${postId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          data: { imageUrl }
-        });
+        await api.delete(`/api/users/favorites/${postId}`, { data: { imageUrl } });
         setSavedPosts(m => { m.delete(key); return new Map(m); });
       } else {
-        await axios.post(`${backendUrl}/api/users/favorites/${postId}`, { imageUrl }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post(`/api/users/favorites/${postId}`, { imageUrl });
         setSavedPosts(m => { m.set(key, true); return new Map(m); });
       }
     } catch {}
   };
 
   // ── Render modal de todos los filtros ──────────────────────────────────
-  const renderAllFiltersModal = () => (
-    <div className="filters-modal-overlay" onClick={() => setShowFiltersModal(false)}>
-      <div className="filters-modal-panel filters-modal-panel--all" onClick={e => e.stopPropagation()}>
+  const renderAllFiltersModal = () => {
+  const facetsLoaded = Object.keys(facets.tags).length > 0;
+  return (
+    <div className={`filters-modal-overlay${isModalClosing ? ' is-closing' : ''}`} onClick={closeFiltersModal}>
+      <div className={`filters-modal-panel filters-modal-panel--all${isModalClosing ? ' is-closing' : ''}`} onClick={e => e.stopPropagation()}>
 
         <div className="filters-modal-header">
           <span className="filters-modal-title">{t('filters.modalTitle')}</span>
-          <button type="button" className="filters-modal-close" onClick={() => setShowFiltersModal(false)}>×</button>
+          <button type="button" className="filters-modal-close" onClick={closeFiltersModal}><X size={18} strokeWidth={1.8} aria-hidden="true" /></button>
+        </div>
+
+        {/* ── ESPECIALIDAD ──────────────────────────────────── */}
+        <div className="filters-modal-section filters-modal-section--specialty">
+          <p className="filters-col-title">{t('filters.specialty')}</p>
+          <div className="filters-tags filters-tags--level">
+            {orderedGroups.map(group => {
+              const isActive = activeRoleGroup === group;
+              const groupTags = group === 'Otro' ? customTags : (rolesByGroup[group] || []);
+              const selectedInGroup = groupTags.filter(t => (filters.professionalProfile || []).includes(t.id));
+              const hasSelection = selectedInGroup.length > 0;
+              const icon = GROUP_ICONS[group];
+              const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+              const groupFacetTotal = groupTags.reduce((sum, t) => sum + (facets.tags[t.id] ?? 0), 0);
+              const dimmed = (hasActiveFilter || facetsLoaded) && !hasSelection && groupFacetTotal === 0;
+              return (
+                <button
+                  key={group}
+                  type="button"
+                  className={`filter-tag filter-country-tag filter-tag--specialty-bg ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
+                  style={{
+                    ...(dimmed ? { opacity: 0.35, pointerEvents: 'none' } : {}),
+                    backgroundImage: GROUP_BG[group] ? `url(${GROUP_BG[group]})` : undefined,
+                  }}
+                  onClick={() => setActiveRoleGroup(prev => (prev === group ? null : group))}
+                >
+                  <span>{tFilters(`groups.${GROUP_I18N_KEY[group]}`) || group}{hasSelection && !isActive ? ` (${selectedInGroup.length})` : ''}</span>
+                </button>
+              );
+            })}
+          </div>
+          {activeRoleGroup && activeRoleGroup !== 'Otro' && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                <button
+                  type="button"
+                  className={`filter-tag filter-tag--all ${(rolesByGroup[activeRoleGroup] || []).length > 0 && (rolesByGroup[activeRoleGroup] || []).every(tag => (filters.professionalProfile || []).includes(tag.id)) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const ids = (rolesByGroup[activeRoleGroup] || []).map(tag => tag.id);
+                    const allSelected = ids.length > 0 && ids.every(id => (filters.professionalProfile || []).includes(id));
+                    setFilters(prev => ({
+                      ...prev,
+                      professionalProfile: allSelected
+                        ? (prev.professionalProfile || []).filter(id => !ids.includes(id))
+                        : [...new Set([...(prev.professionalProfile || []).filter(id => !ids.includes(id)), ...ids])],
+                    }));
+                  }}
+                >
+                  {t('filters.allCities')}
+                </button>
+                {(rolesByGroup[activeRoleGroup] || [])
+                  .filter(t => facetsLoaded ? (facets.tags[t.id] ?? 0) > 0 : t.count > 0)
+                  .map(t => {
+                    const sel = (filters.professionalProfile || []).includes(t.id);
+                    const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                    const facetCount = facets.tags[t.id];
+                    const displayCount = facetCount !== undefined ? facetCount : t.count;
+                    const dimmed = (hasActiveFilter || facetsLoaded) && !sel && (facetCount ?? 0) === 0;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className={`filter-tag ${sel ? 'selected' : ''}`}
+                        style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
+                        onClick={() => { const groupIds = (rolesByGroup[activeRoleGroup] || []).map(tg => tg.id); const allSelected = groupIds.every(id => (filters.professionalProfile || []).includes(id)); if (allSelected) { setFilters(prev => ({ ...prev, professionalProfile: [...(prev.professionalProfile || []).filter(id => !groupIds.includes(id)), t.id] })); } else { toggleTag('professionalProfile', t.id); } }}
+                      >
+                        {tFilters(`tags.${t.id}`) || t.label} ({displayCount})
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+          {activeRoleGroup === 'Otro' && customTags.length > 0 && (
+            <div className="filters-country-cities">
+              <div className="filters-tags filters-tags--level">
+                <button
+                  type="button"
+                  className={`filter-tag filter-tag--all ${customTags.length > 0 && customTags.every(tag => (filters.professionalProfile || []).includes(tag.id)) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const ids = customTags.map(tag => tag.id);
+                    const allSelected = ids.length > 0 && ids.every(id => (filters.professionalProfile || []).includes(id));
+                    setFilters(prev => ({
+                      ...prev,
+                      professionalProfile: allSelected
+                        ? (prev.professionalProfile || []).filter(id => !ids.includes(id))
+                        : [...new Set([...(prev.professionalProfile || []).filter(id => !ids.includes(id)), ...ids])],
+                    }));
+                  }}
+                >
+                  {t('filters.allCities')}
+                </button>
+                {customTags.filter(t => facetsLoaded ? (facets.tags[t.id] ?? 0) > 0 : t.count > 0).map(t => {
+                  const sel = (filters.professionalProfile || []).includes(t.id);
+                  const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
+                  const facetCount = facets.tags[t.id];
+                  const displayCount = facetCount !== undefined ? facetCount : t.count;
+                  const dimmed = (hasActiveFilter || facetsLoaded) && !sel && (facetCount ?? 0) === 0;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`filter-tag ${sel ? 'selected' : ''}`}
+                      style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
+                      onClick={() => { const groupIds = customTags.map(tg => tg.id); const allSelected = groupIds.every(id => (filters.professionalProfile || []).includes(id)); if (allSelected) { setFilters(prev => ({ ...prev, professionalProfile: [...(prev.professionalProfile || []).filter(id => !groupIds.includes(id)), t.id] })); } else { toggleTag('professionalProfile', t.id); } }}
+                    >
+                      {tFilters(`tags.${t.id}`) || t.label} ({displayCount})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── EXPERIENCIA ───────────────────────────────────── */}
@@ -460,87 +602,6 @@ const Explorer = () => {
           </div>
         </div>
 
-        {/* ── ESPECIALIDAD ──────────────────────────────────── */}
-        <div className="filters-modal-section filters-modal-section--specialty">
-          <p className="filters-col-title">{t('filters.specialty')}</p>
-          <div className="filters-tags filters-tags--level">
-            {orderedGroups.map(group => {
-              const isActive = activeRoleGroup === group;
-              const groupTags = group === 'Otro' ? customTags : (rolesByGroup[group] || []);
-              const selectedInGroup = groupTags.filter(t => (filters.professionalProfile || []).includes(t.id));
-              const hasSelection = selectedInGroup.length > 0;
-              const icon = GROUP_ICONS[group];
-              const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
-              const groupFacetTotal = groupTags.reduce((sum, t) => sum + (facets.tags[t.id] ?? 0), 0);
-              const dimmed = hasActiveFilter && !hasSelection && groupFacetTotal === 0;
-              return (
-                <button
-                  key={group}
-                  type="button"
-                  className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
-                  style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                  onClick={() => setActiveRoleGroup(prev => prev === group ? null : group)}
-                >
-                  {icon && (
-                    <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />
-                  )}
-                  {group}{hasSelection && !isActive ? ` (${selectedInGroup.length})` : ''}
-                </button>
-              );
-            })}
-          </div>
-          {activeRoleGroup && activeRoleGroup !== 'Otro' && (
-            <div className="filters-country-cities">
-              <div className="filters-tags filters-tags--level">
-                {(rolesByGroup[activeRoleGroup] || [])
-                  .filter(t => t.count > 0)
-                  .map(t => {
-                    const sel = (filters.professionalProfile || []).includes(t.id);
-                    const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
-                    const facetCount = facets.tags[t.id];
-                    const displayCount = facetCount !== undefined ? facetCount : t.count;
-                    const dimmed = hasActiveFilter && !sel && facetCount === 0;
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className={`filter-tag ${sel ? 'selected' : ''}`}
-                        style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                        onClick={() => toggleTag('professionalProfile', t.id)}
-                      >
-                        {t.label} ({displayCount})
-                      </button>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-          {activeRoleGroup === 'Otro' && customTags.length > 0 && (
-            <div className="filters-country-cities">
-              <div className="filters-tags filters-tags--level">
-                {customTags.map(t => {
-                  const sel = (filters.professionalProfile || []).includes(t.id);
-                  const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
-                  const facetCount = facets.tags[t.id];
-                  const displayCount = facetCount !== undefined ? facetCount : t.count;
-                  const dimmed = hasActiveFilter && !sel && facetCount === 0;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`filter-tag ${sel ? 'selected' : ''}`}
-                      style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                      onClick={() => toggleTag('professionalProfile', t.id)}
-                    >
-                      {t.label} ({displayCount})
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* ── UBICACIÓN ─────────────────────────────────────── */}
         <div className="filters-modal-section">
           <p className="filters-col-title">{t('filters.location')}</p>
@@ -561,7 +622,7 @@ const Explorer = () => {
                     type="button"
                     className={`filter-tag filter-country-tag ${isActive ? 'is-active' : ''} ${hasSelection ? 'has-selection' : ''}`}
                     style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                    onClick={() => setActiveCountryPanel(prev => prev === country ? null : country)}
+                    onClick={() => setActiveCountryPanel(prev => (prev === country ? null : country))}
                   >
                     <span className="country-flag-circle">
                       {FLAG_IMAGES[code]
@@ -576,7 +637,7 @@ const Explorer = () => {
               <button
                 type="button"
                 className={`filter-tag filter-country-tag ${activeCountryPanel === '__otros__' ? 'is-active' : ''} ${otherCities.some(city => (filters.city || []).includes(city)) ? 'has-selection' : ''}`}
-                onClick={() => setActiveCountryPanel(prev => prev === '__otros__' ? null : '__otros__')}
+                onClick={() => setActiveCountryPanel(prev => (prev === '__otros__' ? null : '__otros__'))}
               >
                 <span className="country-flag-circle"><img src="/iconos/flag/worldwide.png" alt={t('filters.otherCities')} /></span>
                 {t('filters.otherCities')}
@@ -594,6 +655,21 @@ const Explorer = () => {
                   <p className="filters-empty">{t('filters.noCreativesInCountry')}</p>
                 ) : (
                   <div className="filters-tags filters-tags--level">
+                    <button
+                      type="button"
+                      className={`filter-tag filter-tag--all ${cities.length > 0 && cities.every(c => (filters.city || []).includes(c)) ? 'selected' : ''}`}
+                      onClick={() => {
+                        const allSelected = cities.length > 0 && cities.every(c => (filters.city || []).includes(c));
+                        setFilters(prev => ({
+                          ...prev,
+                          city: allSelected
+                            ? (prev.city || []).filter(c => !cities.includes(c))
+                            : [...new Set([...(prev.city || []), ...cities])],
+                        }));
+                      }}
+                    >
+                      {t('filters.allCities')}
+                    </button>
                     {cities.map(city => {
                       const sel = (filters.city || []).includes(city);
                       const hasActiveFilter = filters.city.length > 0 || filters.professionalProfile.length > 0 || filters.creativeLevel.length > 0 || filters.projectType.length > 0;
@@ -606,7 +682,7 @@ const Explorer = () => {
                           type="button"
                           className={`filter-tag ${sel ? 'selected' : ''}`}
                           style={dimmed ? { opacity: 0.35, pointerEvents: 'none' } : undefined}
-                          onClick={() => toggleTag('city', city)}
+                          onClick={() => { const allSelected = cities.every(c => (filters.city || []).includes(c)); if (allSelected) { setFilters(prev => ({ ...prev, city: [...(prev.city || []).filter(c => !cities.includes(c)), city] })); } else { toggleTag('city', city); } }}
                         >
                           {city}{displayCount > 0 ? ` (${displayCount})` : ''}
                         </button>
@@ -653,7 +729,7 @@ const Explorer = () => {
               {t('filters.clear')}
             </button>
           ) : <span />}
-          <button type="button" className="filters-modal-apply" onClick={() => setShowFiltersModal(false)}>
+          <button type="button" className="filters-modal-apply" onClick={closeFiltersModal}>
             {t('filters.apply')}
           </button>
         </div>
@@ -661,6 +737,7 @@ const Explorer = () => {
       </div>
     </div>
   );
+  };
 
   // ── JSX principal ───────────────────────────────────────────────────────
   return (
@@ -677,7 +754,7 @@ const Explorer = () => {
             className={`new-tablero-button explorer-filtros-btn ${hasActiveFilters ? 'has-selection' : ''}`}
             onClick={() => { setActiveCountryPanel(null); setActiveRoleGroup(null); setShowFiltersModal(true); }}
           >
-            <img src="/iconos/filter.png" alt="" aria-hidden="true" style={{ width: 14, height: 14 }} />
+            <SlidersHorizontal size={14} strokeWidth={1.8} aria-hidden="true" />
             {t('filters.button')}
             {hasActiveFilters && <span className="filtros-count">({activeChips.length})</span>}
           </button>
@@ -687,20 +764,36 @@ const Explorer = () => {
         {hasActiveFilters && (
           <div className="filters-open-area">
             <div className="filters-open-tags">
-              {activeChips.map(chip => (
-                <button
-                  key={`${chip.key}-${chip.value}`}
-                  type="button"
-                  className="filters-sticky-chip"
-                  onClick={() => removeChip(chip.key, chip.value)}
-                >
-                  {chip.label}
-                  <span className="chip-x">×</span>
-                </button>
-              ))}
+              {[
+                { key: 'city', label: t('filters.location') },
+                { key: 'professionalProfile', label: t('filters.specialtyGroup') },
+                { key: 'creativeLevel', label: t('filters.experience') },
+                { key: 'projectType', label: t('filters.tagGroup') },
+              ].map(({ key, label }) => {
+                const chips = activeChips.filter(c => c.key === key);
+                if (!chips.length) return null;
+                return (
+                  <div key={key} className="filters-open-group">
+                    <span className="filters-open-group-label">{label}:</span>
+                    <div className="filters-open-group-chips">
+                      {chips.map(chip => (
+                        <button
+                          key={`${chip.key}-${chip.value}`}
+                          type="button"
+                          className="filters-sticky-chip"
+                          onClick={() => removeChip(chip.key, chip.value)}
+                        >
+                          {chip.flagSrc && <img src={chip.flagSrc} alt="" style={{ width: 14, height: 14 }} />}
+                          {chip.label}
+                          <span className="chip-x">×</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <button type="button" className="filters-sticky-chip clean-all" onClick={clearAll}>
-              <img src="/iconos/bin.png" alt="" className="button-icon" style={{width:"12px"}} />
               {t('filters.clear')}
             </button>
           </div>
@@ -708,7 +801,7 @@ const Explorer = () => {
       </div>
 
       {/* Modal de todos los filtros */}
-      {showFiltersModal && renderAllFiltersModal()}
+      {(showFiltersModal || isModalClosing) && renderAllFiltersModal()}
 
 
       <div className="explorer-header">
@@ -722,7 +815,8 @@ const Explorer = () => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {postImages.map((item, idx) => {
+          {/* Primera carga: skeleton en la misma rejilla */}
+          {loading && postImages.length === 0 ? masonrySkeletonItems(9) : postImages.map((item, idx) => {
             const totalImagesInPost = imagesCountByPostId.get(item.postId) || 1;
             const extraImages = Math.max(0, totalImagesInPost - 1);
             const userLabel = item.user?.username
@@ -736,16 +830,22 @@ const Explorer = () => {
                 className="masonry-item"
                 onClick={() => handlePostClick(item.postId, item.imageUrl)}
               >
-                <img src={clImg.post(item.imageUrl)} alt={item.postTitle || t('user.defaultLabel')} loading="lazy" />
+                <img
+                  src={clImg.post(item.thumbUrl || item.imageUrl)}
+                  alt={item.postTitle || t('user.defaultLabel')}
+                  loading="lazy"
+                  className="masonry-img-fade"
+                  onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
+                />
 
                 <div className="user-profile-hover">
                   <div className="user-info-hover">
                     {item.user?.username ? (
-                      <a className="masonry-caption" href={`/profile/${item.user.username}`}>
-                        {userLabel} /
+                      <a className="masonry-caption" href={`/${item.user.username}`}>
+                        {userLabel}
                       </a>
                     ) : (
-                      <span className="masonry-caption">{userLabel} /</span>
+                      <span className="masonry-caption">{userLabel}</span>
                     )}
                     <div className="masonry-caption">{item.postTitle || ' '}</div>
                   </div>
@@ -754,21 +854,23 @@ const Explorer = () => {
                   )}
                 </div>
 
-                <button
-                  className={`save-button-explorer ${isSaved ? 'saved' : ''}`}
-                  onClick={(e) => handleSavePost(e, item.postId, item.imageUrl)}
-                  aria-label={isSaved ? t('save.saved') : t('save.action')}
-                  type="button"
-                >
-                  {isSaved ? (
-                    <img src="/iconos/check-tick.svg" alt="" aria-hidden="true" className="save-icon" />
-                  ) : (
-                    <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
-                  )}
-                  <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
-                    {isSaved ? t('save.tooltipSaved') : t('save.tooltipDefault')}
-                  </span>
-                </button>
+                <div className="post-image-actions post-image-actions--explorer">
+                  <button
+                    className={`save-button-explorer ${isSaved ? 'saved' : ''}`}
+                    onClick={(e) => handleSavePost(e, item.postId, item.imageUrl)}
+                    aria-label={isSaved ? t('save.saved') : t('save.action')}
+                    type="button"
+                  >
+                    {isSaved ? (
+                      <Check size={18} strokeWidth={1.8} aria-hidden="true" className="save-icon" />
+                    ) : (
+                      <Bookmark size={18} strokeWidth={1.8} aria-hidden="true" className="save-plus" />
+                    )}
+                    <span className={`save-tooltip ${isSaved ? 'tooltip-saved' : 'tooltip-default'}`}>
+                      {isSaved ? t('save.tooltipSaved') : t('save.tooltipDefault')}
+                    </span>
+                  </button>
+                </div>
 
                 {saveFeedback.show &&
                   saveFeedback.postId === item.postId &&
@@ -788,7 +890,7 @@ const Explorer = () => {
 
         <div ref={sentinelRef} style={{ height: '1px' }} />
 
-        {loading && (
+        {loading && postImages.length > 0 && (
           <div className="loading-spinner">
             <i className="fas fa-spinner fa-spin" />
           </div>

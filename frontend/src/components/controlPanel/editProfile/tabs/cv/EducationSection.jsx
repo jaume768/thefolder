@@ -1,8 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Section } from "../../ui/ProfileFormSection";
 import { clImg } from "../../../../../utils/optimizeImage";
+import { PenLine, Camera, Plus } from "lucide-react";
 
-const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/bin.png";
 
 export default function EducationSection({
@@ -63,11 +64,11 @@ export default function EducationSection({
             {eduDraft.institutionLogo ? (
               <img src={clImg.logo(eduDraft.institutionLogo)} alt={t("editProfile.logoLabel")} />
             ) : (
-              <span className="ux-exp-logo-icon">📷</span>
+              <Camera size={20} strokeWidth={1.5} aria-hidden="true" className="ux-exp-logo-icon" />
             )}
           </button>
 
-          <div className="ux-helper ux-exp-helper">
+          <div className="ux-counter">
             {t("editProfile.logoUploadHint")}
           </div>
         </div>
@@ -277,7 +278,7 @@ export default function EducationSection({
           <div className="ux-exp-form-actions">
             {list.length > 0 && (
               <button
-                className="ux-btn"
+                className="ux-btn danger"
                 type="button"
                 onClick={cancelEducationForm}
               >
@@ -305,16 +306,7 @@ export default function EducationSection({
   );
 
   return (
-    <div id="sec-cv-formacion" className="ux-anchor-target">
-      <div className="ux-card">
-        <label className="ux-form-label separator" htmlFor="edu-institution">
-          <img src="/iconos/education.png" className="ux-section-icon" alt="" />
-          {t("editProfile.educationSectionLabel")}
-        </label>
-
-        <div className="ux-helper ux-exp-helper">
-          {t("editProfile.educationSubtitle")}
-        </div>
+    <Section id="sec-cv-formacion" title={t("editProfile.educationSectionLabel")} help={t("editProfile.educationSubtitle")}>
 
         {/* LISTA con form inline en acordeón */}
         {list.length > 0 && (
@@ -334,11 +326,11 @@ export default function EducationSection({
 
                   <div className="ux-exp-content">
                     <div className="ux-exp-title">
-                      {(edu?.formationName || "").toUpperCase()}
+                      {edu?.formationName || ""}
                     </div>
 
                     <div className="ux-exp-meta">
-                      {edu?.institution || "—"}
+                      {edu?.institution || "-"}
                     </div>
 
                     {edu?.location && (
@@ -354,10 +346,10 @@ export default function EducationSection({
                             ? t("editProfile.currentlyWorkingShort")
                             : edu?.formationEndMonth && edu?.formationEndYear
                             ? `${MONTHS_ES[(Number(edu.formationEndMonth) || 1) - 1]?.label}. ${edu.formationEndYear}`
-                            : "—"}
+                            : "-"}
                         </>
                       ) : (
-                        "—"
+                        "-"
                       )}
                     </div>
                   </div>
@@ -367,16 +359,20 @@ export default function EducationSection({
                       type="button"
                       className="ux-link-btn"
                       onClick={() => openEditEducationForm(idx)}
+                      aria-label={t("editProfile.edit")}
                     >
-                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
+                      <PenLine size={14} strokeWidth={1.8} aria-hidden="true" />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.edit")}</span>
                     </button>
 
                     <button
                       type="button"
                       className="ux-link-btn danger"
                       onClick={() => confirmDeleteEducation(idx)}
+                      aria-label={t("editProfile.delete")}
                     >
-                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} />
+                      <img src={trashDelete} className="ux-icon" alt="" style={{width:"12px"}} />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.delete")}</span>
                     </button>
                   </div>
 
@@ -405,6 +401,7 @@ export default function EducationSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewEducationForm}
             >
+              <Plus size={14} strokeWidth={2} aria-hidden="true" />
               {t("editProfile.addEducation")}
             </button>
           </div>
@@ -412,7 +409,6 @@ export default function EducationSection({
 
         {/* FORM para nueva entrada o lista vacía (aparece al final) */}
         {(eduFormOpen && eduEditingIndex === null) || list.length === 0 ? renderForm() : null}
-      </div>
-    </div>
+    </Section>
   );
 }

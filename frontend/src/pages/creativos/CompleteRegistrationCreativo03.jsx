@@ -106,7 +106,7 @@ const CompleteRegistrationCreativo03 = () => {
         <p className="ob-step-subtitle">
           {t('photo.subtitle')}
         </p>
-        <p className="ob-subtitle">
+        <p className="ux-helper">
           {t("onboarding:photo.format")}
         </p>
 
@@ -126,7 +126,7 @@ const CompleteRegistrationCreativo03 = () => {
 
           <div className="ob-photo-actions">
             <button type="button" className="ob-photo-action" onClick={handlePickFile}>
-              ✎ <span>{t('photo.edit')}</span>
+              <span>{t('photo.edit')}</span>
             </button>
             <span className="ob-photo-sep">|</span>
             <button
@@ -134,8 +134,7 @@ const CompleteRegistrationCreativo03 = () => {
               className="ob-photo-action"
               onClick={handleRemove}
               disabled={!file}
-            >
-              🗑 <span>{t('photo.remove')}</span>
+            ><span>{t('photo.remove')}</span>
             </button>
 
             <input

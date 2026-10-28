@@ -11,6 +11,18 @@
   margin-top: 80px;
 }
 
+/* Con la barra de la landing (AuthLayout landingNav, hoy /creatives sin
+   sesión) el contenido empieza a la misma altura que con sesión. */
+.public-container--landing-nav {
+  margin-top: 72px;
+}
+
+@media (max-width: 768px) {
+  .public-container--landing-nav {
+    margin-top: 0;
+  }
+}
+
 
 .creatives-container {
   display: flex;
@@ -28,7 +40,7 @@
 }
 
 .creatives-content {
-  max-width: 850px;
+  max-width: 1050px;
   margin-top: 4px;
   display: flex;
   flex-direction: column;
@@ -91,7 +103,7 @@ h1.centerTitle {
 span.creatives-count {
   font-weight: 400;
   font-size: 32px;
-  line-height: 38px;
+  line-height: 46px;
   color: #999;
 }
 
@@ -135,7 +147,7 @@ span.creatives-count {
 
   span.creatives-count {
     font-size: 22px !important;
-    line-height: 22px !important;
+    line-height: 40px !important;
   }
 }
 
@@ -204,6 +216,14 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   box-shadow: none;
   transition: none;
   margin-bottom: 32px;
+  /* Entrada suave al montar (carga inicial / scroll infinito) — evita el
+     "pop" rígido de que la tarjeta aparezca de golpe. */
+  animation: creative-card-in 0.4s ease both;
+}
+
+@keyframes creative-card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .creative-card-media {
@@ -222,12 +242,18 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   object-fit: cover;
   position: relative;
   z-index: 0;
+  /* arranca invisible y hace fade-in en onLoad (ver CreativesPage.jsx) */
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .creative-card-image--placeholder {
   width: 100%;
   height: 220px;
   display: block;
+  /* es un <div> de color liso, no una <img> — nunca dispara onLoad, así
+     que no puede depender del fade-in de .creative-card-image. */
+  opacity: 1;
 }
 
 .creative-card-avatar {
@@ -245,34 +271,38 @@ p.creatives-subtitle.--show-mobile.--margin-top {
     background: #fdfdfd;
 }
 
-/* Meta */
+/* Meta — mismo estilo que las tarjetas de /community (.cm-name/.cm-meta,
+   MyComunity.css) un punto más pequeños que en /community (12.5px / 11.5px): nombre en #111 y
+   500, rol y ciudades en #555, sin mayúsculas ni letter-spacing; el nombre
+   nunca se subraya (tampoco al hover). */
 .creative-name {
   margin: 0;
   font-family: 'Inter Tight', sans-serif;
-  font-size: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: #111;
+  text-decoration: none;
+}
+
+.creative-role,
+.creative-location {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10.5px;
   font-weight: 400;
-  line-height: 1.05;
-  color: #666;
-  letter-spacing: 0.01em;
-  text-decoration: underline;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #555;
 }
 
 .creative-role {
-  margin-top: 2px;
-  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #666;
+  margin-top: 0;
 }
 
 .creative-location {
   margin-top: 0;
-  font-family: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 400;
-  font-size: 9px;
-  letter-spacing: 0.04em;
-  color: #666;
 }
 
 @media (max-width: 992px) {
@@ -307,7 +337,7 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   color: #e74c3c;
   text-align: center;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 0;
   margin: 20px 0;
   font-family: 'Inter Tight', sans-serif;
   font-size: 12px;
@@ -342,7 +372,7 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   width: 100%;
   gap: 7.5%;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .filters-triggers-left {
@@ -352,7 +382,6 @@ p.creatives-subtitle.--show-mobile.--margin-top {
   flex-direction: row;
   align-items: flex-start;
   gap: 48px;
-  width: 20px;
 }
 
 .filters-triggers-left.filters-explorer {
@@ -468,43 +497,89 @@ button.filter-section-trigger:hover {
 
 .filters-open-tags {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.filters-open-group {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-content: center;
+  align-items: center;
+}
+
+.filters-open-group-label {
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.filters-open-group-chips {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .filters-sticky-chip {
-  background: #222;
-  color: #fff;
-  border-radius: 24px;
-  padding: 4px 12px;
-  font-family: 'Inter Tight', sans-serif;
+  background: transparent;
+  border: solid 1px #555;
+  color: #222;
+  border-radius: 0;
+  padding: 6px 12px;
+  font-family: Inter Tight, sans-serif;
   font-size: 12px;
-  letter-spacing: 0.04em;
+  letter-spacing: .04em;
   font-weight: 400;
   cursor: pointer;
   display: inline-flex;
   gap: 8px;
-  border: solid transparent;
   align-items: center;
 }
 
 .filters-sticky-chip .chip-x {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1;
-  color: #fff;
+  font-weight: 300;
+  color: #222;
 }
 
 button.filters-sticky-chip.clean-all {
   background: transparent;
   color: #b42318;
   font-weight: 400;
-  margin-top: 10px;
   width: fit-content;
+  border-color: transparent !important;
 }
 
 @media (max-width: 768px) {
   .filters-open-area {
+    width: 100%;
+  }
+
+  .filters-open-group-chips {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-content: center;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filters-open-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-content: center;
+    align-items: center;
     width: 100%;
   }
 }
@@ -519,6 +594,11 @@ button.filters-sticky-chip.clean-all {
   .filters-open-tags {
     flex-wrap: wrap;
     gap: 12px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    align-content: center;
   }
 }
 
@@ -528,11 +608,11 @@ button.filters-sticky-chip.clean-all {
    ============================================================================= */
 
 .filter-tag {
-  border: 1px solid #f2f2f2;
+  border: 1px solid #d9d9d9;
   background: #FDFDFD;
   color: #222;
-  border-radius: 4px;
-  padding: 4px 12px;
+  border-radius: 0px;
+  padding: 6px 12px;
   letter-spacing: 0.04em;
   font-family: 'Inter Tight', sans-serif;
   font-size: 12px;
@@ -543,8 +623,28 @@ button.filters-sticky-chip.clean-all {
 
 .filter-tag.selected {
   border-color: #111;
-  background: #111;
-  color: #fdfdfd;
+  font-weight: 500;
+  border: solid 1.2px #111;
+}
+
+/* Chip "Todas/All" dentro de un grupo abierto: es un atajo para
+   seleccionar/deseleccionar todo el grupo de golpe. Antes heredaba el
+   mismo aspecto que un chip ya seleccionado en cuanto se abría el grupo
+   (porque el grupo se auto-seleccionaba entero), así que no se distinguía
+   de "ya está todo elegido". Ahora que abrir un grupo ya no selecciona
+   nada, este chip debe destacar como sugerencia/atajo sin parecer
+   seleccionado — solo pasa a los estilos de .selected cuando el usuario
+   lo pulsa de verdad. */
+.filter-tag.filter-tag--all:not(.selected) {
+  border-style: dashed;
+  border-color: #b9b9b9;
+  background: #f3f3f3;
+  color: #555;
+}
+
+.filter-tag.filter-tag--all:not(.selected):hover {
+  border-color: #111;
+  color: #111;
 }
 
 button.filter-tag.experience-tag {
@@ -552,23 +652,24 @@ button.filter-tag.experience-tag {
   min-width: 120px;
   min-height: 120px;
   height: auto;
-  border-radius: 12px;
+  border-radius: 0px;
   font-family: Inter Tight, sans-serif;
   font-size: 14px;
   line-height: 16px;
-  font-weight: 500;
+  font-weight: 400;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   padding: 12px;
   letter-spacing: .04em;
   gap: 4px;
 }
 
 .experience-tag-icon {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
   object-fit: contain;
   margin-bottom: 2px;
 }
@@ -578,22 +679,14 @@ button.filter-tag.experience-tag {
   height: 22px;
 }
 
-.filter-tag.selected .experience-tag-icon {
-  filter: invert(1);
-}
-
 .experience-tag-desc {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 300;
   color: #666;
-  line-height: 17px;
+  line-height: 12px;
   letter-spacing: 0.02em;
   text-transform: none;
-  text-align: left;
-}
-
-.filter-tag.selected .experience-tag-desc {
-  color: #aaa;
+  text-align: center;
 }
 
 
@@ -631,7 +724,7 @@ button.filter-tag.experience-tag {
   }
 
   .filters-tags {
-    gap: 12px;
+    gap: 16px;
   }
 }
 
@@ -640,29 +733,67 @@ button.filter-tag.experience-tag {
    9. FILTROS — MODAL OVERLAY
    ============================================================================= */
 
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes panelSlideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes panelSlideOutRight {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+@keyframes panelSlideInBottom {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes panelSlideOutBottom {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
 .filters-modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 9999;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 24px;
+  justify-content: flex-end;
   cursor: pointer;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: overlayFadeIn 0.22s ease forwards;
+}
+
+.filters-modal-overlay.is-closing {
+  animation: overlayFadeOut 0.22s ease forwards;
 }
 
 .filters-modal-panel {
-  width: min(680px, 92vw);
-  background: #FDFDFD;
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  border-radius: 6px;
+  width: min(40%, 92vw);
+  background: #fdfdfd;
+  border: 1px solid rgba(0, 0, 0, .1);
   overflow: scroll;
-  height: 75vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   cursor: default;
   justify-content: space-between;
+  animation: panelSlideInRight 0.22s ease forwards;
+}
+
+.filters-modal-panel.is-closing {
+  animation: panelSlideOutRight 0.22s ease forwards;
 }
 
 @media (max-width: 768px) {
@@ -673,9 +804,14 @@ button.filter-tag.experience-tag {
 
   .filters-modal-panel {
     width: 100%;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0;
     height: 90%;
     overflow: auto;
+    animation: panelSlideInBottom 0.22s ease forwards;
+  }
+
+  .filters-modal-panel.is-closing {
+    animation: panelSlideOutBottom 0.22s ease forwards;
   }
 }
 
@@ -695,12 +831,12 @@ button.filter-tag.experience-tag {
 
 .filters-panel-title {
   font-family: 'Inter Tight', sans-serif;
-  font-size: 11px;
-  line-height: 17px;
-  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
   letter-spacing: 0.02em;
+  font-weight: 500;
   text-transform: uppercase;
-  color: #111;
+  color: #222;
 }
 
 .filters-panel-close {
@@ -724,6 +860,19 @@ button.filter-tag.experience-tag {
   overflow: hidden;
 }
 
+/* Pie fijo (flex-shrink:0, igual que el header) para paneles con acción de
+   confirmación — AddProjectsModal.jsx es el primer consumidor, pero queda
+   junto al resto del shell .filters-panel-* por si otro picker lo reutiliza. */
+.filters-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .filters-panel-header {
     padding: 24px;
@@ -735,6 +884,10 @@ button.filter-tag.experience-tag {
 
   .filters-panel-body {
     padding: 24px;
+  }
+
+  .filters-panel-footer {
+    padding: 16px 24px;
   }
 }
 
@@ -759,7 +912,7 @@ button.filter-tag.experience-tag {
   font-family: Inter Tight, sans-serif;
   font-size: 14px;
   line-height: 12px;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: .04em;
   color: #222;
   margin-bottom: 4px;
@@ -796,7 +949,7 @@ button.filter-tag.experience-tag {
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 8px 10px;
   cursor: pointer;
   display: flex;
@@ -953,7 +1106,7 @@ img.image-icon {
   height: auto;
   padding: 20px;
   background-color: #ffffff;
-  border-radius: 10px;
+  border-radius: 0;
   position: sticky;
   top: 80px;
   max-height: calc(100vh - 40px);
@@ -1034,7 +1187,7 @@ img.image-icon {
 
 .first-post-cta-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 40px 36px 32px;
   width: min(460px, 92vw);
   display: flex;
@@ -1082,7 +1235,7 @@ img.image-icon {
   background: #111;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 0;
   padding: 10px 24px;
   font-size: 12px;
   font-weight: 400;
@@ -1128,7 +1281,7 @@ img.image-icon {
   left: 0;
   right: 0;
   height: 50vh;
-  background: linear-gradient(to bottom, transparent 0%, #fff 55%);
+  background: linear-gradient(to bottom, rgba(253, 253, 253, 0) 0%, #fdfdfd 55%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1150,8 +1303,14 @@ img.image-icon {
   margin: 0;
 }
 
+/* Mismo botón que "Crear perfil" de la barra de la landing: negro, esquinas
+   rectas, a su tamaño (no a todo el ancho). */
 .creatives-guest-wall .new-tablero-button {
   pointer-events: auto;
-  border-radius: 6px;
-  letter-spacing: 0.04em;
+  width: auto;
+  border-radius: 0;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }

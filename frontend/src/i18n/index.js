@@ -42,6 +42,10 @@ import legalES from './locales/es/legal.json';
 import legalEN from './locales/en/legal.json';
 import filtersES from './locales/es/filters.json';
 import filtersEN from './locales/en/filters.json';
+import projectsES from './locales/es/projects.json';
+import projectsEN from './locales/en/projects.json';
+import templatesES from './locales/es/templates.json';
+import templatesEN from './locales/en/templates.json';
 
 const resources = {
   es: {
@@ -64,6 +68,8 @@ const resources = {
     modals: modalsES,
     legal: legalES,
     filters: filtersES,
+    projects: projectsES,
+    templates: templatesES,
   },
   en: {
     common: commonEN,
@@ -85,14 +91,16 @@ const resources = {
     modals: modalsEN,
     legal: legalEN,
     filters: filtersEN,
+    projects: projectsEN,
+    templates: templatesEN,
   },
 };
 
 // Normaliza cualquier variante (en-US, en-GB…) a 'en' o 'es'
 const normalizeLang = (lng) => {
-  if (!lng) return 'es';
+  if (!lng) return 'en';
   const base = String(lng).toLowerCase().split('-')[0];
-  return base === 'en' ? 'en' : 'es';
+  return base === 'es' ? 'es' : 'en';
 };
 
 i18n
@@ -100,10 +108,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'es',
-    supportedLngs: ['es', 'en'],
+    fallbackLng: 'en',
+    supportedLngs: ['en', 'es'],
     load: 'languageOnly',
-    ns: ['common', 'home', 'auth', 'onboarding', 'explorer', 'offers', 'post', 'profile', 'blog', 'magazine', 'landing', 'industry', 'community', 'saved', 'creatives', 'fashion', 'modals', 'legal', 'filters'],
+    ns: ['common', 'home', 'auth', 'onboarding', 'explorer', 'offers', 'post', 'profile', 'blog', 'magazine', 'landing', 'industry', 'community', 'saved', 'creatives', 'fashion', 'modals', 'legal', 'filters', 'projects', 'templates'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false, // React ya protege contra XSS

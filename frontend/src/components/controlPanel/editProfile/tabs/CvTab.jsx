@@ -1,5 +1,5 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import "./ProfileInfo.css";
+import "./ProfileCv.css";
 
 import BiographySection from "./cv/BiographySection";
 import ExperienceSection from "./cv/ExperienceSection";
@@ -107,24 +107,13 @@ export default function CvTab({
   toggleDraftBool,
   setJobSearchActive,
 }) {
-  const { t } = useTranslation("profile");
 
   return (
-    <div>
-      <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">{t("editProfile.tabs.cv")}</h2>
-        <p className="ux-card-subtitle">
-          {t("editProfile.cvSubtitle").split("\\n").map((line, i) => (
-            <React.Fragment key={i}>
-              {line}
-              {i < t("editProfile.cvSubtitle").split("\\n").length - 1 && <br />}
-            </React.Fragment>
-          ))}
-        </p>
-      </div>
-
-      <section id="card-cv">
-        <div className="ux-editprofile-section">
+    // pi-legacy: las secciones con lista (experiencia, formación, prensa,
+    // premios) siguen con sus clases ux-*; ProfileCv.css las adapta al diseño
+    // de "Info de perfil" solo dentro de esta página.
+    <div className="pi-root pi-legacy">
+      <div>
           {/* 1) Biografía personal */}
           <BiographySection draft={draft} setDraftField={setDraftField} MAX_BIO={MAX_BIO} />
 
@@ -242,8 +231,7 @@ export default function CvTab({
             toggleDraftBool={toggleDraftBool}
             setJobSearchActive={setJobSearchActive}
           />
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

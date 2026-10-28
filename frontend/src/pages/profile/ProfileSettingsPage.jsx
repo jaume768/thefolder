@@ -1,17 +1,31 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { X, Check, Trash2, LogOut } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import PageSkeleton from "../../components/skeleton/PageSkeleton";
+import PanelPageHeader from "../../components/controlPanel/editProfile/ui/PanelPageHeader";
+import { Section, Field } from "../../components/controlPanel/editProfile/ui/ProfileFormSection";
+import ConfirmDialog from "../../components/controlPanel/proyectos/ConfirmDialog";
 
 import "../../components/controlPanel/css/UserProfileExtern.css";
+import "../../components/controlPanel/css/editProfileShell.css";
+import "../../components/controlPanel/editProfile/tabs/ProfileInfo.css";
+import "./ProfileSettingsPage.css";
+
+// Idiomas disponibles (los mismos que LanguageSwitcher.jsx marca como
+// available) — nombre en su propio idioma, no traducido.
+const LANGUAGES = [["es", "Español"], ["en", "English"]];
 
 const normalizeUsername = (value) =>
   String(value || '').replace(/\s+/g, '').toLowerCase();
 
 export default function ProfileSettingsPage() {
-  const { t } = useTranslation("profile");
+  const { t, i18n } = useTranslation("profile");
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { logout: authLogout } = useAuth();
 
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -62,10 +76,7 @@ export default function ProfileSettingsPage() {
         const token = localStorage.getItem("authToken");
         if (!token) { navigate("/?showRegister=true"); return; }
 
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const res = await axios.get(`${backendUrl}/api/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get('/api/users/profile');
         setUserData(res.data?.user || res.data);
       } catch (e) {
       } finally {
@@ -136,12 +147,7 @@ export default function ProfileSettingsPage() {
       return;
     }
     try {
-      const token = localStorage.getItem("authToken");
-      const res = await axios.put(
-        `${backendUrl}/api/users/change-username`,
-        { username: v },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.put('/api/users/change-username', { username: v });
       setUserData(prev => ({ ...prev, username: res.data.user?.username || v }));
       setUsernameMsg({ type: "ok", text: t("settings.usernameUpdated") });
       setTimeout(() => cancelSection(), 1500);
@@ -151,7 +157,7 @@ export default function ProfileSettingsPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    authLogout();
     localStorage.removeItem("userRole");
     navigate("/");
   };
@@ -170,13 +176,7 @@ export default function ProfileSettingsPage() {
     }
 
     try {
-      const token = localStorage.getItem("authToken");
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      await axios.put(
-        `${backendUrl}/api/users/change-password`,
-        { currentPassword, newPassword, confirmPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.put('/api/users/change-password', { currentPassword, newPassword, confirmPassword });
       setPasswordMsg({ type: "ok", text: t("settings.passwordUpdated") });
       setTimeout(() => cancelSection(), 1500);
     } catch (e) {
@@ -198,13 +198,7 @@ export default function ProfileSettingsPage() {
     }
 
     try {
-      const token = localStorage.getItem("authToken");
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      const res = await axios.put(
-        `${backendUrl}/api/users/change-email`,
-        { newEmail, password: emailPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.put('/api/users/change-email', { newEmail, password: emailPassword });
       setUserData(prev => ({ ...prev, email: res.data.email }));
       setEmailMsg({ type: "ok", text: t("settings.emailUpdated") });
       setTimeout(() => cancelSection(), 1500);
@@ -218,359 +212,280 @@ export default function ProfileSettingsPage() {
     try {
       setIsDeleting(true);
       setDeleteError("");
-      const token = localStorage.getItem("authToken");
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      await axios.delete(`${backendUrl}/api/users/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      localStorage.removeItem("authToken");
+      await api.delete('/api/users/profile');
+      authLogout();
       localStorage.removeItem("userRole");
       navigate("/");
     } catch (e) {
+      // El diálogo se cierra y el error se queda en la propia sección.
       setDeleteError(t("settings.deleteError"));
       setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
   // ── Render ───────────────────────────────────────────────────────────────
-  if (loading) return <div className="loading-indicator">{t("settings.loading")}</div>;
-  if (!userData) return <div className="edit-profile-wrapper">{t("settings.noSession")}</div>;
+  if (loading) return <PageSkeleton variant="panel" />;
+  if (!userData) return <div className="nep-main-content">{t("settings.noSession")}</div>;
+
+  const currentLang = i18n.language?.toLowerCase().startsWith("es") ? "es" : "en";
+  const usernameOk = !!newUsername && !usernameLocalError && !usernameChecking && !usernameTaken;
+
+  // Mensaje de resultado bajo los campos de una sección (error / ok)
+  const renderMsg = (msg) => msg.text && (
+    <p className={`st-msg st-msg--${msg.type === "ok" ? "ok" : "error"}`} role="status">{msg.text}</p>
+  );
+
+  // Guardar (negro, como los CTA del panel) + Cancelar (texto)
+  const renderActions = (saveLabel, onSave, disabled = false) => (
+    <div className="st-actions">
+      <button type="button" className="nep-ph-btn nep-ph-btn--black" onClick={onSave} disabled={disabled}>
+        {saveLabel}
+      </button>
+      <button type="button" className="pi-text-btn" onClick={cancelSection}>
+        {t("settings.cancel")}
+      </button>
+    </div>
+  );
+
+  // Valor actual en solo lectura + "Cambiar" (mismo .pi-readonly que el
+  // email de Info de perfil). Sin `section`, solo lectura.
+  const renderReadonly = (value, section) => (
+    <div className="pi-readonly">
+      <span className="pi-readonly-value">{value}</span>
+      {section && editingSection !== section && (
+        <button type="button" className="pi-readonly-link st-readonly-btn" onClick={() => openSection(section)}>
+          {t("settings.change")}
+        </button>
+      )}
+    </div>
+  );
 
   return (
-    <div className="edit-profile-wrapper">
+    <>
+      <div className="nep-main-content">
+        {/* Cabecera común del panel, sin botones: "Cerrar sesión" vive en la
+            sección Sesión (arriba confundía, parecía la acción principal). */}
+        <PanelPageHeader
+          title={t("editProfile.nav.settings")}
+          subtitle={t("settings.subtitle")}
+        />
 
-      <p className="creatives-subtitle --show-mobile">
-        {t("settings.subtitle")}
-      </p>
+        {/* Mismo diseño que Info de perfil / CV / Redes (ProfileInfo.css):
+            filas título+ayuda | campos, campos gris tenue sin borde. */}
+        <div className="nep-tab-body">
+          <div className="pi-root st-root">
 
-      <div className="creatives-hero-inner miPerfil-hero">
-        <div className="guardados-header miPerfil-header">
-          <h1 className="centerTitle guardados miPerfil-title">{t("settings.title")}</h1>
-        </div>
-      </div>
+            {/* ── Nombre de usuario ── */}
+            <Section id="sec-st-username" title={t("settings.username")} help={t("settings.usernameHint")}>
+              <Field>
+                {renderReadonly(`thefolder.es/${userData?.username || "-"}`, "username")}
+              </Field>
 
-      <section id="card-settings">
-        <div className="ux-editprofile-section">
-
-          {/* ── 0. NOMBRE DE USUARIO ─────────────────────────────────────── */}
-          <div className="ux-form-block">
-            <div className="ux-settings-row">
-              <div className="ux-settings-row-info">
-                <label className="ux-form-label">{t("settings.username")}</label>
-                <p className="ux-settings-current-value">@{userData?.username || "—"}</p>
-              </div>
-
-              {editingSection !== "username" && (
-                <button
-                  type="button"
-                  className="ux-link-btn"
-                  onClick={() => openSection("username")}
-                >
-                  {t("settings.change")}
-                </button>
-              )}
-            </div>
-
-            {editingSection === "username" && (
-              <div className="ux-settings-edit-area">
-                <p className="ux-form-hint" style={{ marginBottom: 10 }}>
-                  {t("settings.usernameHint")}
-                </p>
-
-                {/* Input estilo registro: thefolder.es/username */}
-                <div className="ux-username-field">
-                  <span className="ux-username-prefix">thefolder.es/</span>
-                  <input
-                    className="ux-username-input"
-                    value={newUsername}
-                    onChange={e => { setNewUsername(normalizeUsername(e.target.value)); setUsernameTaken(false); }}
-                    onKeyDown={e => { if (e.key === ' ') e.preventDefault(); }}
-                    onPaste={e => { e.preventDefault(); setNewUsername(normalizeUsername(e.clipboardData.getData('text'))); }}
-                    maxLength={20}
-                    autoCorrect="off"
-                    autoCapitalize="none"
-                    spellCheck={false}
-                    placeholder={userData?.username || t("settings.usernamePlaceholder")}
-                  />
-                  <span
-                    className={[
-                      'ux-username-status',
-                      usernameChecking ? 'is-checking' : '',
-                      usernameTaken ? 'is-bad' : '',
-                      (newUsername && !usernameLocalError && !usernameChecking && !usernameTaken) ? 'is-ok' : '',
-                    ].filter(Boolean).join(' ')}
-                  >
-                    {usernameChecking ? '…' : usernameTaken ? '×' : (newUsername && !usernameLocalError && !usernameChecking && !usernameTaken) ? '✓' : ''}
-                  </span>
-                </div>
-
-                {usernameLocalError && newUsername && (
-                  <p className="ux-msg-error">{usernameLocalError}</p>
-                )}
-                {usernameTaken && !usernameChecking && !usernameLocalError && (
-                  <p className="ux-msg-error">{t("settings.usernameTaken")}</p>
-                )}
-                {usernameMsg.text && (
-                  <p className={usernameMsg.type === "ok" ? "ux-msg-ok" : "ux-msg-error"}>
-                    {usernameMsg.text}
-                  </p>
-                )}
-
-                <div className="ux-settings-actions">
-                  <button
-                    type="button"
-                    className="ux-btn-primary"
-                    onClick={handleChangeUsername}
-                    disabled={!newUsername || !!usernameLocalError || usernameChecking || usernameTaken}
-                  >
-                    {t("settings.saveUsername")}
-                  </button>
-                  <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
-                    {t("settings.cancel")}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── 1. EMAIL ─────────────────────────────────────────────────── */}
-          <div className="ux-form-block">
-            <div className="ux-settings-row">
-              <div className="ux-settings-row-info">
-                <label className="ux-form-label">{t("settings.email")}</label>
-                <p className="ux-settings-current-value">{userData?.email || "—"}</p>
-              </div>
-
-              {editingSection !== "email" && (
-                <button
-                  type="button"
-                  className="ux-link-btn"
-                  onClick={() => openSection("email")}
-                >
-                  {t("settings.change")}
-                </button>
-              )}
-            </div>
-
-            {editingSection === "email" && (
-              <div className="ux-settings-edit-area">
-                <div className="ux-form-column" style={{ gridTemplateColumns: "1fr" }}>
-                  <div className="ux-form-field">
-                    <label className="ux-form-label" htmlFor="newEmail">{t("settings.newEmail")}</label>
-                    <input
-                      id="newEmail"
-                      type="email"
-                      className="ux-input"
-                      value={newEmail}
-                      onChange={e => setNewEmail(e.target.value)}
-                      placeholder={t("settings.emailPlaceholder")}
-                      autoComplete="email"
-                    />
-                  </div>
-
-                  {!isGoogleUser && (
-                    <div className="ux-form-field">
-                      <label className="ux-form-label" htmlFor="emailPassword">
-                        {t("settings.confirmCurrentPassword")}
-                      </label>
+              {editingSection === "username" && (
+                <>
+                  <Field id="st-new-username" label={t("settings.newUsername")}>
+                    <div className="pi-input pi-prefixed">
+                      <span className="pi-prefix" aria-hidden="true">thefolder.es/</span>
                       <input
-                        id="emailPassword"
-                        type="password"
-                        className="ux-input"
-                        value={emailPassword}
-                        onChange={e => setEmailPassword(e.target.value)}
-                        placeholder={t("settings.currentPasswordPlaceholder")}
-                        autoComplete="current-password"
+                        id="st-new-username"
+                        className="pi-prefixed-input"
+                        value={newUsername}
+                        onChange={e => { setNewUsername(normalizeUsername(e.target.value)); setUsernameTaken(false); }}
+                        onKeyDown={e => { if (e.key === " ") e.preventDefault(); }}
+                        onPaste={e => { e.preventDefault(); setNewUsername(normalizeUsername(e.clipboardData.getData("text"))); }}
+                        maxLength={20}
+                        autoCorrect="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        autoFocus
+                        placeholder={userData?.username || t("settings.usernamePlaceholder")}
                       />
+                      <span
+                        className={`st-status${usernameTaken ? " is-bad" : ""}${usernameOk ? " is-ok" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {usernameChecking
+                          ? <span className="pi-spinner" />
+                          : usernameTaken
+                            ? <X size={16} strokeWidth={2} />
+                            : usernameOk ? <Check size={16} strokeWidth={2} /> : null}
+                      </span>
                     </div>
+                  </Field>
+
+                  {usernameLocalError && newUsername && <p className="st-msg st-msg--error">{usernameLocalError}</p>}
+                  {usernameTaken && !usernameChecking && !usernameLocalError && (
+                    <p className="st-msg st-msg--error">{t("settings.usernameTaken")}</p>
                   )}
-                </div>
-
-                {emailMsg.text && (
-                  <p className={emailMsg.type === "ok" ? "ux-msg-ok" : "ux-msg-error"}>
-                    {emailMsg.text}
-                  </p>
-                )}
-
-                <div className="ux-settings-actions">
-                  <button type="button" className="ux-btn-primary" onClick={handleChangeEmail}>
-                    {t("settings.saveEmail")}
-                  </button>
-                  <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
-                    {t("settings.cancel")}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── 2. CONTRASEÑA ────────────────────────────────────────────── */}
-          <div className="ux-form-block">
-            <div className="ux-settings-row">
-              <div className="ux-settings-row-info">
-                <label className="ux-form-label">{t("settings.password")}</label>
-                <p className="ux-settings-current-value">••••••••</p>
-              </div>
-
-              {editingSection !== "password" && (
-                <button
-                  type="button"
-                  className="ux-link-btn"
-                  onClick={() => openSection("password")}
-                >
-                  {t("settings.change")}
-                </button>
+                  {renderMsg(usernameMsg)}
+                  {renderActions(
+                    t("settings.saveUsername"),
+                    handleChangeUsername,
+                    !newUsername || !!usernameLocalError || usernameChecking || usernameTaken
+                  )}
+                </>
               )}
-            </div>
+            </Section>
 
-            {editingSection === "password" && (
-              <div className="ux-settings-edit-area">
-                <div className="ux-form-column" style={{ gridTemplateColumns: "1fr" }}>
-                  {!isGoogleUser && (
-                    <div className="ux-form-field">
-                      <label className="ux-form-label" htmlFor="currentPwd">{t("settings.currentPassword")}</label>
+            {/* ── Email ── */}
+            <Section id="sec-st-email" title={t("settings.email")} help={t("settings.help.email")}>
+              <Field>
+                {renderReadonly(userData?.email || "-", "email")}
+              </Field>
+
+              {editingSection === "email" && (
+                <>
+                  <div className={isGoogleUser ? undefined : "pi-grid-2"}>
+                    <Field id="st-new-email" label={t("settings.newEmail")}>
                       <input
-                        id="currentPwd"
+                        id="st-new-email"
+                        type="email"
+                        className="pi-input"
+                        value={newEmail}
+                        onChange={e => setNewEmail(e.target.value)}
+                        placeholder={t("settings.emailPlaceholder")}
+                        autoComplete="email"
+                        autoFocus
+                      />
+                    </Field>
+                    {!isGoogleUser && (
+                      <Field id="st-email-password" label={t("settings.confirmCurrentPassword")}>
+                        <input
+                          id="st-email-password"
+                          type="password"
+                          className="pi-input"
+                          value={emailPassword}
+                          onChange={e => setEmailPassword(e.target.value)}
+                          placeholder={t("settings.currentPasswordPlaceholder")}
+                          autoComplete="current-password"
+                        />
+                      </Field>
+                    )}
+                  </div>
+                  {renderMsg(emailMsg)}
+                  {renderActions(t("settings.saveEmail"), handleChangeEmail)}
+                </>
+              )}
+            </Section>
+
+            {/* ── Contraseña ── */}
+            <Section id="sec-st-password" title={t("settings.password")} help={t("settings.help.password")}>
+              <Field>
+                {renderReadonly("••••••••", "password")}
+              </Field>
+
+              {editingSection === "password" && (
+                <>
+                  {!isGoogleUser && (
+                    <Field id="st-current-password" label={t("settings.currentPassword")}>
+                      <input
+                        id="st-current-password"
                         type="password"
-                        className="ux-input"
+                        className="pi-input"
                         value={currentPassword}
                         onChange={e => setCurrentPassword(e.target.value)}
                         placeholder={t("settings.currentPasswordPlaceholder")}
                         autoComplete="current-password"
+                        autoFocus
                       />
-                    </div>
+                    </Field>
                   )}
-
-                  <div className="ux-form-field">
-                    <label className="ux-form-label" htmlFor="newPwd">{t("settings.newPassword")}</label>
-                    <input
-                      id="newPwd"
-                      type="password"
-                      className="ux-input"
-                      value={newPassword}
-                      onChange={e => setNewPassword(e.target.value)}
-                      placeholder={t("settings.newPasswordPlaceholder")}
-                      autoComplete="new-password"
-                    />
+                  <div className="pi-grid-2">
+                    <Field id="st-new-password" label={t("settings.newPassword")}>
+                      <input
+                        id="st-new-password"
+                        type="password"
+                        className="pi-input"
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        placeholder={t("settings.newPasswordPlaceholder")}
+                        autoComplete="new-password"
+                      />
+                    </Field>
+                    <Field id="st-confirm-password" label={t("settings.confirmNewPassword")}>
+                      <input
+                        id="st-confirm-password"
+                        type="password"
+                        className="pi-input"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        placeholder={t("settings.confirmPasswordPlaceholder")}
+                        autoComplete="new-password"
+                      />
+                    </Field>
                   </div>
+                  {renderMsg(passwordMsg)}
+                  {renderActions(t("settings.savePassword"), handleChangePassword)}
+                </>
+              )}
+            </Section>
 
-                  <div className="ux-form-field">
-                    <label className="ux-form-label" htmlFor="confirmPwd">{t("settings.confirmNewPassword")}</label>
-                    <input
-                      id="confirmPwd"
-                      type="password"
-                      className="ux-input"
-                      value={confirmPassword}
-                      onChange={e => setConfirmPassword(e.target.value)}
-                      placeholder={t("settings.confirmPasswordPlaceholder")}
-                      autoComplete="new-password"
-                    />
-                  </div>
-                </div>
-
-                {passwordMsg.text && (
-                  <p className={passwordMsg.type === "ok" ? "ux-msg-ok" : "ux-msg-error"}>
-                    {passwordMsg.text}
-                  </p>
-                )}
-
-                <div className="ux-settings-actions">
-                  <button type="button" className="ux-btn-primary" onClick={handleChangePassword}>
-                    {t("settings.savePassword")}
-                  </button>
-                  <button type="button" className="ux-btn-ghost" onClick={cancelSection}>
-                    {t("settings.cancel")}
-                  </button>
+            {/* ── Idioma: mismo control segmentado que Disponibilidad (CV) ── */}
+            <Section id="sec-st-language" title={t("settings.language")} help={t("settings.help.language")}>
+              <div className="pi-field">
+                {/* Sin etiqueta propia: el título de la sección ya dice "Idioma" */}
+                <div className="pi-segmented pi-segmented--half" role="radiogroup" aria-labelledby="sec-st-language-title">
+                  {LANGUAGES.map(([code, label]) => (
+                    <button
+                      key={code}
+                      type="button"
+                      role="radio"
+                      aria-checked={currentLang === code}
+                      className={`pi-segment${currentLang === code ? " is-on" : ""}`}
+                      onClick={() => i18n.changeLanguage(code)}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
+            </Section>
 
-          {/* ── 3. CERRAR SESIÓN ─────────────────────────────────────────── */}
-          <div className="ux-form-block">
-            <div className="ux-settings-row">
-              <div className="ux-settings-row-info">
-                <label className="ux-form-label">{t("settings.session")}</label>
-                <p className="ux-settings-current-value">{t("settings.connectedAs", { email: userData?.email })}</p>
+            {/* ── Sesión: con quién estás conectado + "Cerrar sesión" ── */}
+            <Section id="sec-st-session" title={t("settings.session")} help={t("settings.help.session")}>
+              <Field>
+                {renderReadonly(userData?.email || "-")}
+              </Field>
+              <div>
+                <button type="button" className="pi-btn" onClick={handleLogout}>
+                  <LogOut size={14} strokeWidth={1.8} aria-hidden="true" />
+                  {t("settings.logout")}
+                </button>
               </div>
-              <button type="button" className="ux-link-btn" onClick={handleLogout}>
-                {t("settings.logout")}
-              </button>
-            </div>
-          </div>
+            </Section>
 
-          {/* ── 4. ELIMINAR CUENTA ───────────────────────────────────────── */}
-          <div className="ux-form-block">
-            <div className="ux-settings-row">
-              <div className="ux-settings-row-info">
-                <label className="ux-form-label">{t("settings.deleteAccount")}</label>
-                <p className="ux-settings-current-value">
-                  {t("settings.deleteAccountWarning")}
-                </p>
+            {/* ── Eliminar cuenta ── */}
+            <Section id="sec-st-delete" title={t("settings.deleteAccount")} help={t("settings.deleteAccountWarning")}>
+              <div>
+                <button
+                  type="button"
+                  className="pi-btn st-danger-btn"
+                  onClick={() => { setIsDeleteModalOpen(true); setDeleteError(""); }}
+                >
+                  <Trash2 size={14} strokeWidth={1.8} aria-hidden="true" />
+                  {t("settings.deleteAccount")}
+                </button>
               </div>
-              <button
-                type="button"
-                className="ux-link-btn danger"
-                onClick={() => { setIsDeleteModalOpen(true); setDeleteError(""); }}
-              >
-                {t("settings.delete")}
-              </button>
-            </div>
-          </div>
+              {deleteError && <p className="st-msg st-msg--error">{deleteError}</p>}
+            </Section>
 
+          </div>
         </div>
-      </section>
+      </div>
 
-      {/* ── Modal confirmar eliminación ──────────────────────────────────── */}
+      {/* Confirmar eliminación: mismo diálogo que borrar proyecto / carpeta */}
       {isDeleteModalOpen && (
-        <div
-          className="filters-modal-overlay"
-          onMouseDown={e => { if (e.target === e.currentTarget) setIsDeleteModalOpen(false); }}
-        >
-          <div className="filters-modal-panel ux-delete-modal" onMouseDown={e => e.stopPropagation()}>
-            <div className="filters-panel-header">
-              <div className="filters-panel-title">{t("settings.deleteModalTitle")}</div>
-              <button
-                type="button"
-                className="filters-panel-close"
-                onClick={() => setIsDeleteModalOpen(false)}
-                aria-label={t("settings.close")}
-              >
-                <img src="/iconos/close.svg" alt={t("settings.close")} className="image-icon" />
-              </button>
-            </div>
-
-            <div className="ux-delete-modal-body">
-              <p>
-                {t("settings.deleteModalBody1")}
-              </p>
-              <p><strong>{t("settings.deleteModalBody2")}</strong></p>
-
-              {deleteError && <p className="ux-msg-error">{deleteError}</p>}
-
-              <div className="ux-settings-actions">
-                <button
-                  type="button"
-                  className="ux-btn-danger"
-                  onClick={handleDeleteAccount}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? t("settings.deleting") : t("settings.deleteConfirm")}
-                </button>
-                <button
-                  type="button"
-                  className="ux-btn-ghost"
-                  onClick={() => setIsDeleteModalOpen(false)}
-                  disabled={isDeleting}
-                >
-                  {t("settings.deleteCancel")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          title={t("settings.deleteModalTitle")}
+          warning={`${t("settings.deleteModalBody1")} ${t("settings.deleteModalBody2")}`}
+          confirmLabel={isDeleting ? t("settings.deleting") : t("settings.deleteConfirm")}
+          cancelLabel={t("settings.deleteCancel")}
+          onConfirm={handleDeleteAccount}
+          onCancel={() => { if (!isDeleting) setIsDeleteModalOpen(false); }}
+          busy={isDeleting}
+        />
       )}
-
-    </div>
+    </>
   );
 }

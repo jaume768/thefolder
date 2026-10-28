@@ -1,0 +1,493 @@
+/* ── CV: adaptador de las secciones con lista (CvTab.jsx, .pi-legacy) ──
+   Experiencia, Formación, Prensa y Premios siguen con su marcado ux-*
+   (tarjeta + formulario en línea + "Añadir"). Aquí se les da el lenguaje de
+   "Info de perfil" (ProfileInfo.css) sin tocar su lógica:
+   - campos gris tenue sin borde, 48px, etiqueta 13px #555 encima;
+   - tarjetas = bloques gris tenue, sin borde ni radio ni sombra;
+   - un único botón negro (Guardar); el resto gris o de texto; sin rojo.
+   Todo va bajo .pi-root.pi-legacy para ganar a las reglas globales de
+   UserProfileExtern.css / editProfileShell.css sin !important. */
+
+/* ── Formulario en línea ───────────────────────────────────────────── */
+.pi-root.pi-legacy .ux-exp-form-wrap {
+  margin: 0;
+  padding: 20px;
+  background: #00000006;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.pi-root.pi-legacy .ux-exp-form-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.pi-root.pi-legacy .ux-exp-form-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+
+.pi-root.pi-legacy .ux-exp-logo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 96px;
+  flex-shrink: 0;
+}
+
+.pi-root.pi-legacy .ux-exp-logo-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.pi-root.pi-legacy .ux-exp-logo-btn:hover {
+  background: #f9f9f9;
+}
+
+.pi-root.pi-legacy .ux-exp-logo-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+.pi-root.pi-legacy .ux-exp-logo-icon {
+  color: #8a8a8a;
+}
+
+.pi-root.pi-legacy .ux-exp-fields {
+  flex: 1;
+  min-width: 0;
+}
+
+.pi-root.pi-legacy .ux-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pi-root.pi-legacy .ux-form-field,
+.pi-root.pi-legacy .ux-exp-date-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pi-root.pi-legacy .ux-form-label,
+.pi-root.pi-legacy .ux-form-label-sm {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #555;
+}
+
+/* Campos (el de la web de la empresa usa .ux-helper como clase del input) */
+.pi-root.pi-legacy .ux-input,
+.pi-root.pi-legacy input.ux-helper,
+.pi-root.pi-legacy .ux-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  margin: 0;
+  padding: 0 16px;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: normal;
+  color: #111;
+  outline: none;
+}
+
+.pi-root.pi-legacy .ux-textarea {
+  height: auto;
+  min-height: 120px;
+  padding: 14px 16px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.pi-root.pi-legacy .ux-input:focus,
+.pi-root.pi-legacy input.ux-helper:focus,
+.pi-root.pi-legacy .ux-textarea:focus {
+  outline: 2px solid #111;
+  outline-offset: 0;
+}
+
+.pi-root.pi-legacy .ux-input:disabled {
+  color: #8a8a8a;
+  background: #f9f9f9;
+  cursor: not-allowed;
+}
+
+.pi-root.pi-legacy select.ux-input {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.pi-root.pi-legacy .ux-counter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #555;
+}
+
+.pi-root.pi-legacy .ux-exp-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.pi-root.pi-legacy .ux-exp-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* Casilla "Trabajo aquí actualmente" etc.: cuadrada, negra marcada (.pi-check) */
+.pi-root.pi-legacy .ux-exp-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  margin: 0;
+  font-size: 13px;
+  color: #111;
+  cursor: pointer;
+}
+
+.pi-root.pi-legacy .ux-exp-check input[type="checkbox"],
+.pi-root.pi-legacy .ux-exp-check input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px #c4c4c4;
+  cursor: pointer;
+}
+
+.pi-root.pi-legacy .ux-exp-check input:checked {
+  background: #111 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 12px no-repeat;
+  box-shadow: none;
+}
+
+.pi-root.pi-legacy .ux-exp-check input:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+/* Acciones del formulario: Cancelar (texto) · Borrador (gris) · Guardar (negro) */
+.pi-root.pi-legacy .ux-exp-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pi-root.pi-legacy .ux-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pi-root.pi-legacy .ux-btn:hover {
+  background: #ececec;
+}
+
+.pi-root.pi-legacy .ux-btn.primary {
+  padding: 0 20px;
+  background: #111;
+  color: #fff;
+}
+
+.pi-root.pi-legacy .ux-btn.primary:hover {
+  background: #000;
+}
+
+.pi-root.pi-legacy .ux-btn.danger {
+  margin-right: auto;
+  padding: 0;
+  background: none;
+  color: #555;
+}
+
+.pi-root.pi-legacy .ux-btn.danger:hover {
+  color: #111;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Tarjetas de la lista ──────────────────────────────────────────── */
+.pi-root.pi-legacy .ux-exp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+/* Tarjeta: [logo] | contenido (todo el ancho que quede) | acciones arriba a
+   la derecha. Premios no tiene logo: sin esa columna, el contenido se
+   quedaba metido en los 56px del logo y las acciones caían en medio. */
+.pi-root.pi-legacy .ux-exp-card {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin: 0;
+  padding: 16px;
+  background: #00000006 !important; /* gana al fondo inline de los borradores */
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.pi-root.pi-legacy .ux-exp-logo {
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+}
+
+.pi-root.pi-legacy .ux-exp-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+.pi-root.pi-legacy .ux-exp-logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #8a8a8a;
+}
+
+.pi-root.pi-legacy .ux-exp-card:not(:has(> .ux-exp-logo)) {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.pi-root.pi-legacy .ux-exp-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin: 0; /* el global le pone margin-left: 12px */
+  align-items: stretch;
+  overflow-wrap: anywhere;
+}
+
+/* Título tal cual se escribió (antes en MAYÚSCULAS): jerarquía por peso */
+.pi-root.pi-legacy .ux-exp-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+.pi-root.pi-legacy .ux-exp-meta {
+  margin: 0;
+  font-size: 14px;
+  color: #111;
+}
+
+.pi-root.pi-legacy .ux-exp-subtle {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.pi-root.pi-legacy .ux-exp-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  text-decoration: none;
+}
+
+.pi-root.pi-legacy .ux-exp-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Editar / borrar: cuadrados blancos de 36px sobre el gris de la tarjeta */
+/* Siempre en la última columna de la 1.ª fila: arriba a la derecha, en
+   todas las secciones y en todos los tamaños. */
+.pi-root.pi-legacy .ux-exp-actions {
+  grid-row: 1;
+  grid-column: -2 / -1;
+  align-self: start;
+  justify-content: flex-end;
+  display: flex;
+  gap: 4px;
+}
+
+.pi-root.pi-legacy .ux-exp-actions .ux-link-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  cursor: pointer;
+}
+
+.pi-root.pi-legacy .ux-exp-actions .ux-link-btn:hover {
+  background: #ececec;
+}
+
+.pi-root.pi-legacy .ux-exp-actions .ux-icon {
+  width: 14px !important;
+  opacity: 0.8;
+}
+
+/* ── "+ Añadir …": mismo diseño que .pi-add-btn / .pe-add-btn ─────────
+   A todo el ancho, alto de un campo, sin fondo, borde discontinuo. */
+.pi-root.pi-legacy .ux-exp-add {
+  margin: 0;
+}
+
+.pi-root.pi-legacy .ux-exp-add .ux-btn,
+.pi-root.pi-legacy .ux-exp-add-btn {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  background: none;
+  border: 1px dashed #bdbdbd;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111;
+  transition: border-color 0.12s ease;
+}
+
+.pi-root.pi-legacy .ux-exp-add .ux-btn:hover,
+.pi-root.pi-legacy .ux-exp-add-btn:hover,
+.pi-root.pi-legacy .ux-exp-add .ux-btn:focus-visible,
+.pi-root.pi-legacy .ux-exp-add-btn:focus-visible {
+  background: none;
+  border-color: #111;
+}
+
+/* ── Tablet ────────────────────────────────────────────────────────── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .pi-root.pi-legacy .ux-exp-form-layout {
+    flex-direction: column;
+  }
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .pi-root.pi-legacy .ux-exp-form-wrap {
+    padding: 16px;
+  }
+
+  .pi-root.pi-legacy .ux-exp-form-layout {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pi-root.pi-legacy .ux-input,
+  .pi-root.pi-legacy input.ux-helper,
+  .pi-root.pi-legacy .ux-textarea {
+    font-size: 16px; /* sin zoom en iOS */
+  }
+
+  .pi-root.pi-legacy .ux-exp-dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pi-root.pi-legacy .ux-exp-card {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .pi-root.pi-legacy .ux-exp-card:not(:has(> .ux-exp-logo)) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .pi-root.pi-legacy .ux-exp-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .pi-root.pi-legacy .ux-btn {
+    height: 44px;
+  }
+}

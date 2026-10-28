@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import api from '../../services/api';
 import { FaBuilding, FaMapMarkerAlt, FaCalendarAlt, FaBriefcase, FaLaptopHouse, FaClock, FaUserGraduate } from 'react-icons/fa';
 import '../../components/controlPanel/css/view-offer.css';
 import { clImg } from '../../utils/optimizeImage';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const ViewOffer = () => {
     const { t, i18n } = useTranslation('offers');
@@ -45,10 +47,9 @@ const ViewOffer = () => {
                 const token = localStorage.getItem('authToken');
                 if (token) {
                     try {
-                        const userResponse = await axios.get(`${backendUrl}/api/users/profile`, {
-                            headers: { Authorization: `Bearer ${token}` }
-                        });
-                        
+                        const userResponse = await api.get('/api/users/profile');
+
+
                         // Comprobar si el publisher es un objeto o un string
                         if (typeof offerData.publisher === 'object' && offerData.publisher !== null) {
                             setIsOwner(userResponse.data._id === offerData.publisher._id);
@@ -91,33 +92,10 @@ const ViewOffer = () => {
         navigate(`/edit-offer/${offerId}`);
     };
 
-    if (loading) {
-        return (
-            <div className="view-offer-loading-view">
-                <div className="loader-view"></div>
-                <p className="loading-indicator">{t('view.loading')}</p>
-            </div>
-        );
-    }
+    if (loading) return <PageSkeleton variant="article" />;
 
-    if (error) {
-        return (
-            <div className="view-offer-error-view">
-                <h2>{t('view.notFoundTitle')}</h2>
-                <p>{error}</p>
-                <button onClick={() => navigate(-1)}>{t('view.back')}</button>
-            </div>
-        );
-    }
-
-    if (!offer) {
-        return (
-            <div className="view-offer-not-found-view">
-                <h2>{t('view.notFoundTitle')}</h2>
-                <p>{t('view.notFoundDesc')}</p>
-                <button onClick={() => navigate(-1)}>{t('view.back')}</button>
-            </div>
-        );
+    if (error || !offer) {
+        return <Navigate to="/404" replace />;
     }
 
     return (
@@ -287,7 +265,7 @@ const ViewOffer = () => {
                             <h4>{offer.companyName || t('view.noCompany')}</h4>
                             {offer.publisher && (
                                 typeof offer.publisher === 'object' && offer.publisher.username ? (
-                                    <a href={`/profile/${offer.publisher.username}`} className="view-profile-link-view">
+                                    <a href={`/${offer.publisher.username}`} className="view-profile-link-view">
                                         {t('view.viewProfile')}
                                     </a>
                                 ) : (

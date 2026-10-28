@@ -18,7 +18,8 @@ const UserDetailPage = () => {
     role: '',
     isAdmin: false,
     isActive: true,
-    isVerificatedProfesional: false
+    isVerificatedProfesional: false,
+    hiddenFromDirectory: false
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -42,7 +43,8 @@ const UserDetailPage = () => {
           role: response.user.role || 'Creativo',
           isAdmin: response.user.isAdmin || false,
           isActive: response.user.isActive !== false, // true por defecto si no está definido
-          isVerificatedProfesional: response.user.isVerificatedProfesional || false
+          isVerificatedProfesional: response.user.isVerificatedProfesional || false,
+          hiddenFromDirectory: response.user.hiddenFromDirectory || false
         });
       } else {
         setError('No se pudo obtener la información del usuario');
@@ -101,7 +103,8 @@ const UserDetailPage = () => {
       role: user.role || 'Creativo',
       isAdmin: user.isAdmin || false,
       isActive: user.isActive !== false,
-      isVerificatedProfesional: user.isVerificatedProfesional || false
+      isVerificatedProfesional: user.isVerificatedProfesional || false,
+      hiddenFromDirectory: user.hiddenFromDirectory || false
     });
     setIsEditing(false);
   };
@@ -288,7 +291,22 @@ const UserDetailPage = () => {
                   Usuario activo
                 </label>
               </div>
-              
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  id="hiddenFromDirectory"
+                  name="hiddenFromDirectory"
+                  checked={formData.hiddenFromDirectory}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  className="form-check-input"
+                />
+                <label htmlFor="hiddenFromDirectory" className="form-check-label">
+                  Ocultar de /creatives (sigue activo, solo no aparece en el directorio)
+                </label>
+              </div>
+
               {formData.role === 'Profesional' && (
                 <div className="form-check">
                   <input 

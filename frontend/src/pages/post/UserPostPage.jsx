@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
+import api from "../../services/api";
 import {
   FaUserCircle,
 } from "react-icons/fa";
+import { X, Check, MoreVertical, Bookmark, SquarePen, Trash2 } from "lucide-react";
 import PeopleTagsList from "../../components/PeopleTagsList";
-import EditPostModal from "../../components/EditPostModal";
+// Mismos modales que el panel /myprofile/ ("Tus proyectos"): editor de
+// proyecto en modal y diálogo de confirmación.
+import ProjectEditor from "../../components/controlPanel/proyectos/ProjectEditor";
+import ConfirmDialog from "../../components/controlPanel/proyectos/ConfirmDialog";
+import PageSkeleton, { masonrySkeletonItems } from "../../components/skeleton/PageSkeleton";
 import "../../components/controlPanel/css/UserPost.css";
 import "../../components/controlPanel/css/MorePosts.css";
 import "../../components/controlPanel/css/explorer.css";
 import "../../components/controlPanel/css/MasonryGallery.css";
+import "../profile/portfolioTemplates/shared/QuickActions.css";
 import Masonry from "react-masonry-css";
 import { clImg } from "../../utils/optimizeImage";
 import { formatUserLocation } from "../../utils/locations";
@@ -19,7 +25,7 @@ const GUEST_POST_LIMIT = 3;
 
 const UserPost = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['post', 'explorer']);
+  const { t } = useTranslation(['post', 'explorer', 'profile', 'projects']);
   const { id } = useParams();
   const location = useLocation();
   const clickedImageUrl = location.state?.clickedImageUrl;
@@ -116,6 +122,12 @@ const UserPost = () => {
     return counts;
     }, [randomPosts]);
 
+  useEffect(() => {
+    document.title = post?.title
+      ? `${post.title} | THEFOLDER`
+      : 'Publicación | THEFOLDER';
+  }, [post]);
+
   // ✅ Teclado: izquierda/derecha + ESC cuando fullscreen
   useEffect(() => {
     if (!showFullScreenPreview) return;
@@ -161,8 +173,6 @@ const UserPost = () => {
     const controller = new AbortController();
 
     const fetchMore = async () => {
-      if (!moreHasMore) return;
-
       setMoreLoading(true);
       try {
         const limit = 14;
@@ -171,16 +181,13 @@ const UserPost = () => {
         const exclude = [id, ...viewed].filter(Boolean).join(",");
 
         const url =
-          `${backendUrl}/api/posts/explorer?page=${morePage}` +
+          `/api/posts/explorer?page=${morePage}` +
           `&limit=${limit}&exclude=${encodeURIComponent(exclude)}`;
 
-        const res = await axios.get(url, {
+        const res = await api.get(url, {
           signal: controller.signal,
           timeout: 15000,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Cache-Control": "no-cache",
-          },
+          headers: { "Cache-Control": "no-cache" },
         });
 
         const raw = res.data?.images || res.data?.posts || res.data || [];
@@ -188,6 +195,7 @@ const UserPost = () => {
           .map((it) => ({
             postId: it.postId || it._id,
             imageUrl: it.imageUrl || it.mainImage || (it.images?.[0] ?? ""),
+            thumbUrl: it.thumbUrl || "",
             postTitle: it.postTitle || it.title || "",
             user: it.user || { username: it.username, city: it.city },
           }))
@@ -243,11 +251,8 @@ const UserPost = () => {
       try {
         const token = localStorage.getItem("authToken");
         if (!token) return;
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-        const userResponse = await axios.get(`${backendUrl}/api/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const userResponse = await api.get('/api/users/profile');
 
         if (userResponse.data && userResponse.data._id) {
           setCurrentUserId(userResponse.data._id);
@@ -263,10 +268,7 @@ const UserPost = () => {
       if (!token) return;
 
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const response = await axios.get(`${backendUrl}/api/users/favorites`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await api.get('/api/users/favorites');
 
         const savedImagesMap = new Map();
 
@@ -338,12 +340,8 @@ const UserPost = () => {
     const fetchPost = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
-        const response = await axios.get(`${backendUrl}/api/posts/${id}`, {
-          headers: authHeaders,
-        });
+        const response = await api.get(`/api/posts/${id}`);
 
         setPost(response.data.post);
         if (clickedImageUrl && response.data.post.images) {
@@ -358,9 +356,7 @@ const UserPost = () => {
 
         if (!token) { setLoading(false); return; }
 
-        const favResponse = await axios.get(`${backendUrl}/api/users/favorites`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const favResponse = await api.get('/api/users/favorites');
 
         const savedImagesMap = new Map();
         const favorites = favResponse.data.favorites || [];
@@ -391,8 +387,6 @@ const UserPost = () => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
         const usernamesToCheck = [
           ...new Set(
             post.peopleTags
@@ -415,9 +409,8 @@ const UserPost = () => {
         const results = await Promise.all(
           usernamesToCheck.map(async (username) => {
             try {
-              const res = await axios.get(
-                `${backendUrl}/api/users/check-username/${encodeURIComponent(username)}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+              const res = await api.get(
+                `/api/users/check-username/${encodeURIComponent(username)}`
               );
 
               return [
@@ -484,15 +477,13 @@ const UserPost = () => {
     );
   }
 
-  if (loading)
-    return (
-      <div className="modern-loading-container">
-        <div className="loading-spinner"></div>
-        <p className="loading-indicator">{t('post:view.loading')}</p>
-      </div>
-    );
+  if (loading) return <PageSkeleton variant="detail" />;
 
-  if (!post) return <div>{t('post:view.noData')}</div>;
+  // Post borrado, de un usuario eliminado, id mal escrito o error del
+  // servidor (/api/posts/:id es público, así que nunca es por la sesión).
+  if (!post) {
+    return <Navigate to="/404" replace />;
+  }
 
   const isOwner =
     currentUserId && post?.user &&
@@ -611,14 +602,12 @@ const UserPost = () => {
     if (!reportReason.trim()) return;
     setReportSubmitting(true);
     try {
-      const token = localStorage.getItem('authToken');
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const currentImg = displayedImages?.[currentImageIndex] || post?.mainImage || '';
-      await axios.post(`${backendUrl}/api/reports`, {
+      await api.post('/api/reports', {
         postId: id,
         postImage: currentImg,
         reason: reportReason.trim(),
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       setReportSent(true);
     } catch {
       // silencioso — no exponer detalles
@@ -667,7 +656,6 @@ const UserPost = () => {
     e.stopPropagation();
     const token = localStorage.getItem("authToken");
     if (!token) return;
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     if (!imageUrl) return;
 
@@ -676,16 +664,7 @@ const UserPost = () => {
 
     try {
       if (!isImageSaved) {
-        await axios.post(
-          `${backendUrl}/api/users/favorites/${id}`,
-          { imageUrl },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        await api.post(`/api/users/favorites/${id}`, { imageUrl });
 
         setSavedImages((prev) => {
           const m = new Map(prev);
@@ -700,13 +679,7 @@ const UserPost = () => {
           message: t('post:view.saved'),
         });
       } else {
-        await axios.delete(`${backendUrl}/api/users/favorites/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          data: { imageUrl },
-        });
+        await api.delete(`/api/users/favorites/${id}`, { data: { imageUrl } });
 
         setSavedImages((prev) => {
           const m = new Map(prev);
@@ -746,21 +719,11 @@ const UserPost = () => {
         return;
       }
 
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const key = `${postId}-${imageUrl}`;
       const isSaved = savedPosts.has(key);
 
       if (!isSaved) {
-        await axios.post(
-          `${backendUrl}/api/users/favorites/${postId}`,
-          { imageUrl },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        await api.post(`/api/users/favorites/${postId}`, { imageUrl });
 
         setSavedPosts((prev) => {
           const newMap = new Map(prev);
@@ -776,13 +739,7 @@ const UserPost = () => {
           message: t('post:view.saved'),
         });
       } else {
-        await axios.delete(`${backendUrl}/api/users/favorites/${postId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          data: { imageUrl },
-        });
+        await api.delete(`/api/users/favorites/${postId}`, { data: { imageUrl } });
 
         setSavedPosts((prev) => {
           const newMap = new Map(prev);
@@ -815,11 +772,7 @@ const UserPost = () => {
 
   const handleDeletePost = async () => {
     try {
-      const token = localStorage.getItem("authToken");
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      await axios.delete(`${backendUrl}/api/posts/${post._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/api/posts/${post._id}`);
       navigate(-1);
     } catch (error) {
     }
@@ -907,6 +860,7 @@ const UserPost = () => {
                     key={`${img}-${realIndex}`}
                     className="post-column-item editorial-item"
                     >
+                    <div className="editorial-image-frame">
                     <img
                         src={clImg.post(img)}
                         alt={`Imagen ${realIndex + 1}`}
@@ -916,12 +870,6 @@ const UserPost = () => {
                         setShowFullScreenPreview(true);
                         }}
                     />
-
-                        {getImageCredit(img) && (
-                          <div className="image-credit">
-                            {getImageCredit(img)}
-                          </div>
-                        )}
 
                     <div className="post-image-actions">
                         <div
@@ -936,15 +884,9 @@ const UserPost = () => {
                             setActionsForUrl((prev) => (prev === img ? null : img));
                             }}
                             aria-label={t('post:view.actions.more')}
-                            title={t('post:view.actions.more')}
                         >
-                            <img
-                            src="/iconos/more-info.svg"
-                            alt=""
-                            aria-hidden="true"
-                            className="more-info-icon"
-                            style={{ width: "18px", height: "18px" }}
-                            />
+                            <MoreVertical size={18} strokeWidth={1.8} aria-hidden="true" />
+                            <span className="nep-icon-tooltip">{t('post:view.actions.more')}</span>
                         </button>
 
                         {isMenuOpen && (
@@ -986,14 +928,9 @@ const UserPost = () => {
                         type="button"
                         >
                         {isSaved ? (
-                            <img
-                            src="/iconos/check-tick.svg"
-                            alt=""
-                            aria-hidden="true"
-                            className="save-icon"
-                            />
+                            <Check size={14} strokeWidth={1.8} aria-hidden="true" className="save-icon" />
                         ) : (
-                            <img src="/iconos/saved.png" alt="" aria-hidden="true" className="save-plus" />
+                            <Bookmark size={14} strokeWidth={1.8} aria-hidden="true" className="save-plus" />
                         )}
 
                         <span
@@ -1005,6 +942,13 @@ const UserPost = () => {
                         </span>
                         </button>
                     </div>
+                    </div>
+
+                    {getImageCredit(img) && (
+                        <div className="image-credit">
+                        {getImageCredit(img)}
+                        </div>
+                    )}
                     </div>
                 );
                 })}
@@ -1038,21 +982,17 @@ const UserPost = () => {
                         >
                             <div className="perfil__datos">
                               <div className="perfil__by-user">
-                                  {post.authorRole && (
-                                    <p className="no-text-decoration">{post.authorRole}</p>
-                                  )}
-                                  <p className="no-text-decoration"> / </p>
+                                  <p className="no-text-decoration">{t('post:view.by')}</p>
                                   <h2 className="perfil__nombre">
                                       {post.user?.professionalType === 1 ||
                                       post.user?.professionalType === 2 ||
                                       post.user?.professionalType === 4
                                       ? post.user?.companyName || post.user?.username
                                       : post.user?.fullName || post.user?.username}
-                                      <span> ↗</span>
                                   </h2>
                               </div>
                             <p className="perfil__ubicacion">
-                                {formatUserLocation(post.user?.city, post.user?.country, t, { city2: post.user?.city2, country2: post.user?.country2 })}
+                                {formatUserLocation(post.user?.city, post.user?.country, t, { city2: post.user?.city2, country2: post.user?.country2, city3: post.user?.city3, country3: post.user?.country3 })}
                             </p>
                             </div>
                         </div>
@@ -1069,18 +1009,35 @@ const UserPost = () => {
                         >
                         <p className="publicacion__descripcion">{post.description}</p>
 
-                        {/* EQUIPO */}
-                        {Array.isArray(post.peopleTags) &&
-                            post.peopleTags.length > 0 &&
+                        {/* EQUIPO — el propio autor va siempre primero en la lista, con
+                            su rol (post.authorRole, la respuesta a "¿Cuál fue tu rol en
+                            el proyecto?" en CreatePost) en el mismo formato de tarjeta
+                            que el resto de tagged-person__meta. */}
+                        {(post.authorRole ||
+                            (Array.isArray(post.peopleTags) &&
                             post.peopleTags.some(
-                            (p) =>
+                                (p) =>
                                 String(p?.name || "").trim() ||
                                 String(p?.username || "").trim()
-                            ) && (
+                            ))) && (
                             <div className="perfil__personas">
                                 <h3 className="personas__titulo">{t('post:view.team')}</h3>
                                   <PeopleTagsList
-                                    people={post.peopleTags}
+                                    people={[
+                                      ...(post.authorRole
+                                        ? [{
+                                            name:
+                                              post.user?.professionalType === 1 ||
+                                              post.user?.professionalType === 2 ||
+                                              post.user?.professionalType === 4
+                                                ? post.user?.companyName || post.user?.username
+                                                : post.user?.fullName || post.user?.username,
+                                            username: post.user?.username,
+                                            role: post.authorRole,
+                                          }]
+                                        : []),
+                                      ...(Array.isArray(post.peopleTags) ? post.peopleTags : []),
+                                    ]}
                                     taggedUsersInfo={taggedUsersInfo}
                                     getInitials={getInitials}
                                     onOpenExternal={({ url, name }) => setExternalLinkModal({ open: true, url, name })}
@@ -1088,6 +1045,43 @@ const UserPost = () => {
                                   />
                             </div>
                             )}
+
+                        {/* PUBLISHED IN */}
+                        {Array.isArray(post.publishedIn) &&
+                            post.publishedIn.some(e => String(e?.mediaName || "").trim()) && (
+                            <div className="perfil__personas">
+                                <h3 className="personas__titulo">{t('post:view.publishedIn')}</h3>
+                                <div className="people-cards">
+                                  {post.publishedIn
+                                    .filter(e => String(e?.mediaName || "").trim())
+                                    .map((entry, i) => (
+                                    <div key={i} className="publication-card publication-card--view">
+                                      <div className="publication-card-body publication-card-magazine">
+                                        {(entry.isOnline || entry.isPrinted) && (
+                                          <div className="publication-card-checks publication-card-checks--view">
+                                            {entry.isOnline && <span className="pub-format-badge">Online</span>}
+                                            {entry.isPrinted && <span className="pub-format-badge">{t('post:view.printed')}</span>}
+                                          </div>
+                                        )}
+                                        {entry.articleUrl ? (
+                                          <a
+                                            href={entry.articleUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="pub-media-name pub-media-name--link"
+                                            onClick={e => { e.preventDefault(); setExternalLinkModal({ open: true, url: entry.articleUrl, name: entry.mediaName }); }}
+                                          >
+                                            {entry.mediaName}
+                                          </a>
+                                        ) : (
+                                          <span className="pub-media-name">{entry.mediaName}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* TIPOS DE PROYECTO */}
                         {Array.isArray(post.projectTypes) && post.projectTypes.length > 0 && (
@@ -1104,33 +1098,45 @@ const UserPost = () => {
                           </div>
                         )}
                         </div>
-                        {isOwner && (
-                          <>
-                            <button
-                              className="delete-post edit-post"
-                              type="button"
-                              onClick={() => {
-                                setActionsForUrl(null);
-                                setShowEditModal(true);
-                              }}
-                            >
-                              {t('post:view.edit')}
-                            </button>
-                            <button
-                              className="delete-post"
-                              type="button"
-                              onClick={() => {
-                                setActionsForUrl(null);
-                                setShowDeleteModal(true);
-                              }}
-                            >
-                              {t('post:view.delete')}
-                            </button>
-                          </>
-                        )}
                     </div>
                 </div>
                 </div>
+
+                {/* Acciones de dueño: mismo panel flotante que el resto de la
+                    app (QuickActions.css) en vez de botones inline — así el
+                    contenido del post (título/descripción/imágenes) se ve
+                    idéntico seas o no el dueño. */}
+                {isOwner && (
+                  <div className="df-quick-actions df-quick-actions--box">
+                  <div className="df-quick-actions__items">
+                    <button
+                      type="button"
+                      className="df-action-btn"
+                      onClick={() => {
+                        setActionsForUrl(null);
+                        setShowEditModal(true);
+                      }}
+                      aria-label={t('post:view.edit')}
+                    >
+                      <SquarePen size={16} strokeWidth={1.8} aria-hidden="true" />
+                      <span className="nep-icon-tooltip">{t('post:view.edit')}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="df-action-btn df-action-btn--danger"
+                      onClick={() => {
+                        setActionsForUrl(null);
+                        setShowDeleteModal(true);
+                      }}
+                      aria-label={t('post:view.delete')}
+                    >
+                      <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
+                      <span className="nep-icon-tooltip">{t('post:view.delete')}</span>
+                    </button>
+                  </div>
+                  </div>
+                )}
 
                 {/* ✅ RESTO DE FOTOS DEBAJO */}
                 <div className="perfil__imagenes">
@@ -1178,7 +1184,7 @@ const UserPost = () => {
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
             >
-            {randomPosts.map((item, index) => {
+            {moreLoading && randomPosts.length === 0 ? masonrySkeletonItems(6) : randomPosts.map((item, index) => {
                 const postId = item.postId;
                 const imageUrl = item.imageUrl;
 
@@ -1204,7 +1210,7 @@ const UserPost = () => {
                     }, 10);
                     }}
                 >
-                    <img src={clImg.post(imageUrl)} alt={item.postTitle || "Imagen"} loading="lazy" />
+                    <img src={clImg.post(item.thumbUrl || imageUrl)} alt={item.postTitle || "Imagen"} loading="lazy" />
 
                     {/* ✅ Texto SIEMPRE visible (como Explorer) */}
                     <div className="user-profile-hover">
@@ -1212,13 +1218,13 @@ const UserPost = () => {
                         {item.user?.username ? (
                         <a
                             className="masonry-caption"
-                            href={`/profile/${item.user.username}`}
+                            href={`/${item.user.username}`}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {userLabel} /
+                            {userLabel}
                         </a>
                         ) : (
-                        <span className="masonry-caption">{userLabel} /</span>
+                        <span className="masonry-caption">{userLabel}</span>
                         )}
 
                         <div className="masonry-caption">{item.postTitle || " "}</div>
@@ -1230,30 +1236,23 @@ const UserPost = () => {
                     )}
                     </div>
 
-                    {/* ✅ Botón guardar igual que Explorer (+ / tick + tooltip) */}
-                    <button
-                    className={`save-button-explorer ${isSaved ? "saved" : ""}`}
-                    onClick={(e) => handleSavePost(e, postId, imageUrl)}
-                    aria-label={isSaved ? t('explorer:save.saved') : t('explorer:save.action')}
-                    type="button"
-                    >
-                    {isSaved ? (
-                        <img
-                        src="/iconos/check-tick.svg"
-                        alt=""
-                        aria-hidden="true"
-                        className="save-icon"
-                        />
-                    ) : (
-                        <span className="save-plus" aria-hidden="true">
-                        +
+                    <div className="post-image-actions post-image-actions--explorer">
+                      <button
+                        className={`save-button-explorer related-save-button ${isSaved ? "saved" : ""}`}
+                        onClick={(e) => handleSavePost(e, postId, imageUrl)}
+                        aria-label={isSaved ? t('explorer:save.saved') : t('explorer:save.action')}
+                        type="button"
+                      >
+                        {isSaved ? (
+                          <Check size={14} strokeWidth={1.8} aria-hidden="true" className="save-icon" />
+                        ) : (
+                          <Bookmark size={14} strokeWidth={1.8} aria-hidden="true" className="save-plus" />
+                        )}
+                        <span className={`save-tooltip ${isSaved ? "tooltip-saved" : "tooltip-default"}`}>
+                          {isSaved ? t('explorer:save.tooltipSaved') : t('explorer:save.tooltipDefault')}
                         </span>
-                    )}
-
-                    <span className={`save-tooltip ${isSaved ? "tooltip-saved" : "tooltip-default"}`}>
-                        {isSaved ? t('explorer:save.tooltipSaved') : t('explorer:save.tooltipDefault')}
-                    </span>
-                    </button>
+                      </button>
+                    </div>
                 </div>
                 );
             })}
@@ -1265,7 +1264,7 @@ const UserPost = () => {
 
             <div ref={moreSentinelRef} style={{ height: "1px" }} />
 
-            {moreLoading && (
+            {moreLoading && randomPosts.length > 0 && (
             <div className="loading-spinner" style={{ margin: "20px auto" }}>
                 <i className="fas fa-spinner fa-spin" />
             </div>
@@ -1283,28 +1282,30 @@ const UserPost = () => {
 
         {/* MODAL EDITAR */}
         {showEditModal && (
-          <EditPostModal
-            post={post}
+          <ProjectEditor
+            key={post._id}
+            id={post._id}
+            variant="modal"
             onClose={() => setShowEditModal(false)}
             onSaved={(updatedPost) => {
-              if (updatedPost === null) { navigate(-1); return; }
+              if (!updatedPost) return;
               setPost(updatedPost);
               setCurrentImageIndex(0);
             }}
+            onDeleted={() => { setShowEditModal(false); navigate(-1); }}
           />
         )}
 
         {/* MODAL ELIMINAR */}
         {showDeleteModal && (
-            <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <p>{t('post:view.deleteConfirm')}</p>
-                <div className="modal-actions">
-                <button onClick={handleDeletePost}>{t('post:view.deleteAction')}</button>
-                <button onClick={() => setShowDeleteModal(false)}>{t('post:view.cancel')}</button>
-                </div>
-            </div>
-            </div>
+          <ConfirmDialog
+            title={t('projects:editor.deleteTitle')}
+            warning={t('projects:editor.deleteText')}
+            confirmLabel={t('projects:editor.delete')}
+            cancelLabel={t('projects:editor.cancel')}
+            onConfirm={handleDeletePost}
+            onCancel={() => setShowDeleteModal(false)}
+          />
         )}
 
         {/* MODAL DESCARGA */}
@@ -1338,11 +1339,7 @@ const UserPost = () => {
                 onClick={() => setShowHonorModal(false)}
                 aria-label={t('post:view.report.close')}
                 >
-                <img
-                    src="/iconos/close.svg"
-                    alt={t('post:view.report.close')}
-                    style={{ width: "20px", height: "20px" }}
-                />
+                <X size={20} strokeWidth={1.8} aria-hidden="true" />
                 </button>
             </div>
             </div>
@@ -1360,6 +1357,16 @@ const UserPost = () => {
             onTouchEnd={onTouchEnd}
             >
             <div className="fullscreen-preview-content">
+                <button
+                type="button"
+                className="fullscreen-mark"
+                onClick={handleContinueExplorer}
+                aria-label={t('post:view.fullscreen.explorer')}
+                >
+                  <span className="fullscreen-mark-t">T</span>
+                  <span className="fullscreen-mark-slash">/</span>
+                </button>
+
                 <button
                 className="fullscreen-close-btn"
                 onClick={(e) => { e.stopPropagation(); setShowFullScreenPreview(false); }}

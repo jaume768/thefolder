@@ -1,40 +1,27 @@
 // UserProfile.jsx
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useLayoutEffect, useContext } from "react";
 import axios from "axios";
+import api from "../../services/api";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import ProfileIndexGallery from "./ProfileIndexGallery";
-import ProfileStudioGallery from "./ProfileStudioGallery";
+import { useParams, useNavigate, useSearchParams, useLocation, Navigate } from "react-router-dom";
+import JuneStampTemplate from "./portfolioTemplates/JuneStamp/JuneStampTemplate";
+import RebecasGalleryTemplate from "./portfolioTemplates/RebecasGallery/RebecasGalleryTemplate";
+import DaisyFilmTemplate from "./portfolioTemplates/DaisyFilm/DaisyFilmTemplate";
+import ClassicTemplate from "./portfolioTemplates/Classic/ClassicTemplate";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useCreatePost } from "../../contexts/CreatePostContext";
-import "../../components/controlPanel/css/UserProfileExtern.css";
-import "../../components/controlPanel/css/UserProfile.css";
+import { Helmet } from "react-helmet-async";
 import { clImg } from "../../utils/optimizeImage";
-import { formatUserLocation } from "../../utils/locations";
-import { FaCheckCircle, FaExclamationCircle, FaCopy, FaTimes } from "react-icons/fa";
+import { buildSocialMediaUrl } from "../../utils/socialMediaUtils";
+import { readPreviewParams } from "../../utils/previewSession";
+import { resolveProfileLayout } from "../../utils/profileLayout";
+import PageSkeleton from "../../components/skeleton/PageSkeleton";
 
-// Componentes
-import ProfileHeroTemplates from "./heroTemplates/ProfileHeroTemplates";
-import UserBiographySection from "../../components/controlPanel/userProfile/UserBiographySection";
-import UserProfessionalExperienceSection from  "../../components/controlPanel/userProfile/UserProfessionalExperienceSection";
-import UserSkillsSection from "../../components/controlPanel/userProfile/UserSkillsSection";
-import UserSoftwareSection from "../../components/controlPanel/userProfile/UserSoftwareSection";
-import UserEducationSection from "../../components/controlPanel/userProfile/UserEducationSection";
-import UserPressPublicationsSection from "../../components/controlPanel/userProfile/UserPressPublicationsSection";
-import UserAwardsSection from "../../components/controlPanel/userProfile/UserAwardsSection";
-import UserLanguagesSection from "../../components/controlPanel/userProfile/UserLanguagesSection";
-import UserSocialSection from "../../components/controlPanel/userProfile/UserSocialSection";
-import UserDownloadableFilesSection from "../../components/controlPanel/userProfile/UserDownloadableFilesSection"; 
-import UserCompanyTagsSection from "../../components/controlPanel/userProfile/UserCompanyTagsSection";
-import UserMilestoneSection from "../../components/controlPanel/userProfile/UserMilestoneSection";
-import UserCompanyOffersSection from "../../components/controlPanel/userProfile/UserCompanyOffersSection";
-import UserEducationalOffersSection from "../../components/controlPanel/userProfile/UserEducationalOffersSection"; 
-import UserGallery from "../../components/controlPanel/userProfile/UserGallery";
-import ExternalProfileHeader from "../../components/controlPanel/userProfile/ExternalProfileHeader";
-import LandingHeader from "../../components/landing/LandingHeader";
-
-
-const UserProfile = () => {
+// `section` viene de la ruta (App.jsx: /:username, /:username/about,
+// /:username/contact) — contrato de URL estable entre plantillas. Cada
+// PortfolioTemplate recibe el mismo prop y decide si lo usa; así la URL no
+// depende de qué diseño esté activo ni cambia si se rediseña la plantilla.
+const UserProfile = ({ section }) => {
   const { t } = useTranslation("profile");
 
   const isLoggedIn = !!localStorage.getItem("authToken");
@@ -45,6 +32,16 @@ const UserProfile = () => {
   const fromCreatives = !!location.state?.fromCreatives;
   const [searchParams] = useSearchParams();
   const layoutParam = searchParams.get("layout");
+
+  // Preview en vivo desde ProfileAppearanceTab.jsx (iframe con ?preview=1):
+  // los overrides de query string pisan lo persistido en `profile` para que
+  // el iframe refleje selecciones sin guardar todavía — nunca esperan al
+  // autosave debounced de 900ms del editor. Solo activos con preview=1 (no
+  // pisan valores reales en un link normal sin ese flag). readPreviewParams
+  // (utils/previewSession.js) trae también la red de seguridad: si alguna
+  // navegación dentro del preview pierde el query string, sigue sabiendo
+  // que estamos en preview y con qué plantilla — ver ese archivo.
+  const { isPreview, previewOverride } = readPreviewParams(searchParams, username);
 
   const { user: currentUser } = useContext(AuthContext);
   const { openCreatePost } = useCreatePost();
@@ -64,11 +61,11 @@ const UserProfile = () => {
   const [activeTab, setActiveTab] = useState("publicaciones");
   const [userPosts, setUserPosts] = useState([]);
   const [postsLoading, setPostsLoading] = useState(false);
+  const [portfolioPages, setPortfolioPages] = useState([]);
 
   // layout + hero
   const [fallbackHeaderImage, setFallbackHeaderImage] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   // state general
   const [loading, setLoading] = useState(true);
@@ -82,16 +79,6 @@ const UserProfile = () => {
   const [isEducationalInstitution, setIsEducationalInstitution] = useState(false);
   const [companyOffers, setCompanyOffers] = useState([]);
 
-  // email popup
-  const [showEmailPopup, setShowEmailPopup] = useState(false);
-
-  // external link warning
-  const [externalLinkModal, setExternalLinkModal] = useState({ open: false, url: "" });
-  const openExternalLink = (url) => {
-    const full = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
-    setExternalLinkModal({ open: true, url: full });
-  };
-
   // responsive
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -99,8 +86,13 @@ const UserProfile = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Ocultar el dashboard-header global mientras se muestra el ext-profile-header propio
-  useEffect(() => {
+  // Ocultar el dashboard-header global mientras se muestra el ext-profile-header propio.
+  // useLayoutEffect (no useEffect): tiene que ser síncrono, antes del pintado —
+  // PanelSidebar (panel persistente) también usa useLayoutEffect para esta misma
+  // clase, y si esta página la añadiera un tick más tarde (useEffect corre después
+  // del paint) se ve un parpadeo con el dashboard-header global duplicado encima
+  // durante ese hueco al navegar desde el panel hacia aquí.
+  useLayoutEffect(() => {
     document.body.classList.add("hide-dashboard-header");
     return () => {
       document.body.classList.remove("hide-dashboard-header");
@@ -110,21 +102,12 @@ const UserProfile = () => {
   const profileImage =
     profile?.profile?.profilePicture || profile?.profilePicture || "/multimedia/usuarioDefault.jpg";
 
-  const hasCvData = !!(
-    profile?.biography ||
-    profile?.professionalFormation?.length ||
-    profile?.education?.length ||
-    profile?.skills?.length ||
-    profile?.software?.length ||
-    (profile?.languages || profile?.profile?.languages || []).length ||
-    profile?.companyTags?.length ||
-    profile?.professionalMilestones?.length ||
-    profile?.cvUrl ||
-    profile?.portfolioUrl
-  );
-
   const headerImageToShow = clImg.cover(
-    (isMobile ? profile?.featuredHeaderImageMobile : profile?.featuredHeaderImageDesktop) ||
+    // Mobile sin portada propia → la de desktop (antes saltaba a la de
+    // reserva); el encuadre de mobile se le aplica igual.
+    (isMobile
+      ? (profile?.featuredHeaderImageMobile || profile?.featuredHeaderImageDesktop)
+      : profile?.featuredHeaderImageDesktop) ||
     profile?.featuredHeaderImage ||
     fallbackHeaderImage ||
     profile?.profile?.profilePicture ||
@@ -136,8 +119,10 @@ const UserProfile = () => {
     setTimeout(() => setNotification({ show: false, type: "", message: "" }), 3000);
   };
 
+  // Anterior dentro de THEFOLDER, o el explorador si esta es la primera
+  // página de la visita (location.key "default"; ver QuickActions.jsx).
   const handleBack = () => {
-    if (window.history.length > 1) navigate(-1);
+    if (location.key && location.key !== "default") navigate(-1);
     else navigate("/explorer");
   };
 
@@ -156,7 +141,21 @@ const UserProfile = () => {
     // (especialmente fallbackHeaderImage) se muestren en el nuevo perfil.
     setProfile(null);
     setUserPosts([]);
+    setPortfolioPages([]);
     setFallbackHeaderImage(null);
+
+    // Fire-and-forget analytics ping — no await, no error handling.
+    // Se salta en preview=1: el iframe de ProfileAppearanceTab.jsx recarga
+    // en cada selección, y son siempre auto-visitas del propio dueño del
+    // perfil, no visitas reales. También se salta si isOwner: el dueño
+    // viendo su propio perfil público (para revisar cómo queda, compartir
+    // el link, etc.) tampoco es una visita real — sin esto inflaba las
+    // "visitas este mes" de HomeTab.jsx cada vez que el dueño entraba a su
+    // propio perfil.
+    if (!isPreview && !isOwner) {
+      const _api = import.meta.env.VITE_BACKEND_URL;
+      fetch(`${_api}/api/analytics/profile-view/${username}`, { method: 'POST' });
+    }
 
     const fetchUserProfileAndPosts = async () => {
       try {
@@ -183,11 +182,18 @@ const UserProfile = () => {
         setUserPosts(postsRes.data?.posts || []);
         setPostsLoading(false);
 
+        // 2b) páginas del portfolio (creadas en /myprofile/projects)
+        try {
+          const pagesRes = await axios.get(`${backendUrl}/api/sections/user/${username}`);
+          setPortfolioPages(pagesRes.data?.sections || []);
+        } catch (pagesError) {
+          setPortfolioPages([]);
+        }
+
         // 3) info extra si hay token (follow + notifs)
         if (token) {
           try {
-            const headers = { Authorization: `Bearer ${token}` };
-            const currentUser = await axios.get(`${backendUrl}/api/users/profile`, { headers });
+            const currentUser = await api.get('/api/users/profile');
 
             const current = currentUser.data?.user || currentUser.data;
             const isFollowingUser = Array.isArray(current?.following) && current.following.includes(user._id);
@@ -218,6 +224,28 @@ const UserProfile = () => {
 
     fetchUserProfileAndPosts();
   }, [username]);
+
+  // Refresco silencioso de posts + páginas (sin loading global) tras cerrar
+  // el overlay "organizar proyectos" del quick action de DaisyFilm — ese
+  // overlay tiene su propio fetch/estado (ProjectsOrganizerPanel), así que
+  // reorder/mover/borrar ahí no toca userPosts/portfolioPages hasta que se
+  // cierra y se dispara este refetch puntual.
+  const [projectsRefreshKey, setProjectsRefreshKey] = useState(0);
+  useEffect(() => {
+    if (projectsRefreshKey === 0) return;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    (async () => {
+      try {
+        const postsRes = await axios.get(`${backendUrl}/api/posts/user/${username}`);
+        setUserPosts(postsRes.data?.posts || []);
+      } catch (e) {}
+      try {
+        const pagesRes = await axios.get(`${backendUrl}/api/sections/user/${username}`);
+        setPortfolioPages(pagesRes.data?.sections || []);
+      } catch (e) {}
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectsRefreshKey]);
 
   //Rol
   useEffect(() => {
@@ -297,13 +325,7 @@ const UserProfile = () => {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      await axios.post(
-        `${backendUrl}/api/users/follow/${profile._id}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post(`/api/users/follow/${profile._id}`, {});
 
       setIsFollowing(true);
       setIsNotificationActive(true);
@@ -335,11 +357,7 @@ const UserProfile = () => {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      await axios.delete(`${backendUrl}/api/users/follow/${profile._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/api/users/follow/${profile._id}`);
 
       setIsFollowing(false);
       setIsNotificationActive(false);
@@ -370,20 +388,10 @@ const UserProfile = () => {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
       if (isNotificationActive) {
-        await axios.post(
-          `${backendUrl}/api/users/notifications/deactivate/${profile._id}`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.post(`/api/users/notifications/deactivate/${profile._id}`, {});
       } else {
-        await axios.post(
-          `${backendUrl}/api/users/notifications/activate/${profile._id}`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.post(`/api/users/notifications/activate/${profile._id}`, {});
       }
 
       setIsNotificationActive((prev) => !prev);
@@ -391,429 +399,221 @@ const UserProfile = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="user-extern-loading">
-        <p className="loading-indicator">{t("loading")}</p>
-      </div>
-    );
-  }
+  // ── SEO ──────────────────────────────────────────────────────────────────
+  const SITE_URL = 'https://thefolder.es';
+  const seoName = profile?.fullName || username;
+  const seoSpecialty = roleLabelById[profile?.professionalTags?.[0]] || '';
+  const seoTitle = seoSpecialty
+    ? `${seoName} · ${seoSpecialty} | THEFOLDER`
+    : `${seoName} | THEFOLDER`;
+  const rawBio = profile?.biography
+    ? profile.biography.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    : '';
+  const seoBio = rawBio
+    ? (rawBio.length > 157 ? rawBio.slice(0, 157).trimEnd() + '…' : rawBio)
+    : `Descubre el perfil de @${username} en THEFOLDER, el directorio de creativos de moda.`;
+  const seoImage = profileImage && profileImage !== '/multimedia/usuarioDefault.jpg'
+    ? profileImage
+    : `${SITE_URL}/og-thefolder.jpg`;
+  const seoUrl = `${SITE_URL}/${username}`;
+  const sameAs = profile?.social
+    ? Object.entries({
+        instagram: profile.social.instagram,
+        linkedin: profile.social.linkedin,
+        behance: profile.social.behance,
+        tiktok: profile.social.tiktok,
+        youtube: profile.social.youtube,
+        pinterest: profile.social.pinterest,
+        sitioweb: profile.social.sitioWeb,
+      })
+        .filter(([, v]) => v?.trim())
+        .map(([platform, v]) => buildSocialMediaUrl(platform, v))
+        .filter(Boolean)
+    : [];
+  const jsonLd = profile ? JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: seoName,
+    ...(seoSpecialty && { jobTitle: seoSpecialty }),
+    image: seoImage,
+    url: seoUrl,
+    ...(sameAs.length && { sameAs }),
+  }) : null;
+
+  const seoHelmet = (
+    <Helmet>
+      <title>{seoTitle}</title>
+      <meta name="description" content={seoBio} />
+      <link rel="canonical" href={seoUrl} />
+      <meta property="og:type" content="profile" />
+      <meta property="og:url" content={seoUrl} />
+      <meta property="og:title" content={seoTitle} />
+      <meta property="og:description" content={seoBio} />
+      <meta property="og:image" content={seoImage} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={seoTitle} />
+      <meta name="twitter:description" content={seoBio} />
+      <meta name="twitter:image" content={seoImage} />
+      {jsonLd && <script type="application/ld+json">{jsonLd}</script>}
+    </Helmet>
+  );
+
+  if (loading) return <PageSkeleton variant="portfolio" />;
 
   if (error) {
-    return (
-      <div className="user-extern-error">
-        <h2>{t("common.error")}</h2>
-        <p>{error}</p>
-        <button onClick={() => navigate("/explorer")}>{t("backToExplorer")}</button>
-      </div>
-    );
+    return <Navigate to="/404" replace />;
   }
 
-  // ── Layout alternativo: Studio Gallery
-  if (profile?.profileLayout === "studio-gallery" || layoutParam === "studio") {
+  // Layout efectivo: el override de ?layout= (preview=1) pisa profile.profileLayout —
+  // ver previewOverride arriba. layoutParam ("studio"/"daisy"/"index", el escape
+  // hatch de preview que ya existía) sigue funcionando igual, independiente de preview=1.
+  // Plantillas retiradas (Rebeca's Gallery, Daisy Film) se ven como June
+  // Stamp: ver utils/profileLayout.js. El ?layout= de preview no se toca.
+  const effectiveLayout = previewOverride("layout", resolveProfileLayout(profile?.profileLayout));
+
+  // ── Layout alternativo: Rebeca's Gallery (antes "Studio Gallery") — misma
+  // arquitectura de páginas propias que Daisy Film/June Stamp (routing por
+  // `section`, no el `activeTab` local de Classic), ver
+  // docs/arquitectura-plantillas-junestamp-daisyfilm.md.
+  if (effectiveLayout === "studio-gallery" || layoutParam === "studio") {
     return (
-      <ProfileStudioGallery
+      <>
+        {seoHelmet}
+        <RebecasGalleryTemplate
         profile={profile}
+        username={username}
+        section={section}
         userPosts={userPosts}
         postsLoading={postsLoading}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        portfolioPages={portfolioPages}
+        onProjectsChanged={() => setProjectsRefreshKey((k) => k + 1)}
+        isPreview={isPreview}
         isOwner={isOwner}
+        isLoggedIn={isLoggedIn}
+        isCompany={isCompany}
+        isEducationalInstitution={isEducationalInstitution}
         isFollowing={isFollowing}
         followLoading={followLoading}
         handleFollow={handleFollow}
         handleUnfollow={handleUnfollow}
-        isLoggedIn={isLoggedIn}
-        isCompany={isCompany}
-        isEducationalInstitution={isEducationalInstitution}
       />
+      </>
     );
   }
 
-  // ── Layout alternativo: por profileLayout del usuario (o ?layout=index para preview)
-  if (profile?.profileLayout === "index-gallery" || layoutParam === "index") {
+  // ── Layout alternativo: Daisy Film (fullscreen carousel)
+  if (effectiveLayout === "daisy-film" || layoutParam === "daisy") {
     return (
-      <ProfileIndexGallery
+      <>
+        {seoHelmet}
+        <DaisyFilmTemplate
         profile={profile}
+        username={username}
+        section={section}
         userPosts={userPosts}
         postsLoading={postsLoading}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        portfolioPages={portfolioPages}
+        onProjectsChanged={() => setProjectsRefreshKey((k) => k + 1)}
+        isPreview={isPreview}
         isOwner={isOwner}
+        isLoggedIn={isLoggedIn}
+        isCompany={isCompany}
+        isEducationalInstitution={isEducationalInstitution}
         isFollowing={isFollowing}
         followLoading={followLoading}
         handleFollow={handleFollow}
         handleUnfollow={handleUnfollow}
-        openCreatePost={openCreatePost}
-        isLoggedIn={isLoggedIn}
-        isCompany={isCompany}
-        isEducationalInstitution={isEducationalInstitution}
-        setShowEmailPopup={setShowEmailPopup}
-        handleBack={handleBack}
       />
+      </>
     );
   }
 
-  const coverTemplateToShow =
-    (isMobile ? profile?.coverTemplateMobile : profile?.coverTemplateDesktop) || "fullscreen";
+  // ── Layout alternativo: June Stamp (por profileLayout del usuario, id
+  // persistido "index-gallery" — antes "Editorial Index" — o ?layout=index
+  // para preview; ninguno de los dos se renombró, ver memoria del proyecto)
+  if (effectiveLayout === "index-gallery" || layoutParam === "index") {
+    return (
+      <>
+        {seoHelmet}
+        <JuneStampTemplate
+        profile={profile}
+        username={username}
+        section={section}
+        userPosts={userPosts}
+        postsLoading={postsLoading}
+        portfolioPages={portfolioPages}
+        galleryDisplayMode={previewOverride("galleryMode", profile?.juneStampGalleryMode) || "projects"}
+        onProjectsChanged={() => setProjectsRefreshKey((k) => k + 1)}
+        isPreview={isPreview}
+        isOwner={isOwner}
+        isLoggedIn={isLoggedIn}
+        isCompany={isCompany}
+        isEducationalInstitution={isEducationalInstitution}
+        isFollowing={isFollowing}
+        followLoading={followLoading}
+        handleFollow={handleFollow}
+        handleUnfollow={handleUnfollow}
+      />
+      </>
+    );
+  }
+
+  const coverTemplateToShow = isMobile
+    ? previewOverride("coverMobile", profile?.coverTemplateMobile) || "fullscreen"
+    : previewOverride("coverDesktop", profile?.coverTemplateDesktop) || "fullscreen";
+
+  // Encuadre de la portada: en el preview de /myprofile/edit/templates llega
+  // por ?focusDesktop / ?focusMobile ("x,y") antes de que se guarde; fuera,
+  // el guardado en el perfil.
+  const focusParam = previewOverride(isMobile ? "focusMobile" : "focusDesktop", null);
+  const [focusX, focusY] = String(focusParam || "").split(",").map(Number);
+  const heroFocus = focusParam && Number.isFinite(focusX) && Number.isFinite(focusY)
+    ? { x: focusX, y: focusY }
+    : (isMobile ? profile?.featuredHeaderFocusMobile : profile?.featuredHeaderFocusDesktop);
 
     const DARK_HERO_TEMPLATES = ["fullscreen", "fullscreen-alt", "split-top"];
     const headerIsDark = DARK_HERO_TEMPLATES.includes(coverTemplateToShow);
 
   return (
-    <div className="user-extern-container">
-      {isLoggedIn ? (
-        <ExternalProfileHeader
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onBack={handleBack}
-          viewedName={
-            isCompany || isEducationalInstitution
-              ? profile?.companyName
-              : profile?.fullName
-          }
-          viewedAvatar={profileImage}
-          isDark={headerIsDark}
-        />
-      ) : (
-        <>
-          <LandingHeader
-            menuOpen={menuOpen}
-            setMenuOpen={setMenuOpen}
-            onLoginClick={() => navigate("/", { state: { showLogin: true } })}
-            onRegisterClick={() => navigate("/", { state: { showRegister: true } })}
-          />
-          <div className="tf-guest-profile" role="dialog" aria-label={t("guestAriaLabel")}>
-            <button
-              type="button"
-              className="tf-btn tf-btn--CTA"
-              onClick={() => navigate("/", { state: { showRegister: true } })}
-            >
-              {t("guestCta")}
-              <br />
-              {t("guestCtaLine2")}
-            </button>
-          </div>
-        </>
-      )}
-
-      {notification.show && (
-        <div className={`user-extern-notification ${notification.type}`}>
-          {notification.type === "success" ? (
-            <FaCheckCircle className="user-extern-notification-icon" />
-          ) : (
-            <FaExclamationCircle className="user-extern-notification-icon" />
-          )}
-          <span>{notification.message}</span>
-        </div>
-      )}
-
-      <ProfileHeroTemplates
-        templateId={coverTemplateToShow}
-        view={isMobile ? "mobile" : "desktop"}
-        profile={profile}
-        imageUrl={headerImageToShow}
-        isCompany={isCompany}
-        isEducationalInstitution={isEducationalInstitution}
-        getHeaderGradient={getHeaderGradient}
-        roleLabelById={roleLabelById}
-        profileHeadlines={profile?.profileHeadlines || []} 
-      />
-
-      <div className="user-extern-content">
-        {/* IZQUIERDA */}
-        <div className="user-extern-left-column">
-          <div className="user-extern-profile-info">
-            <div className="resume-avatar-card">
-              <div className="resume-avatar-wrapper">
-                <img
-                  src={profileImage}
-                  alt={profile?.username || t("default.profilePictureAlt")}
-                  className="resume-avatar"
-                />
-              </div>
-            </div>
-
-            <div className="title-user-extern-container">
-              <h1 className="user-extern-fullname">
-                {isCompany || isEducationalInstitution
-                  ? profile?.companyName || t("default.externalCompanyName")
-                  : profile?.fullName || t("default.externalFullName")}
-              </h1>
-
-              {Array.isArray(profile?.profileHeadlines) &&
-                profile.profileHeadlines.filter(Boolean).length > 0 && (
-                  <div className="user-extern-tags-profile">
-                    {profile.profileHeadlines
-                      .map((t) => String(t || "").trim())
-                      .filter(Boolean)
-                      .slice(0, 3)
-                      .map((tag, index, arr) => (
-                        <React.Fragment key={`${tag}-${index}`}>
-                          <span className="creative-type">{tag}</span>
-                          {index < arr.length - 1 && <span className="separator">|</span>}
-                        </React.Fragment>
-                      ))}
-                  </div>
-                )}
-
-              {profile?.bio && (
-                <div className="resume-section">
-                  <p className="resume-bio">{profile.bio}</p>
-                </div>
-              )}
-            </div>
-
-            {(profile?.city || profile?.country || profile?.city2) && (
-              <div className="resume-section">
-                <p className="resume-location">
-                  <span>[</span>
-                  {formatUserLocation(profile?.city, profile?.country, t, { city2: profile?.city2, country2: profile?.country2 })}
-                  <span>]</span>
-                </p>
-              </div>
-            )}
-
-            <div className="user-extern-action-buttons">
-              <div className="button-group">
-                {!isOwner && (
-                <button
-                  className={`user-extern-follow-button ${isFollowing ? "following" : ""}`}
-                  onClick={isFollowing ? handleUnfollow : handleFollow}
-                  disabled={followLoading}
-                >
-                  {followLoading ? t("follow.loading") : isFollowing ? (
-                    <p className="normal-14px-text">
-                      <i>{t("follow.following")} </i>
-                    </p>
-                  ) : (
-                    <p className="normal-14px-text">{t("follow.follow")}</p>
-                  )}
-                </button>
-                )}
-
-                {profile?.email && (
-                  <button className="resume-contact-btn" onClick={() => setShowEmailPopup(true)}>
-                    {t("contact.button")}
-                  </button>
-                )}
-              </div>
-
-              {profile?.social?.sitioWeb && (
-                <div className="resume-website">
-                  <a
-                    href={
-                      profile.social.sitioWeb.startsWith("http://") ||
-                      profile.social.sitioWeb.startsWith("https://")
-                        ? profile.social.sitioWeb
-                        : `https://${profile.social.sitioWeb}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {profile.social.sitioWeb.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                  </a>
-                  <span>↗</span>
-                </div>
-              )}
-
-              {profile?.social?.representationName && (
-                <div className="resume-website resume-representation">
-                  <span className="resume-representation__label">{t("representation.label")}</span>
-                  {profile.social.representationWeb ? (
-                    <button
-                      type="button"
-                      className="resume-website-btn"
-                      onClick={() => openExternalLink(profile.social.representationWeb)}
-                    >
-                      {profile.social.representationName}
-                    </button>
-                  ) : (
-                    <span>{profile.social.representationName}</span>
-                  )}
-                  {profile.social.representationWeb && <span>↗</span>}
-                </div>
-              )}
-
-              <UserSocialSection social={profile?.social} />
-            </div>
-          </div>
-        </div>
-
-        {/* TABS — solo si hay datos de CV */}
-        {hasCvData && (
-          <nav className="guardados-tabs" aria-label={t("guestAriaLabel")}>
-            <button
-              type="button"
-              className={`tab portfolio ${activeTab === "publicaciones" ? "active" : ""}`}
-              onClick={() => setActiveTab("publicaciones")}
-            >
-              {t("tabs.portfolio")}
-            </button>
-
-            <button
-              type="button"
-              className={`tab portfolio ${activeTab === "perfil" ? "active" : ""}`}
-              onClick={() => setActiveTab("perfil")}
-            >
-              {t("tabs.cv")}
-            </button>
-          </nav>
-        )}
-
-        {/* DERECHA (simplificada + UserGallery) */}
-        <div className="user-extern-right-column">
-          {activeTab === "publicaciones" && (
-            <UserGallery
-              posts={userPosts}
-              loading={postsLoading}
-              emptyMessage={isOwner ? undefined : t("emptyPostsExternal")}
-              emptyContent={isOwner ? (
-                <p className="user-extern-no-content user-extern-no-content--owner">
-                  <button
-                    type="button"
-                    className="user-extern-publish-link"
-                    onClick={openCreatePost}
-                  >
-                    {t("publishFirst")}
-                  </button>
-                  {t("publishFirstRest")}
-                </p>
-              ) : undefined}
-              galleryStyle={profile?.galleryStyle || "gap"}
-              onPostClick={fromCreatives ? (postId) => navigate(`/post/${postId}`, { state: { fromCreatives: true } }) : undefined}
-            />
-          )}
-
-          {activeTab === "perfil" && (
-            <div className="resume-two-col">
-              <div className="resume-main">
-                {isCompany ? (
-                  <div className="user-extern-company-profile">
-                    <UserCompanyTagsSection
-                      companyTags={profile?.companyTags}
-                      offersPractices={profile?.offersPractices}
-                    />
-                    <UserBiographySection biography={profile?.biography} />
-                    <UserMilestoneSection professionalMilestones={profile?.professionalMilestones} />
-                    <UserSocialSection social={profile?.social} />
-                    <UserLanguagesSection
-                      languages={profile?.languages || profile?.profile?.languages || []}
-                    />
-                  </div>
-                ) : isEducationalInstitution ? (
-                  <div className="user-extern-institution-profile">
-                    <UserBiographySection biography={profile?.biography} />
-                    <UserSkillsSection skills={profile?.skills} />
-                    <UserSocialSection social={profile?.social} />
-                    <UserLanguagesSection
-                      languages={profile?.languages || profile?.profile?.languages || []}
-                    />
-                  </div>
-                ) : (
-                  <div className="user-extern-creative-profile">
-                    <UserBiographySection biography={profile?.biography} />
-                    <UserProfessionalExperienceSection
-                      professionalFormation={profile?.professionalFormation}
-                    />
-                    <UserEducationSection education={profile?.education} />
-                    <UserPressPublicationsSection pressPublications={profile?.pressPublications} />
-                    <UserAwardsSection awards={profile?.awards} />
-                    <UserSkillsSection skills={profile?.skills} />
-                    <UserSoftwareSection software={profile?.software} />
-                    <UserLanguagesSection
-                      languages={profile?.languages || profile?.profile?.languages || []}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="resume-aside">
-                <UserDownloadableFilesSection
-                  cvUrl={profile?.cvUrl}
-                  portfolioUrl={profile?.portfolioUrl}
-                  userId={profile?._id}
-                  username={username}
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "ofertas" && (
-            <div className="user-extern-offers-content">
-              {isCompany ? (
-                <UserCompanyOffersSection offers={companyOffers} />
-              ) : isEducationalInstitution ? (
-                <UserEducationalOffersSection offers={companyOffers} />
-              ) : null}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* POPUP EMAIL */}
-      {showEmailPopup && (
-        <div className="success-popup-overlay" onClick={() => setShowEmailPopup(false)}>
-          <div className="success-popup" onClick={(e) => e.stopPropagation()}>
-            <div className="success-popup-header">
-              <h3>{t("contact.popupTitle")}</h3>
-              <button
-                className="email-popup-close"
-                onClick={() => setShowEmailPopup(false)}
-                title={t("contact.closeTitle")}
-              >
-                <FaTimes />
-              </button>
-            </div>
-            <div className="email-popup-content">
-              <div className="email-display">
-                <span className="email-text">{profile?.email}</span>
-                <button
-                  className="copy-email-btn"
-                  onClick={() => {
-                    navigator.clipboard.writeText(profile?.email || "");
-                    showNotification("success", t("contact.copied"));
-                    setShowEmailPopup(false);
-                  }}
-                  title={t("contact.copy") + " email"}
-                >
-                  <FaCopy /> {t("contact.copy")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {externalLinkModal.open && (
-        <div
-          className="modal-overlay"
-          onClick={() => setExternalLinkModal({ open: false, url: "" })}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <p className="modal-content-title">{t("externalLink.title")}</p>
-            <p className="modal-content-subtitle">{t("externalLink.subtitle")}</p>
-            <div className="modal-content-link">{externalLinkModal.url}</div>
-            <div className="modal-actions">
-              <button onClick={() => setExternalLinkModal({ open: false, url: "" })}>
-                {t("externalLink.cancel")}
-              </button>
-              <button
-                onClick={() => {
-                  window.open(externalLinkModal.url, "_blank", "noopener,noreferrer");
-                  setExternalLinkModal({ open: false, url: "" });
-                }}
-              >
-                {t("externalLink.continue")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <ClassicTemplate
+      mode="public"
+      profile={profile}
+      profileImage={profileImage}
+      username={username}
+      userPosts={userPosts}
+      postsLoading={postsLoading}
+      portfolioPages={portfolioPages}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      isOwner={isOwner}
+      isFollowing={isFollowing}
+      followLoading={followLoading}
+      handleFollow={handleFollow}
+      handleUnfollow={handleUnfollow}
+      isLoggedIn={isLoggedIn}
+      isCompany={isCompany}
+      isEducationalInstitution={isEducationalInstitution}
+      isMobile={isMobile}
+      roleLabelById={roleLabelById}
+      companyOffers={companyOffers}
+      openCreatePost={openCreatePost}
+      coverTemplateToShow={coverTemplateToShow}
+      headerImageToShow={headerImageToShow}
+      heroFocus={heroFocus}
+      getHeaderGradient={getHeaderGradient}
+      headerIsDark={headerIsDark}
+      isPreview={isPreview}
+      handleBack={handleBack}
+      notification={notification}
+      showNotification={showNotification}
+      fromCreatives={fromCreatives}
+      onPostClick={(postId) => navigate(`/post/${postId}`, { state: { fromCreatives: true } })}
+      galleryStyle={previewOverride("gallery", profile?.galleryStyle) || "gap"}
+      seoHelmet={seoHelmet}
+      onProjectsChanged={() => setProjectsRefreshKey((k) => k + 1)}
+    />
   );
 };
 
 export default UserProfile;
+

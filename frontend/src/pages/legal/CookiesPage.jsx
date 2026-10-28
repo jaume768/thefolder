@@ -51,6 +51,20 @@ const Cookies = () => {
                     <p className="legal-paragraph">
                         Todos estos elementos son estrictamente necesarios para el funcionamiento de la plataforma y no requieren tu consentimiento previo según el artículo 22.2 de la LSSI-CE. Te informamos de su existencia en cumplimiento del principio de transparencia del RGPD.
                     </p>
+
+                    {/* BORRADOR — pendiente de revisión legal: a diferencia de lo
+                        anterior, esto es para estadísticas de uso (ver
+                        PrivacidadPage.jsx §2 "Datos de sesión y uso de la
+                        plataforma"), no estrictamente necesario para el
+                        funcionamiento — falta confirmar con un abogado si esto
+                        necesita su propio consentimiento en el aviso de cookies
+                        en vez de ir bajo el mismo "aceptar" que lo esencial. */}
+                    <h3 className="legal-subtitle-small">Almacenamiento de sesión (sessionStorage)</h3>
+                    <p className="legal-paragraph">A diferencia del localStorage, esto se borra automáticamente al cerrar la pestaña y no persiste entre visitas distintas.</p>
+                    <ul className="legal-list">
+                        <li><strong>thefolder:anonId:</strong> Identificador aleatorio, generado en tu navegador, que usamos para no contar dos veces la misma visita dentro de una misma sesión en las estadísticas agregadas de uso de la plataforma (ver Política de Privacidad, sección 2). Solo se usa si no has iniciado sesión.</li>
+                        <li><strong>thefolder:visitPinged:</strong> Marca interna para saber que ya se ha registrado la visita de esta sesión y no repetirlo en cada página que visitas.</li>
+                    </ul>
                 </section>
 
                 <section>
@@ -115,8 +129,8 @@ const Cookies = () => {
                 <section>
                     <h2 className="legal-subtitle">9/ Historial de versiones</h2>
                     <ul className="legal-list">
-                        <li><strong>Versión 1.0</strong> — Publicada el 20 de mayo de 2025. Versión original.</li>
-                        <li><strong>Versión 2.0</strong> — Publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, detalle exacto de cookies y localStorage según auditoría técnica, eliminación de referencias a medidas de seguridad no verificadas (firewalls, IDS/IPS, backups), incorporación de sección sobre lo que no hacemos.</li>
+                        <li><strong>Versión 1.0</strong>: publicada el 20 de mayo de 2025. Versión original.</li>
+                        <li><strong>Versión 2.0</strong>: publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, detalle exacto de cookies y localStorage según auditoría técnica, eliminación de referencias a medidas de seguridad no verificadas (firewalls, IDS/IPS, backups), incorporación de sección sobre lo que no hacemos.</li>
                     </ul>
                 </section>
 

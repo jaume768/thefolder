@@ -1,0 +1,451 @@
+/* ── INSIGHTS TAB (/myprofile/edit/insights) ────────────────────────────
+   Mismo lenguaje que el home del panel (HomeTab.css) e Info de perfil
+   (ProfileInfo.css):
+   - Solo Inter Tight, sin mayúsculas ni letter-spacing; jerarquía por
+     tamaño y peso (400/500/600).
+   - Texto #111 / #555. Gris tenue #00000006 para los bloques. Negro solo
+     para lo destacado (la barra del periodo actual y la que está en hover).
+   - Esquinas rectas. Sin bordes, sombras ni tarjetas por dato.
+   Desktop >992px · tablet 769–992px · mobile ≤768px. */
+
+@keyframes ins-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.ins-root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #111;
+}
+
+/* ── Bloque principal: periodo + dato + visitas por mes ──────────────── */
+/* Un bloque gris: arriba el selector de periodo (izquierda) y el número
+   grande del periodo (derecha, como las métricas .ht-stats--inline de la
+   cabecera del home); debajo, la gráfica mensual, que también elige mes. */
+.ins-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 20px;
+  background: #00000006;
+}
+
+.ins-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ins-hero-num {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+  text-align: right;
+}
+
+.ins-hero-delta {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Selector de periodo: "Todo" + ‹ mes › . El activo, en negro. */
+.ins-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ins-period-btn,
+.ins-period-step {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  background: #00000006;
+  color: #111;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.ins-period-btn {
+  padding: 0 16px;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ins-period-btn:hover:not(.is-on) {
+  background: #ececec;
+}
+
+.ins-period-btn.is-on,
+.ins-period-step.is-on {
+  background: #111;
+  color: #fff;
+}
+
+.ins-period-label {
+  min-width: 132px;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ins-period-step:not(.is-on) .ins-period-label {
+  color: #555;
+}
+
+.ins-period-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ins-period-arrow:hover:not(:disabled) {
+  background: #0000000f;
+}
+
+.ins-period-step.is-on .ins-period-arrow:hover:not(:disabled) {
+  background: #ffffff26;
+}
+
+.ins-period-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.ins-hero-value {
+  font-size: 64px;
+  font-weight: 500;
+  line-height: 1;
+  color: #111;
+}
+
+.ins-hero-label {
+  font-size: 14px;
+  color: #555;
+}
+
+.ins-hero-hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.ins-hero-link {
+  font-weight: 500;
+  color: #111;
+}
+
+/* ── Métricas: una franja gris, 4 columnas (como .ht-stats--strip) ──── */
+.ins-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: #00000006;
+}
+
+.ins-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 20px;
+}
+
+.ins-stat-num {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+  color: #111;
+}
+
+.ins-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Métricas con página propia: toda la celda es el enlace; al hover gris
+   un poco más oscuro (#ececec, como los botones secundarios), la etiqueta
+   en #111 y la flecha ↗ se desplaza, como .ht-view-project del home. */
+.ins-stat--link {
+  align-items: flex-start;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.ins-stat--link:hover,
+.ins-stat--link:focus-visible {
+  background: #ececec;
+  outline: none;
+}
+
+.ins-stat--link:hover .ins-stat-label,
+.ins-stat--link:focus-visible .ins-stat-label {
+  color: #111;
+}
+
+.ins-stat-arrow {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.ins-stat--link:hover .ins-stat-arrow,
+.ins-stat--link:focus-visible .ins-stat-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* ── Gráficas: bloque gris (la mensual va dentro de .ins-hero) ──────── */
+.ins-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  padding: 20px;
+  background: #00000006;
+}
+
+/* Dentro del bloque principal: sin fondo ni padding propios. */
+.ins-chart--in-hero {
+  padding: 0;
+  background: none;
+}
+
+.ins-chart-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ins-chart-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ins-chart-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+/* = .ht-block-title */
+.ins-chart-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111;
+}
+
+.ins-chart-total {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.ins-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 160px;
+}
+
+.ins-chart-bar-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  outline: none;
+}
+
+/* Barras que eligen mes: botones sin estilo de botón. */
+.ins-chart-bar-col.is-selectable {
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ins-chart-bar-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.ins-chart-bar {
+  width: 100%;
+  background: #0000001f;
+  border-radius: 0;
+  transition: background-color 0.12s ease;
+}
+
+.ins-chart-bar-col.is-current .ins-chart-bar,
+.ins-chart-bar-col:hover .ins-chart-bar,
+.ins-chart-bar-col:focus-visible .ins-chart-bar {
+  background: #111;
+}
+
+.ins-chart-bar-label {
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.ins-chart-bar-col.is-current .ins-chart-bar-label {
+  font-weight: 500;
+  color: #111;
+}
+
+/* Tooltip por barra — = .ht-tooltip del home: negro, recto, 11px. Fecha y
+   número separados por espacio, sin "·". */
+.ins-chart-tooltip {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  padding: 5px 10px;
+  background: #111;
+  color: #fdfdfd;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+
+.ins-chart-tooltip-value {
+  font-weight: 600;
+}
+
+.ins-chart-bar-col:hover .ins-chart-tooltip,
+.ins-chart-bar-col:focus-visible .ins-chart-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ── Skeleton (= .ht-skel) ──────────────────────────────────────────── */
+.ins-skel {
+  display: block;
+  background: #0000000d;
+  animation: ins-pulse 1.5s ease-in-out infinite;
+}
+
+.ins-skel--hero {
+  width: 140px;
+  height: 64px;
+}
+
+.ins-skel--hero-block {
+  height: 380px;
+}
+
+.ins-skel--num {
+  width: 56px;
+  height: 28px;
+}
+
+.ins-skel--line {
+  width: 120px;
+  height: 14px;
+}
+
+.ins-skel--chart {
+  height: 248px;
+}
+
+/* ── Tablet ─────────────────────────────────────────────────────────── */
+@media (max-width: 992px) {
+  .ins-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Periodo arriba, el número debajo (alineado a la izquierda). */
+  .ins-hero {
+    padding: 16px;
+    gap: 24px;
+  }
+
+  .ins-hero-top {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ins-hero-num {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .ins-hero-value {
+    font-size: 48px;
+  }
+
+  .ins-stat {
+    padding: 16px;
+  }
+
+  .ins-stat-num {
+    font-size: 24px;
+  }
+
+  .ins-stat-label,
+  .ins-chart-total {
+    font-size: 13px;
+  }
+
+  .ins-chart-bars {
+    height: 120px;
+    gap: 3px;
+  }
+
+  .ins-chart-bar-label {
+    font-size: 10px;
+  }
+}

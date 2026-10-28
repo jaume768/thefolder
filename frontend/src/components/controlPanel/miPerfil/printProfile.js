@@ -415,7 +415,7 @@ export const printUserProfile = (profileData) => {
       </div>
       
       <div class="no-print" style="margin-top: 30px; text-align: center;">
-        <button onclick="window.print(); return false;" style="padding: 10px 20px; background-color: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        <button onclick="window.print(); return false;" style="padding: 10px 20px; background-color: #4CE3F0; color: #111; border: none; border-radius: 4px; cursor: pointer;">
           Imprimir perfil
         </button>
       </div>

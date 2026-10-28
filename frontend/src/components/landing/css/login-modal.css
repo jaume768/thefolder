@@ -15,7 +15,7 @@
 }
 
 .login-card.with-error {
-    height: 600px;
+    height: auto;
 }
 
 .error {
@@ -32,7 +32,7 @@
     box-shadow: 0 4px 8px #0000001a;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     justify-content: center;
 }
 
@@ -63,9 +63,9 @@
 
 .input-group input {
     width: 100%;
-    padding: 6px 8px 8px;
+    padding: 4px;
     font-size: 13px;
-    background-color: #fdfdfd;
+    background-color: transparent;
     color: black;
     border: solid transparent;
     border-bottom: 1px solid #ccc;
@@ -115,6 +115,7 @@
 .toggle-password {
     position: absolute;
     right: 15px;
+    top: 22px;
     cursor: pointer;
     color: #999;
     background: transparent;
@@ -143,7 +144,7 @@
     width: 100%;
     padding: 0.75rem;
     font-size: 14px;
-    border-radius: 12px;
+    border-radius: 0px;
     border: none;
     cursor: pointer;
 }
@@ -190,6 +191,7 @@
     align-items: center;
     gap: 0.5rem;
     color: #666;
+    padding-top: 8px;
 }
 
 .extra-links p {
@@ -304,8 +306,9 @@ font-family: 'Inter Tight', sans-serif;
     justify-content: center;
     gap: 10px;
     font-weight: 400;
-
+    margin-top: 12px;
 }
+
 
 .google-btn:hover{
   background-color: #f3f3f3;
@@ -317,14 +320,19 @@ font-family: 'Inter Tight', sans-serif;
 }
 
 
-/* Quitar el fondo azul/gris del autofill (Chrome/Edge/Safari) */
-.login-card input:-webkit-autofill,
-.login-card input:-webkit-autofill:hover,
-.login-card input:-webkit-autofill:focus,
-.login-card input:-webkit-autofill:active{
+/* Quitar el fondo azul (#e8f0fe o similar) del autofill (Chrome/Edge/Safari)
+   — escopeado a .input-group en vez de .login-card: /login (LoginPage.jsx)
+   no usa el wrapper .login-card, y /register usa .login-card-register, así
+   que .login-card solo cubría los modales viejos. .input-group envuelve el
+   input en los 4 sitios (LoginPage, RegisterPage, LoginModal, RegisterModal). */
+.input-group input:-webkit-autofill,
+.input-group input:-webkit-autofill:hover,
+.input-group input:-webkit-autofill:focus,
+.input-group input:-webkit-autofill:active{
   -webkit-text-fill-color: #111;
-  box-shadow: 0 0 0px 1000px #fdfdfd inset;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  box-shadow: 0 0 0px 1000px transparent inset;
   transition: background-color 9999s ease-in-out 0s;
   caret-color: #111;
-  padding: 6px;
+  padding: 4px;
 }

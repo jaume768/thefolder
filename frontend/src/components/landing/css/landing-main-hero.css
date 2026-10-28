@@ -1,0 +1,132 @@
+/* ============================================================
+   MAIN HERO — 100vh. Marca grande arriba a la izquierda, fila
+   "what" + headline centrada verticalmente, grid de steps abajo.
+   Todo dentro de un único viewport (sin scroll). Ver LandingMainHero.jsx.
+   ============================================================ */
+
+.tf-mainhero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 130px 16px 0px;
+}
+
+.tf-mainhero__top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Píldora compartida por what/why/how/for who — fondo del footer
+   (#99faff) usado aquí como acento de detalle. */
+.tf-pill {
+  display: inline-block;
+  padding: 4px;
+  background: #99faff;
+  color: #000;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 0.8;
+  width: fit-content;
+  font-weight: 500;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.tf-mainhero__row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0px;
+  max-width: 900px;
+}
+
+.tf-mainhero__headline {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0;
+}
+
+
+.tf-mainhero__headline-lead {
+  margin: 0;
+  font-family: "Inter Tight", var(--font-sans);
+  font-weight: 500;
+  line-height: 1.1;
+  font-size: 1.5rem;
+  color: var(--text);
+  text-align: left;
+}
+
+.tf-mainhero__headline-sub {
+  margin: 0;
+  font-family: "Inter Tight", var(--font-sans);
+  font-weight: 500;
+  line-height: 1.1;
+  font-size: 1.5rem;
+  color: var(--text);
+  text-align: left;
+}
+
+.tf-mainhero__steps {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.tf-mainhero__steps img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── ENTRADA — fade+up al cargar la página, sin esperar scroll ── */
+@keyframes tfHeroIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tf-mainhero__top {
+  opacity: 0;
+  animation: tfHeroIn 750ms cubic-bezier(.16, 1, .3, 1) forwards;
+  animation-delay: 80ms;
+}
+
+.tf-mainhero__steps {
+  opacity: 0;
+  animation: tfHeroIn 800ms cubic-bezier(.16, 1, .3, 1) forwards;
+  animation-delay: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-mainhero__top,
+  .tf-mainhero__steps {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .tf-mainhero {
+    min-height: 100vh;
+    padding: 110px var(--page-px) 24px;
+  }
+
+  .tf-mainhero__row {
+    gap: 12px;
+  }
+
+  .tf-mainhero__steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+}

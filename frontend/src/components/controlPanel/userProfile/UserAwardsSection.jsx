@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import '../css/professionalExperience.css';
+import { ArrowUpRight } from 'lucide-react';
 
 const UserAwardsSection = ({ awards }) => {
   const { t } = useTranslation('profile');
@@ -55,6 +56,7 @@ const UserAwardsSection = ({ awards }) => {
                   className="ux-exp-link"
                 >
                   {t('sections.viewReference')}
+                  <ArrowUpRight className="ux-exp-link-icon" size={12} strokeWidth={1.6} aria-hidden="true" />
                 </a>
               )}
             </div>

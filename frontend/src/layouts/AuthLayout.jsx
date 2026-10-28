@@ -1,11 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Layout from "./AppLayout";
 import LandingHeader from "../components/landing/LandingHeader";
-import LoginModal from "../components/landing/LoginModal";
-import RegisterModal from "../components/landing/RegisterModal";
+import LandingHeaderActions from "../components/landing/LandingHeaderActions";
+import LandingFooter from "../components/landing/LandingFooter";
+import { RouteSkeleton } from "../components/skeleton/PageSkeleton";
 
-const AuthLayout = ({ children, activeMenu, contentClassName }) => {
+// landingNav: sin sesión, la barra de la landing (THEFOLDER/ + Iniciar sesión
+// / Crear perfil, LandingHeaderActions) en vez de LandingHeader: /creatives
+// y las páginas legales del footer (aviso legal, términos, privacidad,
+// cookies). Oct 2026, decisión del usuario.
+const AuthLayout = ({ children, activeMenu, contentClassName, landingNav = false }) => {
+  const navigate = useNavigate();
   const token = localStorage.getItem("authToken");
   const isAuthenticated = !!token;
 
@@ -21,18 +28,14 @@ const AuthLayout = ({ children, activeMenu, contentClassName }) => {
   const navItems = useMemo(
     () => [
         { label: "CREATIVOS", to: "/creatives" },
-        { label: "PERFILES", to: "/perfiles" },
         // { label: "ESTUDIAR MODA", to: "/fashion" },
         // { label: "INDUSTRIA", to: "/industry" },
     ],
     []
   );
 
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-
-  const onLoginClick = () => setShowLoginModal(true);
-  const onRegisterClick = () => setShowRegisterModal(true);
+  const onLoginClick = () => navigate("/login");
+  const onRegisterClick = () => navigate("/register");
 
   // ✅ Si está logeado: usa Layout (dashboard)
   if (isAuthenticated) {
@@ -43,31 +46,30 @@ const AuthLayout = ({ children, activeMenu, contentClassName }) => {
     );
   }
 
-  // ✅ Si NO está logeado: header landing + contenido
+  // ✅ Si NO está logeado: header landing + contenido + footer landing.
+  // Cubre todas las páginas que AuthLayout monta en modo invitado
+  // (/explorer, /creatives, /templates, /about, /legal, /terminos,
+  // /privacy, /cookies...) — antes LandingFooter solo vivía en Home.jsx,
+  // así que ninguna de esas páginas tenía footer ni los links que apuntan
+  // a ellas (.tf-footer__pages/.tf-footer__legal) llevaban a una página
+  // que a su vez tuviera footer.
   return (
-    <div className="public-container">
-      <LandingHeader
-        navItems={navItems}
-        onLoginClick={onLoginClick}
-        onRegisterClick={onRegisterClick}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-      />
-      {children}
-
-      {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onSwitchToRegister={() => { setShowLoginModal(false); setShowRegisterModal(true); }}
-          onSwitchToReset={() => setShowLoginModal(false)}
+    <div className={`public-container${landingNav ? " public-container--landing-nav" : ""}`}>
+      {landingNav ? (
+        <LandingHeaderActions compact onLoginClick={onLoginClick} onRegisterClick={onRegisterClick} />
+      ) : (
+        <LandingHeader
+          navItems={navItems}
+          onLoginClick={onLoginClick}
+          onRegisterClick={onRegisterClick}
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
         />
       )}
-      {showRegisterModal && (
-        <RegisterModal
-          onClose={() => setShowRegisterModal(false)}
-          onSwitchToLogin={() => { setShowRegisterModal(false); setShowLoginModal(true); }}
-        />
-      )}
+      <Suspense fallback={<RouteSkeleton />}>
+        {children}
+      </Suspense>
+      <LandingFooter />
     </div>
   );
 };

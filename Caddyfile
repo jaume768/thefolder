@@ -1,5 +1,33 @@
 # Frontend público
 thefolder.es, www.thefolder.es {
+
+    # Detectar crawlers de redes sociales en rutas de perfil (/:username)
+    @socialBot {
+        header_regexp User-Agent (facebookexternalhit|Twitterbot|WhatsApp|LinkedInBot|TelegramBot|Googlebot|Slackbot|Discordbot|Applebot|bingbot|Pinterestbot|redditbot|Iframely|vkShare|W3C_Validator)
+        path_regexp profileSlug ^/[A-Za-z0-9._-]+$
+        not path /explorer /creatives /industry /fashion /blog /magazine /legal /privacy /cookies /contact /about /profile /community /createPost /createOffer /createEducationalOffer /login /register /offers /myprofile /guardados /token-handler /complete-registration /complete-registration-legacy /og-thefolder.png /favicon.png /iconos/* /multimedia/*
+    }
+
+    handle @socialBot {
+        rewrite * /og/profile{http.request.uri.path}
+        reverse_proxy backend:5000
+    }
+
+    # Detectar crawlers en rutas de post (/post/:id)
+    @socialBotPost {
+        header_regexp User-Agent (facebookexternalhit|Twitterbot|WhatsApp|LinkedInBot|TelegramBot|Googlebot|Slackbot|Discordbot|Applebot|bingbot|Pinterestbot|redditbot|Iframely|vkShare|W3C_Validator)
+        path_regexp postSlug ^/post/[A-Za-z0-9]+$
+    }
+    handle @socialBotPost {
+        rewrite * /og{http.request.uri.path}
+        reverse_proxy backend:5000
+    }
+
+    # Sitemap dinámico generado por el backend
+    handle /sitemap.xml {
+        reverse_proxy backend:5000
+    }
+
     reverse_proxy frontend:80
 }
 

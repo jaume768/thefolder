@@ -1,8 +1,10 @@
 // src/components/CreateOffer.jsx
 import React, { useState, useEffect } from 'react';
+import { ImageUp } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import api from '../../services/api';
 import ExtraQuestionsForm from '../../components/forms/ExtraQuestionsForm';
 import VerificationRequiredModal from '../../components/modals/VerificationRequiredModal';
 import '../../components/controlPanel/css/create-offer.css';
@@ -53,10 +55,7 @@ const CreateOffer = () => {
         try {
             const token = localStorage.getItem('authToken');
             if (!token) return;
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const { data: user } = await axios.get(`${backendUrl}/api/users/profile`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data: user } = await api.get('/api/users/profile');
             if (user.role === 'Profesional') {
                 setIsVerificatedProfesional(user.isVerificatedProfesional || false);
                 if (!offerId && !user.isVerificatedProfesional) {
@@ -170,10 +169,7 @@ const CreateOffer = () => {
                 navigate('/', { state: { showRegister: true } });
                 return;
             }
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const { data: user } = await axios.get(`${backendUrl}/api/users/profile`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data: user } = await api.get('/api/users/profile');
             if (user.role !== 'Profesional') {
                 setError(t('create.onlyProfessionals'));
                 setLoading(false);
@@ -206,11 +202,10 @@ const CreateOffer = () => {
             });
             if (companyLogo) fd.append('logo', companyLogo);
 
-            const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
             if (isEditing) {
-                await axios.put(`${backendUrl}/api/offers/${offerId}`, fd, axiosConfig);
+                await api.put(`/api/offers/${offerId}`, fd);
             } else {
-                await axios.post(`${backendUrl}/api/offers/create`, fd, axiosConfig);
+                await api.post('/api/offers/create', fd);
             }
             navigate('/misOfertas');
         } catch (err) {
@@ -255,7 +250,7 @@ const CreateOffer = () => {
                                 <img src={previewLogo} alt={t('create.sections.headerImage')} />
                             ) : (
                                 <div className="upload-placeholder">
-                                    <span className="upload-icon">⤴︎</span>
+                                    <ImageUp size={24} strokeWidth={1.5} aria-hidden="true" className="upload-icon" />
                                     <p>{t('create.sections.headerImage')}</p>
                                 </div>
                             )}

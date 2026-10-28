@@ -443,11 +443,16 @@ const UsersPage = () => {
                       {user.role || 'Desconocido'}
                     </span>
                   </td>
-                  <td>{new Date(user.createdAt).toLocaleDateString('es-ES')}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' })}</td>
                   <td>
                     <span className={`status-badge ${user.isActive ? 'active' : 'inactive'}`}>
                       {user.isActive ? 'Activo' : 'Inactivo'}
                     </span>
+                    {user.hiddenFromDirectory && (
+                      <span className="status-badge inactive" style={{ marginLeft: 6 }} title="No aparece en /creatives">
+                        Oculto directorio
+                      </span>
+                    )}
                   </td>
                   <td className="actions-cell">
                     <Link to={`/usuarios/${user._id}`} className="action-btn view-btn" title="Ver detalles">

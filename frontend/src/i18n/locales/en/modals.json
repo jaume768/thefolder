@@ -46,5 +46,11 @@
     "myCommunity": "My community",
     "settings": "Settings",
     "logout": "Log out"
+  },
+  "sessionExpired": {
+    "title": "Your session has expired",
+    "body": "For your security, we signed you out after a period of inactivity. Log in again to continue.",
+    "cta": "Log in",
+    "dismiss": "Keep browsing"
   }
 }

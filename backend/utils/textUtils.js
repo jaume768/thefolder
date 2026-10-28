@@ -111,9 +111,28 @@ function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * Genera un slug URL-safe a partir de un string (quita acentos, espacios → guiones).
+ * @param {string} str
+ * @returns {string}
+ */
+function slugify(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 module.exports = {
     normalizeString,
     createNormalizedRegex,
     createNormalizedSearchCondition,
-    escapeRegex
+    escapeRegex,
+    slugify
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const adminInsightsController = require('../controllers/adminInsightsController');
 const { ensureAuthenticated, ensureAdmin } = require('../middlewares/auth');
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -82,6 +83,12 @@ router.get('/stats', adminController.getDashboardStats);
 
 // Actividad de usuarios
 router.get('/user-activity', adminController.getUserActivity);
+
+// Tráfico: visitantes (logueados/anónimos), procedencia, tiempo en la web
+router.get('/traffic-stats', adminController.getTrafficStats);
+
+// Estadísticas completas del panel (Dashboard / Tráfico / Actividad), por periodo
+router.get('/insights', adminInsightsController.getInsights);
 
 // Creación de administradores (sólo accesible por otros administradores)
 router.post('/create-admin', adminController.createAdmin);

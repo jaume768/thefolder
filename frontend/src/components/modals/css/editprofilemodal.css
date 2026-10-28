@@ -10,7 +10,7 @@
   max-height: min(78vh, 800px);
   overflow: auto;
   background:#fff;
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0,0,0,.20);
 }
 

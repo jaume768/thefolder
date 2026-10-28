@@ -9,6 +9,7 @@ import Draggable from 'react-draggable';
 import '../../components/controlPanel/css/offers.css';
 import '../../components/controlPanel/css/explorer.css';
 import { clImg } from '../../utils/optimizeImage';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const Offers = () => {
     const { t, i18n } = useTranslation('offers');
@@ -186,7 +187,7 @@ const Offers = () => {
             year: 'numeric',
         });
 
-    if (loading) return <div className="loading-indicator">{t('loading')}</div>;
+    if (loading) return <PageSkeleton variant="list" />;
     if (error) return <div className="error">{t('error')}</div>;
 
     return (

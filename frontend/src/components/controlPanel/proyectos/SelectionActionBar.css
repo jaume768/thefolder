@@ -1,0 +1,276 @@
+/* ── Barra de acción del modo selección ──────────────────────────
+   Sticky abajo a la derecha, mismo punto/nivel que los botones fijos del
+   panel (.gf-create-folder-sticky / .gf-organize-sticky en Guardados.css):
+   position:fixed, bottom:28px, right:28px, z-index:500. El desplegable
+   "mover a..." se abre hacia ARRIBA (bottom, no top) porque la barra vive
+   pegada al borde inferior de la pantalla.
+   ─────────────────────────────────────────────────────────────── */
+
+.opa-bar {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #111;
+  color: #fff;
+  padding: 10px 10px 10px 16px;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  max-width: calc(100vw - 40px);
+}
+
+.opa-count {
+  font-family: "Inter Tight", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.opa-move-wrap {
+  position: relative;
+}
+
+.opa-move-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #111;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-family: "Inter Tight", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.opa-move-btn:hover {
+  background: #eee;
+}
+
+/* Separa "mover" (constructivo) de "borrar" (destructivo, irreversible —
+   borra los posts de verdad) para que no queden al mismo nivel visual ni se
+   confundan al pulsar rápido. */
+.opa-divider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Icono solo (no texto) a propósito: "mover" es la acción esperada/frecuente
+   y lleva texto; "borrar" es la excepcional/peligrosa, un icono rojo
+   discreto pesa menos visualmente y obliga a fijarse antes de pulsar —
+   siempre exige el confirm modal del padre, nunca borra al primer clic. */
+.opa-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.opa-delete-btn:hover:not(:disabled) {
+  background: rgba(255, 107, 107, 0.12);
+  border-color: #ff6b6b;
+}
+
+.opa-delete-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.opa-cancel-btn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-family: "Inter Tight", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.opa-cancel-btn:hover {
+  border-color: #fff;
+}
+
+/* Abre hacia arriba (bottom, no top) — la barra está pegada al borde
+   inferior, así que un desplegable hacia abajo se saldría de la pantalla. */
+.opa-dropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  top: auto;
+  right: 0;
+  background: #fff;
+  color: #111;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  min-width: 220px;
+  max-width: min(280px, calc(100vw - 40px));
+  max-height: min(260px, calc(100vh - 140px));
+  overflow-y: auto;
+  padding: 6px;
+  z-index: 40;
+}
+
+.opa-page-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 10px;
+  font-family: "Inter Tight", sans-serif;
+  font-size: 13px;
+  color: #222;
+  cursor: pointer;
+}
+
+.opa-page-option:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.opa-page-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Carpeta donde ya está guardada la imagen (FolderPickerPopover) — visible
+   a propósito, no apagada como un :disabled normal: aquí "deshabilitada"
+   significa "ya estás aquí", no "no disponible". Selector reforzado (no solo
+   .opa-page-option--current) porque tiene que ganarle a .opa-page-option:disabled,
+   que por sí sola pesa más (clase + pseudo-clase). */
+.opa-page-option.opa-page-option--current:disabled {
+  opacity: 1;
+  font-weight: 600;
+  color: #111;
+  cursor: default;
+}
+
+/* "Portfolio (default)" (FolderPickerPopover) — mismo look que .opa-page-new
+   de abajo (borde para separarla de las páginas reales), pero arriba en vez
+   de abajo: es el primer destino de la lista, no una acción final. */
+.opa-page-option--default {
+  border-bottom: 1px solid #eee;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+}
+
+.opa-page-check {
+  flex-shrink: 0;
+  color: #111;
+}
+
+.opa-page-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opa-page-new {
+  justify-content: flex-start;
+  color: #555;
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+  padding-top: 10px;
+  letter-spacing: 0.02em;
+  gap: 6px;
+}
+
+.opa-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px;
+}
+
+.opa-create-msg {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.opa-create-input {
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: "Inter Tight", sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.opa-create-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: "Inter Tight", sans-serif;
+  cursor: pointer;
+}
+
+.opa-create-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Mobile: bar de ancho completo, thumb-friendly ────────────── */
+@media (max-width: 768px) {
+  .opa-bar {
+    left: 16px;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    max-width: none;
+    padding: 10px 10px 10px 14px;
+  }
+
+  .opa-count {
+    flex: 1;
+  }
+
+  .opa-move-btn,
+  .opa-cancel-btn {
+    min-height: 44px;
+  }
+
+  .opa-delete-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .opa-dropdown {
+    max-width: none;
+    left: 0;
+    right: 0;
+  }
+
+  .opa-page-option {
+    padding: 12px 10px;
+    min-height: 44px;
+  }
+}

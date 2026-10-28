@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import HeaderSection from '../../components/controlPanel/EducationalOfferDetail/HeaderSection';
 import MainInfoSection from '../../components/controlPanel/EducationalOfferDetail/MainInfoSection';
@@ -10,6 +10,7 @@ import AdditionalInfoSection from '../../components/controlPanel/EducationalOffe
 import { formatDate, formatPrice, formatDuration } from
 '../../components/controlPanel/EducationalOfferDetail/utils';
 import '../../components/controlPanel/css/educationalOfferDetail.css';
+import PageSkeleton from '../../components/skeleton/PageSkeleton';
 
 const EducationalOfferDetail = () => {
     const { t } = useTranslation('offers');
@@ -19,6 +20,11 @@ const EducationalOfferDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [galleryIndex, setGalleryIndex] = useState(0);
+
+    useEffect(() => {
+        if (!offer?.title) return;
+        document.title = `${offer.title} | THEFOLDER`;
+    }, [offer?.title]);
 
     useEffect(() => {
         const fetchOfferDetails = async () => {
@@ -38,17 +44,10 @@ const EducationalOfferDetail = () => {
         }
     }, [offerId]);
 
-    if (loading) {
-        return (
-            <div className="job-offer-loading-jobdetail">
-                <i className="fas fa-spinner fa-spin"></i>
-                <span className="loading-indicator">{t('view.loadingEducational')}</span>
-            </div>
-        );
-    }
+    if (loading) return <PageSkeleton variant="article" />;
 
     if (error || !offer) {
-        return <div className="job-offer-error-jobdetail">{error || t('view.notFoundEducational')}</div>;
+        return <Navigate to="/404" replace />;
     }
 
     const handleBack = () => {

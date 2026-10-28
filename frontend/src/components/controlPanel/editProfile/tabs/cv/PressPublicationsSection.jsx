@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Section } from "../../ui/ProfileFormSection";
 import { clImg } from "../../../../../utils/optimizeImage";
+import { PenLine, Camera, Plus } from "lucide-react";
 
-const editCard = "/iconos/edit-card.svg";
 const trashDelete = "/iconos/bin.png";
 
 const ROLES = ["Autor", "Colaborador", "Entrevistado", "Mencionado"];
@@ -72,7 +73,7 @@ export default function PressPublicationsSection({
             {pressDraft.logoUrl ? (
               <img src={clImg.logo(pressDraft.logoUrl)} alt={t("editProfile.logoLabel")} />
             ) : (
-              <span className="ux-exp-logo-icon">📷</span>
+              <Camera size={20} strokeWidth={1.5} aria-hidden="true" className="ux-exp-logo-icon" />
             )}
           </button>
 
@@ -200,7 +201,7 @@ export default function PressPublicationsSection({
           {/* ACCIONES */}
           <div className="ux-exp-form-actions">
             {list.length > 0 && (
-              <button className="ux-btn" type="button" onClick={cancelPressForm}>
+              <button className="ux-btn danger" type="button" onClick={cancelPressForm}>
                 {t("editProfile.modals.cancel")}
               </button>
             )}
@@ -217,16 +218,7 @@ export default function PressPublicationsSection({
   );
 
   return (
-    <div id="sec-cv-prensa" className="ux-anchor-target">
-      <div className="ux-card">
-        <label className="ux-form-label separator">
-          <img src="/iconos/press-recognition.png" className="ux-section-icon" alt="" />
-          {t("editProfile.pressSectionLabel")}
-        </label>
-
-        <div className="ux-helper ux-exp-helper">
-          {t("editProfile.pressSubtitle")}
-        </div>
+    <Section id="sec-cv-prensa" title={t("editProfile.pressSectionLabel")} help={t("editProfile.pressSubtitle")}>
 
         {list.length > 0 && (
           <div className="ux-exp-list">
@@ -245,16 +237,16 @@ export default function PressPublicationsSection({
 
                   <div className="ux-exp-content">
                     <div className="ux-exp-title">
-                      {(item?.title || "").toUpperCase()}
+                      {item?.title || ""}
                     </div>
-                    <div className="ux-exp-meta">{item?.publication || "—"}</div>
+                    <div className="ux-exp-meta">{item?.publication || "-"}</div>
                     {item?.role && (
                       <div className="ux-exp-subtle">{item.role}</div>
                     )}
                     <div className="ux-exp-subtle">
                       {item?.pubMonth && item?.pubYear
                         ? `${MONTHS_ES[(Number(item.pubMonth) || 1) - 1]?.label}. ${item.pubYear}`
-                        : item?.pubYear || "—"}
+                        : item?.pubYear || "-"}
                     </div>
                   </div>
 
@@ -263,15 +255,19 @@ export default function PressPublicationsSection({
                       type="button"
                       className="ux-link-btn"
                       onClick={() => openEditPressForm(idx)}
+                      aria-label={t("editProfile.edit")}
                     >
-                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
+                      <PenLine size={14} strokeWidth={1.8} aria-hidden="true" />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.edit")}</span>
                     </button>
                     <button
                       type="button"
                       className="ux-link-btn danger"
                       onClick={() => confirmDeletePress(idx)}
+                      aria-label={t("editProfile.delete")}
                     >
-                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{ width: "12px"}} />
+                      <img src={trashDelete} className="ux-icon" alt="" style={{ width: "12px"}} />
+                      <span className="ux-link-btn-tooltip">{t("editProfile.delete")}</span>
                     </button>
                   </div>
                   {item?.isDraft && (
@@ -297,13 +293,13 @@ export default function PressPublicationsSection({
               className="ux-btn ux-exp-add-btn"
               onClick={openNewPressForm}
             >
+              <Plus size={14} strokeWidth={2} aria-hidden="true" />
               {t("editProfile.addPress")}
             </button>
           </div>
         )}
 
         {(pressFormOpen && pressEditingIndex === null) || list.length === 0 ? renderForm() : null}
-      </div>
-    </div>
+    </Section>
   );
 }

@@ -14,5 +14,6 @@ export const resetPassword = (token, newPassword) =>
 
 export const logout = () => {
   localStorage.removeItem('authToken');
+  localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
 };

@@ -9,20 +9,22 @@
   },
   "nav": {
     "creatives": "Creativos",
-    "profiles": "Perfiles",
     "fashion": "Estudiar moda",
     "industry": "Industria",
     "menu": "Menú",
     "home": "Home",
-    "explorer": "Explorador"
+    "explorer": "Explorador",
+    "about": "Sobre nosotros"
   },
   "actions": {
     "login": "Iniciar sesión",
     "register": "Crear perfil",
     "createProfile": "Crea tu perfil",
     "publish": "Publicar",
-    "myProfile": "Mi perfil",
+    "myProfile": "Ver mi portfolio",
+    "myPortfolio": "Mi portfolio",
     "profileOptions": "Opciones de perfil",
+    "myPanel": "Mi panel",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "close": "Cerrar",
@@ -40,12 +42,14 @@
     "editProfile": "Editar perfil",
     "myCommunity": "Mi comunidad",
     "saved": "Guardados",
+    "savedImages": "Guardados",
     "logout": "Cerrar sesión",
     "settings": "Configuración",
     "createAccount": "Crear cuenta"
   },
   "search": {
     "placeholder": "Busca creativos, proyectos…",
+    "menuLabel": "Buscar",
     "mobilePlaceholder": "Buscar creativos, publicaciones...",
     "all": "Todos",
     "users": "Usuarios",
@@ -58,13 +62,36 @@
     "projectsSection": "Proyectos /",
     "userFallback": "Usuario"
   },
+  "error": "Algo ha ido mal. Por favor, inténtalo de nuevo.",
   "footer": {
     "contact": "Contacto",
+    "templates": "Plantillas",
     "legal": "Aviso Legal",
     "terms": "Términos",
     "privacy": "Privacidad",
     "cookies": "Cookies",
     "linksAriaLabel": "Enlaces del pie",
+    "legalLinksAriaLabel": "Enlaces legales",
+    "socialAriaLabel": "Redes sociales",
     "brandAriaLabel": "© {{year}} thefolder"
+  },
+  "notFound": {
+    "text": "Esta página no existe o ya no está disponible.",
+    "back": "Volver a THEFOLDER"
+  },
+  "credits": {
+    "searchPlaceholder": "Busca su @usuario de THEFOLDER o escribe su nombre",
+    "searchLabel": "Persona del crédito",
+    "onTheFolderTitle": "En THEFOLDER",
+    "searching": "Buscando…",
+    "noMatches": "Nadie en THEFOLDER con ese nombre o usuario.",
+    "addExternal": "Añadir \"{{name}}\"",
+    "addExternalSub": "No está en THEFOLDER",
+    "onTheFolder": "@{{username}} en THEFOLDER",
+    "notOnTheFolder": "No está en THEFOLDER",
+    "change": "Cambiar",
+    "instagramLabel": "Instagram de {{name}} (opcional)",
+    "instagramPlaceholder": "usuario",
+    "instagramHint": "Solo el nombre de usuario. Si pegas el enlace, lo sacamos de ahí."
   }
 }

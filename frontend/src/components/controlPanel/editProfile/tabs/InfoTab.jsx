@@ -1,32 +1,79 @@
-import React, { useState } from "react";
+// components/controlPanel/editProfile/tabs/InfoTab.jsx
+// "Info de perfil" — contenido bajo la cabecera común (PanelPageHeader).
+// Mismo lenguaje que el home del panel, "Tus proyectos" y el editor de
+// proyecto: Inter Tight, jerarquía por tamaño/peso, campos gris tenue sin
+// borde, esquinas rectas, sin líneas ni tarjetas entre secciones (las separa
+// el espacio). Cada sección es una fila título+ayuda | campos en desktop y
+// tablet, y una columna en mobile (ver ProfileInfo.css).
+//
+// Solo cambia la presentación: mismos campos del draft, mismo autoguardado
+// (ProfileDraftContext), misma lógica de ubicaciones (3 huecos que se
+// reordenan al quitar uno) y de especialización (professionalTags, máx. 3,
+// "Otro" admite una etiqueta propia).
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, Check, ChevronLeft, ChevronRight, List, Plus, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { LOCATIONS, ALL_COUNTRIES } from "../../../../utils/locations";
-
-// iconos desde /public (más estable en Vite)
-const editCard = "/iconos/edit-card.svg";
-const trashDelete = "/iconos/bin.png";
-
-const GROUP_ICONS = {
-  'Accesorios':          '/iconos/specialty/accesories.png',
-  'Beauty (MUAH)':       '/iconos/specialty/beauty.png',
-  'Fotografía & Vídeo':  '/iconos/specialty/camera-photo.png',
-  'Dirección Creativa':  '/iconos/specialty/creative-direction.png',
-  'Diseño':              '/iconos/specialty/fashion-design.png',
-  'Digital & 3D':        '/iconos/specialty/graphic-design.png',
-  'Ilustración':         '/iconos/specialty/illustration.png',
-  'Styling':             '/iconos/specialty/styling.png',
-  'Marketing & PR':           '/iconos/specialty/marketing.png',
-  'Digital & Social':         '/iconos/specialty/content-creator.png',
-  'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
-  'Otro':                     '/iconos/specialty/clue.png',
-};
+import { LOCATIONS, ALL_COUNTRIES, translateCountry, translateCity } from "../../../../utils/locations";
+// InfoTab.css solo trae los estilos .ptf-* del picker antiguo: ya no los usa
+// esta pestaña, pero el paso de onboarding (SpecializationStep.jsx) usa esas
+// clases sin importar ninguna hoja — se mantiene el import para no cambiarle
+// nada mientras no tenga la suya propia.
+import "./InfoTab.css";
+import "./ProfileInfo.css";
+import { Section, Field } from "../ui/ProfileFormSection";
 
 const GROUP_ORDER = [
   "Diseño", "Dirección Creativa", "Fotografía & Vídeo", "Styling",
-  "Beauty (MUAH)", "Digital & 3D", "Accesorios",
-  "Comunicación & Editorial", "Marketing & PR", "Digital & Social", "Ilustración", "Otro",
+  "Beauty & Hair", "3D & Producto", "Accesorios",
+  "Comunicación & Editorial", "Marketing & PR", "Social & Ecommerce", "Gráfica & Ilustración", "Otro",
 ];
+
+const GROUP_I18N_KEY = {
+  'Accesorios':               'accesorios',
+  'Beauty & Hair':            'beautymuah',
+  'Fotografía & Vídeo':       'fotografiavideo',
+  'Dirección Creativa':       'direccioncreativa',
+  'Diseño':                   'diseno',
+  '3D & Producto':            'digital3d',
+  'Gráfica & Ilustración':    'ilustracion',
+  'Styling':                  'styling',
+  'Marketing & PR':           'marketingpr',
+  'Social & Ecommerce':       'digitalsocial',
+  'Comunicación & Editorial': 'comunicacioneditorial',
+  'Otro':                     'otro',
+};
+
+const MAX_TAGS = 3;
+const BIO_MAX = 150;
+
+const LEVELS = [
+  { value: 1, name: "Newcomer",     descKey: "levelNewcomer" },
+  { value: 2, name: "Graduated",    descKey: "levelGraduated" },
+  { value: 3, name: "Emerging",     descKey: "levelEmerging" },
+  { value: 4, name: "Professional", descKey: "levelProfessional" },
+];
+
+function CountryOptions({ t }) {
+  return (
+    <>
+      <option value="">{t("editProfile.info.country")}</option>
+      <option value="España">{t("countrySpain")}</option>
+      <option disabled>──────────</option>
+      {ALL_COUNTRIES.map((c) => <option key={c} value={c}>{translateCountry(c, t)}</option>)}
+      <option value="__otro__">{t("editProfile.otherCountry")}</option>
+    </>
+  );
+}
+
+function Checkbox({ checked }) {
+  return (
+    <span className={`pi-check${checked ? " is-on" : ""}`} aria-hidden="true">
+      {checked && <Check size={12} strokeWidth={2.4} />}
+    </span>
+  );
+}
 
 export default function InfoTab({
   draft,
@@ -37,6 +84,8 @@ export default function InfoTab({
   profileFileRef,
   uploadProfilePicture,
   deleteProfilePicture,
+  uploadCreativeCover,
+  deleteCreativeCover,
 
   splitName,
   setDraftField,
@@ -44,21 +93,27 @@ export default function InfoTab({
   onLevelChange,
 }) {
   const { t } = useTranslation("profile");
-  // ✅ Hooks SIEMPRE dentro del componente
+  const { t: tFilters } = useTranslation("filters");
+  const ti = (key, opts) => t(`editProfile.info.${key}`, opts);
+  const isOrg = isCompany || isEducationalInstitution;
+
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [roleOptions, setRoleOptions] = React.useState([]);
-  const [activeGroup, setActiveGroup] = React.useState(null);
-  const [roleQuery, setRoleQuery] = React.useState("");
-  const [customInput, setCustomInput] = React.useState('');
+  const [coverUploading, setCoverUploading] = useState(false);
+  const coverFileRef = useRef(null);
+  // Portada en /creatives: la propia o, si no hay, la foto de perfil (mismo
+  // orden que CreativesPage.jsx).
+  const creativeCover = draft?.creativeCoverDesktop || "";
 
-  const [customCountryInput, setCustomCountryInput] = React.useState(draft?.customCountry || "");
-  const [customCityInput, setCustomCityInput] = React.useState(draft?.city || "");
+  // ── Ubicaciones (hasta 3: country/city, country2/city2, country3/city3) ──
+  const [customCountryInput, setCustomCountryInput] = useState(draft?.customCountry || "");
+  const [customCityInput, setCustomCityInput] = useState(draft?.city || "");
+  const [showCity2, setShowCity2] = useState(!!(draft?.city2 || draft?.country2));
+  const [customCityInput2, setCustomCityInput2] = useState(draft?.city2 || "");
+  const [showCity3, setShowCity3] = useState(!!(draft?.city3 || draft?.country3));
+  const [customCityInput3, setCustomCityInput3] = useState(draft?.city3 || "");
 
-  const [showCity2, setShowCity2] = React.useState(!!(draft?.city2 || draft?.country2));
-  const [customCityInput2, setCustomCityInput2] = React.useState(draft?.city2 || "");
-
-  // Sincronizar showCity2 cuando el draft carga después del montaje
-  React.useEffect(() => {
+  // Sincronizar showCity2/showCity3 cuando el draft carga después del montaje
+  useEffect(() => {
     if (draft?.city2 || draft?.country2) {
       setShowCity2(true);
       setCustomCityInput2(draft.city2 || "");
@@ -66,44 +121,94 @@ export default function InfoTab({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!draft?.city2, !!draft?.country2]);
 
-  const selectedRoleIds = Array.isArray(draft?.professionalTags) ? draft.professionalTags : [];
-  const headlines = Array.isArray(draft?.profileHeadlines) ? draft.profileHeadlines : ["", "", ""];
+  useEffect(() => {
+    if (draft?.city3 || draft?.country3) {
+      setShowCity3(true);
+      setCustomCityInput3(draft.city3 || "");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!draft?.city3, !!draft?.country3]);
 
-  const setHeadlineAt = (idx, value) => {
-    const next = [...headlines];
+  const locationCount = 1 + (showCity2 ? 1 : 0) + (showCity3 ? 1 : 0);
 
-    // normaliza: trim + limita largo (opcional, recomendado)
-    next[idx] = String(value || "").slice(0, 40); // 40 chars por “headline” (ajusta si quieres)
+  const handleAddLocation = () => {
+    if (!showCity2) { setShowCity2(true); return; }
+    if (!showCity3) setShowCity3(true);
+  };
 
-    // aseguramos longitud 3
-    while (next.length < 3) next.push("");
-    if (next.length > 3) next.length = 3;
+  // Elimina la ubicación en la posición `slotIndex` (1, 2 o 3) y reordena
+  // las siguientes para que no queden huecos entre medio.
+  const handleRemoveLocation = (slotIndex) => {
+    const slots = [
+      {
+        country: draft?.country || "",
+        city: draft?.city || "",
+        cityInput: customCityInput,
+        customCountry: draft?.country === "__otro__" ? (draft?.customCountry || customCountryInput || "") : "",
+      },
+      ...(showCity2 ? [{ country: draft?.country2 || "", city: draft?.city2 || "", cityInput: customCityInput2 }] : []),
+      ...(showCity3 ? [{ country: draft?.country3 || "", city: draft?.city3 || "", cityInput: customCityInput3 }] : []),
+    ];
 
-    setDraftField("profileHeadlines", next);
+    slots.splice(slotIndex - 1, 1);
+
+    setDraftField("country", slots[0]?.country || "");
+    setDraftField("city", slots[0]?.city || "");
+    setCustomCityInput(slots[0]?.cityInput || slots[0]?.city || "");
+    setDraftField("customCountry", slots[0]?.customCountry || "");
+    setCustomCountryInput(slots[0]?.customCountry || "");
+
+    setDraftField("country2", slots[1]?.country || "");
+    setDraftField("city2", slots[1]?.city || "");
+    setCustomCityInput2(slots[1]?.cityInput || slots[1]?.city || "");
+    setShowCity2(!!slots[1]);
+
+    setDraftField("country3", slots[2]?.country || "");
+    setDraftField("city3", slots[2]?.city || "");
+    setCustomCityInput3(slots[2]?.cityInput || slots[2]?.city || "");
+    setShowCity3(!!slots[2]);
+
     setIsDirty(true);
   };
 
+  const locations = [
+    { n: 1, countryKey: "country", cityKey: "city", cityInput: customCityInput, setCityInput: setCustomCityInput },
+    showCity2 && { n: 2, countryKey: "country2", cityKey: "city2", cityInput: customCityInput2, setCityInput: setCustomCityInput2 },
+    showCity3 && { n: 3, countryKey: "country3", cityKey: "city3", cityInput: customCityInput3, setCityInput: setCustomCityInput3 },
+  ].filter(Boolean);
 
-  React.useEffect(() => {
+  // ── Especialización (professionalTags, máx. 3, de cualquier categoría) ──
+  const [roleOptions, setRoleOptions] = useState([]);
+  const [activeGroup, setActiveGroup] = useState(null);
+  const [customInput, setCustomInput] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  useEffect(() => {
     const fetchRoles = async () => {
       try {
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
         const res = await axios.get(`${backendUrl}/api/tags?type=role&status=active`);
         setRoleOptions(res.data.tags || []);
-      } catch (e) {
+      } catch {
+        // sin lista: solo quedan las etiquetas propias ("Otro")
       }
     };
     fetchRoles();
   }, []);
 
-  const roleLabelById = React.useMemo(() => {
+  const selectedRoleIds = useMemo(
+    () => (Array.isArray(draft?.professionalTags) ? draft.professionalTags : []),
+    [draft?.professionalTags]
+  );
+  const maxTagsReached = selectedRoleIds.length >= MAX_TAGS;
+
+  const tagById = useMemo(() => {
     const m = {};
-    for (const t of roleOptions) m[t.id] = t.label;
+    for (const tag of roleOptions) m[tag.id] = tag;
     return m;
   }, [roleOptions]);
 
-
-  const rolesByGroup = React.useMemo(() => {
+  const rolesByGroup = useMemo(() => {
     const map = {};
     for (const tag of roleOptions) {
       if (!map[tag.group]) map[tag.group] = [];
@@ -112,699 +217,733 @@ export default function InfoTab({
     return map;
   }, [roleOptions]);
 
-  const orderedGroups = React.useMemo(() => {
-    const groups = [...Object.keys(rolesByGroup)];
-    const rank = Object.fromEntries(GROUP_ORDER.filter(g => g !== 'Otro').map((g, i) => [g, i]));
-    const sorted = [...new Set(groups)].filter(g => g !== 'Otro').sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
-    sorted.push('Otro');
+  const orderedGroups = useMemo(() => {
+    const rank = Object.fromEntries(GROUP_ORDER.filter((g) => g !== "Otro").map((g, i) => [g, i]));
+    const sorted = [...new Set(Object.keys(rolesByGroup))]
+      .filter((g) => g !== "Otro")
+      .sort((a, b) => (rank[a] ?? 9999) - (rank[b] ?? 9999));
+    sorted.push("Otro");
     return sorted;
   }, [rolesByGroup]);
 
-  const confirmCustomTag = () => {
-    const trimmed = customInput.trim();
-    if (!trimmed || selectedRoleIds.includes(trimmed) || selectedRoleIds.length >= 3) return;
-    setDraftField("professionalTags", [...selectedRoleIds, trimmed]);
+  // La categoría activa nunca queda vacía: por defecto, la primera de verdad
+  // (orderedGroups siempre termina en 'Otro', así que hace falta >1 para que
+  // haya una categoría real cargada).
+  useEffect(() => {
+    if (!activeGroup && orderedGroups.length > 1) setActiveGroup(orderedGroups[0]);
+  }, [orderedGroups, activeGroup]);
+
+  const groupLabel = (group) => tFilters(`groups.${GROUP_I18N_KEY[group]}`) || group;
+  const tagLabel = (id) => tFilters(`tags.${id}`) || tagById[id]?.label || id;
+  // Las etiquetas propias no están en la lista: su categoría es "Otro".
+  const tagGroupOf = (id) => tagById[id]?.group ?? "Otro";
+
+  const groupCounts = useMemo(() => {
+    const counts = {};
+    for (const group of orderedGroups) {
+      counts[group] = group === "Otro"
+        ? selectedRoleIds.filter((id) => !tagById[id]).length
+        : (rolesByGroup[group] || []).filter((tag) => selectedRoleIds.includes(tag.id)).length;
+    }
+    return counts;
+  }, [orderedGroups, rolesByGroup, selectedRoleIds, tagById]);
+
+  const setTags = (next) => {
+    setDraftField("professionalTags", next.slice(0, MAX_TAGS));
     setIsDirty(true);
-    setCustomInput('');
   };
-
-
-  const normalize = str => String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').toLowerCase().trim();
-
-  const filteredRoleOptions = React.useMemo(() => {
-    const q = normalize(roleQuery);
-    if (!q) return roleOptions;
-    return roleOptions.filter((t) => normalize(t.label || "").includes(q));
-  }, [roleOptions, roleQuery]);
 
   const toggleRole = (id) => {
-    const exists = selectedRoleIds.includes(id);
-    let next = exists ? selectedRoleIds.filter((x) => x !== id) : [...selectedRoleIds, id];
-
-    // max 3
-    if (next.length > 3) next = next.slice(0, 3);
-
-    setDraftField("professionalTags", next);
-    setIsDirty(true);
+    if (selectedRoleIds.includes(id)) setTags(selectedRoleIds.filter((x) => x !== id));
+    else if (!maxTagsReached) setTags([...selectedRoleIds, id]);
   };
 
-  const removeRole = (id) => {
-    const next = selectedRoleIds.filter((x) => x !== id);
-    setDraftField("professionalTags", next);
-    setIsDirty(true);
+  const removeRole = (id) => setTags(selectedRoleIds.filter((x) => x !== id));
+
+  const confirmCustomTag = () => {
+    const trimmed = customInput.trim();
+    if (!trimmed || selectedRoleIds.includes(trimmed) || maxTagsReached) return;
+    setTags([...selectedRoleIds, trimmed]);
+    setCustomInput("");
   };
+
+  // "Otro": etiqueta propia (input + Añadir) y la lista de las ya añadidas.
+  const renderCustomTagPanel = () => {
+    const customIds = selectedRoleIds.filter((id) => !tagById[id]);
+    return (
+      <div className="pi-custom">
+        <p className="pi-help-sm">{t("editProfile.customSpecialtyHint")}</p>
+        <div className="pi-custom-row">
+          <input
+            className="pi-input"
+            type="text"
+            value={customInput}
+            placeholder={t("editProfile.customSpecialtyPlaceholder")}
+            aria-label={ti("customTagLabel")}
+            maxLength={40}
+            disabled={maxTagsReached}
+            onChange={(e) => setCustomInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); confirmCustomTag(); } }}
+          />
+          <button
+            type="button"
+            className="pi-btn"
+            onClick={confirmCustomTag}
+            disabled={!customInput.trim() || maxTagsReached}
+          >
+            {t("editProfile.add")}
+          </button>
+        </div>
+        {customIds.map((id) => (
+          <button
+            key={id}
+            type="button"
+            role="checkbox"
+            aria-checked="true"
+            className="pi-tag-row is-on"
+            onClick={() => removeRole(id)}
+          >
+            <Checkbox checked />
+            <span className="pi-tag-name">{id}</span>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const renderTagRow = (tag, extraClass = "") => {
+    const on = selectedRoleIds.includes(tag.id);
+    const disabled = !on && maxTagsReached;
+    return (
+      <button
+        key={tag.id}
+        type="button"
+        role="checkbox"
+        aria-checked={on}
+        className={`pi-tag-row${on ? " is-on" : ""}${extraClass}`}
+        disabled={disabled}
+        onClick={() => toggleRole(tag.id)}
+      >
+        <Checkbox checked={on} />
+        <span className="pi-tag-name">{tagLabel(tag.id)}</span>
+      </button>
+    );
+  };
+
+  // ── Nivel ──
+  const levelPending = draft?.requestedCreativeLevel === 4;
+
+  // ── Render ──
+  const bio = draft?.bio || "";
 
   return (
-    <div>
-      <div className="ux-card-main">
-        <h2 className="ux-card-title-h2">{t("editProfile.infoTitle")}</h2>
-        <p className="ux-card-subtitle">
-          {t("editProfile.infoSubtitle").split("\\n").map((line, i) => (
-            <React.Fragment key={i}>
-              {line}
-              {i < t("editProfile.infoSubtitle").split("\\n").length - 1 && <br />}
-            </React.Fragment>
-          ))}
-        </p>
-      </div>
+    <div className="pi-root">
+      {/* 1. Foto de perfil */}
+      <Section id="sec-foto" title={ti("photoTitle")} help={ti("photoHelp")}>
+        <div className="pi-photo">
+          <img src={profileImage} alt={t("default.profilePictureAlt")} />
+          {avatarUploading && (
+            <div className="pi-photo-loading" aria-hidden="true"><span className="pi-spinner" /></div>
+          )}
+        </div>
+        <div className="pi-photo-actions">
+          <button type="button" className="pi-btn" onClick={() => profileFileRef.current?.click()} disabled={avatarUploading}>
+            {ti("changePhoto")}
+          </button>
+          <button type="button" className="pi-text-btn" onClick={() => deleteProfilePicture()} disabled={avatarUploading}>
+            {ti("removePhoto")}
+          </button>
+          <input
+            ref={profileFileRef}
+            id="profileFile"
+            name="profileFile"
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (!file) return;
+              setAvatarUploading(true);
+              try { await uploadProfilePicture(file); } finally { setAvatarUploading(false); }
+            }}
+          />
+        </div>
+      </Section>
 
-      <section id="card-identidad" className="ux-card">
-        <div className="ux-editprofile-section">
-          {/* Foto de perfil */}
-          <div id="sec-foto" className="ux-anchor-target">
-            <div className="ux-form-block">
-              <label className="ux-form-label" htmlFor="profileFile">
-                {t("default.profilePictureAlt")}
-              </label>
-
-              <div className="ux-photo-box">
-                {avatarUploading && <div className="ux-upload-loading" aria-hidden="true"><div className="ux-upload-spinner" /></div>}
-                <div className="center ux-photo-preview">
-                  <img src={profileImage} alt={t("default.profilePictureAlt")} />
-                </div>
-
-                <div className="ux-photo-actions">
-                  <div>
-                    <button
-                      type="button"
-                      className="ux-link-btn"
-                      onClick={() => profileFileRef.current.click()}
-                    >
-                      <input
-                        name="profileFile"
-                        id="profileFile"
-                        ref={profileFileRef}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        onChange={async (e) => {
-                          const file = e.target.files[0];
-                          if (!file) return;
-                          e.target.value = "";
-                          setAvatarUploading(true);
-                          try { await uploadProfilePicture(file); } finally { setAvatarUploading(false); }
-                        }}
-                      />
-
-                      <img src={editCard} className="ux-icon" alt={t("editProfile.edit")} />
-                      {t("editProfile.edit")}
-                    </button>
-
-                    <span className="ux-sep">|</span>
-
-                    <button
-                      type="button"
-                      className="ux-link-btn danger"
-                      onClick={() => deleteProfilePicture()}
-                    >
-                      <img src={trashDelete} className="ux-icon" alt={t("editProfile.delete")} style={{width:"12px"}} />
-                      {t("editProfile.delete")}
-                    </button>
-                  </div>
-
-                  <div className="ux-photo-hint">
-                    {t("editProfile.changeMayTakeTime")}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Nombre / Apellido */}
-          <div id="sec-nombre" className="ux-anchor-target">
-            {isCompany || isEducationalInstitution ? (
-              <div className="ux-form-row">
-                <div className="ux-form-field" style={{ gridColumn: "1 / -1" }}>
-                  <label className="ux-form-label" htmlFor="companyName">
-                    {t("editProfile.companyNameLabel")}
-                  </label>
-                  <input
-                    id="companyName"
-                    name="companyName"
-                    type="text"
-                    autoComplete="organization"
-                    className="ux-input"
-                    value={draft?.companyName || ""}
-                    onChange={(e) => setDraftField("companyName", e.target.value)}
-                    placeholder="Nombre de la empresa"
-                  />
-                </div>
-
-                <div className="ux-form-field" style={{ gridColumn: "1 / -1" }}>
-                  <label className="ux-form-label" htmlFor="companyWebsite">
-                    {t("editProfile.companyWebsiteLabel")}
-                  </label>
-                  <input
-                    id="companyWebsite"
-                    name="companyWebsite"
-                    type="url"
-                    autoComplete="url"
-                    className="ux-input"
-                    value={draft?.social?.sitioWeb || ""}
-                    onChange={(e) => setDraftField("social.sitioWeb", e.target.value)}
-                    placeholder="empresa.com"
-                  />
-                  <div className="ux-helper">{t("editProfile.websiteHelper")}</div>
-                </div>
-              </div>
-            ) : (
-              <div className="ux-form-row">
-                <div className="ux-form-field">
-                  <label className="ux-form-label" htmlFor="firstName">
-                    {t("editProfile.firstName")}
-                  </label>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    className="ux-input"
-                    value={splitName(draft?.fullName || "").firstName}
-                    onChange={(e) => {
-                      const { lastName } = splitName(draft?.fullName || "");
-                      setDraftField("fullName", `${e.target.value} ${lastName}`.trim());
-                    }}
-                    placeholder={t("firstNamePlaceholder")}
-                  />
-                </div>
-
-                <div className="ux-form-field">
-                  <label className="ux-form-label" htmlFor="lastName">
-                    {t("editProfile.lastName")}
-                  </label>
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    className="ux-input"
-                    value={splitName(draft?.fullName || "").lastName}
-                    onChange={(e) => {
-                      const { firstName } = splitName(draft?.fullName || "");
-                      setDraftField("fullName", `${firstName} ${e.target.value}`.trim());
-                    }}
-                    placeholder={t("lastNamePlaceholder")}
-                  />
-                </div>
-              </div>
+      {/* 1b. Portada en el directorio de creativos (/creatives). Solo para
+          perfiles creativos: empresas y escuelas no salen en ese directorio.
+          Sin portada propia, la tarjeta usa la foto de perfil. */}
+      {!isOrg && uploadCreativeCover && (
+        <Section
+          id="sec-directorio"
+          title={(
+            <>
+              {ti("directoryTitle")}
+              {/* Ver /creatives en otra pestaña, por si no queda claro qué es */}
+              <a
+                className="pi-title-link"
+                href="/creatives"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={ti("seeCreatives")}
+              >
+                <ArrowUpRight size={16} strokeWidth={1.8} aria-hidden="true" />
+                <span className="pi-title-link-tip" aria-hidden="true">{ti("seeCreatives")}</span>
+              </a>
+            </>
+          )}
+          help={ti("directoryHelp")}
+        >
+          <div className={`pi-photo${creativeCover ? "" : " pi-photo--fallback"}`}>
+            <img src={creativeCover || profileImage} alt={ti("directoryTitle")} />
+            {!creativeCover && <span className="pi-photo-note">{ti("directoryUsingProfile")}</span>}
+            {coverUploading && (
+              <div className="pi-photo-loading" aria-hidden="true"><span className="pi-spinner" /></div>
             )}
           </div>
+          <div className="pi-photo-actions">
+            <button type="button" className="pi-btn" onClick={() => coverFileRef.current?.click()} disabled={coverUploading}>
+              {creativeCover ? ti("changeCover") : ti("chooseCover")}
+            </button>
+            {creativeCover && (
+              <button
+                type="button"
+                className="pi-text-btn"
+                disabled={coverUploading}
+                onClick={async () => {
+                  setCoverUploading(true);
+                  try { await deleteCreativeCover(); } finally { setCoverUploading(false); }
+                }}
+              >
+                {ti("removePhoto")}
+              </button>
+            )}
+            <input
+              ref={coverFileRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (!file) return;
+                setCoverUploading(true);
+                try { await uploadCreativeCover(file); } finally { setCoverUploading(false); }
+              }}
+            />
+          </div>
+        </Section>
+      )}
 
-          {/* Ubicación */}
-          <div id="sec-ubicacion" className="ux-anchor-target">
-            <div className="ux-form-block">
-              <label className="ux-form-label">{t("editProfile.location")}</label>
-              <div className="ux-form-row">
+      {/* 2. Nombre */}
+      <Section id="sec-nombre" title={ti("nameTitle")}>
+        {isOrg ? (
+          <Field id="companyName">
+            <input
+              id="companyName"
+              name="companyName"
+              type="text"
+              autoComplete="organization"
+              className="pi-input"
+              aria-label={ti("companyName")}
+              value={draft?.companyName || ""}
+              onChange={(e) => setDraftField("companyName", e.target.value)}
+              placeholder={t("editProfile.companyNamePlaceholder")}
+            />
+          </Field>
+        ) : (
+          <div className="pi-grid-2 pi-grid-2--always">
+            <Field id="firstName">
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoComplete="given-name"
+                className="pi-input"
+                aria-label={ti("firstName")}
+                value={splitName(draft?.fullName || "").firstName}
+                onChange={(e) => {
+                  const { lastName } = splitName(draft?.fullName || "");
+                  setDraftField("fullName", `${e.target.value} ${lastName}`.trim());
+                }}
+                placeholder={t("firstNamePlaceholder")}
+              />
+            </Field>
+            <Field id="lastName">
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoComplete="family-name"
+                className="pi-input"
+                aria-label={ti("lastName")}
+                value={splitName(draft?.fullName || "").lastName}
+                onChange={(e) => {
+                  const { firstName } = splitName(draft?.fullName || "");
+                  setDraftField("fullName", `${firstName} ${e.target.value}`.trim());
+                }}
+                placeholder={t("lastNamePlaceholder")}
+              />
+            </Field>
+          </div>
+        )}
+      </Section>
 
-                {/* País */}
-                <div className="ux-form-field">
+      {/* 3. Ubicación */}
+      <Section id="sec-ubicacion" title={ti("locationTitle")} help={ti("locationHelp")}>
+        <div className="pi-locations">
+          {locations.map((loc) => {
+            const country = draft?.[loc.countryKey] || "";
+            const cityList = country && LOCATIONS[country];
+            const suffix = loc.n === 1 ? "" : loc.n;
+            return (
+              <div key={loc.n} className="pi-location">
+                <div className={`pi-grid-2 pi-grid-2--always${locationCount >= 2 ? " pi-has-remove" : ""}`}>
                   <select
-                    id="country"
-                    name="country"
-                    className="ux-input"
-                    value={draft?.country || ""}
+                    id={`country${suffix}`}
+                    name={`country${suffix}`}
+                    className="pi-input pi-select"
+                    aria-label={ti("country")}
+                    value={country}
                     onChange={(e) => {
-                      setDraftField("country", e.target.value);
-                      setDraftField("city", "");
-                      setCustomCityInput("");
-                      setCustomCountryInput("");
+                      setDraftField(loc.countryKey, e.target.value);
+                      setDraftField(loc.cityKey, "");
+                      loc.setCityInput("");
+                      if (loc.n === 1) setCustomCountryInput("");
                       setIsDirty(true);
                     }}
                   >
-                    <option value="">{t("editProfile.country")}</option>
-                    <option value="España">{t("countrySpain")}</option>
-                    <option disabled>──────────</option>
-                    {ALL_COUNTRIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                    <option value="__otro__">{t("editProfile.otherCountry")}</option>
+                    <CountryOptions t={t} />
                   </select>
-                </div>
 
-                {/* Ciudad */}
-                <div className="ux-form-field">
-                  {draft?.country && LOCATIONS[draft?.country] ? (
-                    // País con lista predefinida → select normal
+                  {cityList ? (
                     <select
-                      id="city"
-                      name="city"
-                      className="ux-input"
-                      value={draft?.city || ""}
+                      id={`city${suffix}`}
+                      name={`city${suffix}`}
+                      className="pi-input pi-select"
+                      aria-label={ti("city")}
+                      value={draft?.[loc.cityKey] || ""}
                       onChange={(e) => {
-                        setDraftField("city", e.target.value);
+                        setDraftField(loc.cityKey, e.target.value);
                         setIsDirty(true);
                       }}
                     >
-                      <option value="">{t("editProfile.city")}</option>
-                      {(LOCATIONS[draft?.country] || []).map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
+                      <option value="">{ti("city")}</option>
+                      {cityList.map((city) => <option key={city} value={city}>{translateCity(city, t)}</option>)}
                     </select>
                   ) : (
-                    // País sin lista o "Otro país" → input libre con estado local
+                    // País sin lista o "Otro país" → ciudad libre
                     <input
-                      id="city"
-                      name="city"
+                      id={`city${suffix}`}
+                      name={`city${suffix}`}
                       type="text"
-                      className="ux-input"
-                      value={customCityInput}
-                      placeholder={
-                        draft?.country
-                          ? t("editProfile.cityPlaceholder")
-                          : t("editProfile.selectCountryFirst")
-                      }
-                      disabled={!draft?.country}
-                      onChange={(e) => setCustomCityInput(e.target.value)}
+                      className="pi-input"
+                      aria-label={ti("city")}
+                      value={loc.cityInput}
+                      placeholder={country ? t("editProfile.cityPlaceholder") : t("editProfile.selectCountryFirst")}
+                      disabled={!country}
+                      onChange={(e) => loc.setCityInput(e.target.value)}
                       onBlur={(e) => {
-                        setDraftField("city", e.target.value);
+                        setDraftField(loc.cityKey, e.target.value);
                         setIsDirty(true);
                       }}
                       autoComplete="off"
                     />
                   )}
-                </div>
 
-              </div>
-
-              {/* Si eligió "Otro país" → input libre para el nombre del país */}
-              {draft?.country === "__otro__" && (
-                <div className="ux-form-row" style={{ marginTop: 10 }}>
-                  <div className="ux-form-field" style={{ gridColumn: "1 / -1" }}>
-                    <input
-                      type="text"
-                      className="ux-input"
-                      placeholder={t("editProfile.countryPlaceholder")}
-                      value={customCountryInput}
-                      onChange={(e) => setCustomCountryInput(e.target.value)}
-                      onBlur={(e) => {
-                        setDraftField("customCountry", e.target.value);
-                        setIsDirty(true);
-                      }}
-                      autoComplete="off"
-                    />
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-              {/* Segunda ubicación */}
-              {!showCity2 && (
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    type="button"
-                    className="ux-btn ux-exp-add-btn"
-                    onClick={() => setShowCity2(true)}
-                  >
-                    {t("editProfile.addSecondLocation")}
-                  </button>
-                </div>
-              )}
-
-              {showCity2 && (
-                <div style={{ marginTop: 12 }}>
-                  <div className="ux-form-row">
-
-                    {/* País 2 */}
-                    <div className="ux-form-field">
-                      <select
-                        id="country2"
-                        name="country2"
-                        className="ux-input"
-                        value={draft?.country2 || ""}
-                        onChange={(e) => {
-                          setDraftField("country2", e.target.value);
-                          setDraftField("city2", "");
-                          setCustomCityInput2("");
-                          setIsDirty(true);
-                        }}
-                      >
-                        <option value="">{t("editProfile.country")}</option>
-                        <option value="España">{t("countrySpain")}</option>
-                        <option disabled>──────────</option>
-                        {ALL_COUNTRIES.map((c) => (
-                          <option key={c} value={c}>{c}</option>
-                        ))}
-                        <option value="__otro__">{t("editProfile.otherCountry")}</option>
-                      </select>
-                    </div>
-
-                    {/* Ciudad 2 */}
-                    <div className="ux-form-field">
-                      {draft?.country2 && LOCATIONS[draft?.country2] ? (
-                        <select
-                          id="city2"
-                          name="city2"
-                          className="ux-input"
-                          value={draft?.city2 || ""}
-                          onChange={(e) => {
-                            setDraftField("city2", e.target.value);
-                            setIsDirty(true);
-                          }}
-                        >
-                          <option value="">{t("editProfile.city")}</option>
-                          {(LOCATIONS[draft?.country2] || []).map((city) => (
-                            <option key={city} value={city}>{city}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        <input
-                          id="city2"
-                          name="city2"
-                          type="text"
-                          className="ux-input"
-                          value={customCityInput2}
-                          placeholder={
-                            draft?.country2
-                              ? t("editProfile.cityPlaceholder")
-                              : t("editProfile.selectCountryFirst")
-                          }
-                          disabled={!draft?.country2}
-                          onChange={(e) => setCustomCityInput2(e.target.value)}
-                          onBlur={(e) => {
-                            setDraftField("city2", e.target.value);
-                            setIsDirty(true);
-                          }}
-                          autoComplete="off"
-                        />
-                      )}
-                    </div>
-
-                  </div>
-
-                  <div style={{ marginTop: 8 }}>
+                  {/* × dentro del campo de ciudad (que le reserva el hueco) */}
+                  {locationCount >= 2 && (
                     <button
                       type="button"
-                      className="ux-btn"
-                      style={{ fontSize: 12 }}
-                      onClick={() => {
-                        setShowCity2(false);
-                        setDraftField("city2", "");
-                        setDraftField("country2", "");
-                        setCustomCityInput2("");
-                        setIsDirty(true);
-                      }}
+                      className="pi-remove-x"
+                      onClick={() => handleRemoveLocation(loc.n)}
+                      aria-label={ti("removeLocation")}
                     >
-                      {t("editProfile.removeSecondLocation")}
+                      <X size={16} strokeWidth={1.6} aria-hidden="true" />
                     </button>
-                  </div>
+                  )}
                 </div>
-              )}
 
-          </div>
-
-          {/* Especialización + filtros */}
-          <div id="sec-especializacion" className="ux-anchor-target">
-            <div className="ux-form-block">
-              {/* ✅ 1) Especialización (perfil) - libre */}
-              <label className="ux-form-label">{t("sections.specialization")}</label>
-              <div className="ux-helper" style={{ marginBottom: 10 }}>
-                {t("editProfile.headlinesHelper")}
+                {/* "Otro país" (solo la primera ubicación): nombre del país */}
+                {loc.n === 1 && country === "__otro__" && (
+                  <input
+                    type="text"
+                    className="pi-input pi-location-extra"
+                    aria-label={ti("otherCountry")}
+                    placeholder={t("editProfile.countryPlaceholder")}
+                    value={customCountryInput}
+                    onChange={(e) => setCustomCountryInput(e.target.value)}
+                    onBlur={(e) => {
+                      setDraftField("customCountry", e.target.value);
+                      setIsDirty(true);
+                    }}
+                    autoComplete="off"
+                  />
+                )}
               </div>
+            );
+          })}
+        </div>
 
-              <div className="ux-form-row" style={{ gridTemplateColumns: "1fr", gap: 10 }}>
-                <input
-                  type="text"
-                  className="ux-input"
-                  value={headlines[0] || ""}
-                  onChange={(e) => setHeadlineAt(0, e.target.value)}
-                  placeholder={t("headlineExample1")}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-                <input
-                  type="text"
-                  className="ux-input"
-                  value={headlines[1] || ""}
-                  onChange={(e) => setHeadlineAt(1, e.target.value)}
-                  placeholder={t("headlineExample2")}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-                <input
-                  type="text"
-                  className="ux-input"
-                  value={headlines[2] || ""}
-                  onChange={(e) => setHeadlineAt(2, e.target.value)}
-                  placeholder={t("headlineExample3")}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
+        {locationCount < 3 && (
+          <button type="button" className="pi-add-btn" onClick={handleAddLocation}>
+            <Plus size={14} strokeWidth={1.8} aria-hidden="true" />
+            {ti("addLocation")}
+          </button>
+        )}
+      </Section>
+
+      {/* 4. Especialización */}
+      <Section
+        id="sec-especializacion"
+        title={ti("specTitle")}
+        help={ti("specHelp")}
+        aside={<span className="pi-counter">{selectedRoleIds.length} / {MAX_TAGS}</span>}
+      >
+        <div className="pi-slots">
+          {Array.from({ length: MAX_TAGS }).map((_, i) => {
+            const id = selectedRoleIds[i];
+            if (!id) {
+              return <div key={`empty-${i}`} className="pi-slot pi-slot--empty">{ti("emptySlot")}</div>;
+            }
+            return (
+              <div key={id} className="pi-slot">
+                <span className="pi-slot-text">
+                  <span className="pi-slot-name">{tagLabel(id)}</span>
+                  <span className="pi-slot-group">{groupLabel(tagGroupOf(id))}</span>
+                </span>
+                <button
+                  type="button"
+                  className="pi-icon-btn"
+                  onClick={() => removeRole(id)}
+                  aria-label={`${ti("remove")} ${tagLabel(id)}`}
+                >
+                  <X size={16} strokeWidth={1.6} aria-hidden="true" />
+                </button>
               </div>
+            );
+          })}
+        </div>
 
-              <div className="ux-helper" style={{ marginTop: 10 }}>
-                {t("editProfile.headlinesShowHint")}
-              </div>
-
-              {/* Separador visual suave */}
-              <div style={{ height: 68 }} />
-
-              {/* ✅ 2) Cómo filtrar tu perfil - lista cerrada (professionalTags) */}
-              <label className="ux-form-label">{t("editProfile.filterProfile")}</label>
-
-              <div className="ux-helper">
-                <p className="ob-subtitle">
-                  {t("editProfile.filterProfileHelper").split("\\n").map((line, i) => (
-                    <React.Fragment key={i}>
-                      {line}
-                      {i < t("editProfile.filterProfileHelper").split("\\n").length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
+        {/* Desktop/tablet: maestro–detalle (categorías | etiquetas) */}
+        <div className="pi-picker">
+          <span className="pi-label">{ti("pickerLabel")}</span>
+          <div className="pi-picker-box">
+            <div className="pi-picker-groups" role="tablist" aria-orientation="vertical">
+              {orderedGroups.map((group) => {
+                const isActive = activeGroup === group;
+                const count = groupCounts[group] || 0;
+                return (
+                  <button
+                    key={group}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    className={`pi-picker-group${isActive ? " is-active" : ""}`}
+                    onClick={() => setActiveGroup(group)}
+                  >
+                    <span className="pi-picker-group-name">{groupLabel(group)}</span>
+                    {count > 0
+                      ? <span className="pi-picker-group-count">{count}</span>
+                      : !isActive && <ChevronRight size={14} strokeWidth={1.8} aria-hidden="true" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="pi-picker-panel" role="tabpanel">
+              {activeGroup && (
+                <p className="pi-picker-head">
+                  {maxTagsReached && activeGroup !== "Otro"
+                    ? ti("fullNote", { group: groupLabel(activeGroup) })
+                    : groupLabel(activeGroup)}
                 </p>
+              )}
+              {activeGroup === "Otro"
+                ? renderCustomTagPanel()
+                : (
+                  <div className="pi-picker-tags">
+                    {(rolesByGroup[activeGroup] || []).map((tag) => renderTagRow(tag))}
+                  </div>
+                )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile: botón que abre el sheet */}
+        <button type="button" className="pi-add-btn pi-mobile-only" onClick={() => setSheetOpen(true)}>
+          <List size={14} strokeWidth={1.8} aria-hidden="true" />
+          {ti("changeTags")}
+        </button>
+      </Section>
+
+      {/* 5. Presentación corta */}
+      {/* Sin etiqueta encima del campo (repetía el título); el contador va
+          arriba a la derecha, como en Especialización. */}
+      <Section
+        id="sec-bio"
+        title={ti("bioTitle")}
+        help={ti("bioHelp")}
+        aside={<span className="pi-counter">{bio.length} / {BIO_MAX}</span>}
+      >
+        <Field id="bio">
+          <textarea
+            id="bio"
+            name="bio"
+            autoComplete="off"
+            spellCheck={false}
+            rows={3}
+            className="pi-input pi-textarea"
+            aria-label={ti("bioTitle")}
+            value={bio}
+            onChange={(e) => setDraftField("bio", e.target.value.slice(0, BIO_MAX))}
+            placeholder={t("editProfile.shortBioPlaceholder")}
+          />
+        </Field>
+      </Section>
+
+      {/* 6. Email de contacto (solo lectura) */}
+      <Section id="sec-email" title={ti("emailTitle")}>
+        <Field>
+          <div className="pi-readonly">
+            <span className="pi-readonly-value">{draft?.email || ""}</span>
+            <Link to="/myprofile/settings" className="pi-readonly-link">{ti("changeInSettings")}</Link>
+          </div>
+        </Field>
+      </Section>
+
+      {/* 7. Representación */}
+      <Section id="sec-representation" title={ti("repTitle")} help={ti("repHelp")}>
+        <div className="pi-grid-2">
+          <Field id="representationName" label={ti("agency")}>
+            <input
+              id="representationName"
+              name="representationName"
+              type="text"
+              className="pi-input"
+              value={draft?.social?.representationName || ""}
+              onChange={(e) => setDraftField("social.representationName", e.target.value)}
+              placeholder={ti("agencyPlaceholder")}
+            />
+          </Field>
+          <Field id="representationWeb" label={ti("link")}>
+            <input
+              id="representationWeb"
+              name="representationWeb"
+              type="url"
+              className="pi-input"
+              value={draft?.social?.representationWeb || ""}
+              onChange={(e) => setDraftField("social.representationWeb", e.target.value)}
+              placeholder="https://"
+            />
+          </Field>
+        </div>
+      </Section>
+
+      {/* 8. Web o portfolio online */}
+      <Section id="sec-web" title={ti("webTitle")}>
+        <Field id="siteWeb">
+          <input
+            id="siteWeb"
+            name="siteWeb"
+            type="url"
+            autoComplete="url"
+            className="pi-input"
+            aria-label={ti("webTitle")}
+            value={draft?.social?.sitioWeb || ""}
+            onChange={(e) => setDraftField("social.sitioWeb", e.target.value)}
+            placeholder="https://"
+          />
+        </Field>
+      </Section>
+
+      {/* 9. Nivel de experiencia */}
+      {!isOrg && (
+        <Section id="sec-experiencia-nivel" title={ti("levelTitle")} help={ti("levelHelp")}>
+          <div className="pi-levels" role="radiogroup" aria-labelledby="sec-experiencia-nivel-title">
+            {LEVELS.map((lvl) => {
+              const isPending = lvl.value === 4 && levelPending;
+              const selected = draft?.creativeLevel === lvl.value || isPending;
+              return (
+                <button
+                  key={lvl.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-describedby={isPending ? "pi-level-pending-note" : undefined}
+                  className={`pi-level${selected ? " is-on" : ""}`}
+                  onClick={() => onLevelChange(lvl.value)}
+                >
+                  <span className="pi-level-name">{lvl.name}</span>
+                  <span className="pi-level-desc">{ti(lvl.descKey)}</span>
+                  {isPending && <span className="pi-level-tag">{ti("inReview")}</span>}
+                </button>
+              );
+            })}
+          </div>
+          {levelPending && (
+            <p id="pi-level-pending-note" className="pi-help-sm">{ti("pendingNote")}</p>
+          )}
+        </Section>
+      )}
+
+      {sheetOpen && (
+        <SpecializationSheet
+          ti={ti}
+          orderedGroups={orderedGroups}
+          rolesByGroup={rolesByGroup}
+          roleOptions={roleOptions}
+          groupCounts={groupCounts}
+          groupLabel={groupLabel}
+          tagLabel={tagLabel}
+          selectedRoleIds={selectedRoleIds}
+          maxTagsReached={maxTagsReached}
+          removeRole={removeRole}
+          renderTagRow={renderTagRow}
+          renderCustomTagPanel={renderCustomTagPanel}
+          onClose={() => setSheetOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Sheet de Especialización (mobile): mismo estilo que los sheets de "Tus
+// proyectos". Paso 1: elegidas + buscador + categorías; paso 2: etiquetas de
+// la categoría. Escape o tocar fuera cierran; el foco queda dentro.
+function SpecializationSheet({
+  ti, orderedGroups, rolesByGroup, roleOptions, groupCounts, groupLabel, tagLabel,
+  selectedRoleIds, maxTagsReached, removeRole, renderTagRow, renderCustomTagPanel, onClose,
+}) {
+  const [group, setGroup] = useState(null);
+  const [query, setQuery] = useState("");
+  const sheetRef = useRef(null);
+  // onClose cambia en cada render del padre: se lee del ref para que el
+  // efecto (foco inicial + trampa de foco) corra solo al abrir.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    const el = sheetRef.current;
+    const prevFocus = document.activeElement;
+    const focusables = () => el?.querySelectorAll("button:not(:disabled), input:not(:disabled)") ?? [];
+    focusables()[0]?.focus();
+
+    const onKey = (e) => {
+      if (e.key === "Escape") { e.preventDefault(); onCloseRef.current(); return; }
+      if (e.key !== "Tab") return;
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      prevFocus?.focus?.();
+    };
+  }, []);
+
+  const q = query.trim().toLowerCase();
+  const results = q
+    ? roleOptions.filter((tag) => tagLabel(tag.id).toLowerCase().includes(q))
+    : [];
+  const counter = <span className="pi-counter">{selectedRoleIds.length} / {MAX_TAGS}</span>;
+
+  return (
+    <div className="pi-sheet-overlay" onMouseDown={onClose}>
+      <div
+        ref={sheetRef}
+        className="pi-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label={ti("specTitle")}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <span className="pi-sheet-handle" aria-hidden="true" />
+
+        <div className="pi-sheet-body">
+          {!group ? (
+            <>
+              <div className="pi-sheet-titlebar">
+                <h2 className="pi-sheet-title">{ti("specTitle")}</h2>
+                {counter}
               </div>
 
               {selectedRoleIds.length > 0 && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+                <div className="pi-sheet-chips">
                   {selectedRoleIds.map((id) => (
-                    <button
-                      key={id}
-                      type="button"
-                      className="filters-sticky-chip"
-                      onClick={() => removeRole(id)}
-                      title={t("editProfile.remove")}
-                    >
-                      <span>{roleLabelById[id] || id}</span>
-                      <span className="chip-x">×</span>
+                    <button key={id} type="button" className="pi-sheet-chip" onClick={() => removeRole(id)} aria-label={`${ti("remove")} ${tagLabel(id)}`}>
+                      {tagLabel(id)}
                     </button>
                   ))}
                 </div>
               )}
 
-              <div className="filters-tags filters-tags--level">
-                {orderedGroups.map((group) => {
-                  const isActive = activeGroup === group;
-                  const groupTags = group === 'Otro'
-                    ? selectedRoleIds.filter(id => !roleLabelById[id])
-                    : (rolesByGroup[group] || []).filter(t => selectedRoleIds.includes(t.id));
-                  const hasSelection = groupTags.length > 0;
-                  const icon = GROUP_ICONS[group];
-                  return (
-                    <button
-                      key={group}
-                      type="button"
-                      className={`filter-tag filter-country-tag${isActive ? ' is-active' : ''}${hasSelection ? ' has-selection' : ''}`}
-                      onClick={() => setActiveGroup(isActive ? null : group)}
-                    >
-                      {icon && <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />}
-                      {group}{hasSelection && !isActive ? ` (${groupTags.length})` : ''}
-                    </button>
-                  );
-                })}
+              <div className="pi-search">
+                <Search size={16} strokeWidth={1.8} aria-hidden="true" />
+                <input
+                  type="search"
+                  className="pi-input pi-search-input"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={ti("searchPlaceholder")}
+                  aria-label={ti("searchPlaceholder")}
+                />
               </div>
 
-              {/* SUBETIQUETAS DEL BLOQUE SELECCIONADO */}
-              {activeGroup && activeGroup !== 'Otro' && (
-                <div className="filters-country-cities">
-                  <div className="filters-tags filters-tags--level">
-                    {(rolesByGroup[activeGroup] || []).map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        className={`filter-tag${selectedRoleIds.includes(t.id) ? ' selected' : ''}`}
-                        onClick={() => toggleRole(t.id)}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
+              {q ? (
+                <div className="pi-sheet-list">
+                  {results.length
+                    ? results.map((tag) => renderTagRow(tag, " pi-tag-row--lg"))
+                    : <p className="pi-help-sm">{ti("noResults")}</p>}
                 </div>
-              )}
-
-              {/* PANEL "OTRO" → inputs libres */}
-              {activeGroup === 'Otro' && (
-                <div className="filters-country-cities">
-                  <p className="ux-helper" style={{ marginBottom: 8 }}>
-                    {t("editProfile.customSpecialtyHint")}
-                  </p>
-                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <input
-                      className="ux-input"
-                      type="text"
-                      value={customInput}
-                      placeholder={t("editProfile.customSpecialtyPlaceholder")}
-                      maxLength={40}
-                      disabled={selectedRoleIds.length >= 3}
-                      onChange={e => setCustomInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirmCustomTag(); } }}
-                    />
-                    <button
-                      type="button"
-                      className="filter-tag"
-                      onClick={confirmCustomTag}
-                      disabled={!customInput.trim() || selectedRoleIds.length >= 3}
-                    >
-                      {t("editProfile.add")}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Presentación corta */}
-          <div id="sec-bio" className="ux-anchor-target">
-            <div className="ux-form-block">
-              <label className="ux-form-label" htmlFor="bio">
-                {t("editProfile.shortBioLabel")}
-              </label>
-
-              <textarea
-                id="bio"
-                name="bio"
-                autoComplete="off"
-                spellCheck={false}
-                className="ux-textarea"
-                value={draft?.bio || ""}
-                onChange={(e) => {
-                  const v = e.target.value.slice(0, 150);
-                  setDraftField("bio", v);
-                }}
-                placeholder={t("editProfile.shortBioPlaceholder")}
-              />
-
-              <div className="ux-counter">
-                <span>{t("editProfile.max150Chars")}</span>
-                <span>{(draft?.bio || "").length}/150</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Email contacto */}
-          <div id="sec-email" className="ux-anchor-target">
-            <div className="ux-form-block">
-              <label className="ux-form-label" htmlFor="email">
-                {t("editProfile.contactEmailLabel")}
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                className="ux-input"
-                value={draft?.email || ""}
-                readOnly
-              />
-              <div className="ux-counter">{t("editProfile.emailReadonly")}</div>
-            </div>
-          </div>
-
-          {/* Representación */}
-          <div id="sec-representation" className="ux-anchor-target">
-            <div className="ux-form-block">
-              <label className="ux-form-label">{t("sections.representation")}</label>
-              <p className="ux-form-hint">{t("editProfile.representationHint")}</p>
-              <div className="ux-exp-form-row">
-                <div className="ux-form-block">
-                  <label className="ux-form-label-sm" htmlFor="representationName">
-                    {t("editProfile.agencyName")}
-                  </label>
-                  <input
-                    id="representationName"
-                    name="representationName"
-                    type="text"
-                    className="ux-input"
-                    value={draft?.social?.representationName || ""}
-                    onChange={(e) => setDraftField("social.representationName", e.target.value)}
-                    placeholder="Nombre de la agencia"
-                  />
-                </div>
-                <div className="ux-form-block">
-                  <label className="ux-form-label-sm" htmlFor="representationWeb">
-                    {t("editProfile.agencyLink")}
-                  </label>
-                  <input
-                    id="representationWeb"
-                    name="representationWeb"
-                    type="url"
-                    className="ux-input"
-                    value={draft?.social?.representationWeb || ""}
-                    onChange={(e) => setDraftField("social.representationWeb", e.target.value)}
-                    placeholder="agencia.com"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Sitio web */}
-          <div id="sec-web" className="ux-anchor-target">
-            <div className="ux-form-block">
-              <label className="ux-form-label" htmlFor="siteWeb">
-                {t("editProfile.websiteLabel")}
-              </label>
-              <input
-                id="siteWeb"
-                name="siteWeb"
-                type="url"
-                autoComplete="url"
-                className="ux-input"
-                value={draft?.social?.sitioWeb || ""}
-                onChange={(e) => setDraftField("social.sitioWeb", e.target.value)}
-                placeholder="tusitioweb.com"
-              />
-            </div>
-          </div>
-
-          {/* Nivel de experiencia */}
-          {!isCompany && !isEducationalInstitution && (
-            <div className="ux-form-block">
-              <label className="ux-form-label">{t("editProfile.experienceLevel")}</label>
-              {draft?.requestedCreativeLevel === 4 ? (
-                <p className="ux-form-hint ux-form-hint--pending">
-                  ⏳ {t("editProfile.professionalPending")}
-                </p>
               ) : (
-                <p className="ux-form-hint">{t("editProfile.experienceLevelHint")}</p>
+                <>
+                  <span className="pi-help-sm">{ti("orPickCategory")}</span>
+                  <div className="pi-sheet-list">
+                    {orderedGroups.map((g) => {
+                      const count = groupCounts[g] || 0;
+                      return (
+                        <button key={g} type="button" className="pi-sheet-group" onClick={() => setGroup(g)}>
+                          <span className="pi-sheet-group-name">{groupLabel(g)}</span>
+                          {count > 0 && <span className="pi-sheet-group-count">{ti("chosenCount", { count })}</span>}
+                          <ChevronRight size={16} strokeWidth={1.8} aria-hidden="true" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
               )}
-              <div className="ux-level-options">
-                {[
-                  { value: 1, name: 'Newcomer',     icon: 'newcomer.png',     desc: t("editProfile.levelNewcomerDesc") },
-                  { value: 2, name: 'Graduated',    icon: 'graduated.png',    desc: t("editProfile.levelGraduatedDesc") },
-                  { value: 3, name: 'Emerging',     icon: 'emerging.png',     desc: t("editProfile.levelEmergingDesc") },
-                  { value: 4, name: 'Professional', icon: 'professional.png', desc: t("editProfile.levelProfessionalDesc") },
-                ].map(lvl => {
-                  const isPending = lvl.value === 4 && draft?.requestedCreativeLevel === 4;
-                  const selected  = draft?.creativeLevel === lvl.value || isPending;
-                  return (
-                    <button
-                      key={lvl.value}
-                      type="button"
-                      className={`ux-level-btn ${selected ? 'selected' : ''} ${isPending ? 'pending' : ''}`}
-                      onClick={() => onLevelChange(lvl.value)}
-                    >
-                      <img className="ux-level-icon" src={`/iconos/${lvl.icon}`} alt="" aria-hidden="true" />
-                      <span className="ux-level-name">
-                        {lvl.name}{isPending && <span className="ux-level-pending"> ({t("editProfile.pendingDays")})</span>}
-                      </span>
-                      <span className="ux-level-desc">{lvl.desc}</span>
-                    </button>
-                  );
-                })}
+            </>
+          ) : (
+            <>
+              <div className="pi-sheet-titlebar">
+                <button type="button" className="pi-text-btn pi-sheet-back" onClick={() => setGroup(null)}>
+                  <ChevronLeft size={14} strokeWidth={1.8} aria-hidden="true" />
+                  {ti("backToCategories")}
+                </button>
+                {counter}
               </div>
-            </div>
+              <h2 className="pi-sheet-title">{groupLabel(group)}</h2>
+              {maxTagsReached && group !== "Otro" && <p className="pi-help-sm">{ti("fullNoteMobile")}</p>}
+              {group === "Otro"
+                ? renderCustomTagPanel()
+                : (
+                  <div className="pi-sheet-list">
+                    {(rolesByGroup[group] || []).map((tag) => renderTagRow(tag, " pi-tag-row--lg"))}
+                  </div>
+                )}
+            </>
           )}
         </div>
-      </section>
+
+        <div className="pi-sheet-footer">
+          <button type="button" className="pi-sheet-done" onClick={onClose}>{ti("done")}</button>
+        </div>
+      </div>
     </div>
   );
 }

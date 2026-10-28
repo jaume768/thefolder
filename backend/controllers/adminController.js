@@ -6,10 +6,13 @@ const BlogPost = require('../models/BlogPost');
 const School = require('../models/School'); // Agregar modelo de escuela
 const Magazine = require('../models/Magazine'); // Agregar modelo de revista
 const Industry = require('../models/Industry'); // Agregar modelo de industria
+const Visit = require('../models/Visit');
+const DailyStat = require('../models/DailyStat');
+const EditLog = require('../models/EditLog');
 
 const { uploadFile } = require('../utils/storageService');
 const { escapeRegex } = require('../utils/textUtils');
-const { processImageIfNeeded } = require('../utils/imageProcessor');
+const { processImageIfNeeded, processThumb } = require('../utils/imageProcessor');
 
 
 const parseJsonArray = (value, fallback = []) => {
@@ -1672,36 +1675,39 @@ exports.createPost = async (req, res) => {
         
         // Manejar subida de imágenes
         const uploadedImages = [];
+        const uploadedThumbs = [];
         let mainImage = '';
-        
+
         if (req.files && req.files.length > 0) {
-            // Subir cada imagen a Cloudinary
             for (const file of req.files) {
                 try {
-                    // Crear stream de datos para Cloudinary
-                    const buf = await processImageIfNeeded(file.buffer);
-                    const { url: _postImgUrl } = await uploadFile(buf, 'posts');
-                    uploadedImages.push(_postImgUrl);
-                    
-                    // Primera imagen subida será la principal si no hay una específica
-                    if (!mainImage) {
-                        mainImage = _postImgUrl;
-                    }
+                    const [fullBuf, thumbBuf] = await Promise.all([
+                        processImageIfNeeded(file.buffer),
+                        processThumb(file.buffer),
+                    ]);
+                    const [{ url: fullUrl }, { url: thumbUrl }] = await Promise.all([
+                        uploadFile(fullBuf, 'posts'),
+                        uploadFile(thumbBuf, 'posts/thumbs'),
+                    ]);
+                    uploadedImages.push(fullUrl);
+                    uploadedThumbs.push(thumbUrl);
+                    if (!mainImage) mainImage = fullUrl;
                 } catch (err) {
                 }
             }
         }
-        
+
         if (uploadedImages.length === 0) {
             return res.status(400).json({ success: false, message: 'Se requiere al menos una imagen para el post' });
         }
-        
+
         // Crear el post
         const newPost = new Post({
             user: userId,
             title,
             description,
             images: uploadedImages,
+            thumbUrls: uploadedThumbs,
             mainImage,
             tags: tags || [],
             peopleTags: peopleTags || [],
@@ -1746,20 +1752,27 @@ exports.updatePost = async (req, res) => {
         // Procesar nuevas imágenes si se proporcionan
         if (req.files && req.files.length > 0) {
             const uploadedImages = [];
-            
-            // Subir cada imagen a Cloudinary
+            const uploadedThumbs = [];
+
             for (const file of req.files) {
                 try {
-                    const buf = await processImageIfNeeded(file.buffer);
-                    const { url: _postImgUrl } = await uploadFile(buf, 'posts');
-                    uploadedImages.push(_postImgUrl);
+                    const [fullBuf, thumbBuf] = await Promise.all([
+                        processImageIfNeeded(file.buffer),
+                        processThumb(file.buffer),
+                    ]);
+                    const [{ url: fullUrl }, { url: thumbUrl }] = await Promise.all([
+                        uploadFile(fullBuf, 'posts'),
+                        uploadFile(thumbBuf, 'posts/thumbs'),
+                    ]);
+                    uploadedImages.push(fullUrl);
+                    uploadedThumbs.push(thumbUrl);
                 } catch (err) {
                 }
             }
-            
+
             if (uploadedImages.length > 0) {
                 updates.images = [...post.images, ...uploadedImages];
-                // Actualizar mainImage si no había ninguna previamente
+                updates.thumbUrls = [...(post.thumbUrls || []), ...uploadedThumbs];
                 if (!post.mainImage && uploadedImages.length > 0) {
                     updates.mainImage = uploadedImages[0];
                 }
@@ -2019,7 +2032,7 @@ exports.updateAdminPassword = async (req, res) => {
         const adminId = req.user._id;
 
         // Buscar el admin por ID
-        const admin = await User.findById(adminId);
+        const admin = await User.findById(adminId).select('+password');
         if (!admin) {
             return res.status(404).json({ success: false, message: 'Administrador no encontrado' });
         }
@@ -2613,7 +2626,7 @@ exports.getUserActivity = async (req, res) => {
 
     const users = await User.find(
       { isAdmin: { $ne: true } },
-      'fullName email role createdAt lastProfileEditAt profileCompleted'
+      'fullName email role createdAt lastProfileEditAt lastLoginAt profileCompleted'
     )
       .sort({ lastProfileEditAt: -1, createdAt: -1 })
       .limit(100)
@@ -2622,6 +2635,74 @@ exports.getUserActivity = async (req, res) => {
     res.json({ total, edited, retentionPct, users });
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener actividad de usuarios.' });
+  }
+};
+
+// ── Tráfico: visitantes, procedencia y tiempo en la web ─────────────────
+// Todo lo de aquí es agregado (conteos/medias), nunca "cuánto tiempo pasó
+// el usuario X" — ver Visit.js/DailyStat.js/EditLog.js para el porqué.
+// Fechas: se devuelven en ISO/UTC tal cual; el panel admin las formatea a
+// hora de España (Europe/Madrid) al pintarlas, nunca aquí.
+exports.getTrafficStats = async (req, res) => {
+  try {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - 7);
+    const startOfMonth = new Date(now);
+    startOfMonth.setDate(now.getDate() - 30);
+
+    const [
+      loggedInWeek,
+      loggedInMonth,
+      anonWeek,
+      anonMonth,
+      sourceBreakdown,
+      dailyStatsMonth,
+      visitsThisMonthCount,
+      topEditedFields,
+    ] = await Promise.all([
+      Visit.distinct('user', { user: { $ne: null }, visitedAt: { $gte: startOfWeek } }),
+      Visit.distinct('user', { user: { $ne: null }, visitedAt: { $gte: startOfMonth } }),
+      Visit.distinct('anonId', { user: null, anonId: { $ne: null }, visitedAt: { $gte: startOfWeek } }),
+      Visit.distinct('anonId', { user: null, anonId: { $ne: null }, visitedAt: { $gte: startOfMonth } }),
+      Visit.aggregate([
+        { $match: { visitedAt: { $gte: startOfMonth } } },
+        { $group: { _id: '$source', count: { $sum: 1 } } },
+      ]),
+      DailyStat.find({
+        date: { $gte: startOfMonth.toISOString().slice(0, 10) },
+      }).lean(),
+      Visit.countDocuments({ visitedAt: { $gte: startOfMonth } }),
+      EditLog.aggregate([
+        { $match: { editedAt: { $gte: startOfMonth } } },
+        { $unwind: '$fields' },
+        { $group: { _id: '$fields', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+      ]),
+    ]);
+
+    const activeMinutesMonth = dailyStatsMonth.reduce((sum, d) => sum + (d.activeMinutes || 0), 0);
+    const avgMinutesPerVisit = visitsThisMonthCount > 0
+      ? Math.round((activeMinutesMonth / visitsThisMonthCount) * 10) / 10
+      : 0;
+
+    const sources = { instagram: 0, tiktok: 0, twitter: 0, google: 0, email: 0, direct: 0, other: 0 };
+    sourceBreakdown.forEach((row) => {
+      if (sources[row._id] !== undefined) sources[row._id] = row.count;
+    });
+
+    res.json({
+      visitors: {
+        loggedIn: { week: loggedInWeek.length, month: loggedInMonth.length },
+        anonymous: { week: anonWeek.length, month: anonMonth.length },
+      },
+      sources,
+      avgMinutesPerVisit,
+      topEditedFields: topEditedFields.map((f) => ({ field: f._id, count: f.count })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener estadísticas de tráfico.' });
   }
 };
 

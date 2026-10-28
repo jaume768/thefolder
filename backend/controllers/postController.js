@@ -3,18 +3,26 @@ const User = require('../models/User');
 const { uploadFile } = require('../utils/storageService');
 const mongoose = require('mongoose');
 const { escapeRegex } = require('../utils/textUtils');
-const { processImageIfNeeded } = require('../utils/imageProcessor');
+const { processImageIfNeeded, processThumb } = require('../utils/imageProcessor');
 
 exports.createPost = async (req, res) => {
     try {
         let imageUrls = [];
+        let thumbUrls = [];
         if (req.files && req.files.length > 0) {
-            // Procesamos cada imagen
-            for (const file of req.files) {
-                const buf = await processImageIfNeeded(file.buffer);
-                const { url: _imgUrl } = await uploadFile(buf, 'posts');
-                imageUrls.push(_imgUrl);
-            }
+            const uploads = await Promise.all(req.files.map(async (file) => {
+                const [fullBuf, thumbBuf] = await Promise.all([
+                    processImageIfNeeded(file.buffer),
+                    processThumb(file.buffer),
+                ]);
+                const [{ url: fullUrl }, { url: thumbUrl }] = await Promise.all([
+                    uploadFile(fullBuf, 'posts'),
+                    uploadFile(thumbBuf, 'posts/thumbs'),
+                ]);
+                return { fullUrl, thumbUrl };
+            }));
+            imageUrls = uploads.map(u => u.fullUrl);
+            thumbUrls = uploads.map(u => u.thumbUrl);
         }
         // Procesar etiquetas y demás datos enviados (convertir de JSON)
         const peopleTags = req.body.peopleTags ? JSON.parse(req.body.peopleTags) : [];
@@ -27,6 +35,9 @@ exports.createPost = async (req, res) => {
         const projectTypes = req.body.projectTypes
             ? JSON.parse(req.body.projectTypes).filter(t => typeof t === 'string' && t.trim())
             : [];
+        const publishedIn = req.body.publishedIn
+            ? JSON.parse(req.body.publishedIn).filter(e => String(e?.mediaName || '').trim())
+            : [];
 
         const newPost = new Post({
             user: req.user.id,
@@ -34,11 +45,13 @@ exports.createPost = async (req, res) => {
             description: req.body.description,
             authorRole: (req.body.authorRole || '').trim(),
             images: imageUrls,
+            thumbUrls,
             mainImage: imageUrls[0] || '',
             tags,
             peopleTags,
             imageTags,
             projectTypes,
+            publishedIn,
         });
         await newPost.save();
         res.status(201).json({ message: 'Post creado', post: newPost });
@@ -50,8 +63,36 @@ exports.createPost = async (req, res) => {
 exports.getUserPosts = async (req, res) => {
     try {
         const userId = req.user.id || req.user._id;
-        const posts = await Post.find({ user: userId }).sort({ createdAt: -1 });
+        const posts = await Post.find({ user: userId }).sort({ portfolioOrder: 1, createdAt: -1 });
         res.status(200).json({ posts });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Reordenar manualmente "Todos los proyectos" (drag & drop en
+// /proyectos/organizar y en el overlay equivalente de DaisyFilm) — recibe
+// SIEMPRE la lista completa de posts del usuario (esa pestaña ya lista todos
+// sus proyectos), así que un solo bulkWrite fija portfolioOrder = índice para
+// cada uno, sin dejar huecos ni valores mixtos con posts sin ordenar.
+exports.reorderPosts = async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const { postIds } = req.body;
+        if (!Array.isArray(postIds) || postIds.length === 0) {
+            return res.status(400).json({ message: 'postIds es obligatorio' });
+        }
+
+        const ownedCount = await Post.countDocuments({ _id: { $in: postIds }, user: userId });
+        if (ownedCount !== postIds.length) {
+            return res.status(403).json({ message: 'No autorizado sobre alguno de estos posts' });
+        }
+
+        await Post.bulkWrite(postIds.map((id, index) => ({
+            updateOne: { filter: { _id: id, user: userId }, update: { portfolioOrder: index } },
+        })));
+
+        res.status(200).json({ message: 'Orden actualizado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -62,7 +103,7 @@ exports.getRandomPosts = async (req, res) => {
     try {
         const posts = await Post.aggregate([{ $sample: { size: limit } }]);
         // Se hace un populate manual de los posts obtenidos
-        const postsWithUser = await Post.populate(posts, { path: 'user', select: 'fullName city city2 country2' });
+        const postsWithUser = await Post.populate(posts, { path: 'user', select: 'fullName city city2 country2 city3 country3' });
         res.status(200).json({ posts: postsWithUser });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -95,7 +136,7 @@ exports.getRandomPostsExcluding = async (req, res) => {
         // Hacemos un populate manual para incluir información del usuario
         const postsWithUser = await Post.populate(posts, {
             path: 'user',
-            select: 'username profile fullName companyName city country city2 country2 professionalTags'
+            select: 'username profile fullName companyName city country city2 country2 city3 country3 professionalTags'
         });
 
         res.status(200).json({ posts: postsWithUser });
@@ -148,35 +189,54 @@ exports.updatePost = async (req, res) => {
         if (req.body.projectTypes !== undefined) {
             updateData.projectTypes = JSON.parse(req.body.projectTypes).filter(t => typeof t === 'string' && t.trim());
         }
+        if (req.body.publishedIn !== undefined) {
+            updateData.publishedIn = JSON.parse(req.body.publishedIn).filter(e => String(e?.mediaName || '').trim());
+        }
 
         // Existing images kept by the user after possible deletions
         let existingImages = req.body.images ? JSON.parse(req.body.images) : null;
 
-        // Upload any new image files sent as newImages[]
+        // Read current post to reconstruct thumbUrls mapping
+        const currentPost = await Post.findOne({ _id: req.params.id, user: req.user.id });
+        if (!currentPost) return res.status(404).json({ message: 'Post no encontrado o no autorizado' });
+
+        let newThumbUrls = [];
         if (req.files && req.files.length > 0) {
             const slots = 6 - (existingImages || []).length;
             const filesToUpload = req.files.slice(0, Math.max(0, slots));
-            const newUrls = [];
-            for (const file of filesToUpload) {
-                const buf = await processImageIfNeeded(file.buffer);
-                const { url: _imgUrl } = await uploadFile(buf, 'posts');
-                newUrls.push(_imgUrl);
-            }
-            existingImages = (existingImages || []).concat(newUrls);
+            const uploads = await Promise.all(filesToUpload.map(async (file) => {
+                const [fullBuf, thumbBuf] = await Promise.all([
+                    processImageIfNeeded(file.buffer),
+                    processThumb(file.buffer),
+                ]);
+                const [{ url: fullUrl }, { url: thumbUrl }] = await Promise.all([
+                    uploadFile(fullBuf, 'posts'),
+                    uploadFile(thumbBuf, 'posts/thumbs'),
+                ]);
+                return { fullUrl, thumbUrl };
+            }));
+            existingImages = (existingImages || []).concat(uploads.map(u => u.fullUrl));
+            newThumbUrls = uploads.map(u => u.thumbUrl);
         }
 
         if (existingImages !== null) {
             updateData.images = existingImages;
             updateData.mainImage = existingImages[0] || '';
+            // Reconstruct thumbUrls: kept images map to stored thumbs; new uploads append.
+            const keptImages = existingImages.slice(0, existingImages.length - newThumbUrls.length);
+            const keptThumbs = keptImages.map(url => {
+                const idx = (currentPost.images || []).indexOf(url);
+                return idx >= 0 ? ((currentPost.thumbUrls || [])[idx] || '') : '';
+            });
+            updateData.thumbUrls = [...keptThumbs, ...newThumbUrls];
         }
 
-        const post = await Post.findOneAndUpdate(
-            { _id: req.params.id, user: req.user.id },
+        const post = await Post.findByIdAndUpdate(
+            req.params.id,
             updateData,
             { new: true }
         ).populate('user');
 
-        if (!post) return res.status(404).json({ message: 'Post no encontrado o no autorizado' });
         res.status(200).json({ message: 'Post actualizado', post });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -223,9 +283,11 @@ exports.getStaffPicks = async (req, res) => {
 
       const u = post.user || {}; // seguridad extra
 
-      post.images.forEach((imageUrl) => {
+      post.images.forEach((imageUrl, i) => {
+        const thumbUrl = (Array.isArray(post.thumbUrls) && post.thumbUrls[i]) || imageUrl;
         postImages.push({
           imageUrl,
+          thumbUrl,
           postId: post._id,
           postTitle: post.title,
           user: {
@@ -332,7 +394,7 @@ exports.getPostsByUsername = async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        let query = Post.find({ user: user._id.toString() }).sort({ createdAt: -1 });
+        let query = Post.find({ user: user._id.toString() }).sort({ portfolioOrder: 1, createdAt: -1 });
         if (limit > 0) query = query.limit(limit);
         const posts = await query;
         res.status(200).json({ posts });
@@ -370,7 +432,7 @@ exports.getExplorerPosts = async (req, res) => {
             const userQuery = {};
             if (cityArr.length) {
               const cityRx = cityArr.map(c => new RegExp(`^${escapeRegex(c)}$`, 'i'));
-              userQuery.$or = [{ city: { $in: cityRx } }, { city2: { $in: cityRx } }];
+              userQuery.$or = [{ city: { $in: cityRx } }, { city2: { $in: cityRx } }, { city3: { $in: cityRx } }];
             }
             if (countryArr.length) userQuery.country = { $in: countryArr.map(c => new RegExp(`^${escapeRegex(c)}$`, 'i')) };
             if (levelArr.length)   userQuery.creativeLevel    = { $in: levelArr };
@@ -396,15 +458,17 @@ exports.getExplorerPosts = async (req, res) => {
 
         posts = await Post.populate(posts, {
             path: 'user',
-            select: 'username profile fullName companyName city country city2 country2 professionalTags'
+            select: 'username profile fullName companyName city country city2 country2 city3 country3 professionalTags'
         });
 
         let postImages = [];
         posts.forEach(post => {
             if (!post.user) return;
-            post.images.forEach(imageUrl => {
+            post.images.forEach((imageUrl, i) => {
+                const thumbUrl = (Array.isArray(post.thumbUrls) && post.thumbUrls[i]) || imageUrl;
                 postImages.push({
                     imageUrl,
+                    thumbUrl,
                     postId: post._id,
                     postTitle: post.title,
                     user: {
@@ -470,7 +534,7 @@ exports.getExplorerFacets = async (req, res) => {
             const and = [];
             if (!skipCity && cityArr.length) {
                 const rx = cityArr.map(v => new RegExp(escapeRegex(v), 'i'));
-                and.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }] });
+                and.push({ $or: [{ city: { $in: rx } }, { city2: { $in: rx } }, { city3: { $in: rx } }] });
             }
             if (!skipTags && tagArr.length) {
                 and.push({ professionalTags: { $in: tagArr } });
@@ -485,7 +549,7 @@ exports.getExplorerFacets = async (req, res) => {
         // IDs de usuarios que cumplen TODOS los filtros de usuario (para projectType)
         const fullMatchIds = await User.distinct('_id', buildUserFilter());
 
-        const [tagAgg, cityAgg1, cityAgg2, levelAgg, typeAgg] = await Promise.all([
+        const [tagAgg, cityAgg1, cityAgg2, cityAgg3, levelAgg, typeAgg] = await Promise.all([
             // Tags: aplica ciudad + nivel, cuenta por tag
             User.aggregate([
                 { $match: buildUserFilter({ skipTags: true }) },
@@ -504,6 +568,12 @@ exports.getExplorerFacets = async (req, res) => {
                 { $match: { city2: { $exists: true, $ne: '' } } },
                 { $group: { _id: '$city2', count: { $sum: 1 } } },
             ]),
+            // Ciudades (city3): aplica tags + nivel
+            User.aggregate([
+                { $match: buildUserFilter({ skipCity: true }) },
+                { $match: { city3: { $exists: true, $ne: '' } } },
+                { $group: { _id: '$city3', count: { $sum: 1 } } },
+            ]),
             // Niveles: aplica ciudad + tags
             User.aggregate([
                 { $match: buildUserFilter({ skipLevel: true }) },
@@ -521,6 +591,7 @@ exports.getExplorerFacets = async (req, res) => {
         const cityMap = {};
         for (const c of cityAgg1) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
         for (const c of cityAgg2) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
+        for (const c of cityAgg3) cityMap[c._id] = (cityMap[c._id] || 0) + c.count;
 
         return res.json({
             tags:         Object.fromEntries(tagAgg.map(c => [c._id, c.count])),

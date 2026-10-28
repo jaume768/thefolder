@@ -12,9 +12,13 @@
     "title": "Filters",
     "experience": "Experience",
     "specialty": "Creative specialty",
+    "specialtyGroup": "Specialty",
     "location": "Location",
     "clear": "Clear filters",
-    "apply": "Filter"
+    "apply": "Filter",
+    "cityLabel": "City:",
+    "allCities": "All",
+    "specialtyLabel": "Specialty:"
   },
   "levels": {
     "1": "Student",

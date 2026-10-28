@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ImageUp } from 'lucide-react';
 
 const HeaderSection = ({ files, handleFileChange }) => {
     const { t } = useTranslation('offers');
@@ -8,7 +9,7 @@ const HeaderSection = ({ files, handleFileChange }) => {
             <div className="create-educational-header-image-upload">
                 <label htmlFor="headerImage" className="create-educational-upload-label">
                     <div className="create-educational-upload-icon">
-                        <i className="fas fa-arrow-up"></i>
+                        <ImageUp size={20} strokeWidth={1.8} aria-hidden="true" />
                     </div>
                     <span>{t('create.headerSection.uploadLabel')}</span>
                 </label>

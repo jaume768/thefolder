@@ -1,0 +1,77 @@
+/* components/controlPanel/userProfile/PortfolioPagesBar.css */
+.ppb-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ppb-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  max-width: 240px;
+}
+
+.ppb-card:hover {
+  border-color: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.ppb-card-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #999;
+}
+
+.ppb-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ppb-card-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ppb-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ppb-card-count {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ppb-card {
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+  .ppb-card:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  .ppb-card-thumb {
+    background: #2a2a2a;
+    color: #888;
+  }
+}

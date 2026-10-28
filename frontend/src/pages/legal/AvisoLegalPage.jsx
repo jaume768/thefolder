@@ -143,8 +143,8 @@ const AvisoLegal = () => {
                 <section>
                     <h2 className="legal-subtitle">9/ Historial de versiones</h2>
                     <ul className="legal-list">
-                        <li><strong>Versión 1.0</strong> — Publicada el 20 de mayo de 2025. Versión original.</li>
-                        <li><strong>Versión 2.0</strong> — Publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, corrección de jurisdicción, eliminación de datos personales innecesarios, unificación de edad mínima a 16 años, adecuación al dominio thefolder.es.</li>
+                        <li><strong>Versión 1.0</strong>: publicada el 20 de mayo de 2025. Versión original.</li>
+                        <li><strong>Versión 2.0</strong>: publicada en abril de 2026. Revisión general: actualización de nombre comercial a THEFOLDER, corrección de jurisdicción, eliminación de datos personales innecesarios, unificación de edad mínima a 16 años, adecuación al dominio thefolder.es.</li>
                     </ul>
                 </section>
 

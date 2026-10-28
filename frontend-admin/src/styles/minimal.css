@@ -1,0 +1,87 @@
+/* ── Capa global "minimal" del admin ───────────────────────────────────
+   Lo que las variables de theme.css no alcanzan: varias páginas tienen
+   radios, sombras, fuentes o mayúsculas escritos a mano en su CSS. Aquí se
+   igualan todas al lenguaje del panel de usuario (Inter Tight, esquinas
+   rectas, sin sombras ni mayúsculas). Con !important a propósito: es la
+   regla de estilo del panel entero y los CSS de página se cargan después.
+   Avatares y fotos de perfil siguen redondos. */
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+table {
+  font-family: 'Inter Tight', system-ui, sans-serif !important;
+}
+
+*:not(img):not([class*="avatar"]):not([class*="Avatar"]) {
+  border-radius: 0 !important;
+}
+
+*,
+*::before,
+*::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  letter-spacing: normal !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+th, label, button, .menu-category,
+[class*="badge"], [class*="status"], [class*="label"], [class*="title"] {
+  text-transform: none !important;
+}
+
+/* Sin degradados de color: fondos planos */
+[class*="card"],
+[class*="stat"],
+[class*="header"],
+[class*="banner"],
+[class*="hero"] {
+  background-image: none !important;
+}
+
+/* ── Botones ───────────────────────────────────────────────────────── */
+/* Primario negro; secundarios gris tenue; 40px de alto como en la web. */
+.btn,
+[class*="btn-"],
+[class*="-btn"],
+button[type="submit"] {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Campos ────────────────────────────────────────────────────────── */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select,
+textarea {
+  border-color: var(--border-color) !important;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--text-primary) !important;
+}
+
+/* ── Tablas: sin cajas, líneas finas ───────────────────────────────── */
+table {
+  border-collapse: collapse;
+}
+
+th {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ── Scroll discreto ───────────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d4 transparent;
+}

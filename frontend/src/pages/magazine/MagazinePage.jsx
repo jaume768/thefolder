@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import '../../components/controlPanel/css/magazine.css';
-import { FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import { Skel } from '../../components/skeleton/PageSkeleton';
 
 const Magazine = () => {
     const { t } = useTranslation('magazine');
@@ -16,7 +17,7 @@ const Magazine = () => {
         const fetchMagazines = async () => {
             try {
                 setLoading(true);
-                const apiUrl = process.env.REACT_APP_API_URL || 'https://backend-studen-station-production.up.railway.app';
+                const apiUrl = import.meta.env.VITE_BACKEND_URL // antes process.env (no existe en Vite: la página se rompía) + un backend antiguo de Railway;
                 const response = await axios.get(`${apiUrl}/api/magazines`);
                 
                 if (response.data.success) {
@@ -53,9 +54,13 @@ const Magazine = () => {
             </div>
 
             {loading ? (
-                <div className="magazine-loading">
-                    <FaSpinner className="spinner" />
-                    <p className="loading-indicator">{t('loading')}</p>
+                <div className="magazine-grid" aria-busy="true">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="magazine-card sk-static" aria-hidden="true">
+                            <Skel w="100%" ratio="3 / 4" />
+                            <Skel className="sk-line" w="70%" style={{ marginTop: 10 }} />
+                        </div>
+                    ))}
                 </div>
             ) : error ? (
                 <div className="magazine-error">

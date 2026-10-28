@@ -5,8 +5,8 @@
     "prefix": "thefolder.es/",
     "inputAria": "Username",
     "hint": "Use a professional name, no spaces and easy to remember.<br/>At the moment this name <1>CANNOT be changed</1>.",
-    "start": "START",
-    "loading": "LOADING...",
+    "start": "Start",
+    "loading": "Loading...",
     "errors": {
       "required": "Enter a username.",
       "tooLong": "Maximum 20 characters.",
@@ -19,15 +19,16 @@
     }
   },
   "common": {
-    "continue": "CONTINUE",
+    "continue": "Continue",
     "back": "Back",
     "next": "Next",
-    "finish": "FINISH",
-    "saving": "SAVING…",
+    "finish": "Finish",
+    "saving": "Saving…",
     "loading": "LOADING...",
     "networkError": "Network error. Please try again.",
     "genericError": "Something went wrong. Please try again.",
-    "uploadError": "Failed to upload the photo. Please try again."
+    "uploadError": "Failed to upload the photo. Please try again.",
+    "stepProgress": "Step {{current}} of {{total}}"
   },
   "type": {
     "title": "How do you want to use THEFOLDER?",
@@ -42,7 +43,7 @@
       "sub": "(brands, agencies, showrooms, magazines…)"
     },
     "guest": {
-      "title": "Explorer / Scout",
+      "title": "Explorer",
       "main": "Browse freely.",
       "sub": "Explore projects and creatives without creating a public profile."
     }
@@ -64,12 +65,12 @@
     }
   },
   "personal": {
-    "title": "Tell us about yourself",
+    "title": "About you",
     "subtitle": "This information helps us personalize your experience\nand show your profile correctly to other users.",
     "firstName": "First name",
-    "firstNamePlaceholder": "Your first name",
-    "lastName": "Last name",
-    "lastNamePlaceholder": "Your last name(s)",
+    "firstNamePlaceholder": "Name",
+    "lastName": "Surname",
+    "lastNamePlaceholder": "Surname",
     "country": "Country",
     "countryPlaceholder": "Country",
     "otherCountry": "Other country",
@@ -92,7 +93,7 @@
       "newcomer": { "name": "Newcomer", "main": "Currently studying.", "desc": "Student or recent graduate" },
       "graduated": { "name": "Graduated", "main": "Academic training completed.", "desc": "Academic training completed" },
       "emerging": { "name": "Emerging", "main": "Freelance / own projects.", "desc": "Freelance work or personal projects" },
-      "professional": { "name": "Professional", "main": "Active professional.", "sub": "— Subject to validation." }
+      "professional": { "name": "Professional", "main": "Strong portfolio.", "sub": "Subject to validation." }
     }
   },
   "specialization": {
@@ -108,9 +109,11 @@
     "subtitle": "It will be part of your identity on the platform and shown publicly.",
     "alt": "Profile photo",
     "edit": "Edit",
+    "upload": "Upload",
     "processing": "Processing…",
     "remove": "Remove",
     "hint": "You can change it later.",
+    "endRegister": "Finish registration",
     "errorRequired": "The photo is required to publish your profile.",
     "format": "Vertical format.",
     "imageTypeError": "The file must be an image."
@@ -120,7 +123,7 @@
     "saveFailed": "Could not save data.",
     "requiredFields": "Please complete all required fields.",
     "invalidDate": "The date of birth is incorrect.",
-    "allFieldsRequired": "First name, last name, date of birth, country, and city are required fields."
+    "allFieldsRequired": "First name, surname, date of birth, country, and city are required fields."
   },
   "profileStep": {
     "levelLabel": "Your level",
@@ -168,8 +171,8 @@
     "lastDataTitle": "Last details...",
     "firstName": "First name",
     "firstNamePlaceholder": "Enter your first name",
-    "lastName": "Last name(s)",
-    "lastNamePlaceholder": "Enter your last name(s)",
+    "lastName": "Surname",
+    "lastNamePlaceholder": "Enter your surname",
     "dateOfBirth": "Date of birth",
     "countryResidence": "Country of residence",
     "countrySelect": "Select your country",

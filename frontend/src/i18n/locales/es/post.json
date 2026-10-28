@@ -5,29 +5,41 @@
     "cover": "Portada",
     "addImage": "Añadir imagen",
     "removeImage": "Eliminar imagen",
-    "titlePlaceholder": "TÍTULO (*)",
+    "dragToReorder": "Arrastra para cambiar el orden",
+    "titlePlaceholder": "TÍTULO",
     "titleRequired": "El título es obligatorio.",
-    "descPlaceholder": "Descripción del proyecto (opcional)",
-    "rolePlaceholder": "Tu rol en el proyecto (Fotógrafo, Estilista…)",
+    "descPlaceholder": "Descripción del proyecto",
+    "rolePlaceholder": "¿Cuál fue tu rol en el proyecto?",
     "team": {
       "label": "Equipo /",
-      "namePlaceholder": "Nombre o busca @usuario dentro de THEFOLDER",
-      "rolePlaceholder": "Rol (Fotógrafo, Estilista…)",
+      "namePlaceholder": "Nombre completo",
+      "rolePlaceholder": "Rol",
+      "instagramPlaceholder": "instagram_username",
       "linkPlaceholder": "Link (opcional)",
       "addCollaborator": "Añadir colaborador",
       "unregistered": "No registrado",
       "registered": "Registrado ✅",
       "searching": "Buscando...",
-      "noMatches": "Sin coincidencias — añádelo como externo 👆",
-      "addTeamBtn": "Etiquetar Equipo"
+      "noMatches": "Sin coincidencias. Añádelo como externo 👆",
+      "addTeamBtn": "Equipo"
     },
     "credits": {
       "label": "Créditos de estilismo /",
-      "placeholder": "Escribe tus créditos (Falda de NouNou, zapatos de...)",
+      "placeholder": "Falda de NouNou, Zapatos de...",
       "noImagesFirst": "Sube imágenes primero para añadir créditos.",
-      "addCreditsBtn": "Créditos de Estilismo"
+      "addCreditsBtn": "Estilismo"
+    },
+    "publishedIn": {
+      "addBtn": "Publicado en",
+      "label": "Publicado en /",
+      "mediaPlaceholder": "Nombre de la revista / medio",
+      "urlPlaceholder": "URL del artículo (opcional)",
+      "online": "Online",
+      "printed": "Impreso",
+      "addEntry": "Añadir publicación"
     },
     "projectTags": {
+      "addBtn": "Tags",
       "title": "Tags de proyecto",
       "subtitle": "Ayuda a que tu trabajo se filtre correctamente (máx. 3)",
       "rightsLabel": "Confirmo que tengo los derechos necesarios sobre estas imágenes y autorizo a THEFOLDER a mostrarlas en la plataforma. El contenido no infringe derechos de autor, privacidad ni propiedad intelectual de terceros.",
@@ -58,8 +70,11 @@
   },
   "view": {
     "loading": "Cargando proyecto",
-    "noData": "No hay datos del proyecto",
-    "team": "Equipo /",
+    "noData": "Este proyecto no existe o ha sido eliminado.",
+    "by": "por",
+    "team": "Equipo",
+    "publishedIn": "Publicado en",
+    "printed": "Impreso",
     "edit": "Editar publicación",
     "delete": "Eliminar publicación",
     "deleteConfirm": "¿Estás seguro de eliminar esta publicación?",
@@ -90,7 +105,8 @@
     },
     "fullscreen": {
       "close": "CERRAR",
-      "alt": "Vista previa a pantalla completa"
+      "alt": "Vista previa a pantalla completa",
+      "explorer": "Ir al explorador"
     },
     "externalLink": {
       "title": "Estás saliendo de la plataforma",
@@ -99,9 +115,11 @@
       "continue": "Continuar"
     },
     "scrollTop": "Subir",
+    "tagTooltip": "Más proyectos con este tag",
     "copied": "Link copiado ✅",
     "saved": "¡Guardado!",
     "saveAction": "Guardar",
+    "saveActionAria": "Guardar post",
     "removed": "¡Eliminado!",
     "guestGateTitle": "Descubre más en THEFOLDER",
     "guestGateDesc": "Crea tu cuenta gratis para seguir explorando el trabajo de la comunidad creativa.",
@@ -110,33 +128,43 @@
   "edit": {
     "newBadge": "Nueva",
     "removeImage": "Eliminar imagen",
-    "titlePlaceholder": "TÍTULO (*)",
+    "titlePlaceholder": "TÍTULO",
     "titleRequired": "El título es obligatorio.",
-    "descPlaceholder": "Descripción del proyecto (opcional)",
+    "descPlaceholder": "Descripción del proyecto",
     "rolePlaceholder": "Tu rol en el proyecto (Fotógrafo, Estilista…)",
     "team": {
       "label": "Equipo /",
-      "namePlaceholder": "Nombre o busca @usuario dentro de THEFOLDER",
-      "rolePlaceholder": "Rol (Fotógrafo, Estilista…)",
+      "namePlaceholder": "Nombre",
+      "rolePlaceholder": "Rol",
+      "instagramPlaceholder": "instagram_handle",
       "linkPlaceholder": "Link (opcional)",
       "addCollaborator": "Añadir colaborador",
       "unregistered": "No registrado",
       "registered": "Registrado ✅",
       "searching": "Buscando...",
-      "noMatches": "Sin coincidencias — añádelo como externo 👆"
+      "noMatches": "Sin coincidencias. Añádelo como externo 👆"
     },
     "credits": {
       "label": "Créditos de estilismo /",
-      "placeholder": "Escribe tus créditos (Falda de NouNou, zapatos de...)"
+      "placeholder": "Falda de NouNou, Zapatos de..."
+    },
+    "publishedIn": {
+      "label": "Publicado en /",
+      "mediaPlaceholder": "Nombre de la revista / medio",
+      "urlPlaceholder": "URL del artículo (opcional)",
+      "online": "Online",
+      "printed": "Impreso",
+      "addEntry": "Añadir publicación"
     },
     "projectTags": {
       "label": "Tags de proyecto /",
       "max": "máx. 3"
     },
     "optional": {
-      "team": "Etiquetar Equipo",
-      "credits": "Créditos de Estilismo",
-      "tags": "Tags de Proyecto"
+      "team": "Equipo",
+      "credits": "Estilismo",
+      "tags": "Tags",
+      "publishedIn": "Publicado en"
     },
     "cancel": "CANCELAR",
     "save": "GUARDAR",

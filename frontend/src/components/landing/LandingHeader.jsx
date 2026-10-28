@@ -1,7 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "../i18n/LanguageSwitcher";
+import { LayoutPanelLeft } from "lucide-react";
+// LandingHeader nunca importaba su propio CSS — dependía de que
+// landing-styles.css ya estuviera cargado por otra página (Home.jsx,
+// JuneStampTemplate.jsx...). AuthLayout.jsx (que monta este header para
+// visitantes sin sesión) tampoco lo importa, así que si /explorer,
+// /creatives o un perfil en modo invitado era la PRIMERA página cargada
+// (entrada directa, no viniendo de "/"), ese chunk de CSS nunca llegaba a
+// pedirse y el header salía sin estilos. Se importa aquí para que vaya
+// siempre en el mismo chunk que el propio componente.
+import "./css/landing-styles.css";
 
 const LandingHeader = ({
   navItems,
@@ -17,7 +26,6 @@ const LandingHeader = ({
   const items = useMemo(() => (
     navItems || [
       { label: t("nav.creatives").toUpperCase(), to: "/creatives" },
-      { label: t("nav.profiles").toUpperCase(), to: "/perfiles" },
       // { label: t("nav.fashion").toUpperCase(), to: "/fashion" },
       // { label: t("nav.industry").toUpperCase(), to: "/industry" },
     ]
@@ -25,8 +33,50 @@ const LandingHeader = ({
 
   const isHome = location.pathname === "/";
 
+  // Se esconde en cuanto .tf-footer entra en el viewport — no todas las
+  // páginas que montan este header tienen footer (ver landing-footer.css,
+  // hoy solo Home.jsx lo renderiza), así que si no hay .tf-footer en el DOM
+  // esto simplemente no hace nada.
+  const [nearFooter, setNearFooter] = useState(false);
+  useEffect(() => {
+    const footer = document.querySelector(".tf-footer");
+    if (!footer) return;
+
+    let io;
+    // Espera a que la página termine de cargar (imágenes del hero, previews
+    // de plantillas, showcase...) antes de empezar a observar. Si se
+    // arranca al montar sin más, el documento todavía puede ser mucho más
+    // bajo de lo que será cuando esas imágenes terminen de cargar y
+    // empujen el contenido hacia abajo — el footer puede caer dentro del
+    // viewport en ese instante y el primer callback del observer reporta
+    // isIntersecting:true de entrada, escondiendo el header desde el
+    // principio en vez de solo al llegar de verdad al footer.
+    const start = () => {
+      // threshold:0.2 — hace falta que ~20% del footer esté ya visible, no
+      // solo que su borde superior toque el viewport por 1px. En páginas
+      // cortas (poco contenido antes del footer) eso evitaba que el header
+      // se escondiera casi al llegar, prácticamente desde el principio.
+      io = new IntersectionObserver(
+        ([entry]) => setNearFooter(entry.isIntersecting),
+        { threshold: 0.2 }
+      );
+      io.observe(footer);
+    };
+
+    if (document.readyState === "complete") {
+      start();
+    } else {
+      window.addEventListener("load", start, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener("load", start);
+      io?.disconnect();
+    };
+  }, [location.pathname]);
+
   return (
-    <header className={`dashboard-header landing-header ${menuOpen ? "is-open" : ""}`}>
+    <header className={`dashboard-header landing-header ${menuOpen ? "is-open" : ""} ${nearFooter && !menuOpen ? "is-footer-hidden" : ""}`}>
       {/* FILA SUPERIOR */}
       <div className="landing-header__row">
         <div className="header-left">
@@ -39,7 +89,6 @@ const LandingHeader = ({
             }}
           >
             {t("brand")}
-            {isHome && <span className="header-dot" />}
           </button>
 
           {/* NAV DESKTOP (solo desktop) */}
@@ -59,7 +108,6 @@ const LandingHeader = ({
                     }}
                   >
                     {it.label}
-                    {isActive && <span className="header-dot" />}
                   </button>
                 );
               })}
@@ -67,8 +115,6 @@ const LandingHeader = ({
         </div>
 
         <div className="header-right">
-          <LanguageSwitcher className="landing-lang-switcher" />
-
           <button
             type="button"
             className="tf-nav__link tf-nav__login"
@@ -85,7 +131,9 @@ const LandingHeader = ({
             {t("actions.register").toUpperCase()}
           </button>
 
-          {/* Burger <-> X (toggle) */}
+          {/* Mismo icono/trigger que MobileTopHeader.jsx (LayoutPanelLeft) —
+              la barra cerrada de este header debe leerse como la misma pieza
+              en toda la app, logueado o no. */}
           <button
             type="button"
             className={`mobile-top-menubtn ${menuOpen ? "active" : ""}`}
@@ -93,7 +141,7 @@ const LandingHeader = ({
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            {menuOpen ? "[ - ]" : "[ + ]"}
+            <LayoutPanelLeft size={15} strokeWidth={1.8} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -107,7 +155,6 @@ const LandingHeader = ({
             onClick={() => { setMenuOpen(false); navigate("/"); }}
           >
             {t("nav.home").toUpperCase()}
-            {isHome && <span className="header-dot" />}
           </button>
 
           {/* <button
@@ -132,7 +179,6 @@ const LandingHeader = ({
                 }}
               >
                 {it.label}
-                {isActive && <span className="header-dot" />}
               </button>
             );
           })}
@@ -140,8 +186,6 @@ const LandingHeader = ({
 
 
         <div className="landing-mobile-panel__actions">
-          <LanguageSwitcher className="landing-lang-switcher landing-lang-switcher--mobile" />
-
           <button
             type="button"
             className="tf-btn tf-btn--primary tf-btn--wide"

@@ -1,0 +1,300 @@
+/* ──────────────────────────────────────────────────────────────
+   "Cómo apareces en las búsquedas" — selector de tags de perfil
+   (antes "Cómo filtrar tu perfil"). Máx. 3 tags EN TOTAL, de
+   cualquier categoría — las categorías son solo navegación.
+
+   Mismo lenguaje visual que .filter-tag / .filters-sticky-chip
+   (Creatives.css, UserProfileExtern.css): Inter Tight, #222/#8a8a8a,
+   radio 8px, borde 1.2px #efefef. Mismos breakpoints que el resto
+   de la app: 768px (layout) y 480px (ajuste mobile pequeño).
+   ────────────────────────────────────────────────────────────── */
+
+.ptf-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, .08);
+}
+
+.ptf-head .ux-form-label.separator.ptf-title {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.ptf-counter {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: #222;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ptf-subtitle {
+  margin-bottom: 16px;
+}
+
+.ptf-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ── Categorías: lista vertical en desktop ─────────────────────── */
+
+.ptf-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.ptf-category {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: .02em;
+  color: #555;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.ptf-category:hover:not(.is-active) {
+  background: rgba(0, 0, 0, .04);
+  color: #222;
+}
+
+.ptf-category.has-selection:not(.is-active) {
+  color: #222;
+  font-weight: 500;
+}
+
+.ptf-category.is-active {
+  background: #111;
+  color: #fff;
+}
+
+.ptf-category-icon {
+  flex-shrink: 0;
+  color: #888;
+}
+
+.ptf-category.has-selection:not(.is-active) .ptf-category-icon {
+  color: #222;
+}
+
+.ptf-category.is-active .ptf-category-icon {
+  color: #fff;
+}
+
+.ptf-category-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ptf-category-count {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .08);
+  color: #222;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.ptf-category.is-active .ptf-category-count {
+  background: rgba(255, 255, 255, .2);
+  color: #fff;
+}
+
+/* ── Panel de tags de la categoría activa ──────────────────────── */
+
+.ptf-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.ptf-tag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.ptf-tag {
+  border: 1.2px solid #efefef;
+  background: #FDFDFD;
+  color: #222;
+  border-radius: 8px;
+  padding: 8px 12px;
+  letter-spacing: 0.04em;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .15s ease, opacity .15s ease;
+}
+
+.ptf-tag:hover:not(.is-disabled) {
+  border-color: #ccc;
+}
+
+.ptf-tag.is-selected {
+  border-color: #111;
+  font-weight: 500;
+}
+
+.ptf-tag.is-disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ptf-custom {
+  width: 100%;
+}
+
+/* ── Barra de etiquetas elegidas ────────────────────────────────── */
+
+.ptf-bottombar {
+  position: sticky;
+  bottom: 0;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #fdfdfd;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, .04);
+}
+
+.ptf-bottombar-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  flex-shrink: 0;
+}
+
+.ptf-bottombar-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ptf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: solid 1px #555;
+  color: #222;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  letter-spacing: .04em;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.ptf-chip:hover {
+  border-color: #111;
+}
+
+.ptf-bottombar-remaining {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  color: #8a8a8a;
+  flex-shrink: 0;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ── Responsive: mismos breakpoints que el resto de la app ─────── */
+
+@media (max-width: 768px) {
+  .ptf-body {
+    flex-direction: column;
+  }
+
+  .ptf-categories {
+    flex-direction: row;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .ptf-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ptf-category {
+    flex-shrink: 0;
+    width: auto;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: #f3f3f3;
+  }
+
+  .ptf-category-name {
+    white-space: nowrap;
+  }
+
+  .ptf-tag-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ptf-tag {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .ptf-bottombar-remaining {
+    width: 100%;
+    margin-left: 0;
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "../modals/css/editprofilemodal.css";
-import closeIcon from "../../../public/iconos/close.svg";
+import { X } from "lucide-react";
 
 
 export default function Modal({ open, title, children, onClose, footer }) {
@@ -23,7 +23,7 @@ export default function Modal({ open, title, children, onClose, footer }) {
         <div className="ux-modal-header">
           <h3 className="ux-modal-title">{title}</h3>
           <button className="ux-modal-close" onClick={onClose} aria-label={t('actions.close')}>
-            <img src={closeIcon} className="ux-icon" alt={t('actions.close')} />
+            <X size={18} strokeWidth={1.8} aria-hidden="true" />
           </button>
         </div>
 

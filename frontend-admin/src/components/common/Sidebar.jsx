@@ -1,117 +1,84 @@
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import {
-  FaChartBar,
-  FaUsers,
-  FaBriefcase,
-  FaGraduationCap,
-  FaNewspaper,
-  FaSchool,
-  FaBlog,
-  FaCog,
-  FaBook,
-  FaBuilding,
-  FaUserCheck,
-  FaFlag,
-  FaChartLine
-} from 'react-icons/fa';
+  LayoutGrid, MousePointerClick, Activity, Users, BadgeCheck, Flag,
+  Image, PenLine, BookOpen, Building2, School, Briefcase, GraduationCap, Settings,
+} from 'lucide-react';
+
+// Mismo lenguaje que el sidebar del panel de usuario (PanelSidebar.jsx de la
+// web): fondo blanco, grupos con un título pequeño en gris, enlaces #555 y el
+// activo en #111 sobre gris tenue. Iconos Lucide 17px / 1.8.
+const GROUPS = [
+  {
+    title: 'Estadísticas',
+    links: [
+      { to: '/', label: 'Resumen', icon: LayoutGrid, end: true },
+      { to: '/trafico', label: 'Tráfico y navegación', icon: MousePointerClick },
+      { to: '/actividad', label: 'Actividad', icon: Activity },
+    ],
+  },
+  {
+    title: 'Comunidad',
+    links: [
+      { to: '/usuarios', label: 'Usuarios', icon: Users },
+      { to: '/validacion', label: 'Validación', icon: BadgeCheck },
+      { to: '/reportes', label: 'Reportes', icon: Flag },
+    ],
+  },
+  {
+    title: 'Contenido',
+    links: [
+      { to: '/posts', label: 'Proyectos', icon: Image },
+      { to: '/blog', label: 'Blog', icon: PenLine },
+      { to: '/revistas', label: 'Revistas', icon: BookOpen },
+      { to: '/industria', label: 'Industria', icon: Building2 },
+      { to: '/schools', label: 'Escuelas', icon: School },
+    ],
+  },
+  {
+    title: 'Ofertas',
+    links: [
+      { to: '/ofertas', label: 'Empleo', icon: Briefcase },
+      { to: '/ofertas-educativas', label: 'Formación', icon: GraduationCap },
+    ],
+  },
+];
 
 const Sidebar = ({ isMobileOpen, toggleMobileSidebar }) => {
-  const { currentUser } = useAuth();
-
   const closeSidebar = () => {
-    if (isMobileOpen) {
-      toggleMobileSidebar();
-    }
+    if (isMobileOpen) toggleMobileSidebar();
   };
+
+  const renderLink = ({ to, label, icon: Icon, end }) => (
+    <NavLink key={to} to={to} end={end} className="sidebar-link" onClick={closeSidebar}>
+      <Icon className="sidebar-link-icon" size={17} strokeWidth={1.8} aria-hidden="true" />
+      <span className="sidebar-link-text">{label}</span>
+    </NavLink>
+  );
 
   return (
     <>
-      <div className={`sidebar ${isMobileOpen ? 'active' : ''}`}>
+      <aside className={`sidebar ${isMobileOpen ? 'active' : ''}`}>
         <div className="sidebar-header">
-          <h1 className="sidebar-logo">AdminPanel</h1>
+          <span className="sidebar-logo">THEFOLDER</span>
+          <span className="sidebar-logo-sub">Admin</span>
         </div>
-        
-        <div className="sidebar-menu">
-          <div className="menu-category">General</div>
-          
-          <NavLink to="/" className="sidebar-link" onClick={closeSidebar}>
-            <FaChartBar className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Dashboard</span>
-          </NavLink>
-          
-          <div className="menu-category">Gestión</div>
-          
-          <NavLink to="/usuarios" className="sidebar-link" onClick={closeSidebar}>
-            <FaUsers className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Usuarios</span>
-          </NavLink>
 
-          <NavLink to="/validacion" className="sidebar-link" onClick={closeSidebar}>
-            <FaUserCheck className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Validación</span>
-          </NavLink>
+        <nav className="sidebar-menu">
+          {GROUPS.map((group) => (
+            <div key={group.title} className="sidebar-group">
+              <div className="menu-category">{group.title}</div>
+              {group.links.map(renderLink)}
+            </div>
+          ))}
+        </nav>
 
-          <NavLink to="/actividad" className="sidebar-link" onClick={closeSidebar}>
-            <FaChartLine className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Actividad</span>
-          </NavLink>
-
-          <NavLink to="/reportes" className="sidebar-link" onClick={closeSidebar}>
-            <FaFlag className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Reportes</span>
-          </NavLink>
-          
-          <NavLink to="/ofertas" className="sidebar-link" onClick={closeSidebar}>
-            <FaBriefcase className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Ofertas</span>
-          </NavLink>
-          
-          <NavLink to="/ofertas-educativas" className="sidebar-link" onClick={closeSidebar}>
-            <FaGraduationCap className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Ofertas Educativas</span>
-          </NavLink>
-          
-          <NavLink to="/posts" className="sidebar-link" onClick={closeSidebar}>
-            <FaNewspaper className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Posts</span>
-          </NavLink>
-          
-          <NavLink to="/blog" className="sidebar-link" onClick={closeSidebar}>
-            <FaBlog className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Blog</span>
-          </NavLink>
-          
-          <NavLink to="/schools" className="sidebar-link" onClick={closeSidebar}>
-            <FaSchool className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Escuelas</span>
-          </NavLink>
-
-          <NavLink to="/industria" className="sidebar-link" onClick={closeSidebar}>
-            <FaBuilding className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Industria</span>
-          </NavLink>
-          
-          <NavLink to="/revistas" className="sidebar-link" onClick={closeSidebar}>
-            <FaBook className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Revistas</span>
-          </NavLink>
-          
-          <div className="menu-category">Configuración</div>
-          
-          <NavLink to="/configuracion" className="sidebar-link" onClick={closeSidebar}>
-            <FaCog className="sidebar-link-icon" />
-            <span className="sidebar-link-text">Ajustes</span>
-          </NavLink>
-        </div>
-        
         <div className="sidebar-footer">
-          v1.0.0 &copy; {new Date().getFullYear()}
+          {renderLink({ to: '/configuracion', label: 'Ajustes', icon: Settings })}
         </div>
-      </div>
-      
-      <div 
-        className={`sidebar-overlay ${isMobileOpen ? 'active' : ''}`} 
+      </aside>
+
+      <div
+        className={`sidebar-overlay ${isMobileOpen ? 'active' : ''}`}
         onClick={toggleMobileSidebar}
       ></div>
     </>

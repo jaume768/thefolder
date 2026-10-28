@@ -115,6 +115,7 @@
     letter-spacing: 0.04em;
     cursor: pointer;
     font-weight: 400;
+    margin-top: 24px;
 }
 
 .more-results:hover {
@@ -203,7 +204,10 @@
 .result-image-profile {
     width: 50px;
     height: 50px;
-    border-radius: 100%;
+    /* !important: esta tarjeta de resultado se monta también dentro del
+       buscador del header de /myprofile/edit, donde .dashboard-content
+       .overflow-hidden-desktop * resetea todos los border-radius a 0px. */
+    border-radius: 100% !important;
     overflow: hidden;
     margin-right: 12px;
     display: flex;
@@ -305,32 +309,11 @@
 }
 
 /* Estilos para el componente de búsqueda pantalla completa */
-.search-fullscreen {
-    width: 100%;
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    z-index: -5;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.search-fullscreen-header {
-    display: flex;
-    align-items: center;
-    padding: 15px 40px;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    margin-left: 230px;
-    top: 0;
-    background-color: white;
-    z-index: 10;
-}
+/* Posicionamiento real (top/z-index) definido más abajo, junto al resto del FIX de header/nav */
 
 .search-fullscreen-title{
   max-width: 1200px;
-  margin: 28px auto 10px;
+  margin: 12px auto;
   padding: 0 20px;
   font-size: 40px;
   color: #111;
@@ -615,7 +598,7 @@ img.offer-grid-img {
     text-align: center;
     padding: 50px 20px;
     color: #888;
-    background-color: #f0f0f0;
+    background-color: #efefef;
     border-radius: 8px;
     margin: 20px auto;
     max-width: 600px;
@@ -719,7 +702,7 @@ img.offer-grid-img {
 
 /* Ajusta estos valores a tu layout real */
 :root{
-  --desktop-header-h: 82px;   /* tu dashboard-header */
+  --desktop-header-h: 54px;   /* .dashboard-header / .nep-panel-header: top 12px + height 42px */
   --desktop-sidebar-w: 200px; /* tu dashboard-sidebar */
   --mobile-top-h: 64px;       /* tu MobileTopHeader */
   --mobile-bottom-h: 110px;   /* tu MobileNavbar (aprox) */
@@ -727,11 +710,14 @@ img.offer-grid-img {
 
 .search-fullscreen{
   position: fixed;
-  top: 0;
+  /* SearchFullScreen se renderiza DENTRO del <header> (isolation: isolate),
+     así que z-index nunca puede colocarlo detrás del propio header: al ser
+     position:fixed pinta por encima de sus hermanos no posicionados pase lo
+     que pase. La única forma real de no tapar el header es empezar debajo. */
+  top: var(--desktop-header-h);
   right: 0;
   bottom: 0;
 
-  /* ✅ para que el header quede por encima */
   z-index: 900;
 
   display: flex;
@@ -754,7 +740,7 @@ img.offer-grid-img {
 @media (max-width: 768px){
   .search-fullscreen{
     left: 0; /* en tablet/móvil normalmente no hay sidebar */
-    margin-top: 12px;
+    top: var(--mobile-top-h); /* a esta anchura .dashboard-header ya está oculto (<=767px) y manda MobileTopHeader */
     height: 100%;
     padding-bottom: 80px;
   }

@@ -4,6 +4,7 @@
    SECCIÓN
 ========================================================= */
 .tf-finalCta {
+  container-type: inline-size; /* para el cqw de .tf-finalCta__brand--text */
   background: #fdfdfd;
   overflow: hidden;
   height: fit-content;
@@ -41,7 +42,7 @@
 ========================================================= */
 .tf-finalCta__brand {
   font-family: 'Inter Tight', sans-serif;
-  font-size: clamp(80px, 13vw, 180px);
+  font-size: clamp(80px, 15vw, 180px);
   font-weight: 500;
   line-height: 0.9;
   letter-spacing: -0.02em;
@@ -50,6 +51,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-align: center;
+  /* THEFOLDER/ + su texto debajo, centrados juntos en el hueco que deja la
+     imagen (el margin-bottom auto lo pone .tf-finalCta__grid--center). */
+  margin: auto 0 0;
 }
 
 /* =========================================================
@@ -59,7 +63,7 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   padding: 0 34px;
-  margin-top: -8px;
+  margin-top: 8px;
 }
 
 .tf-finalCta__desc {
@@ -71,6 +75,62 @@
   letter-spacing: 0.02em;
   color: #333;
   font-weight: 400;
+}
+
+/* Presentación (LandingFinalCTA.jsx): arriba a la izquierda, bajo la
+   imagen, como papel pautado. Tamaño: la frase más larga ("the portfolio
+   builder...", ~17em en Inter Tight 500) ocupa el 70% del ancho. cqw =
+   ancho real de .tf-finalCta (sin la barra de scroll que 100vw sí cuenta),
+   así sangrías y rayas (en em) escalan igual en cualquier pantalla. */
+.tf-finalCta__brand--text {
+  --rule: 0.07em; /* grosor de la raya, casi como el trazo de la letra */
+  font-size: calc(70cqw / 18);
+  line-height: 0.95; /* caja justa: la raya queda pegada al texto */
+  white-space: nowrap;
+  text-align: left;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45em; /* separación entre filas */
+}
+
+.tf-finalCta .tf-finalCta__brand--text {
+  position: relative;
+  z-index: 1; /* por encima de la foto de fondo */
+  margin: 16px 0 auto 16px; /* esquina superior izquierda */
+}
+
+/* Cada fila: sangría delante (--in) y la raya sigue vacía después del
+   texto (--tail), distinta en cada fila para que no acaben a la par. */
+.tf-finalCta__row {
+  display: block;
+  padding: 0 var(--tail, 0) 0 var(--in, 0);
+  border-bottom: var(--rule) solid #0b0b0b;
+}
+
+/* Filas "largas": la raya llega hasta el 74% del ancho de la página (la
+   fila empieza a 16px del borde izquierdo). */
+.tf-finalCta__row--long {
+  min-width: calc(74cqw - 16px);
+  box-sizing: border-box;
+}
+
+/* Rayas vacías debajo del texto, cada una de un largo (--w). */
+.tf-finalCta__row--empty {
+  width: var(--w, 12em);
+  height: 0.95em;
+  padding: 0;
+}
+
+/* Texto centrado bajo THEFOLDER/: misma letra que .tf-finalCta__desc. */
+.tf-finalCta__grid--center {
+  margin: 16px 0 auto;
+}
+
+.tf-finalCta__desc--center {
+  grid-column: 1 / -1;
+  text-align: center;
 }
 
 /* =========================================================
@@ -144,7 +204,40 @@
     padding: 0 16px;
     white-space: normal;
     word-break: break-word;
-    margin-top: 56px;
+    margin: auto 0 0; /* centrado también en móvil (antes margin-top: 56px) */
+  }
+
+  /* Móvil: letra grande (min(8.6vw, 36px)) y las filas pueden partirse en
+     dos líneas; cada línea lleva su raya (fondo que se repite cada --lh, con
+     la raya a --rule-at, a la misma distancia del texto que en escritorio). */
+  .tf-finalCta__brand.tf-finalCta__brand--text {
+    --lh: 1.3em;
+    --rule-at: 1.12em;
+    font-size: min(8.6vw, 36px);
+    line-height: var(--lh);
+    gap: 0;
+    white-space: normal;
+    padding: 0;
+    max-width: calc(100cqw - 32px);
+  }
+
+  .tf-finalCta__row {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 0 0 calc(var(--in, 0em) * 0.5);
+    border-bottom: 0;
+    background-image: linear-gradient(
+      to bottom,
+      transparent calc(var(--rule-at) - var(--rule)),
+      #0b0b0b calc(var(--rule-at) - var(--rule)),
+      #0b0b0b var(--rule-at),
+      transparent var(--rule-at)
+    );
+    background-size: 100% var(--lh);
+  }
+
+  .tf-finalCta__row--long {
+    min-width: 0;
   }
 
   /* Grid pasa a 1 col en mobile */
@@ -173,5 +266,86 @@
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+}
+
+/* Foto de fondo, detrás del texto, en la esquina inferior derecha de la
+   primera pantalla: a 12px de los bordes, la misma separación que el botón
+   "Crear perfil" (y el menú en móvil) arriba a la derecha (oct 2026,
+   decisión del usuario). Mismo tamaño que tenía. */
+.tf-finalCta {
+  position: relative;
+}
+
+.tf-finalCta .tf-finalCta__imgRow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 16px; /* mismos 16px que el texto a la izquierda */
+  pointer-events: none;
+}
+
+.tf-finalCta .tf-finalCta__imgRow .tf-finalCta__imgCell {
+  width: 250px;
+  max-width: 60vw;
+  aspect-ratio: 4 / 3;
+  min-width: 0;
+}
+
+/* Móvil: márgenes laterales de la landing a 10px (16px en escritorio),
+   iguales a los dos lados en texto, fotos, barra de arriba y footer. */
+@media (max-width: 768px) {
+  /* Arriba a la izquierda del todo, a la altura del menú. Solo la primera
+     fila (la que está al lado del menú) es más estrecha, para no meterse
+     debajo de él (40px de botón + 12px de hueco). */
+  .tf-finalCta .tf-finalCta__brand--text {
+    margin-top: 12px;
+    margin-left: 10px;
+    max-width: calc(100cqw - 20px);
+  }
+
+  .tf-finalCta__row:first-child {
+    max-width: calc(100% - 52px);
+  }
+
+  .tf-finalCta .tf-finalCta__imgRow {
+    padding: 10px;
+  }
+}
+
+/* Móvil: rayas equilibradas como en el resto de secciones: la mayoría
+   acaba tras el texto con una cola corta y la fila long llega al final. */
+@media (max-width: 768px) {
+  .tf-finalCta__row {
+    min-width: 0;
+    padding-right: calc(var(--tail, 0em) * 0.35);
+  }
+
+  .tf-finalCta__row--long {
+    min-width: 100%;
+  }
+}
+
+/* Móvil: la foto de la primera pantalla, del mismo tamaño y formato que
+   las de la columna de perfiles (18vw, 3:4), como si fuera la primera de
+   esa columna. */
+@media (max-width: 768px) {
+  .tf-finalCta .tf-finalCta__imgRow .tf-finalCta__imgCell {
+    width: 18vw;
+    max-width: none;
+    aspect-ratio: 3 / 4;
+  }
+}
+
+/* Móvil: la primera pantalla ocupa exactamente una pantalla (100dvh, la
+   altura visible real del móvil, con o sin barra del navegador); la
+   siguiente sección empieza justo debajo. */
+@media (max-width: 768px) {
+  .tf-finalCta {
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }

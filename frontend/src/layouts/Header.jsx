@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { FaTimes } from 'react-icons/fa';
+import { X, LayoutPanelLeft } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
-import ProfileOptionsModal from '../components/modals/ProfileOptionsModal';
 import SearchResults from '../components/search/SearchResults';
 import SearchFullScreen from '../components/search/SearchFullScreen';
-import LoginModal from '../components/landing/LoginModal';
-import RegisterModal from '../components/landing/RegisterModal';
-import LanguageSwitcher from '../components/i18n/LanguageSwitcher';
 
 
 const getUsernameFromToken = () => {
@@ -27,10 +24,7 @@ try {
 const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOpen }) => {
   const { t } = useTranslation('common');
 
-  const [showProfileOptions, setShowProfileOptions] = useState(false);
   const [showCreateOptions, setShowCreateOptions] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false); // lo mantengo por si lo usas en otro momento
   const [professionalType, setProfessionalType] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,7 +40,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
   const createButtonRef = useRef(null);
-  const profileRef = useRef(null);
   const fullScreenRef = useRef(null);
 
   // ✅ NUEVO: menú tablet (NO lo tocamos ahora)
@@ -56,8 +49,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [firstName, setFirstName] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState(profilePicture || '/multimedia/usuarioDefault.jpg');
   const [myUsername, setMyUsername] = useState('');
 
   // ✅ Links del header (sin "Explorador"; ahora THEFOLDER va fuera como texto no clickable)
@@ -116,10 +107,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
       if (!token) return;
 
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const response = await axios.get(`${backendUrl}/api/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await api.get('/api/users/profile');
 
         const user = response.data;
 
@@ -136,11 +124,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         if (uname) localStorage.setItem("myUsername", uname);
 
         setProfessionalType(user.professionalType || null);
-
-        const name = (user.fullName || '').trim();
-        setFirstName(name ? name.split(' ')[0] : '');
-
-        setAvatarUrl(user.profile?.profilePicture || profilePicture || '/multimedia/usuarioDefault.jpg');
       } catch (error) {
       }
     };
@@ -158,9 +141,8 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
 
     try {
       setIsSearching(true);
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await axios.get(`${backendUrl}/api/users/search`, {
+      const response = await api.get('/api/users/search', {
         params: {
           query: term.trim(),
           searchByFullName: true,
@@ -225,6 +207,9 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
       const results = await performSearch(searchQuery);
       if (results) {
         setShowFullScreenSearch(true);
+        // La píldora vuelve a su forma original: el texto ya se ve como
+        // título en SearchFullScreen, mantenerlo aquí también es redundante.
+        setIsSearchExpanded(false);
       }
     }
   };
@@ -248,7 +233,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
   const handleAvatarClick = () => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      setShowLoginModal(true);
+      navigate("/login");
       return;
     }
 
@@ -261,19 +246,18 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
     }
   };
 
-  // "+" perfil -> desplegable
-  const handleChevronToggle = () => {
+  // Icono de cuadrícula -> panel de perfil, directo
+  const handleOpenPanel = () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      setShowLoginModal(true);
+      navigate('/login');
       return;
     }
-    setShowProfileOptions(prev => !prev);
+    navigate('/myprofile/edit');
   };
 
   // Cerrar cosas cuando cambia ruta
   useEffect(() => {
-    setShowProfileOptions(false);
     setShowCreateOptions(false);
     setShowResults(false);
     setShowFullScreenSearch(false);
@@ -283,36 +267,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
     // ✅ menú tablet
     setShowNavMenu(false);
   }, [location]);
-
-  const handleOptionSelect = (option) => {
-    setShowProfileOptions(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    switch (option) {
-      case 'editProfile':
-        navigate('/myprofile/edit');
-        break;
-      case 'community':
-        navigate('/community');
-        break;
-      case 'guardados':
-        navigate('/guardados');
-        break;
-      case 'misOfertas':
-        navigate('/myprofile/offers');
-        break;
-      case 'configuracion':
-        navigate('/myprofile/settings');
-        break;
-      case 'logout':
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("myUsername");
-        navigate("/");
-        break;
-      default:
-        break;
-    }
-  };
 
   const handleResultClick = (type, item) => {
     setShowResults(false);
@@ -354,10 +308,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
         setShowFullScreenSearch(false);
         setIsSearchExpanded(false);
       }
-
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setShowProfileOptions(false);
-      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -366,20 +316,22 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
 
 
 
-  const isGuardados = location.pathname.startsWith('/guardados');
+  const isGuardados = location.pathname.startsWith('/myprofile/saved');
 
   return (
     <header className="dashboard-header">
       {/* COLUMNA IZQUIERDA */}
       <div className="header-left">
+        <span className="dashboard-mark" aria-hidden="true">
+          <span className="dashboard-mark-t">T</span>
+          <span className="dashboard-mark-slash">/</span>
+        </span>
+
         <button
           className={`button header-left-link ${location.pathname.startsWith('/explorer') ? 'active' : ''}`}
           onClick={() => navigate('/explorer')}
         >
-          {t('brand')}
-          {location.pathname.startsWith('/explorer') && (
-            <span className="header-dot" />
-          )}
+          {t('nav.explorer')}
         </button>
 
 
@@ -395,7 +347,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
                 onClick={() => navigate(item.to)}
               >
                 {item.label}
-                {isActive && <span className="header-dot" />}
               </button>
             );
           })}
@@ -420,7 +371,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
           aria-expanded={showNavMenu}
         >
           {t('nav.menu')}
-          {(showNavMenu || activeNavItem) && <span className="header-dot" />}
         </button>
 
           {showNavMenu && (
@@ -442,7 +392,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
                     }}
                   >
                     {item.label}
-                    {isActive && <span className="header-dot" />}
                   </button>
                 );
               })}
@@ -454,12 +403,12 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
 
       {/* COLUMNA CENTRAL: buscador */}
       <div className="header-center" ref={searchRef}>
-        {!isSearchExpanded ? (
+        <div className={`dashboard-search-pill${isSearchExpanded ? ' expanded' : ''}`}>
           <button
             type="button"
             className="dashboard-search-trigger"
-            onClick={openSearch}
-            aria-label={t('actions.openSearch')}
+            onClick={() => (isSearchExpanded ? searchInputRef.current?.focus() : openSearch())}
+            aria-label={isSearchExpanded ? t('actions.closeSearch') : t('actions.openSearch')}
           >
             <img
               src="/iconos/search.svg"
@@ -468,40 +417,33 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
               className="search-sparkles-icon"
             />
           </button>
-        ) : (
-          <div className={`dashboard-search-pill expanded`}>
-            <img
-              src="/iconos/search.svg"
-              alt=""
-              aria-hidden="true"
-              className="search-sparkles-icon"
-            />
 
-            <input
-              ref={searchInputRef}
-              type="text"
-              className="modern-search-input"
-              placeholder={t('search.placeholder')}
-              value={searchQuery}
-              onChange={handleSearchInputChange}
-              onKeyDown={handleSearch}
-              onFocus={() => {
-                if (searchQuery && searchQuery.trim().length >= 2 && searchResults) {
-                  setShowResults(true);
-                }
-              }}
-            />
+          <input
+            ref={searchInputRef}
+            type="text"
+            className="modern-search-input"
+            placeholder={t('search.placeholder')}
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            onKeyDown={handleSearch}
+            tabIndex={isSearchExpanded ? 0 : -1}
+            onFocus={() => {
+              if (searchQuery && searchQuery.trim().length >= 2 && searchResults) {
+                setShowResults(true);
+              }
+            }}
+          />
 
-            <button
-              type="button"
-              className="search-clear-btn"
-              onClick={clearSearch}
-              aria-label={t('actions.closeSearch')}
-            >
-              <img src="/iconos/close.svg" alt="" aria-hidden="true" />
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            className="search-clear-btn"
+            onClick={clearSearch}
+            aria-label={t('actions.closeSearch')}
+            tabIndex={isSearchExpanded ? 0 : -1}
+          >
+            <X size={16} strokeWidth={1.8} aria-hidden="true" />
+          </button>
+        </div>
 
         {showResults && !showFullScreenSearch && searchResults && searchQuery && searchQuery.trim().length >= 2 && (
           <SearchResults
@@ -511,6 +453,7 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             onViewAll={() => {
               setShowFullScreenSearch(true);
               setShowResults(false);
+              setIsSearchExpanded(false);
             }}
           />
         )}
@@ -518,52 +461,49 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
 
       {/* COLUMNA DERECHA */}
       <div className="header-right">
-        <button
-          className={`button header-left-link create-main-btn ${isCreatePostOpen ? 'active' : ''} ${hasDraft ? 'has-draft' : ''}`}
-          onClick={() => {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-              navigate('/', { state: { showRegister: true } });
-              return;
-            }
-            onCreatePost?.();
-          }}
-        >
-          {t('actions.publish').toUpperCase()}
-          {isCreatePostOpen && <span className="header-dot" />}
-        </button>
+        <span className="create-main-btn-wrap">
+          <button
+            className={`button header-left-link create-main-btn ${isCreatePostOpen ? 'active' : ''}`}
+            onClick={() => {
+              const token = localStorage.getItem('authToken');
+              if (!token) {
+                navigate('/', { state: { showRegister: true } });
+                return;
+              }
+              onCreatePost?.();
+            }}
+          >
+            {t('actions.publish').toUpperCase()}
+          </button>
+          {hasDraft && <span className="create-main-btn-dot" aria-hidden="true" />}
+        </span>
 
-        <div className={`profile-wrapper ${showProfileOptions ? 'open' : ''}`} ref={profileRef}>
+        <div className="profile-wrapper">
           <button
             type="button"
             className="button header-left-link"
             onClick={handleAvatarClick}
-            aria-label={t('actions.myProfile')}
+            aria-label={t('actions.myPortfolio')}
           >
-            {t('actions.myProfile').toUpperCase()}
+            {t('actions.myPortfolio').toUpperCase()}
           </button>
 
           <button
             type="button"
-            className="button header-left-link --text-medium"
-            onClick={handleChevronToggle}
+            className={`button header-left-link --text-medium${location.pathname.startsWith('/myprofile/edit') ? " active" : ""}`}
+            onClick={handleOpenPanel}
             aria-label={t('actions.profileOptions')}
           >
-            [ + ]
-          </button>
-
-          {showProfileOptions && (
-            <ProfileOptionsModal
-              userName={firstName}
-              userAvatar={avatarUrl}
-              userUsername={myUsername}
-              onClose={() => setShowProfileOptions(false)}
-              onSelectOption={handleOptionSelect}
+            <LayoutPanelLeft
+              size={15}
+              strokeWidth={1.8}
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+              aria-hidden="true"
             />
-          )}
+            <span className="nep-icon-tooltip">{t('actions.myPanel')}</span>
+          </button>
         </div>
-
-        <LanguageSwitcher className="header-lang-switcher" />
       </div>
 
       {showFullScreenSearch && (
@@ -579,21 +519,6 @@ const Header = ({ profilePicture, onHamburgerClick, onCreatePost, isCreatePostOp
             onResultClick={handleResultClick}
           />
         </div>
-      )}
-
-      {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onSwitchToRegister={() => { setShowLoginModal(false); setShowRegisterModal(true); }}
-          onSwitchToReset={() => setShowLoginModal(false)}
-        />
-      )}
-
-      {showRegisterModal && (
-        <RegisterModal
-          onClose={() => setShowRegisterModal(false)}
-          onSwitchToLogin={() => { setShowRegisterModal(false); setShowLoginModal(true); }}
-        />
       )}
 
     </header>

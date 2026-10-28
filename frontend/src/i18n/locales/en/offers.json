@@ -53,8 +53,8 @@
       "functions": "Functions",
       "offered": "What we offer",
       "idealProfile": "Ideal profile",
-      "hardSkills": "Hard Skills",
-      "softSkills": "Soft Skills",
+      "hardSkills": "Hardskills",
+      "softSkills": "Softskills",
       "extraQuestions": "Extra questions"
     },
     "sections": {
@@ -277,6 +277,7 @@
     }
   },
   "myOffers": {
+    "title": "My offers",
     "loading": "Loading offers...",
     "loginRequired": "You need to log in to see your offers",
     "loginRequiredCandidates": "You need to log in to see the candidates",

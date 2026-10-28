@@ -1,0 +1,75 @@
+/* ── Configuración (/myprofile/settings) ──────────────────────────
+   La base es la de Info de perfil (ProfileInfo.css, .pi-*): filas
+   título+ayuda | campos, campos gris tenue sin borde, esquinas rectas.
+   Aquí solo lo propio de esta página (prefijo .st-). */
+
+/* "Cambiar" dentro de .pi-readonly es un <button>, no un <a> */
+.st-readonly-btn {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.st-readonly-btn:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Guardar (negro) + Cancelar (texto) bajo los campos en edición */
+.st-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mensajes de resultado / validación */
+.st-msg {
+  margin: -12px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.st-msg--error {
+  color: #c30f2a;
+}
+
+.st-msg--ok {
+  color: #111;
+}
+
+/* Estado de disponibilidad del username, al final del campo */
+.st-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  margin-left: 8px;
+  color: #8a8a8a;
+}
+
+.st-status .pi-spinner {
+  width: 14px;
+  height: 14px;
+}
+
+.st-status.is-ok {
+  color: #111;
+}
+
+.st-status.is-bad {
+  color: #c30f2a;
+}
+
+/* "Eliminar cuenta": mismo botón gris que el resto, texto en rojo (el
+   rojo sólido se reserva para el diálogo de confirmación). */
+.st-danger-btn {
+  color: #c30f2a;
+}
+
+@media (max-width: 768px) {
+  .st-actions .nep-ph-btn {
+    flex: 1;
+  }
+}

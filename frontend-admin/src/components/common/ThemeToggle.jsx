@@ -1,5 +1,5 @@
 import { useTheme } from '../../contexts/ThemeContext';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import { Moon, Sun } from 'lucide-react';
 import '../../styles/ThemeToggle.css';
 
 const ThemeToggle = () => {
@@ -12,9 +12,9 @@ const ThemeToggle = () => {
       title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
     >
       {theme === 'light' ? (
-        <FaMoon className="theme-toggle-icon" />
+        <Moon className="theme-toggle-icon" size={18} strokeWidth={1.8} />
       ) : (
-        <FaSun className="theme-toggle-icon" />
+        <Sun className="theme-toggle-icon" size={18} strokeWidth={1.8} />
       )}
     </button>
   );

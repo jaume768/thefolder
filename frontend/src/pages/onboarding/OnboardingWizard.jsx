@@ -9,6 +9,9 @@ import SpecializationStep from './steps/SpecializationStep';
 import PhotoStep from './steps/PhotoStep';
 import '../css/complete-registration.css';
 import './css/onboarding.css';
+import '../../components/controlPanel/css/explorer.css';
+import '../../components/controlPanel/css/Creatives.css';
+import { getRandomAuthShowcaseImage } from '../../utils/authShowcaseImages';
 
 const INITIAL_DATA = {
   accountType: 'creative', // TypeStep oculto temporalmente — valor fijo
@@ -52,6 +55,9 @@ const OnboardingWizard = () => {
 
   const [step, setStep] = useState(2); // TypeStep oculto temporalmente — empieza en UsernameStep
   const [data, setData] = useState(INITIAL_DATA);
+  // Elegida una sola vez al montar: se mantiene la misma imagen durante
+  // todo el wizard (no debe cambiar entre pasos).
+  const [showcaseImage] = useState(() => getRandomAuthShowcaseImage());
   const suggestedUsername = suggestUsername(getEmailFromToken());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -86,28 +92,32 @@ const OnboardingWizard = () => {
   // ── Paso 5: especialización ──────────────────────────────────────────
   const handleSpecializationNext = () => setStep(6);
 
-  // ── Paso 6: foto → submit ─────────────────────────────────────────────
+  // ── Paso 6: foto (opcional) → submit ────────────────────────────────────
+  // Sin foto, el usuario puede saltar este paso y terminar el registro
+  // igualmente (ver PhotoStep.jsx: "Salta y finalizar" cuando data.photo
+  // está vacío) — la subida de foto solo ocurre si hay una.
   const handlePhotoNext = async () => {
-    if (!data.photo) return;
     setError('');
     setSubmitting(true);
 
     try {
       const token = localStorage.getItem('authToken');
 
-      // 1. Subir foto primero — si falla, no avanzar
-      const formData = new FormData();
-      formData.append('file', data.photo);
-      const photoRes = await fetch(`${backendUrl}/api/users/profile-picture`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      if (!photoRes.ok) {
-        const photoData = await photoRes.json().catch(() => ({}));
-        setError(photoData.error || t('common.uploadError'));
-        setSubmitting(false);
-        return;
+      // 1. Subir foto primero (si el usuario eligió una) — si falla, no avanzar
+      if (data.photo) {
+        const formData = new FormData();
+        formData.append('file', data.photo);
+        const photoRes = await fetch(`${backendUrl}/api/users/profile-picture`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+        if (!photoRes.ok) {
+          const photoData = await photoRes.json().catch(() => ({}));
+          setError(photoData.error || t('common.uploadError'));
+          setSubmitting(false);
+          return;
+        }
       }
 
       // 2. Completar registro
@@ -144,11 +154,31 @@ const OnboardingWizard = () => {
   };
 
   // ── Render ────────────────────────────────────────────────────────────
+  // TypeStep (paso 1) oculto temporalmente — el flujo real activo son los
+  // 5 pasos siguientes (Username → Photo), de ahí TOTAL_STEPS=5. Si se
+  // reactiva TypeStep, subir esto a 6 y ajustar stepIndex.
+  const TOTAL_STEPS = 5;
+  const stepIndex = Math.min(Math.max(step - 1, 0), TOTAL_STEPS);
+  const progressPct = Math.round((stepIndex / TOTAL_STEPS) * 100);
+
   return (
-    <div className="ob-page">
-      <div className="ob-top-brand">
-        <button type="button" className="button header-left-link ob-top-logo">THEFOLDER /</button>
-      </div>
+    <div className="ob-page ob-wizard">
+      <div className="ob-content-panel">
+        <span className="ob-mark" aria-hidden="true">
+          <span className="ob-mark-t">T</span>
+          <span className="ob-mark-slash">/</span>
+        </span>
+
+        <div
+          className="ob-progress-track"
+          role="progressbar"
+          aria-valuenow={stepIndex}
+          aria-valuemin={0}
+          aria-valuemax={TOTAL_STEPS}
+          aria-label={t('common.stepProgress', { current: stepIndex, total: TOTAL_STEPS })}
+        >
+          <div className="ob-progress-fill" style={{ width: `${progressPct}%` }} />
+        </div>
 
       {step === 1 && (
         <TypeStep
@@ -210,6 +240,17 @@ const OnboardingWizard = () => {
           error={error}
         />
       )}
+      </div>
+
+      <div className="ob-image-panel">
+        <img src={showcaseImage.src} alt="" />
+        <p className="auth-image-credit">
+          Image by{' '}
+          <a href={showcaseImage.creditUrl} target="_blank" rel="noopener noreferrer">
+            {showcaseImage.creditName}
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

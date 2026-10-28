@@ -1,7 +1,8 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
+import { Plus, X } from "lucide-react";
+import { Section } from "../../ui/ProfileFormSection";
 
-const closeIcon = "/iconos/close.svg";
+const LEVELS = ["basic", "intermediate", "advanced", "native"];
 
 export default function LanguagesSection({
   languagesRows,
@@ -14,147 +15,63 @@ export default function LanguagesSection({
   const { t } = useTranslation("profile");
   const rows = Array.isArray(languagesRows) ? languagesRows : [];
 
-  if (rows.length === 0) {
-    return (
-      <div id="sec-cv-idiomas" className="ux-anchor-target">
-        <div className="ux-exp-add">
-          <button
-            type="button"
-            className="ux-btn ux-exp-add-btn"
-            onClick={addLanguageRow}
-          >
-            + {t("editProfile.addLanguage")}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div id="sec-cv-idiomas" className="ux-anchor-target">
-      <div className="ux-card">
-        <label className="ux-form-label separator" htmlFor="language-0">
-          <img src="/iconos/languages.png" className="ux-section-icon" alt="" />
-          {t("sections.languages")}
-        </label>
-
-        {/* Filas */}
-        <div className="ux-form-column" style={{ gap: 14, marginTop: 10 }}>
+    <Section
+      id="sec-cv-idiomas"
+      title={t("sections.languages")}
+      help={t("editProfile.cvPage.languagesHelp")}
+    >
+      {rows.length > 0 && (
+        <div className="pi-rows">
           {rows.map((row, idx) => (
-            <div key={`lang-${idx}`} className="ux-form-row" style={{ alignItems: "center" }}>
-              {/* Idioma */}
-              <div className="ux-form-field">
-                <input
-                  id={`language-${idx}`}
-                  name={`language-${idx}`}
-                  type="text"
-                  autoComplete="off"
-                  className="ux-input"
-                  placeholder={
-                    idx === 0
-                      ? "Castellano"
-                      : idx === 1
-                      ? "Inglés"
-                      : t("sections.languages")
-                  }
-                  value={row.language}
-                  onChange={(e) =>
-                    updateLanguageField(idx, "language", e.target.value)
-                  }
-                />
-              </div>
-
-              {/* Nivel */}
-              <div className="ux-form-field" style={{ flex: 2 }}>
-                <div className="ux-form-row" style={{ gap: 22, alignItems: "center" }}>
-                  <label
-                    className="ux-exp-check"
-                    htmlFor={`languageLevel-basic-${idx}`}
-                    style={{ marginTop: 0 }}
+            <div key={`lang-${idx}`} className="pi-row">
+              <div className="pi-lang">
+                {/* × dentro del campo del idioma (que le reserva el hueco) */}
+                <div className="pi-input-wrap pi-has-remove">
+                  <input
+                    id={`language-${idx}`}
+                    name={`language-${idx}`}
+                    type="text"
+                    autoComplete="off"
+                    className="pi-input"
+                    aria-label={t("sections.languages")}
+                    placeholder={idx === 0 ? t("editProfile.cvPage.languageExample1") : idx === 1 ? t("editProfile.cvPage.languageExample2") : t("editProfile.cvPage.languagePlaceholder")}
+                    value={row.language}
+                    onChange={(e) => updateLanguageField(idx, "language", e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="pi-remove-x"
+                    onClick={() => removeLanguageRow(idx)}
+                    aria-label={t("editProfile.removeLanguage")}
                   >
-                    <input
-                      id={`languageLevel-basic-${idx}`}
-                      type="radio"
-                      name={`lang-level-${idx}`}
-                      checked={row.level === "basic"}
-                      onChange={() => setLanguageLevel(idx, "basic")}
-                    />
-                    <span>{t("languageLevels.basic")}</span>
-                  </label>
-
-                  <label
-                    className="ux-exp-check"
-                    htmlFor={`languageLevel-intermediate-${idx}`}
-                    style={{ marginTop: 0 }}
-                  >
-                    <input
-                      id={`languageLevel-intermediate-${idx}`}
-                      type="radio"
-                      name={`lang-level-${idx}`}
-                      checked={row.level === "intermediate"}
-                      onChange={() => setLanguageLevel(idx, "intermediate")}
-                    />
-                    <span>{t("languageLevels.intermediate")}</span>
-                  </label>
-
-                  <label
-                    className="ux-exp-check"
-                    htmlFor={`languageLevel-advanced-${idx}`}
-                    style={{ marginTop: 0 }}
-                  >
-                    <input
-                      id={`languageLevel-advanced-${idx}`}
-                      type="radio"
-                      name={`lang-level-${idx}`}
-                      checked={row.level === "advanced"}
-                      onChange={() => setLanguageLevel(idx, "advanced")}
-                    />
-                    <span>{t("languageLevels.advanced")}</span>
-                  </label>
-
-                  <label
-                    className="ux-exp-check"
-                    htmlFor={`languageLevel-native-${idx}`}
-                    style={{ marginTop: 0 }}
-                  >
-                    <input
-                      id={`languageLevel-native-${idx}`}
-                      type="radio"
-                      name={`lang-level-${idx}`}
-                      checked={row.level === "native"}
-                      onChange={() => setLanguageLevel(idx, "native")}
-                    />
-                    <span>{t("languageLevels.native")}</span>
-                  </label>
+                    <X size={16} strokeWidth={1.6} aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="pi-segmented" role="radiogroup" aria-label={t("editProfile.cvPage.levelLabel")}>
+                  {LEVELS.map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      role="radio"
+                      aria-checked={row.level === level}
+                      className={`pi-segment${row.level === level ? " is-on" : ""}`}
+                      onClick={() => setLanguageLevel(idx, level)}
+                    >
+                      {t(`languageLevels.${level}`)}
+                    </button>
+                  ))}
                 </div>
               </div>
-
-              {/* Borrar */}
-              <button
-                type="button"
-                className="ux-link-btn danger"
-                onClick={() => removeLanguageRow(idx)}
-                aria-label={t("editProfile.removeLanguage")}
-                title={t("editProfile.removeLabel")}
-                style={{ padding: "6px 10px", justifyContent: "center" }}
-              >
-                <img src={closeIcon} className="ux-icon-sm" alt={t("editProfile.removeLabel")} />
-              </button>
             </div>
           ))}
         </div>
+      )}
 
-        {/* Añadir */}
-        <div className="ux-exp-add" style={{ marginTop: 12 }}>
-          <button
-            type="button"
-            className="ux-btn ux-exp-add-btn"
-            onClick={addLanguageRow}
-          >
-            {t("editProfile.addLanguage")}
-          </button>
-        </div>
-      </div>
-    </div>
+      <button type="button" className="pi-add-btn" onClick={addLanguageRow}>
+        <Plus size={14} strokeWidth={1.8} aria-hidden="true" />
+        {t("editProfile.addLanguage")}
+      </button>
+    </Section>
   );
 }

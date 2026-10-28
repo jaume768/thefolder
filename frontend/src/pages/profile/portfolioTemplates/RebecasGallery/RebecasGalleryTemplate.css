@@ -1,0 +1,1049 @@
+/* =============================================================================
+   Rebeca's Gallery (antes "Studio Gallery") — layout limpio tipo portfolio de
+   estudio. Header centrado sin hero image, grid uniforme 3 columnas, mucho
+   espacio. Prefijo de clases: rg- (antes psg-, heredado de
+   "ProfileStudioGallery", el nombre interno original del componente —
+   renombrado para que sea coherente con el nombre visible del template).
+   ============================================================================= */
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+/* Sin padding-bottom a propósito: .rg-footer (último elemento, ver
+   RebecasGalleryTemplate.jsx) debe quedar pegado al final real del
+   documento, igual que .df-footer/.js-footer — un padding aquí dejaría un
+   hueco en blanco después del footer, como si no fuera el final real de la
+   página. .rg-main con flex:1 (ver más abajo) es lo que empuja el footer
+   al fondo del viewport cuando el contenido no llena la pantalla. */
+.rg-layout {
+  min-height: 100vh;
+  font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  margin-top: 24vh;
+  padding-top: 64px; /* más aire arriba, sobre el nombre */
+}
+
+/* Preview embebido (iframe) en /myprofile/edit/templates, solo mobile — ver
+   isPreview en RebecasGalleryTemplate.jsx/UserProfilePage.jsx. Se suma al
+   margin-top de siempre (24vh), no lo sustituye. */
+@media (max-width: 768px) {
+  .rg-layout--preview {
+    margin-top: calc(24vh + 12px);
+  }
+}
+
+/* ── Header centrado ─────────────────────────────────────────────────────── */
+.rg-header {
+  width: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.rg-name {
+  font-family: Inter Tight, sans-serif;
+  font-size: clamp(28px, 6vw, 52px);
+  font-weight: 500;
+  letter-spacing: .02em;
+  color: #111;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rg-role {
+  font-size: 12px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.02em;
+}
+
+.rg-location {
+  font-size: 10px;
+  color: #bbb;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.rg-bio {
+  max-width: 460px;
+  font-size: 12px;
+  font-weight: 300;
+  color: #555;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  margin: 20px 0 0;
+}
+
+/* Acciones: fila de botones debajo del nombre */
+.rg-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.rg-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #888;
+  padding: 0;
+  transition: color 0.14s ease;
+}
+
+.rg-action-btn:hover { color: #111; }
+
+.rg-action-btn--primary {
+  color: #111;
+  border-bottom: 1px solid #111;
+  padding-bottom: 1px;
+}
+
+.rg-action-btn--primary:hover { color: #555; border-color: #555; }
+
+.rg-action-btn--following {
+  color: #bbb;
+  font-style: italic;
+}
+
+.rg-action-sep {
+  width: 1px;
+  height: 10px;
+  background: #ddd;
+}
+
+/* Website link en header */
+.rg-website {
+  margin-top: 10px;
+  font-size: 10px;
+  color: #999;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: color 0.14s ease;
+}
+
+.rg-website:hover { color: #111; text-decoration: underline; }
+
+/* ── Tabs PORTFOLIO / CV ─────────────────────────────────────────────────── */
+.rg-tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  /* Barra algo más baja que antes (24px arriba y abajo). */
+  padding: 18px 24px;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-end;
+  background: #fdfdfd;
+  z-index: 100;
+}
+
+.rg-tab {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #888;
+  transition: color 0.14s ease, border-color 0.14s ease;
+}
+
+.rg-tab--active {
+  color: #111;
+  border-bottom-color: #111;
+}
+
+.rg-tab:hover:not(.rg-tab--active) { color: #666; }
+
+/* ── Área de contenido ───────────────────────────────────────────────────── */
+.rg-main {
+  padding: 0px;
+  flex: 1;
+}
+
+.rg-cv-identity {
+  width: 100%;
+  padding: 12px;
+}
+
+.rg-cv-cv {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.rg-status {
+  text-align: center;
+  font-size: 11px;
+  color: #ccc;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  padding: 60px 0;
+}
+
+/* ── Grid uniforme 3 columnas ────────────────────────────────────────────── */
+.rg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0px;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.rg-card {
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.rg-card__image {
+  width: 100%;
+  aspect-ratio: 3.5 / 4;
+  object-fit: cover;
+  display: block;
+  background: #f5f5f5;
+}
+
+.rg-card__placeholder {
+  width: 100%;
+  aspect-ratio: 3.5 / 4;
+  background: #ececec;
+}
+
+/* Caption visible por defecto bajo la imagen */
+.rg-card__caption {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 6px 32px;
+}
+
+.rg-card__title {
+  font-size: 12px;
+  font-weight: 400;
+  color: #444;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── CV ──────────────────────────────────────────────────────────────────── */
+.rg-cv {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .rg-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rg-header {
+    padding: 56px 24px 36px;
+  }
+
+  .rg-tabs {
+    padding: 16px 24px 0;
+    gap: 24px;
+  }
+
+  .rg-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .rg-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+/* =============================================================================
+   STUDIO GALLERY — CV OVERRIDES
+   Scopeados bajo .rg-cv para no tocar el resto de la web.
+   ============================================================================= */
+
+.rg-cv .user-extern-section {
+  margin-bottom: 0;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.rg-cv .user-extern-section h2 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #bbb;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.rg-cv .user-extern-chips,
+.rg-cv .user-extern-skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rg-cv .user-extern-skill-tag {
+  background: none;
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 300;
+  color: #444;
+  letter-spacing: 0.02em;
+}
+
+.rg-cv .user-extern-languages {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rg-cv .user-languae-text {
+  font-size: 11px;
+  font-weight: 300;
+  color: #555;
+  letter-spacing: 0.02em;
+}
+
+.rg-cv .experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rg-cv .experience-item {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 20px;
+  padding-left: 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.rg-cv .experience-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rg-cv .experience-logo {
+  flex: 0 0 32px;
+  height: 32px;
+  border-radius: 0;
+  border: 1px solid #eee;
+  background: none;
+}
+
+.rg-cv .experience-logo-placeholder {
+  font-size: 10px;
+  color: #555;
+}
+
+.rg-cv .experience-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rg-cv .experience-title {
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.rg-cv .experience-company {
+  font-size: 11px;
+  font-weight: 300;
+  color: #666;
+  margin: 0;
+}
+
+.rg-cv .experience-location,
+.rg-cv .experience-period,
+.rg-cv .experience-duration {
+  font-size: 10px;
+  font-weight: 300;
+  color: #aaa;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.rg-cv .experience-description {
+  font-size: 11px;
+  font-weight: 300;
+  color: #777;
+  line-height: 1.6;
+  margin-top: 6px;
+  max-width: 50%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.rg-cv .experience-website {
+  font-size: 10px;
+  font-weight: 300;
+  color: #aaa;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+  text-decoration: none;
+}
+
+.rg-cv .experience-website:hover { color: #111; }
+
+/* "Ver referencia"/"Ver publicación" (UserAwardsSection/UserPressPublicationsSection)
+   — mismo tratamiento discreto que .experience-website, para no dejar el
+   link con el azul/subrayado por defecto del resto de la web. */
+.rg-cv .ux-exp-link {
+  font-size: 10px;
+  font-weight: 300;
+  color: #aaa;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.rg-cv .ux-exp-link:hover { color: #111; }
+
+.rg-cv__empty {
+  font-size: 13px;
+  color: #ccc;
+  font-weight: 300;
+  text-align: center;
+  padding: 60px 0;
+  margin: 0;
+}
+
+/* =============================================================================
+   PÁGINAS PROPIAS (About/Contact/Proyecto) — misma arquitectura que
+   DaisyFilm/JuneStamp (shared/usePortfolioTemplateState.js, shared/ProjectView.jsx,
+   shared/ProjectActionModals.jsx), re-skinada al lenguaje visual de Rebeca's
+   Gallery: Inter Tight, gris apagado (#111/#888/#bbb), sin bordes redondeados,
+   etiquetas en mayúsculas. A diferencia de DaisyFilm (paneles con scroll
+   interno, .df-layout con position:fixed), Rebeca's Gallery sigue scrolleando
+   el documento normal (igual que antes de esta migración) — .rg-tabs se
+   queda fija encima con position:fixed, el resto del contenido fluye debajo.
+   ============================================================================= */
+
+@keyframes rg-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rg-page { animation: none !important; }
+}
+
+.rg-page {
+  animation: rg-fade-in 0.25s ease;
+}
+
+/* Preview embebido (iframe) en /myprofile/edit/templates — ver isPreview en
+   RebecasGalleryTemplate.jsx. .df-quick-actions ya se oculta entera desde
+   JS; esto apaga cualquier <a>/<Link> real que quede dentro del propio
+   contenido (redes en Contact, link de proyecto publicado, crédito
+   "Plantilla Rebeca's Gallery" del footer, página organizada, perfil de
+   alguien etiquetado…). .rg-tab queda fuera a propósito: esa es
+   navegación DENTRO de la propia plantilla. */
+.rg-layout--preview a:not(.rg-tab) {
+  pointer-events: none;
+}
+
+/* ── Menú "más" (copiar link / descargar / reportar) ──────────────────────
+   Mismo patrón que .df-more-wrap/.df-more-menu (DaisyFilm) — vive fuera de
+   la tarjeta de QuickActions, pegado justo debajo del botón que lo abre. */
+.rg-more-wrap {
+  position: relative;
+}
+
+.rg-more-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 2600;
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  border-radius: 0px;
+  background: #fdfdfdc2;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 13px 0px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  font-family: 'Inter Tight', sans-serif;
+}
+
+.rg-more-menu__item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: left;
+  color: #111;
+  padding: 8px 10px;
+  border-radius: 0px;
+  transition: background 0.15s ease;
+}
+
+.rg-more-menu__item:hover {
+  background: #f5f5f5;
+}
+
+.rg-more-menu__item--danger {
+  color: #c0392b;
+}
+
+/* ── Modales (reportar proyecto / confirmar borrado) ──────────────────────── */
+.rg-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.rg-modal {
+  width: min(360px, 100%);
+  background: #fdfdfd;
+  border-radius: 2px;
+  padding: 24px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 40px 0px, rgba(0, 0, 0, 0.08) 0px 2px 8px -1px;
+  font-family: 'Inter Tight', sans-serif;
+  box-sizing: border-box;
+}
+
+.rg-modal__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #111;
+  margin: 0 0 8px;
+}
+
+.rg-modal__desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.rg-modal__textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.rg-modal__textarea:focus {
+  outline: none;
+  border-color: #999;
+}
+
+.rg-modal__notice {
+  font-size: 11px;
+  color: #999;
+  margin: 0 0 4px;
+}
+
+.rg-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.rg-modal__btn {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.rg-modal__btn:hover:not(:disabled) {
+  background: #e4e4e4;
+}
+
+.rg-modal__btn--strong {
+  background: #111;
+  color: #fdfdfd;
+}
+
+.rg-modal__btn--strong:hover:not(:disabled) {
+  background: #111;
+  opacity: 0.85;
+}
+
+.rg-modal__btn--danger {
+  background: #c0392b;
+  color: #fdfdfd;
+}
+
+.rg-modal__btn--danger:hover:not(:disabled) {
+  background: #c0392b;
+  opacity: 0.85;
+}
+
+.rg-modal__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── About: identidad + CV ──────────────────────────────────────────────── */
+.rg-page--about {
+  padding: 40px 12px 0;
+}
+
+/* ── Contacto ──────────────────────────────────────────────────────────── */
+.rg-page--contact {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 60px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+  box-sizing: border-box;
+}
+
+.rg-contact__info {
+  flex: 1 1 auto;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.rg-contact__primary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rg-contact__email,
+.rg-contact__website {
+  font-size: 13px;
+  color: #111;
+  text-decoration: none;
+}
+
+.rg-contact__email:hover,
+.rg-contact__website:hover { text-decoration: underline; }
+
+.rg-contact__representation {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.rg-contact__representation-link {
+  color: #111;
+  text-decoration: none;
+  border-bottom: 1px solid #111;
+}
+
+.rg-contact__representation-link:hover { opacity: 0.6; }
+
+.rg-contact__socials {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rg-contact__social-link {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #888;
+  text-decoration: none;
+  transition: color 0.14s ease;
+}
+
+.rg-contact__social-link:hover { color: #111; }
+
+.rg-contact__slideshow-col {
+  flex: 0 0 320px;
+  aspect-ratio: 3/4;
+}
+
+.rg-contact__cv-slideshow {
+  width: 320px;
+  height: 35vh;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.rg-contact__cv-slideshow-track {
+  display: flex;
+  height: 100%;
+}
+
+.rg-contact__cv-slideshow-img {
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Vista de proyecto ─────────────────────────────────────────────────── */
+.rg-page--project {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 60px 0 0;
+  gap: 36px;
+  box-sizing: border-box;
+}
+
+.rg-project__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 36px;
+}
+
+.rg-project__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.rg-project__title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #111;
+  margin: 0;
+}
+
+.rg-project__subtitle {
+  font-size: 12px;
+  font-weight: 300;
+  color: #666;
+  line-height: 1.6;
+  max-width: 550px;
+  margin: 0;
+}
+
+.rg-project__img-wrap {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rg-project__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #f5f5f5;
+}
+
+.rg-project__img-credit {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 300;
+  color: #aaa;
+  letter-spacing: 0.02em;
+  text-align: center;
+  max-width: 90%;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.rg-project__credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 80%;
+  margin: 12px 0 0;
+}
+
+.rg-project__credit-item {
+  font-size: 10px;
+  font-weight: 300;
+  color: #888;
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin: 0;
+}
+
+.rg-project__credit-link {
+  color: #888;
+  text-decoration: none;
+  border-bottom: 1px solid #888;
+}
+
+.rg-project__credit-link:hover { color: #111; border-color: #111; }
+
+.rg-project__published {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.rg-project__published-heading {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin: 0;
+}
+
+.rg-project__published-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 10px;
+}
+
+.rg-project__published-item {
+  font-size: 10px;
+  font-weight: 300;
+  color: #888;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+a.rg-project__published-item {
+  border-bottom-color: #888;
+}
+
+a.rg-project__published-item:hover {
+  color: #111;
+  border-bottom-color: #111;
+}
+
+.rg-project__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 4px 0 0;
+  max-width: 80%;
+}
+
+.rg-project__tag {
+  position: relative;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #aaa;
+  padding: 3px 6px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.rg-project__tag:hover { color: #111; }
+
+.rg-project__tag .nep-icon-tooltip {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.rg-project__tag:hover .nep-icon-tooltip,
+.rg-project__tag:focus-visible .nep-icon-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Siguientes proyectos ─────────────────────────────────────────────── */
+.rg-next-projects__title {
+  width: 100%;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #bbb;
+  text-align: center;
+  margin: 40px 0 0;
+}
+
+.rg-next-projects {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.rg-next-projects__item {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  max-width: 320px;
+  font-family: inherit;
+}
+
+.rg-next-projects__img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  background: #f5f5f5;
+}
+
+/* ── Footer (reutiliza .tf-footer de landing-footer.css) ──────────────────────
+   Mismo tratamiento que .df-footer (DaisyFilm) / .js-footer (JuneStamp):
+   fondo #fdfdfd, texto oscuro discreto (no el gris apagado #888 que usa el
+   resto de meta-texto de esta plantilla), tamaño de letra 8px. flex-shrink:0
+   para que nunca se comprima dentro de .rg-layout. */
+.rg-footer {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 160px; /* más aire entre el contenido y el footer */
+  background: #fdfdfd;
+  border-radius: 0;
+  height: fit-content;
+}
+
+.rg-footer .tf-footer__inner {
+  padding: 32px 8px 16px; /* aire solo arriba del texto; abajo como antes */
+  justify-content: center;
+  gap: 32px;
+  font-family: 'Inter Tight', sans-serif;
+}
+
+.rg-footer__credit {
+  font-family: inherit;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: #222;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.rg-footer__credit-link {
+  color: #222;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+.rg-footer__credit-link:hover {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .rg-page--contact {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 32px;
+    padding: 40px 20px 40px;
+  }
+
+  .rg-contact__info { align-items: center; text-align: center; }
+  .rg-contact__primary { align-items: center; }
+
+  .rg-contact__slideshow-col { flex: none; width: 100%; max-width: 320px; }
+  .rg-contact__cv-slideshow { width: 100%; }
+
+  .rg-page--about { padding: 24px 20px 0; }
+
+  .rg-page--project { padding: 24px 0 0; }
+
+  .rg-project__img-wrap { width: 92%; }
+
+  .rg-next-projects { gap: 12px; padding: 0 16px; }
+  .rg-next-projects__item { max-width: 260px; }
+
+  .rg-footer .tf-footer__inner {
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* ── Botón ← T/ (shared/QuickActions.jsx) a la medida de .rg-tabs ─────────
+   En desktop la barra de arriba mide 50px (18px + texto + 18px): el botón
+   va pegado arriba a la izquierda con esa misma altura, como parte de la
+   barra. La flecha queda centrada en un cuadrado de 50px (17px a cada lado)
+   y T/ a 17px del borde, mismo aire en todo el botón. En mobile se queda
+   como en el resto de plantillas (44px, mínimo cómodo para el dedo). */
+@media (min-width: 769px) {
+  .rg-layout > .df-quick-actions.df-quick-actions--top {
+    top: 0;
+    left: 0;
+    height: 50px;
+  }
+
+  .rg-layout > .df-quick-actions--top .df-qa-back {
+    width: 50px;
+  }
+
+  .rg-layout > .df-quick-actions--top .df-qa-logo {
+    padding-right: 17px;
+  }
+}

@@ -1,0 +1,494 @@
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import ReactDOM from "react-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import api from "../../../../../services/api";
+import { useTranslation } from "react-i18next";
+import { FaTimes } from "react-icons/fa";
+import { X, LayoutPanelLeft } from "lucide-react";
+import SearchResults from '../../../../../components/search/SearchResults';
+import SearchFullScreen from '../../../../../components/search/SearchFullScreen';
+import { useCreatePost } from "../../../../../contexts/CreatePostContext";
+
+const ExternalProfileHeader = ({ activeTab, setActiveTab, onBack, viewedName, viewedAvatar, isDark, isPreview = false }) => {
+  const { t } = useTranslation("profile");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const createPostCtx = useCreatePost();
+  const openCreatePost = createPostCtx?.openCreatePost;
+  const isCreatePostOpen = createPostCtx?.createPostOpen ?? false;
+
+  // ── Scroll / hero state ──────────────────────────────────────────────
+  const [isHero, setIsHero] = useState(true);
+  const [showMiniProfile, setShowMiniProfile] = useState(false);
+  const scrollerRef = useRef(null);
+
+  // ── Usuario autenticado ──────────────────────────────────────────────
+  const [myUsername, setMyUsername] = useState("");
+
+  // ── Borrador ─────────────────────────────────────────────────────────
+  const [hasDraft, setHasDraft] = useState(false);
+
+  // ── Nav tablet ───────────────────────────────────────────────────────
+  const [showNavMenu, setShowNavMenu] = useState(false);
+  const navMenuRef = useRef(null);
+
+  // ── Búsqueda ─────────────────────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [showFullScreenSearch, setShowFullScreenSearch] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const searchTimeoutRef = useRef(null);
+
+  const searchRef = useRef(null);
+  const searchInputRef = useRef(null);
+  const fullScreenRef = useRef(null);
+
+  const navItems = [
+    { label: "Creativos", to: "/creatives" },
+  ];
+  const activeNavItem = navItems.find(item => location.pathname.startsWith(item.to));
+  const isMyProfile =
+    location.pathname.startsWith("/myprofile") ||
+    (!!myUsername && location.pathname.toLowerCase() === `/${myUsername.toLowerCase()}`);
+
+  // ── Cambio de color según scroll ─────────────────────────────────────
+  useEffect(() => {
+    const pickScroller = () => {
+      const candidates = [
+        document.querySelector(".dashboard-content"),
+        document.querySelector(".dashboard"),
+        document.querySelector("#root"),
+        document.scrollingElement,
+        document.documentElement,
+        document.body,
+      ].filter(Boolean);
+      return candidates.find((el) => {
+        const style = window.getComputedStyle(el);
+        return (
+          el.scrollHeight > el.clientHeight &&
+          style.overflowY !== "visible" &&
+          style.overflowY !== "hidden"
+        );
+      }) || null;
+    };
+
+    let scrollerEl = pickScroller();
+    scrollerRef.current = scrollerEl;
+
+    const getScrollTop = () => (scrollerEl ? scrollerEl.scrollTop : window.scrollY || 0);
+    const getViewportHeight = () => (scrollerEl ? scrollerEl.clientHeight : window.innerHeight);
+
+    let raf = 0;
+    const update = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const vh = getViewportHeight();
+        const top = getScrollTop();
+        setIsHero(top < vh);
+        setShowMiniProfile(top > vh * 1.45);
+      });
+    };
+
+    const rebind = () => {
+      if (scrollerEl) scrollerEl.removeEventListener("scroll", update);
+      scrollerEl = pickScroller();
+      scrollerRef.current = scrollerEl;
+      if (scrollerEl) scrollerEl.addEventListener("scroll", update, { passive: true });
+      update();
+    };
+
+    rebind();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", rebind);
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", rebind);
+      if (scrollerEl) scrollerEl.removeEventListener("scroll", update);
+    };
+  }, []);
+
+  // ── Datos del usuario autenticado ────────────────────────────────────
+  useEffect(() => {
+    const fetchMe = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      try {
+        const res = await api.get('/api/users/profile');
+        const uname = res.data?.username || res.data?.userName || "";
+        setMyUsername(uname);
+        if (uname) localStorage.setItem("myUsername", uname);
+      } catch {
+        // silencioso
+      }
+    };
+    fetchMe();
+  }, []);
+
+  // ── Borrador activo ──────────────────────────────────────────────────
+  useEffect(() => {
+    const DRAFT_KEY = "createpost_draft_v2";
+    const computeHasDraft = () => {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return false;
+        const d = JSON.parse(raw);
+        return d.version === 2;
+      } catch {
+        return false;
+      }
+    };
+    const refresh = () => setHasDraft(computeHasDraft());
+    refresh();
+    const onStorage = (e) => { if (e.key === DRAFT_KEY) refresh(); };
+    window.addEventListener("storage", onStorage);
+    const t = setInterval(refresh, 800);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      clearInterval(t);
+    };
+  }, []);
+
+  // ── Cerrar todo al cambiar de ruta ───────────────────────────────────
+  useEffect(() => {
+    setShowResults(false);
+    setShowFullScreenSearch(false);
+    setIsSearchExpanded(false);
+    setSearchQuery("");
+    setShowNavMenu(false);
+  }, [location]);
+
+  // ── Cerrar si query vacío ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!searchQuery || searchQuery.trim() === "") {
+      setSearchResults(null);
+      setShowResults(false);
+      setShowFullScreenSearch(false);
+    }
+  }, [searchQuery]);
+
+  // ── Click fuera ──────────────────────────────────────────────────────
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (navMenuRef.current && !navMenuRef.current.contains(e.target)) {
+        setShowNavMenu(false);
+      }
+      const insideSearch =
+        searchRef.current?.contains(e.target) ||
+        fullScreenRef.current?.contains(e.target);
+      if (!insideSearch) {
+        setShowResults(false);
+        setShowFullScreenSearch(false);
+        setIsSearchExpanded(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ── Búsqueda ─────────────────────────────────────────────────────────
+  const performSearch = useCallback(async (term) => {
+    if (!term || term.trim().length < 2) {
+      setSearchResults(null);
+      setShowResults(false);
+      return;
+    }
+    try {
+      setIsSearching(true);
+      const response = await api.get('/api/users/search', {
+        params: {
+          query: term.trim(),
+          searchByFullName: true,
+          searchByUsername: true,
+          includePosts: true,
+          includeUserPosts: true,
+        },
+      });
+      setSearchResults(response.data.results);
+      setIsSearching(false);
+      return response.data.results;
+    } catch {
+      setIsSearching(false);
+      return null;
+    }
+  }, []);
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    clearTimeout(searchTimeoutRef.current);
+    if (!value || value.trim() === "") {
+      setSearchResults(null);
+      setShowResults(false);
+      setShowFullScreenSearch(false);
+      return;
+    }
+    searchTimeoutRef.current = setTimeout(async () => {
+      if (value.trim().length >= 2) {
+        const results = await performSearch(value);
+        if (results && value.trim().length >= 2) setShowResults(true);
+      }
+    }, 300);
+  };
+
+  const handleSearch = async (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    clearTimeout(searchTimeoutRef.current);
+    if (!searchQuery || searchQuery.trim().length < 2) return;
+    setShowResults(false);
+    const results = await performSearch(searchQuery);
+    if (results) {
+      setShowFullScreenSearch(true);
+      // La píldora vuelve a su forma original: el texto ya se ve como
+      // título en SearchFullScreen, mantenerlo aquí también es redundante.
+      setIsSearchExpanded(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSearchResults(null);
+    setShowResults(false);
+    setShowFullScreenSearch(false);
+    setIsSearchExpanded(false);
+  };
+
+  const openSearch = () => {
+    setIsSearchExpanded(true);
+    requestAnimationFrame(() => searchInputRef.current?.focus());
+  };
+
+  // ── Handlers ─────────────────────────────────────────────────────────
+  const handleAvatarClick = () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/", { state: { showRegister: true } });
+      return;
+    }
+    const uname = (localStorage.getItem("myUsername") || myUsername || "").trim();
+    navigate(uname && uname.toLowerCase() !== "username" ? `/${uname}` : "/profile");
+  };
+
+  const handleOpenPanel = () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/", { state: { showRegister: true } });
+      return;
+    }
+    navigate("/myprofile/edit");
+  };
+
+  const handleCreate = () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/", { state: { showRegister: true } });
+      return;
+    }
+    if (typeof openCreatePost === "function") {
+      openCreatePost();
+      return;
+    }
+    navigate("/createPost");
+  };
+
+  const handleResultClick = (type, item) => {
+    setShowResults(false);
+    setShowFullScreenSearch(false);
+    switch (type) {
+      case "user": navigate(`/${item.username}`); break;
+      case "post": navigate(`/post/${item._id}`); break;
+      case "offer": navigate(`/JobOfferDetail/${item._id}`); break;
+      case "educationalOffer": navigate(`/EducationalOfferDetail/${item._id}`); break;
+      default: break;
+    }
+  };
+
+  // En el hero oscuro (isHero && isDark = "on-hero") el header desaparece
+  // del todo — no solo transparente/reestilizado, directamente no se monta.
+  // El portal de SearchFullScreen de más abajo sigue vivo aparte: solo se
+  // puede abrir desde un botón de este header, así que si estaba abierto
+  // antes de entrar en este estado no se corta de golpe.
+  if (isHero && isDark) {
+    return (
+      <>
+        {showFullScreenSearch && ReactDOM.createPortal(
+          <div ref={fullScreenRef} onMouseDown={e => e.stopPropagation()}>
+            <SearchFullScreen
+              results={searchResults || {}}
+              query={searchQuery}
+              isSearching={isSearching}
+              onClose={() => setShowFullScreenSearch(false)}
+              onResultClick={handleResultClick}
+            />
+          </div>,
+          document.body
+        )}
+      </>
+    );
+  }
+
+  // Mockup de /myprofile/edit/templates (isPreview): sin navbar, ni sobre el
+  // hero ("on-hero-light") ni sobre el contenido ("on-white").
+  if (isPreview) return null;
+
+  return (
+    <>
+    <header className={`ext-profile-header ${isHero ? "on-hero-light" : "on-white"}`}>
+
+      {/* COLUMNA IZQUIERDA */}
+      <div className="header-left">
+        <button
+          className={`button header-left-link ${location.pathname.startsWith("/explorer") ? "active" : ""}`}
+          onClick={() => navigate("/explorer")}
+        >
+          THEFOLDER
+        </button>
+
+        {/* Nav desktop */}
+        <nav className="header-left-nav header-left-nav--desktop">
+          {navItems.map(item => {
+            const isActive = location.pathname.startsWith(item.to);
+            return (
+              <button
+                key={item.label}
+                className={`button header-left-link ${isActive ? "active" : ""}`}
+                onClick={() => navigate(item.to)}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Nav tablet */}
+        <div className="header-left-nav-dropdown" ref={navMenuRef} onMouseDown={e => e.stopPropagation()}>
+          <button
+            type="button"
+            className={`button header-left-link header-left-menu-btn ${showNavMenu || activeNavItem ? "active" : ""}`}
+            onClick={e => { e.stopPropagation(); setShowNavMenu(v => !v); }}
+            aria-haspopup="menu"
+            aria-expanded={showNavMenu}
+          >
+            {t("menu")}
+          </button>
+          {showNavMenu && (
+            <div className="header-left-menu-panel" role="menu">
+              {navItems.map(item => {
+                const isActive = location.pathname.startsWith(item.to);
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    className={`button header-left-link header-left-menu-item ${isActive ? "active" : ""}`}
+                    role="menuitem"
+                    onMouseDown={e => e.stopPropagation()}
+                    onClick={e => { e.stopPropagation(); setShowNavMenu(false); navigate(item.to); }}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* COLUMNA CENTRAL: buscador */}
+      <div className="header-center" ref={searchRef}>
+        {!isSearchExpanded ? (
+          <button
+            type="button"
+            className="dashboard-search-trigger"
+            onClick={openSearch}
+            aria-label={t("openSearch")}
+          >
+            <img src="/iconos/search.svg" alt="" aria-hidden="true" className="search-sparkles-icon" />
+          </button>
+        ) : (
+          <div className="dashboard-search-pill expanded">
+            <img src="/iconos/search.svg" alt="" aria-hidden="true" className="search-sparkles-icon" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="modern-search-input"
+              placeholder={t("searchPlaceholder")}
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+              onKeyDown={handleSearch}
+              onFocus={() => {
+                if (searchQuery && searchQuery.trim().length >= 2 && searchResults) setShowResults(true);
+              }}
+            />
+            <button type="button" className="search-clear-btn" onClick={clearSearch} aria-label={t("closeSearch")}>
+              <X size={16} strokeWidth={1.8} aria-hidden="true" />
+            </button>
+          </div>
+        )}
+        {showResults && searchResults && searchQuery && searchQuery.trim().length >= 2 && (
+          <SearchResults
+            results={searchResults}
+            onResultClick={handleResultClick}
+            isLoading={isSearching}
+            onViewAll={() => { setShowFullScreenSearch(true); setShowResults(false); setIsSearchExpanded(false); }}
+          />
+        )}
+      </div>
+
+      {/* COLUMNA DERECHA */}
+      <div className="header-right">
+        <span className="create-main-btn-wrap">
+          <button
+            className={`button header-left-link create-main-btn ${isCreatePostOpen ? "active" : ""}`}
+            onClick={handleCreate}
+          >
+            PUBLICAR
+          </button>
+          {hasDraft && <span className="create-main-btn-dot" aria-hidden="true" />}
+        </span>
+
+        <div className="profile-wrapper">
+          <button
+            type="button"
+            className={`button header-left-link${isMyProfile ? " active" : ""}`}
+            onClick={handleAvatarClick}
+            aria-label="Mi perfil"
+          >
+            MI PERFIL
+          </button>
+          <button
+            type="button"
+            className={`button header-left-link --text-medium${location.pathname.startsWith("/myprofile/edit") ? " active" : ""}`}
+            onClick={handleOpenPanel}
+            aria-label="Opciones de perfil"
+          >
+            <LayoutPanelLeft size={15} strokeWidth={1.8} aria-hidden="true" />
+            <span className="nep-icon-tooltip">{t("common:actions.myPanel")}</span>
+          </button>
+        </div>
+      </div>
+
+    </header>
+
+      {showFullScreenSearch && ReactDOM.createPortal(
+        <div ref={fullScreenRef} onMouseDown={e => e.stopPropagation()}>
+          <SearchFullScreen
+            results={searchResults || {}}
+            query={searchQuery}
+            isSearching={isSearching}
+            onClose={() => setShowFullScreenSearch(false)}
+            onResultClick={handleResultClick}
+          />
+        </div>,
+        document.body
+      )}
+    </>
+  );
+};
+
+export default ExternalProfileHeader;

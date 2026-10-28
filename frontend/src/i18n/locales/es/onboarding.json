@@ -5,8 +5,8 @@
     "prefix": "thefolder.es/",
     "inputAria": "Nombre de usuario",
     "hint": "Usa un nombre profesional, sin espacios y fácil de recordar.<br/>Por el momento este nombre <1>NO se podrá modificar</1>.",
-    "start": "EMPEZAR",
-    "loading": "CARGANDO...",
+    "start": "Empezar",
+    "loading": "Cargando...",
     "errors": {
       "required": "Escribe un nombre de usuario.",
       "tooLong": "Máximo 20 caracteres.",
@@ -23,16 +23,17 @@
     }
   },
   "common": {
-    "continue": "CONTINUAR",
+    "continue": "Continuar",
     "back": "Volver atrás",
     "next": "Siguiente",
-    "finish": "FINALIZAR",
-    "saving": "GUARDANDO…",
+    "finish": "Finalizar",
+    "saving": "Guardando…",
     "loading": "CARGANDO...",
     "networkError": "Error de red. Inténtalo de nuevo.",
     "genericError": "Ha ocurrido un error. Inténtalo de nuevo.",
     "uploadError": "Error al subir la foto. Inténtalo de nuevo.",
-    "saveFailed": "No se pudieron guardar los datos."
+    "saveFailed": "No se pudieron guardar los datos.",
+    "stepProgress": "Paso {{current}} de {{total}}"
   },
   "type": {
     "title": "¿Cómo quieres usar THEFOLDER?",
@@ -69,12 +70,12 @@
     }
   },
   "personal": {
-    "title": "Cuéntanos sobre ti",
+    "title": "Sobre ti",
     "subtitle": "Esta información nos ayuda a personalizar tu experiencia\ny a mostrar tu perfil correctamente a otros usuarios.",
     "firstName": "Nombre",
-    "firstNamePlaceholder": "María",
+    "firstNamePlaceholder": "Nombre",
     "lastName": "Apellido/s",
-    "lastNamePlaceholder": "García",
+    "lastNamePlaceholder": "Apellidos",
     "dateOfBirth": "Fecha de nacimiento",
     "location": "Ubicación",
     "country": "País",
@@ -97,7 +98,7 @@
       "newcomer": { "name": "Newcomer", "main": "Estudiando actualmente.", "desc": "Estudiante o recién graduado" },
       "graduated": { "name": "Graduated", "main": "Formación académica completada.", "desc": "Formación académica completada" },
       "emerging": { "name": "Emerging", "main": "Freelance / proyectos propios.", "desc": "Trabajo freelance o en proyectos propios" },
-      "professional": { "name": "Professional", "main": "Profesional en activo.", "sub": "— Sujeto a validación." }
+      "professional": { "name": "Professional", "main": "Profesional en activo.", "sub": "Sujeto a validación." }
     }
   },
   "specialization": {
@@ -113,9 +114,11 @@
     "subtitle": "Formará parte de tu identidad en la plataforma y se mostrará de forma pública.",
     "alt": "Foto de perfil",
     "edit": "Editar",
+    "upload": "Subir",
     "processing": "Procesando…",
     "remove": "Borrar",
     "hint": "Puedes cambiarla más adelante.",
+    "endRegister": "Finalizar registro",
     "errorRequired": "La foto es necesaria para publicar tu perfil.",
     "format": "Formato vertical.",
     "imageTypeError": "El archivo debe ser una imagen."

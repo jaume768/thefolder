@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: row;
   gap: 16px;
-  width: min(60%, 92vw);
+  width: 100%;
   margin-top: 28px;
 }
 
@@ -54,23 +54,17 @@
 .ob-field-row {
   display: flex;
   flex-direction: row;
-  gap: 24px;
+  gap: 48px;
   justify-content: center;
+  width: 100%;
 }
 
 .ob-fields {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 24px;
-  width: 50%;
-}
-
-label.ob-field__label {
-    font-family: 'Inter Tight', sans-serif;
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+  width: 100%;
 }
 
 /* ── ProfileStep — selector de nivel/tipo ────────────────────────────── */
@@ -78,28 +72,29 @@ label.ob-field__label {
 .ob-level-options {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  width: 80%;
+  width: 100%;
   margin-top: 8px;
 }
 
 .ob-level-btn {
-  flex: 1;
+  flex: 1 1 calc(50% - 6px);
   min-width: 110px;
-  min-height: 120px;
+  min-height: 90px;
   height: auto;
-  padding: 12px;
-  border: 1px solid #D8D8D8;
-  border-radius: 12px;
-  background: #FDFDFD;
+  padding: 10px;
+  border: 0px solid #D8D8D8;
+  border-radius: 6px;
+  background: #f9f9f9;
   text-align: left;
   cursor: pointer;
   transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
 }
 
@@ -134,11 +129,13 @@ label.ob-field__label {
 
 .ob-level-btn__desc {
   font-size: 12px;
-  font-weight: 300;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 400;
   color: #666;
-  line-height: 17px;
+  line-height: 16px;
   letter-spacing: 0.02em;
   text-transform: none;
+  text-align: center;
 }
 
 .ob-level-btn.selected .ob-level-btn__desc {
@@ -264,6 +261,21 @@ label.ob-field__label {
 
 /* ── SpecializationStep ──────────────────────────────────────────────────── */
 
+/* flex:1 + min-height:0 en vez de un 40% fijo con scroll interno — reparte
+   el alto que sobra dentro de .ob-wizard .ob-center (locked a 100vh, ver
+   complete-registration.css) sin nunca mostrar scrollbar; overflow:hidden
+   como red de seguridad si algún paso tuviera más contenido del que cabe. */
+.ob-step-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 .ob-buttons--spec {
   margin-top: 32px;
 }
@@ -281,11 +293,99 @@ label.ob-field__label {
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Tags simples (icono + texto) para los grupos de especialización — solo
+   en el registro. El filtro real de Explorer/Creativos sigue usando
+   .filter-tag--specialty-bg con foto de fondo (explorer.css, sin tocar). */
+.ob-spec-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 25%;
+  max-width: 90px;
+  min-height: 64px;
+  padding: 8px 4px;
+  border: 0px solid #e5e5e5;
+  border-radius: 10px;
+  background: #f9f9f9;
+  cursor: pointer;
+  font-family: 'Inter Tight', sans-serif;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.ob-spec-tag:hover {
+  border-color: #aaa;
+}
+
+.ob-spec-tag.has-selection:not(.is-active) {
+  border-color: #111;
+  background: #f5f5f5;
+}
+
+.ob-spec-tag.is-active {
+  background: #111;
+  border-color: #111;
+}
+
+.ob-spec-tag-icon {
+  color: #888;
+  flex-shrink: 0;
+}
+
+.ob-spec-tag.has-selection:not(.is-active) .ob-spec-tag-icon {
+  color: #111;
+}
+
+.ob-spec-tag.is-active .ob-spec-tag-icon {
+  color: #fff;
+}
+
+.ob-spec-tag-name {
+  font-size: 10px;
+  color: #555;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.ob-spec-tag.has-selection:not(.is-active) .ob-spec-tag-name {
+  color: #111;
+  font-weight: 500;
+}
+
+.ob-spec-tag.is-active .ob-spec-tag-name {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .ob-spec-tag {
+    width: 28%;
+    max-width: none;
+    min-height: 60px;
+  }
+
+  .ob-spec-tag-name {
+    font-size: 11px;
+  }
+
+  .ob-spec-subtags {
+    max-width: 100%;
+    border-left: 0px !important;
+}
 }
 
 .ob-spec-subtags {
   margin-top: 12px;
   width: 100%;
+}
+
+.ob-spec-subtags {
+    max-width: 100%;
+    border-left: 0px !important;
 }
 
 .filters-country-cities .filters-tags {
@@ -304,8 +404,7 @@ label.ob-field__label {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    width: 92vw;
-    max-width: 400px;
+    width: 100%;
     margin-top: 20px;
     height: auto;
     align-items: stretch;
@@ -321,6 +420,7 @@ label.ob-field__label {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    width: 90%;
   }
 
   .ob-level-options {
@@ -338,18 +438,12 @@ label.ob-field__label {
   }
 
   .ob-fields {
-    width: 92vw;
-    max-width: 520px;
+    width: 100%;
   }
 
   /* SpecializationStep */
   .ob-spec-groups {
     gap: 8px;
-  }
-
-  .ob-spec-groups .filter-country-tag {
-    padding: 6px 12px;
-    gap: 6px;
   }
 
   .ob-spec-groups .experience-tag-icon {
@@ -360,6 +454,7 @@ label.ob-field__label {
   .ob-spec-subtags .filters-tags {
     gap: 10px;
     justify-content: center;
+    max-width: 100% !important;
   }
 
   .ob-spec-subtags .filter-tag {
@@ -385,11 +480,6 @@ label.ob-field__label {
   .ob-buttons {
     flex-direction: row;
     justify-content: space-between;
-  }
-
-  /* Dots breathing room */
-  .ob-dots {
-    margin-top: 24px;
   }
 
 }

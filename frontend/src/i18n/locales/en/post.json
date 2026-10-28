@@ -5,29 +5,41 @@
     "cover": "Cover",
     "addImage": "Add image",
     "removeImage": "Remove image",
-    "titlePlaceholder": "TITLE (*)",
+    "dragToReorder": "Drag to reorder",
+    "titlePlaceholder": "TITLE",
     "titleRequired": "Title is required.",
-    "descPlaceholder": "Project description (optional)",
-    "rolePlaceholder": "Your role in the project (Photographer, Stylist…)",
+    "descPlaceholder": "Project description",
+    "rolePlaceholder": "What was your role in the project?",
     "team": {
-      "label": "Team /",
-      "namePlaceholder": "Name or search @user within THEFOLDER",
+      "label": "Your team /",
+      "namePlaceholder": "Full name",
       "rolePlaceholder": "Role (Photographer, Stylist…)",
+      "instagramPlaceholder": "instagram_username",
       "linkPlaceholder": "Link (optional)",
-      "addCollaborator": "Add collaborator",
+      "addCollaborator": "Add team member",
       "unregistered": "Not registered",
       "registered": "Registered ✅",
       "searching": "Searching...",
-      "noMatches": "No matches — add as external 👆",
-      "addTeamBtn": "Tag Team"
+      "noMatches": "No matches. Add as external 👆",
+      "addTeamBtn": "Team"
     },
     "credits": {
       "label": "Styling credits /",
-      "placeholder": "Write your credits (NouNou skirt, shoes by...)",
+      "placeholder": "NouNou skirt, Shoes by...",
       "noImagesFirst": "Upload images first to add credits.",
-      "addCreditsBtn": "Styling Credits"
+      "addCreditsBtn": "Styling"
+    },
+    "publishedIn": {
+      "addBtn": "Published in",
+      "label": "Published in /",
+      "mediaPlaceholder": "Magazine / publication name",
+      "urlPlaceholder": "Article URL (optional)",
+      "online": "Online",
+      "printed": "Printed",
+      "addEntry": "Add publication"
     },
     "projectTags": {
+      "addBtn": "Tags",
       "title": "Project tags",
       "subtitle": "Help your work be filtered correctly (max. 3)",
       "rightsLabel": "I confirm that I have the necessary rights over these images and authorize THEFOLDER to display them on the platform. The content does not infringe copyright, privacy, or third-party intellectual property rights.",
@@ -58,8 +70,11 @@
   },
   "view": {
     "loading": "Loading project",
-    "noData": "No project data",
-    "team": "Team /",
+    "noData": "This project doesn't exist or has been removed.",
+    "by": "by",
+    "team": "Team",
+    "publishedIn": "Published in",
+    "printed": "Printed",
     "edit": "Edit post",
     "delete": "Delete post",
     "deleteConfirm": "Are you sure you want to delete this post?",
@@ -90,7 +105,8 @@
     },
     "fullscreen": {
       "close": "CLOSE",
-      "alt": "Full screen preview"
+      "alt": "Full screen preview",
+      "explorer": "Go to explorer"
     },
     "externalLink": {
       "title": "You are leaving the platform",
@@ -99,9 +115,11 @@
       "continue": "Continue"
     },
     "scrollTop": "Scroll up",
+    "tagTooltip": "More projects with this tag",
     "copied": "Link copied ✅",
     "saved": "Saved!",
     "saveAction": "Save",
+    "saveActionAria": "Save post",
     "removed": "Removed!",
     "guestGateTitle": "Discover more on THEFOLDER",
     "guestGateDesc": "Create your free account to keep exploring the work of the creative community.",
@@ -110,33 +128,43 @@
   "edit": {
     "newBadge": "New",
     "removeImage": "Remove image",
-    "titlePlaceholder": "TITLE (*)",
+    "titlePlaceholder": "TITLE",
     "titleRequired": "Title is required.",
-    "descPlaceholder": "Project description (optional)",
-    "rolePlaceholder": "Your role in the project (Photographer, Stylist…)",
+    "descPlaceholder": "Project description",
+    "rolePlaceholder": "What was your role in the project?",
     "team": {
-      "label": "Team /",
-      "namePlaceholder": "Name or search @user within THEFOLDER",
+      "label": "Your team /",
+      "namePlaceholder": "Full name",
       "rolePlaceholder": "Role (Photographer, Stylist…)",
+      "instagramPlaceholder": "instagram_username",
       "linkPlaceholder": "Link (optional)",
-      "addCollaborator": "Add collaborator",
+      "addCollaborator": "Add team member",
       "unregistered": "Not registered",
       "registered": "Registered ✅",
       "searching": "Searching...",
-      "noMatches": "No matches — add as external 👆"
+      "noMatches": "No matches. Add as external 👆"
     },
     "credits": {
       "label": "Styling credits /",
-      "placeholder": "Write your credits (NouNou skirt, shoes by...)"
+      "placeholder": "NouNou skirt, Shoes by..."
+    },
+    "publishedIn": {
+      "label": "Published in /",
+      "mediaPlaceholder": "Magazine / publication name",
+      "urlPlaceholder": "Article URL (optional)",
+      "online": "Online",
+      "printed": "Printed",
+      "addEntry": "Add publication"
     },
     "projectTags": {
       "label": "Project tags /",
       "max": "max. 3"
     },
     "optional": {
-      "team": "Tag Team",
-      "credits": "Styling Credits",
-      "tags": "Project Tags"
+      "team": "Team",
+      "credits": "Styling",
+      "tags": "Tags",
+      "publishedIn": "Published in"
     },
     "cancel": "CANCEL",
     "save": "SAVE",

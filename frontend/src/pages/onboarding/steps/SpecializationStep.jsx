@@ -1,31 +1,56 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useTranslation, Trans } from 'react-i18next';
+import {
+  Paintbrush, Sparkles, Camera, Tags, EyeClosed, Box, Handbag,
+  Newspaper, Megaphone, ShoppingBag, PenTool, MoreHorizontal,
+  ChevronLeft, ChevronRight,
+} from 'lucide-react';
 
-const GROUP_ICONS = {
-  'Accesorios':               '/iconos/specialty/accesories.png',
-  'Beauty (MUAH)':            '/iconos/specialty/beauty.png',
-  'Fotografía & Vídeo':       '/iconos/specialty/camera-photo.png',
-  'Dirección Creativa':       '/iconos/specialty/creative-direction.png',
-  'Diseño':                   '/iconos/specialty/fashion-design.png',
-  'Digital & 3D':             '/iconos/specialty/graphic-design.png',
-  'Ilustración':              '/iconos/specialty/illustration.png',
-  'Styling':                  '/iconos/specialty/styling.png',
-  'Marketing & PR':           '/iconos/specialty/marketing.png',
-  'Digital & Social':         '/iconos/specialty/content-creator.png',
-  'Comunicación & Editorial': '/iconos/specialty/editorial-design.png',
-  'Otro':                     '/iconos/specialty/clue.png',
+const GROUP_I18N_KEY = {
+  'Accesorios':               'accesorios',
+  'Beauty & Hair':            'beautymuah',
+  'Fotografía & Vídeo':       'fotografiavideo',
+  'Dirección Creativa':       'direccioncreativa',
+  'Diseño':                   'diseno',
+  '3D & Producto':            'digital3d',
+  'Gráfica & Ilustración':    'ilustracion',
+  'Styling':                  'styling',
+  'Marketing & PR':           'marketingpr',
+  'Social & Ecommerce':       'digitalsocial',
+  'Comunicación & Editorial': 'comunicacioneditorial',
+  'Otro':                     'otro',
+};
+
+// Mismos iconos que .ptf-category (InfoTab.jsx) para estos mismos grupos —
+// aquí en vez de las fotos de fondo que usa el filtro real de
+// Explorer/Creativos (.filter-tag--specialty-bg, no tocado: este mapa y
+// .ob-spec-tag son solo para el registro).
+const GROUP_ICON = {
+  'Diseño':                   Paintbrush,
+  'Dirección Creativa':       Sparkles,
+  'Fotografía & Vídeo':       Camera,
+  'Styling':                  Tags,
+  'Beauty & Hair':            EyeClosed,
+  '3D & Producto':            Box,
+  'Accesorios':               Handbag,
+  'Comunicación & Editorial': Newspaper,
+  'Marketing & PR':           Megaphone,
+  'Social & Ecommerce':       ShoppingBag,
+  'Gráfica & Ilustración':    PenTool,
+  'Otro':                     MoreHorizontal,
 };
 
 const GROUP_ORDER = [
   'Diseño', 'Dirección Creativa', 'Fotografía & Vídeo', 'Styling',
-  'Beauty (MUAH)', 'Digital & 3D', 'Accesorios',
-  'Comunicación & Editorial', 'Marketing & PR', 'Digital & Social', 'Ilustración', 'Otro',
+  'Beauty & Hair', '3D & Producto', 'Accesorios',
+  'Comunicación & Editorial', 'Marketing & PR', 'Social & Ecommerce', 'Gráfica & Ilustración', 'Otro',
 ];
 
 const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { t } = useTranslation('onboarding');
+  const { t: tFilters } = useTranslation('filters');
   const [roleOptions, setRoleOptions] = useState([]);
   const [activeGroup, setActiveGroup] = useState(null);
   const [customInput, setCustomInput] = useState('');
@@ -94,112 +119,107 @@ const SpecializationStep = ({ professionalTags, onChange, onNext, onBack }) => {
         />
       </p>
 
-      {selected.length > 0 && (
-        <div className="ob-spec-chips">
-          {selected.map(id => (
-            <button
-              key={id}
-              type="button"
-              className="filters-sticky-chip"
-              onClick={() => toggleTag(id)}
-              title={t('specialization.removeTitle')}
-            >
-              <span>{roleLabelById[id] || id}</span>
-              <span className="chip-x">×</span>
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="ob-step-content">
+        {selected.length > 0 && (
+          <div className="ob-spec-chips">
+            {selected.map(id => (
+              <button
+                key={id}
+                type="button"
+                className="filters-sticky-chip"
+                onClick={() => toggleTag(id)}
+                title={t('specialization.removeTitle')}
+              >
+                <span>{tFilters(`tags.${id}`) || roleLabelById[id] || id}</span>
+                <span className="chip-x">×</span>
+              </button>
+            ))}
+          </div>
+        )}
 
-      <div className="ob-spec-groups filters-tags filters-tags--level">
-        {orderedGroups.map(group => {
-          const isActive = activeGroup === group;
-          const hasSelection = group === 'Otro'
-            ? selected.some(id => !roleLabelById[id])
-            : (rolesByGroup[group] || []).some(t => selected.includes(t.id));
-          const icon = GROUP_ICONS[group];
-          return (
-            <button
-              key={group}
-              type="button"
-              className={`filter-tag filter-country-tag${isActive ? ' is-active' : ''}${hasSelection ? ' has-selection' : ''}`}
-              onClick={() => setActiveGroup(isActive ? null : group)}
-            >
-              {icon && <img className="experience-tag-icon" src={icon} alt="" aria-hidden="true" />}
-              {group}
-            </button>
-          );
-        })}
+        <div className="ob-spec-groups filters-tags filters-tags--level">
+          {orderedGroups.map(group => {
+            const isActive = activeGroup === group;
+            const hasSelection = group === 'Otro'
+              ? selected.some(id => !roleLabelById[id])
+              : (rolesByGroup[group] || []).some(t => selected.includes(t.id));
+            const GroupIcon = GROUP_ICON[group] || MoreHorizontal;
+            return (
+              <button
+                key={group}
+                type="button"
+                className={`ob-spec-tag${isActive ? ' is-active' : ''}${hasSelection ? ' has-selection' : ''}`}
+                onClick={() => setActiveGroup(isActive ? null : group)}
+              >
+                <GroupIcon size={18} strokeWidth={1.6} className="ob-spec-tag-icon" aria-hidden="true" />
+                <span className="ob-spec-tag-name">{tFilters(`groups.${GROUP_I18N_KEY[group]}`) || group}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sub-tags de grupos normales */}
+        {activeGroup && activeGroup !== 'Otro' && (
+          <div className="ob-spec-subtags filters-country-cities">
+            <div className="filters-tags filters-tags--level" style={{ justifyContent: 'center' }}>
+              {(rolesByGroup[activeGroup] || []).map(t => {
+                const sel = selected.includes(t.id);
+                const maxReached = !sel && selected.length >= 3;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`filter-tag${sel ? ' selected' : ''}${maxReached ? ' is-disabled' : ''}`}
+                    onClick={() => !maxReached && toggleTag(t.id)}
+                    disabled={maxReached}
+                  >
+                    {tFilters(`tags.${t.id}`) || t.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Panel "Otro" → input libre */}
+        {activeGroup === 'Otro' && (
+          <div className="ob-spec-subtags filters-country-cities" style={{ width: '100%', maxWidth: 400 }}>
+            <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 8 }}>
+              {t('specialization.otherHint')}
+            </p>
+            <div className="ob-custom-row">
+              <input
+                className="ux-input"
+                type="text"
+                value={customInput}
+                placeholder={t('specialization.otherPlaceholder')}
+                onChange={e => setCustomInput(e.target.value)}
+                onKeyDown={handleCustomKeyDown}
+                style={{ flex: 1 }}
+                maxLength={40}
+                disabled={selected.length >= 3}
+              />
+              <button
+                type="button"
+                className="filter-tag"
+                onClick={confirmCustom}
+                disabled={!customInput.trim() || selected.length >= 3}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                {t('specialization.add')}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Sub-tags de grupos normales */}
-      {activeGroup && activeGroup !== 'Otro' && (
-        <div className="ob-spec-subtags filters-country-cities">
-          <div className="filters-tags filters-tags--level" style={{ justifyContent: 'center' }}>
-            {(rolesByGroup[activeGroup] || []).map(t => {
-              const sel = selected.includes(t.id);
-              const maxReached = !sel && selected.length >= 3;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  className={`filter-tag${sel ? ' selected' : ''}${maxReached ? ' is-disabled' : ''}`}
-                  onClick={() => !maxReached && toggleTag(t.id)}
-                  disabled={maxReached}
-                >
-                  {t.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Panel "Otro" → input libre */}
-      {activeGroup === 'Otro' && (
-        <div className="ob-spec-subtags filters-country-cities" style={{ width: '100%', maxWidth: 400 }}>
-          <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 8 }}>
-            {t('specialization.otherHint')}
-          </p>
-          <div className="ob-custom-row">
-            <input
-              className="ux-input"
-              type="text"
-              value={customInput}
-              placeholder={t('specialization.otherPlaceholder')}
-              onChange={e => setCustomInput(e.target.value)}
-              onKeyDown={handleCustomKeyDown}
-              style={{ flex: 1 }}
-              maxLength={40}
-              disabled={selected.length >= 3}
-            />
-            <button
-              type="button"
-              className="filter-tag"
-              onClick={confirmCustom}
-              disabled={!customInput.trim() || selected.length >= 3}
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              {t('specialization.add')}
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="ob-buttons ob-buttons--spec">
-        <button type="button" className="ob-back" onClick={onBack}>{t('common.back')}</button>
-        <button className="ob-cta" onClick={onNext} disabled={selected.length === 0}>
-          {t('common.continue')}
+        <button type="button" className="ob-back" onClick={onBack} aria-label={t('common.back')}>
+          <ChevronLeft size={18} strokeWidth={1.8} />
         </button>
-      </div>
-
-      <div className="ob-dots" aria-hidden="true">
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot active" />
-        <span className="dot" />
+        <button className="ob-cta ob-cta--icon" onClick={onNext} disabled={selected.length === 0} aria-label={t('common.continue')}>
+          <ChevronRight size={18} strokeWidth={1.8} />
+        </button>
       </div>
     </div>
   );

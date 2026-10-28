@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 // Función de validación para limitar arrays a 3 elementos
+// Punto de enfoque de una portada ({ x, y } en %), sin _id propio.
+const FocusPointSchema = new mongoose.Schema({
+  x: { type: Number, min: 0, max: 100 },
+  y: { type: Number, min: 0, max: 100 },
+}, { _id: false });
+
 function arrayLimit(val) {
   return !val || val.length <= 3;
 }
@@ -9,7 +15,8 @@ const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     fullName: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String }, // Puede quedar vacío en registro con Google
+    // select: false -> nunca viaja al cliente salvo .select('+password') explícito
+    password: { type: String, select: false }, // Puede quedar vacío en registro con Google
     googleId: { type: String },
     role: { type: String, enum: ['Creativo', 'Profesional', 'Admin'] }, // DEPRECATED - sustituido por accountType
     isAdmin: { type: Boolean, default: false }, // DEPRECATED - sustituido por accountType: 'admin'
@@ -30,6 +37,8 @@ const UserSchema = new mongoose.Schema({
     city: { type: String },
     country2: { type: String },
     city2: { type: String },
+    country3: { type: String },
+    city3: { type: String },
     customCountry: { type: String, default: "" },
     referralSource: { type: String }, // ¿Cómo nos has conocido?
     termsAccepted: { type: Boolean },
@@ -61,6 +70,13 @@ const UserSchema = new mongoose.Schema({
     featuredHeaderImageDesktop: { type: String, default: "" },
     featuredHeaderImageMobile: { type: String, default: "" },
 
+    // Punto de enfoque de cada portada (qué parte se ve al recortarla en el
+    // hero): { x, y } en porcentaje 0–100, se aplica como object-position.
+    // null = sin elegir → cada plantilla de hero usa su encuadre de siempre
+    // (algunas "top center"). Vuelve a null al subir o borrar esa imagen.
+    featuredHeaderFocusDesktop: { type: FocusPointSchema, default: null },
+    featuredHeaderFocusMobile: { type: FocusPointSchema, default: null },
+
     // Imagen para el buscador de creativos
     creativeCoverDesktop: { type: String, default: "" },
 
@@ -71,8 +87,13 @@ const UserSchema = new mongoose.Schema({
     // Estilo de galería
     galleryStyle: { type: String, enum: ["gap", "nogap"], default: "gap" },
 
+    // June Stamp: vista del grid de Portfolio — solo portada por proyecto,
+    // todas las imágenes. El visitante ya no puede elegir: "both" (toggle)
+    // se retiró en oct 2026; queda en el enum solo por perfiles antiguos
+    juneStampGalleryMode: { type: String, enum: ["projects", "gallery", "both"], default: "projects" },
+
     // Layout del perfil público (plantilla de página completa)
-    profileLayout: { type: String, enum: ["default", "index-gallery", "studio-gallery"], default: "default" },
+    profileLayout: { type: String, enum: ["default", "index-gallery", "studio-gallery", "daisy-film"], default: "default" },
 
 
     // Campos específicos para Creativos
@@ -183,7 +204,8 @@ const UserSchema = new mongoose.Schema({
         tumblr: { type: String, default: "" },
         youtube: { type: String, default: "" },
         pinterest: { type: String, default: "" },
-        substack: { type: String, default: "" }
+        substack: { type: String, default: "" },
+        arena: { type: String, default: "" }
     },
 
     // Hitos profesionales para perfiles de empresa
@@ -266,13 +288,46 @@ const UserSchema = new mongoose.Schema({
 
     createdAt: { type: Date, default: Date.now },
     lastProfileEditAt: { type: Date, default: null },
+    // Se sobrescribe en cada login exitoso (authController.login) — mismo
+    // patrón que lastProfileEditAt: un único timestamp, no un historial.
+    // Guardado en UTC como el resto de fechas de Mongo; el panel admin lo
+    // formatea a hora de España (Europe/Madrid) solo al mostrarlo.
+    lastLoginAt: { type: Date, default: null },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
+    // Oculta al usuario de /creatives (getCreatives) sin desactivar su
+    // cuenta — para perfiles que no encajan en el directorio (p.ej. sin
+    // interés real en moda) pero que siguen usando la plataforma con
+    // normalidad. Por defecto todo el mundo aparece; esto es una excepción
+    // puntual que gestiona un admin, no un ajuste del propio usuario.
+    hiddenFromDirectory: { type: Boolean, default: false },
     isVerificatedProfesional: { type: Boolean, default: false },
     savedOffers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Offer' }],
     appliedOffers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Offer' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    profileViews: [{
+        date: { type: Date, default: Date.now },
+        source: { type: String, enum: ['instagram', 'direct', 'other'], default: 'direct' }
+    }],
+
+    // ── Sesiones (refresh tokens) ────────────────────────────────────────
+    // Un elemento por dispositivo/navegador con sesión activa. El refresh
+    // token nunca se guarda en claro, solo su hash. Se rota en cada uso
+    // (sliding expiration): mientras haya actividad al menos una vez cada
+    // REFRESH_TOKEN_TTL, la sesión no caduca; si no, expira sola.
+    // select: false -> nunca viaja al cliente salvo que se pida explícitamente
+    // con .select('+sessions'), justo lo que hace tokenService.
+    sessions: {
+        type: [{
+            refreshTokenHash: { type: String, required: true },
+            expiresAt: { type: Date, required: true },
+            createdAt: { type: Date, default: Date.now },
+            userAgent: { type: String, default: '' },
+        }],
+        select: false,
+        default: [],
+    },
 });
 
 module.exports = mongoose.model('User', UserSchema);

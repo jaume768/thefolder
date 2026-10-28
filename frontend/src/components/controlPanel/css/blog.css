@@ -62,9 +62,8 @@
 }
 
 .blog-category-button.active {
-    background-color: #e8f0fe;
-    color: #1a73e8;
-    border-color: #1a73e8;
+    color: var(--color-brand-blue-text);
+    border-color: var(--color-brand-blue-text);
 }
 
 .blog-category-button:disabled {
@@ -207,12 +206,12 @@
 
 .blog-card-category-label {
     font-size: 12px;
-    color: #4c85ff;
+    color: var(--color-brand-blue-text);
     text-transform: uppercase;
     font-weight: 500;
     padding: 2px 8px;
     border-radius: 6px;
-    border: solid 1px #4c85ff;
+    border: solid 1px var(--color-brand-blue);
 }
 
 .blog-card-date {

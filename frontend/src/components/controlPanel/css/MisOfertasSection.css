@@ -157,21 +157,6 @@
     max-width: fit-content;
 }
 
-.status-pill.aplicadas {
-    background-color: #E8F5E9;
-    color: #2E7D32;
-}
-
-.status-pill.guardadas {
-    background-color: #E3F2FD;
-    color: #1976D2;
-}
-
-.status-pill.caducadas {
-    background-color: #F5F5F5;
-    color: #757575;
-}
-
 .ofertas-footer {
     display: flex;
     justify-content: center;
@@ -181,7 +166,7 @@
 }
 
 .buscar-ofertas-btn {
-    background: #4c85ff;
+    background: var(--color-brand-blue);
     color: #fff;
     border: none;
     padding: 0.6rem 1.2rem;
@@ -297,9 +282,9 @@
 }
 
 .status-filter.active {
-    background-color: #4c85ff;
-    color: #fff;
-    border-color: #4c85ff;
+    background-color: var(--color-brand-blue);
+    color: #111;
+    border-color: var(--color-brand-blue-text);
 }
 
 .secondary-filters {
@@ -321,9 +306,9 @@
 }
 
 .secondary-filter.active {
-    background-color: #4c85ff;
-    color: #fff;
-    border-color: #4c85ff;
+    background-color: var(--color-brand-blue);
+    color: #111;
+    border-color: var(--color-brand-blue-text);
 }
 
 /* Estilos para el modal de confirmación */
@@ -546,8 +531,8 @@
 .create-offer-btn {
     padding: 10px 20px;
     font-size: 14px;
-    background-color: #4c85ff;
-    color: #fff;
+    background-color: var(--color-brand-blue);
+    color: #111;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -555,7 +540,7 @@
 }
 
 .create-offer-btn:hover {
-    background-color: #3a6fcc;
+    background-color: var(--color-brand-blue-dark);
 }
 
 .company-offers-footer {
@@ -680,9 +665,8 @@
 }
 
 .candidatos-filter.active {
-    background-color: #e8f0fe;
-    color: #1a73e8;
-    border-color: #1a73e8;
+    color: var(--color-brand-blue-text);
+    border-color: var(--color-brand-blue-text);
 }
 
 .candidatos-response-toggle {
@@ -710,9 +694,8 @@
 }
 
 .candidatos-response-button.active {
-    background-color: #e8f0fe;
-    color: #1a73e8;
-    border-color: #1a73e8;
+    color: var(--color-brand-blue-text);
+    border-color: var(--color-brand-blue-text);
 }
 
 .candidatos-count {

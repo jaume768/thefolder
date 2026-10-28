@@ -1,0 +1,202 @@
+/* portfolioTemplates/shared/QuickActions.css
+   Esquina superior izquierda de las plantillas de portfolio (o inferior
+   con placement="bottom")
+   (QuickActions.jsx): una sola pestaña gris claro con volver (←) y la marca
+   "THEFOLDER/" (al explorador). Gris claro para que se lea igual sobre la
+   página clara y sobre fotos. */
+
+.df-quick-actions {
+  position: fixed;
+  bottom: 24px;
+  left: 16px;
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  /* En reposo, el mismo fondo que las plantillas (#fdfdfd); al hover, el
+     gris claro de antes (ver más abajo). */
+  background: rgba(253, 253, 253, 0.92);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;
+}
+
+/* Un solo botón (← T/) que ocupa toda la pestaña; dentro, la flecha y la
+   marca son solo dibujo (spans). */
+.df-qa-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  font: inherit;
+  cursor: pointer;
+}
+
+.df-qa-back,
+.df-qa-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #111;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.df-qa-back {
+  width: 40px;
+  padding: 0;
+}
+
+/* Mismo aire en todo el botón: la flecha (16px) queda centrada en sus 40px,
+   o sea 12px a cada lado, así que T/ va sin padding a la izquierda (ya está
+   a 12px de la flecha) y 12px a la derecha (12px hasta el borde). */
+.df-qa-logo {
+  padding: 0 12px 0 0;
+}
+
+/* Un solo hover para toda la pestaña (← y T/ juntos), no uno por botón.
+   Solo la pestaña de arriba/abajo, no la caja de iconos (--box). */
+.df-quick-actions:not(.df-quick-actions--box) {
+  transition: background-color 0.12s ease;
+}
+
+.df-quick-actions:not(.df-quick-actions--box):hover,
+.df-quick-actions:not(.df-quick-actions--box):focus-within {
+  background: rgba(240, 240, 240, 0.92);
+}
+
+.df-back-mark {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: inherit;
+}
+
+.df-back-mark-t {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.df-back-mark-slash {
+  font-size: 18px;
+  font-weight: 500;
+  color: inherit;
+  margin-left: 2px;
+  /* 1px más abajo. Con align-items:baseline un margin-top no lo movería,
+     así que se desplaza con top. */
+  position: relative;
+  top: 1px;
+}
+
+/* Arriba a la izquierda (placement="top", el de por defecto): misma
+   distancia arriba que a la izquierda (16px). */
+.df-quick-actions.df-quick-actions--top {
+  top: 16px;
+  bottom: auto;
+}
+
+/* ── Caja de iconos (solo UserPostPage.jsx: editar/eliminar del dueño) ── */
+.df-quick-actions.df-quick-actions--box {
+  height: auto;
+  padding: 6px;
+  background: rgba(240, 240, 240, 0.92);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.df-quick-actions__items {
+  display: grid;
+  grid-template-columns: repeat(2, 32px);
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  justify-items: center;
+  align-items: center;
+  align-content: center;
+}
+
+.df-action-btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #222;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+}
+
+.df-action-btn:hover,
+.df-action-btn:focus-visible {
+  opacity: 1;
+}
+
+.df-action-btn--danger {
+  color: #c0392b;
+}
+
+.df-quick-actions--box .nep-icon-tooltip {
+  top: 50%;
+  bottom: auto;
+  left: calc(100% + 8px);
+  right: auto;
+  transform: translateY(-50%) translateX(-4px);
+}
+
+.df-action-btn:hover .nep-icon-tooltip,
+.df-action-btn:focus-visible .nep-icon-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Aviso pequeño del diálogo "Reportar" (ProjectActionModals.jsx), debajo
+   del textarea. */
+.pam-notice {
+  font-size: 12px;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .df-quick-actions {
+    bottom: 16px;
+    left: 12px;
+    height: 44px;
+  }
+
+  /* Mobile: arriba del todo, 12px como a la izquierda. */
+  .df-quick-actions.df-quick-actions--top {
+    top: 12px;
+    bottom: auto;
+  }
+
+  .df-qa-back {
+    width: 44px;
+  }
+
+  /* 44px de flecha: 14px a cada lado, igual tras la T/. */
+  .df-qa-logo {
+    padding: 0 14px 0 0;
+  }
+
+  .df-action-btn {
+    width: 32px;
+    height: 32px;
+  }
+}

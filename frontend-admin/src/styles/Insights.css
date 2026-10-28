@@ -1,0 +1,607 @@
+/* ── Estadísticas del admin (Resumen / Tráfico / Actividad) ────────────
+   = Estadísticas del panel de usuario (InsightsTab.css de la web):
+   bloques gris tenue sin bordes ni sombras, números #111, etiquetas #555,
+   barras grises con la destacada en negro, tooltips negros rectos.
+   Usa las variables de theme.css para que el modo oscuro funcione.
+   Desktop >1100px · tablet 769–1100px · mobile ≤768px. */
+
+.ai-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1280px;
+  margin: 0 auto;
+  color: var(--text-primary);
+}
+
+/* ── Cabecera ──────────────────────────────────────────────────────── */
+.ai-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 0 14px;
+}
+
+.ai-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.ai-title {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.ai-subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.ai-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-period-btn {
+  height: 36px;
+  padding: 0 16px;
+  background: var(--card-background);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast);
+}
+
+.ai-period-btn:hover:not(.is-on) {
+  background: var(--card-background-hover);
+}
+
+.ai-period-btn.is-on {
+  background: var(--primary-color);
+  color: var(--text-white);
+}
+
+/* ── Sección (título suelto entre bloques) ─────────────────────────── */
+.ai-section-title {
+  margin: 22px 0 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── Franja de métricas ────────────────────────────────────────────── */
+.ai-strip {
+  display: grid;
+  grid-template-columns: repeat(var(--ai-cols, 4), minmax(0, 1fr));
+  background: var(--card-background);
+}
+
+.ai-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 20px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ai-stat-num {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.ai-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.ai-stat--link {
+  transition: background-color var(--transition-fast);
+}
+
+.ai-stat--link:hover,
+.ai-stat--link:focus-visible {
+  background: var(--card-background-hover);
+  outline: none;
+}
+
+.ai-stat--link:hover .ai-stat-label {
+  color: var(--text-primary);
+}
+
+.ai-stat-arrow {
+  transition: transform 0.15s ease;
+}
+
+.ai-stat--link:hover .ai-stat-arrow {
+  transform: translate(2px, -2px);
+}
+
+.ai-delta {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.ai-delta.is-up {
+  color: var(--success-color);
+}
+
+.ai-delta.is-down {
+  color: var(--error-color);
+}
+
+/* ── Rejillas ──────────────────────────────────────────────────────── */
+.ai-cols-2,
+.ai-cols-3,
+.ai-cols-wide {
+  display: grid;
+  gap: 18px;
+}
+
+.ai-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ai-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ai-cols-wide { grid-template-columns: 1.7fr 1fr; }
+
+/* ── Bloque ────────────────────────────────────────────────────────── */
+.ai-block {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 20px;
+  background: var(--card-background);
+}
+
+.ai-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-block-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ai-block-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+.ai-block-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ai-block-aside {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.ai-empty,
+.ai-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ai-error {
+  padding: 20px;
+  background: var(--card-background);
+}
+
+/* ── Barras verticales ─────────────────────────────────────────────── */
+.ai-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.ai-bar-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  outline: none;
+}
+
+.ai-bar-track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+.ai-bar {
+  width: 100%;
+  /* Gris de la serie = el texto al 14% (vale en claro y en oscuro). */
+  background: color-mix(in srgb, var(--text-primary) 14%, transparent);
+  transition: background-color var(--transition-fast);
+}
+
+.ai-bar-col.is-current .ai-bar,
+.ai-bar-col:hover .ai-bar,
+.ai-bar-col:focus-visible .ai-bar {
+  background: var(--text-primary);
+}
+
+.ai-bar-label {
+  min-height: 14px;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Tooltip: negro, recto, 11px; texto y número separados por espacio. */
+.ai-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  padding: 5px 10px;
+  background: var(--text-primary);
+  color: var(--background-color);
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.ai-tip-value {
+  font-weight: 600;
+}
+
+.ai-bar-col:hover .ai-tip,
+.ai-bar-col:focus-visible .ai-tip,
+.ai-heat-cell:hover .ai-tip,
+.ai-heat-cell:focus-visible .ai-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ── Filas con barra horizontal ────────────────────────────────────── */
+.ai-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-row-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.ai-row-label {
+  overflow: hidden;
+  min-width: 0;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-row-values {
+  display: inline-flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.ai-row-count {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.ai-row-pct {
+  min-width: 36px;
+  text-align: right;
+  color: var(--text-secondary);
+}
+
+.ai-row-track {
+  height: 4px;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+}
+
+.ai-row-bar {
+  height: 100%;
+  background: var(--text-primary);
+}
+
+/* ── Flujos (de página a página) ───────────────────────────────────── */
+.ai-flows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.ai-flow:last-child {
+  border-bottom: none;
+}
+
+.ai-flow-path {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.ai-flow-path svg {
+  color: var(--text-light);
+}
+
+/* ── Mapa de calor ─────────────────────────────────────────────────── */
+.ai-heat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.ai-heat-grid {
+  display: grid;
+  grid-template-columns: 36px repeat(24, minmax(14px, 1fr));
+  gap: 2px;
+  min-width: 420px;
+}
+
+.ai-heat-row {
+  display: contents;
+}
+
+.ai-heat-day,
+.ai-heat-hour {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ai-heat-hour {
+  text-align: center;
+}
+
+.ai-heat-day {
+  align-self: center;
+}
+
+.ai-heat-cell,
+.ai-heat-swatch {
+  position: relative;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+}
+
+.ai-heat-cell::after,
+.ai-heat-swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--text-primary);
+  opacity: var(--a, 0);
+}
+
+.ai-heat-cell {
+  outline: none;
+}
+
+.ai-heat-cell:hover::after,
+.ai-heat-cell:focus-visible::after {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
+}
+
+.ai-heat-cell .ai-tip {
+  z-index: 6;
+}
+
+.ai-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ai-heat-swatch {
+  width: 14px;
+}
+
+.ai-heat-legend span:first-child {
+  margin-right: 4px;
+}
+
+.ai-heat-legend span:last-child {
+  margin-left: 4px;
+}
+
+/* ── Listas de proyectos / personas ────────────────────────────────── */
+.ai-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.ai-list-item:last-child {
+  border-bottom: none;
+}
+
+.ai-list-thumb {
+  flex-shrink: 0;
+  width: 40px;
+  height: 50px;
+  object-fit: cover;
+  background: var(--border-color);
+}
+
+.ai-list-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-list-title {
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-list-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ── Nota de datos ─────────────────────────────────────────────────── */
+.ai-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* ── Tabla ─────────────────────────────────────────────────────────── */
+.ai-table-wrap {
+  overflow-x: auto;
+}
+
+.ai-table {
+  width: 100%;
+  font-size: 13px;
+}
+
+.ai-table th,
+.ai-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ai-table td {
+  color: var(--text-primary);
+}
+
+.ai-table .is-muted {
+  color: var(--text-light);
+}
+
+/* ── Skeleton ──────────────────────────────────────────────────────── */
+@keyframes ai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.ai-skel {
+  display: block;
+  background: var(--card-background);
+  animation: ai-pulse 1.5s ease-in-out infinite;
+}
+
+/* ── Tablet ────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .ai-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-cols-wide { grid-template-columns: 1fr; }
+  .ai-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ai-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .ai-title {
+    font-size: 28px;
+  }
+
+  .ai-cols-2,
+  .ai-cols-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-stat {
+    padding: 16px;
+  }
+
+  .ai-stat-num {
+    font-size: 24px;
+  }
+
+  .ai-block {
+    padding: 16px;
+  }
+}

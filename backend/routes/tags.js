@@ -93,7 +93,7 @@ router.get("/cities", async (req, res, next) => {
       userMatchBase._id = { $in: usersWithPosts };
     }
 
-    const [counts1, counts2] = await Promise.all([
+    const [counts1, counts2, counts3] = await Promise.all([
       User.aggregate([
         { $match: { ...userMatchBase, city: { $exists: true, $ne: "" } } },
         { $group: { _id: "$city", count: { $sum: 1 } } },
@@ -102,11 +102,16 @@ router.get("/cities", async (req, res, next) => {
         { $match: { ...userMatchBase, city2: { $exists: true, $ne: "" } } },
         { $group: { _id: "$city2", count: { $sum: 1 } } },
       ]),
+      User.aggregate([
+        { $match: { ...userMatchBase, city3: { $exists: true, $ne: "" } } },
+        { $group: { _id: "$city3", count: { $sum: 1 } } },
+      ]),
     ]);
 
     const cities = {};
     for (const c of counts1) cities[c._id] = (cities[c._id] || 0) + c.count;
     for (const c of counts2) cities[c._id] = (cities[c._id] || 0) + c.count;
+    for (const c of counts3) cities[c._id] = (cities[c._id] || 0) + c.count;
 
     res.json({ cities });
   } catch (e) {

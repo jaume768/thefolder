@@ -48,14 +48,14 @@ services:
     restart: unless-stopped
 
   # ─── Panel de administración ───
-  #frontend-admin:
-  #  build:
-  #    context: ./frontend-admin
-  #    args:
-  #      VITE_BACKEND_URL: https://api.thefolder.es
-  #      VITE_RUTA_FRONTEND: https://thefolder.es
-  #  container_name: frontend-admin
-  #  restart: unless-stopped
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+      args:
+        VITE_BACKEND_URL: https://api.thefolder.es
+        VITE_RUTA_FRONTEND: https://thefolder.es
+    container_name: frontend-admin
+    restart: unless-stopped
 
 volumes:
   mongo_data:
